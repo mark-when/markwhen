@@ -60,6 +60,9 @@ class DateRange {
   }
 
   toYearMonthDay(str: string): YearMonthDay {
+    if (str === "now") {
+      str = (new Date()).toLocaleDateString()
+    }
     let [year, day, month] = str.split("/").reverse();
     const yearNumber = parseInt(year);
     if (!day) {
@@ -105,7 +108,7 @@ const YEAR_WIDTH_PX = 120;
 const EVENT_HEIGHT_PX = 12;
 const EVENT_SPACER_HEIGHT_PX = 4;
 
-import { debounce } from "throttle-debounce"
+import { debounce } from "throttle-debounce";
 
 export default {
   props: {
@@ -115,9 +118,9 @@ export default {
     },
   },
   watch: {
-    eventString(val, oldVal) {
-      debounce(1000, this.parse())
-    }
+    eventString: function (val, oldVal) {
+      this.debouncedParse();
+    },
   },
   computed: {
     frame(): HTMLIFrameElement {
@@ -127,10 +130,14 @@ export default {
       return this.frame.contentDocument!;
     },
   },
+  created() {
+    this.debouncedParse = debounce(1000, this.parse)
+  },
   methods: {
+    debouncedParse: () => {},
     parse() {
       let eventStrings = this.eventString.split("\n");
-      const events = eventStrings.map((eventString) => {
+      const events = eventStrings.filter(str => !!str).map((eventString) => {
         const colonIndex = eventString.indexOf(":");
         if (colonIndex === -1) {
           throw new Error(
@@ -216,8 +223,11 @@ export default {
         event.range
       )}px;`;
       eventBar.className = "eventBar";
+      const eventTitle = this.frameDoc.createElement("p");
+      eventTitle.className = "eventTitle"
+      eventTitle.innerText = event.event
       eventRow.append(eventBar);
-      // eventRow.innerText = event.event
+      eventRow.append(eventTitle)
       intoParent.append(eventRow);
     },
     getLeftMarginForDate(date: YearMonthDay): number {
@@ -294,12 +304,24 @@ export default {
 
         .eventRow {
           margin-top: ${EVENT_SPACER_HEIGHT_PX}px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
         }
 
         .eventBar {
           background-color: #ffffff4a;
           border-radius: ${EVENT_HEIGHT_PX / 2}px;
           height: 100%;
+          flex-shrink: 0;
+        }
+
+        .eventTitle {
+          padding: 0px;
+          margin: 0px 0px 0px 4px;
+          font-family: system-ui;
+          font-size: 80%;
+          white-space: nowrap;
         }
       `.replaceAll(/(?:\r|\n)/g, "");
     },
