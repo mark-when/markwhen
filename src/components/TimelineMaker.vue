@@ -1,15 +1,21 @@
 <template>
   <div class="flex flex-col">
     <div class="flex">
-      <iframe frameborder="0" ref="frame" class="flex-grow"></iframe>
+      <iframe
+        frameborder="0"
+        ref="frame"
+        class="flex-grow"
+        height="80vh"
+      ></iframe>
     </div>
     <div class="flex flex-row">
-      <a 
+      <a
         :href="base64string"
         target="_blank"
         download="timeline.html"
         class="bg-blue-100 mt-3 ml-2 rounded shadow-md hover:shadow-none transition-all duration-100 px-2"
-      >Download HTML</a>
+        >Download HTML</a
+      >
     </div>
   </div>
 </template>
@@ -64,11 +70,13 @@ interface BoundingYears {
 class DateRange {
   from: YearMonthDay;
   to?: YearMonthDay;
+  originalString: string
 
   constructor(dateString: string) {
-    const commentIndex = dateString.indexOf("//")
+    this.originalString = dateString
+    const commentIndex = dateString.indexOf("//");
     if (commentIndex >= 0) {
-      dateString = dateString.substring(0, commentIndex)
+      dateString = dateString.substring(0, commentIndex);
     }
     const [unparsedFrom, unparsedTo] = dateString.split("-");
     this.from = this.toYearMonthDay(unparsedFrom);
@@ -124,6 +132,10 @@ class Event {
     return this.event.replace(this.linkRegex, (substring, linkText, link) => {
       return `<a href="${link}">${linkText}</a>`;
     });
+  }
+
+  getDateHtml(): string {
+    return this.range.originalString
   }
 }
 
@@ -223,7 +235,8 @@ export default {
       this.addEvents(events, years.start, timeline);
 
       this.frameDoc.body.append(timeline);
-      this.htmlString = this.frameDoc.head.innerHTML + this.frameDoc.body.innerHTML;
+      this.htmlString =
+        this.frameDoc.head.innerHTML + this.frameDoc.body.innerHTML;
     },
     addYearHeaders(years: BoundingYears, intoParent: HTMLDivElement) {
       for (let year of this.range(years.end - years.start + 1, years.start)) {
@@ -233,13 +246,13 @@ export default {
     addYearHeader(year: Year, startingYear: Year, intoParent: HTMLDivElement) {
       const startColumn = year - startingYear + 1;
       const endColumn = startColumn;
-      const yearDiv = this.frameDoc.createElement("div")
+      const yearDiv = this.frameDoc.createElement("div");
       const yearTitle = this.frameDoc.createElement("h6");
       yearTitle.innerText = `${year}`;
-      yearTitle.className = "yearTitle"
+      yearTitle.className = "yearTitle";
       yearDiv.className = "year";
       yearDiv.style.cssText = `grid-column: ${startColumn} / ${endColumn}; grid-row: 1 / -1;`;
-      yearDiv.append(yearTitle)
+      yearDiv.append(yearTitle);
       intoParent.append(yearDiv);
     },
     addEvents(events: Event[], startingYear: Year, intoParent: HTMLDivElement) {
@@ -267,7 +280,11 @@ export default {
       const eventTitle = this.frameDoc.createElement("p");
       eventTitle.className = "eventTitle";
       eventTitle.innerHTML = event.getInnerHtml();
+      const eventDate = this.frameDoc.createElement("p");
+      eventDate.className = "eventDate"
+      eventDate.innerHTML = event.getDateHtml();
       eventRow.append(eventBar);
+      eventRow.append(eventDate);
       eventRow.append(eventTitle);
       intoParent.append(eventRow);
     },
@@ -330,7 +347,7 @@ export default {
           grid-template-columns: repeat(${numColumns}, ${columnWidth}px [year-start]);
           grid-template-rows: 40px repeat(${numRows - 1}, ${
         EVENT_HEIGHT_PX + EVENT_SPACER_HEIGHT_PX + 4
-      }px) 1fr;
+      }px) minmax(40px, 1fr);
         }
 
         .year {
@@ -363,10 +380,18 @@ export default {
         }
 
         .eventTitle {
-          margin: 0px 0px 0px 4px;
-          padding: 0px 4px;
+          margin: 0px 0px 0px 8px;
+          padding: 0px 48px 0px 0px;
           font-family: system-ui;
           font-size: 80%;
+          white-space: nowrap;
+        }
+
+        .eventDate {
+          color: #93979a;
+          font-family: system-ui;
+          font-size: 80%;
+          margin: 0px 0px 0px 8px;
           white-space: nowrap;
         }
 
@@ -386,6 +411,7 @@ export default {
 iframe {
   border: 1px solid black;
   width: 800px;
-  height: 500px;
+  min-height: 500px;
+  height: 80vh;
 }
 </style>
