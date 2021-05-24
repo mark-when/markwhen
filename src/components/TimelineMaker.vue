@@ -1,5 +1,17 @@
 <template>
-  <iframe src="" frameborder="0" ref="frame"></iframe>
+  <div class="flex flex-col">
+    <div class="flex">
+      <iframe frameborder="0" ref="frame" class="flex-grow"></iframe>
+    </div>
+    <div class="flex flex-row">
+      <a 
+        :href="base64string"
+        target="_blank"
+        download="timeline.html"
+        class="bg-blue-100 mt-3 ml-2 rounded shadow-md hover:shadow-none transition-all duration-100 px-2"
+      >Download HTML</a>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -54,6 +66,10 @@ class DateRange {
   to?: YearMonthDay;
 
   constructor(dateString: string) {
+    const commentIndex = dateString.indexOf("//")
+    if (commentIndex >= 0) {
+      dateString = dateString.substring(0, commentIndex)
+    }
     const [unparsedFrom, unparsedTo] = dateString.split("-");
     this.from = this.toYearMonthDay(unparsedFrom);
     this.to = unparsedTo ? this.toYearMonthDay(unparsedTo) : undefined;
@@ -61,7 +77,7 @@ class DateRange {
 
   toYearMonthDay(str: string): YearMonthDay {
     if (str === "now") {
-      str = (new Date()).toLocaleDateString()
+      str = new Date().toLocaleDateString();
     }
     let [year, day, month] = str.split("/").reverse();
     const yearNumber = parseInt(year);
@@ -89,6 +105,7 @@ class DateRange {
 class Event {
   range: DateRange;
   event: string;
+  linkRegex = /\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
 
   constructor(range: DateRange, event: string) {
     this.range = range;
@@ -102,11 +119,17 @@ class Event {
   getNextYear(): Year {
     return this.range.getNextYear();
   }
+
+  getInnerHtml(): string {
+    return this.event.replace(this.linkRegex, (substring, linkText, link) => {
+      return `<a href="${link}">${linkText}</a>`;
+    });
+  }
 }
 
 const YEAR_WIDTH_PX = 120;
-const EVENT_HEIGHT_PX = 12;
-const EVENT_SPACER_HEIGHT_PX = 4;
+const EVENT_HEIGHT_PX = 10;
+const EVENT_SPACER_HEIGHT_PX = 5;
 
 import { debounce } from "throttle-debounce";
 
@@ -116,6 +139,11 @@ export default {
       type: String,
       default: "",
     },
+  },
+  data() {
+    return {
+      htmlString: "",
+    };
   },
   watch: {
     eventString: function (val, oldVal) {
@@ -129,29 +157,38 @@ export default {
     frameDoc(): HTMLDocument {
       return this.frame.contentDocument!;
     },
+    base64string(): string {
+      return `data:text/html;base64,${btoa(this.htmlString)}`;
+    },
   },
   created() {
-    this.debouncedParse = debounce(1000, this.parse)
+    this.debouncedParse = debounce(1000, this.parse);
   },
   methods: {
     debouncedParse: () => {},
     parse() {
       let eventStrings = this.eventString.split("\n");
-      const events = eventStrings.filter(str => !!str).map((eventString) => {
-        const colonIndex = eventString.indexOf(":");
-        if (colonIndex === -1) {
-          throw new Error(
-            `Error parsing '${eventString}': missing separating colon (:)`
+      const events = eventStrings
+        // Filter empty strings and comments
+        .filter((str) => !!str && str.match(/^\s*\/\/.*/) === null)
+        .map((eventString) => {
+          const colonIndex = eventString.indexOf(":");
+          if (colonIndex === -1) {
+            throw new Error(
+              `Error parsing '${eventString}': missing separating colon (:)`
+            );
+          }
+          const dateString = eventString.substring(0, colonIndex).trim();
+          return new Event(
+            new DateRange(dateString),
+            eventString.substring(colonIndex + 1).trim()
           );
-        }
-        const dateString = eventString.substring(0, colonIndex).trim();
-        return new Event(
-          new DateRange(dateString),
-          eventString.substring(colonIndex + 1).trim()
-        );
-      });
-      const BoundingYears = this.getBoundingYears(events);
-      this.generateDocument(BoundingYears, events);
+        });
+      const boundingYears = this.getBoundingYears(events);
+      if (boundingYears.end - boundingYears.start > 1000) {
+        throw new Error("Can't make a timeline that long");
+      }
+      this.generateDocument(boundingYears, events);
     },
     getBoundingYears(events: Event[]): BoundingYears {
       let min = events[0].startingYear();
@@ -186,6 +223,7 @@ export default {
       this.addEvents(events, years.start, timeline);
 
       this.frameDoc.body.append(timeline);
+      this.htmlString = this.frameDoc.head.innerHTML + this.frameDoc.body.innerHTML;
     },
     addYearHeaders(years: BoundingYears, intoParent: HTMLDivElement) {
       for (let year of this.range(years.end - years.start + 1, years.start)) {
@@ -195,11 +233,14 @@ export default {
     addYearHeader(year: Year, startingYear: Year, intoParent: HTMLDivElement) {
       const startColumn = year - startingYear + 1;
       const endColumn = startColumn;
+      const yearDiv = this.frameDoc.createElement("div")
       const yearTitle = this.frameDoc.createElement("h6");
       yearTitle.innerText = `${year}`;
-      yearTitle.className = "year";
-      yearTitle.style.cssText = `grid-column: ${startColumn} / ${endColumn}; grid-row: 1 / -1;`;
-      intoParent.append(yearTitle);
+      yearTitle.className = "yearTitle"
+      yearDiv.className = "year";
+      yearDiv.style.cssText = `grid-column: ${startColumn} / ${endColumn}; grid-row: 1 / -1;`;
+      yearDiv.append(yearTitle)
+      intoParent.append(yearDiv);
     },
     addEvents(events: Event[], startingYear: Year, intoParent: HTMLDivElement) {
       for (let i = 0; i < events.length; i++) {
@@ -224,10 +265,10 @@ export default {
       )}px;`;
       eventBar.className = "eventBar";
       const eventTitle = this.frameDoc.createElement("p");
-      eventTitle.className = "eventTitle"
-      eventTitle.innerText = event.event
+      eventTitle.className = "eventTitle";
+      eventTitle.innerHTML = event.getInnerHtml();
       eventRow.append(eventBar);
-      eventRow.append(eventTitle)
+      eventRow.append(eventTitle);
       intoParent.append(eventRow);
     },
     getLeftMarginForDate(date: YearMonthDay): number {
@@ -279,7 +320,8 @@ export default {
         body {
           background-color: #384047; 
           color: white; 
-          height: 100vh
+          height: 100vh;
+          margin: 0;
         }
         
         #timeline {
@@ -287,19 +329,23 @@ export default {
           display: grid;
           grid-template-columns: repeat(${numColumns}, ${columnWidth}px [year-start]);
           grid-template-rows: 40px repeat(${numRows - 1}, ${
-        EVENT_HEIGHT_PX + EVENT_SPACER_HEIGHT_PX
+        EVENT_HEIGHT_PX + EVENT_SPACER_HEIGHT_PX + 4
       }px) 1fr;
         }
 
         .year {
           border-left: 1px dashed gray;
-          font-weight: 300;
-          margin: 0;
-          padding-left: 0.25rem;
-          padding-right: 0.75rem;
-          padding-top: 0.5rem;
           height: 100%;
           font-family: system-ui
+        }
+
+        .yearTitle {
+          font-weight: 300;
+          margin: 0px 0px 0px 0px;
+          position: sticky;
+          top: 0px;
+          padding: 8px;
+          background: linear-gradient(to bottom, #384047, 77%, #38404700);
         }
 
         .eventRow {
@@ -312,16 +358,20 @@ export default {
         .eventBar {
           background-color: #ffffff4a;
           border-radius: ${EVENT_HEIGHT_PX / 2}px;
-          height: 100%;
+          height: ${EVENT_HEIGHT_PX};
           flex-shrink: 0;
         }
 
         .eventTitle {
-          padding: 0px;
           margin: 0px 0px 0px 4px;
+          padding: 0px 4px;
           font-family: system-ui;
           font-size: 80%;
           white-space: nowrap;
+        }
+
+        .eventTitle a {
+          color: white;
         }
       `.replaceAll(/(?:\r|\n)/g, "");
     },
