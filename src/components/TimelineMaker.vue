@@ -377,6 +377,11 @@ export default {
           border-radius: ${EVENT_HEIGHT_PX / 2}px;
           height: ${EVENT_HEIGHT_PX};
           flex-shrink: 0;
+          transition: background-color 0.075s ease-in-out;
+        }
+
+        .eventRow:hover .eventBar {
+          background-color: white;
         }
 
         .eventTitle {

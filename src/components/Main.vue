@@ -34,22 +34,23 @@ export default {
   data() {
     return {
       currentTimelineName: "",
-      events: `08/2008-05/2012: Miami Psych degree
+      events: `08/2008-05/2012: Psych degree
+02/2010-06/2012: Dispatcher
+10/2010: Barn built across the street
+06/2011-08/2011: Westover Air Reserve Base
 
 // 2013
-03/15/2013-07/14/2013: Changsha
-08/30/2013-06/16/2014: Shaoxing
+03/15/2013-04/2015: China
 
 // 2014
 07/2014: 4th of July in DC
-09/2014-04/2015: Hangzhou
 
 // 2015
 05/2015-08/2015: Summer classes so I can graduate in two years
 05/2015: James graduation
 06/2015: Built desk
 06/2015: Kim and Matt wedding
-08/2015-05/2017: Miami CS degree
+08/2015-05/2017: CS degree
 
 // 2016
 05/22/2016-08/12/2016: Cardinal Health
@@ -65,7 +66,7 @@ export default {
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
-10/01/2018-01/2021: Google
+10/01/2018-01/2021: [Google](https://www.google.com)
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019

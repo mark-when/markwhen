@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build --base=/timelinemaker/",
     "serve": "vite preview"
   },
   "dependencies": {

@@ -39,12 +39,7 @@
 
 <script lang="ts">
 export default {
-  props: ["list"],
-  data() {
-    return {
-      selected: ''
-    }
-  }
+  props: ["list"]
 };
 </script>
 
