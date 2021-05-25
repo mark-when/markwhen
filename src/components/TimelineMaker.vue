@@ -5,7 +5,6 @@
         frameborder="0"
         ref="frame"
         class="flex-grow"
-        height="80vh"
       ></iframe>
     </div>
     <div class="flex flex-row">
@@ -282,7 +281,7 @@ export default {
       eventTitle.innerHTML = event.getInnerHtml();
       const eventDate = this.frameDoc.createElement("p");
       eventDate.className = "eventDate"
-      eventDate.innerHTML = event.getDateHtml();
+      eventDate.innerText = event.getDateHtml();
       eventRow.append(eventBar);
       eventRow.append(eventDate);
       eventRow.append(eventTitle);

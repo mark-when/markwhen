@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/timelinemaker/",
+    "build": "vite build",
     "serve": "vite preview"
   },
   "dependencies": {
