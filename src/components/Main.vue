@@ -1,5 +1,14 @@
 <template>
-  <h1 class="text-3xl">Timeline Maker</h1>
+  <div class="flex">
+    <a href="/">
+      <img
+        src="https://api.sw.ink/v0/swink/761QQ2NQBM/image?innerText=Cascade"
+      />
+    </a>
+    <div class="underline flex items-end">
+      <a href="https://github.com/kochrt/timeline-maker">Github</a>
+    </div>
+  </div>
   <div class="flex flex-row p-3 h-100">
     <storage
       :list="list"
@@ -133,15 +142,15 @@ export default {
       const concatenatedList = localStorage.getItem("timelines");
       if (concatenatedList) {
         this.list = concatenatedList.split(",");
-        this.loadTimeline(this.list[0])
+        this.loadTimeline(this.list[0]);
       }
     },
   },
 };
 </script>
 
-<style>
-textarea {
-  white-space: nowrap;
+<style scoped>
+img {
+  height: 10rem;
 }
 </style>
