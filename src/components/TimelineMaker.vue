@@ -12,7 +12,7 @@
         :href="base64string"
         target="_blank"
         download="timeline.html"
-        class="bg-blue-100 mt-3 ml-2 rounded shadow-md hover:shadow-none transition-all duration-100 px-2"
+        class="bg-blue-100 mt-3 rounded shadow-md hover:shadow-none transition-all duration-100 px-2"
         >Download HTML</a
       >
     </div>

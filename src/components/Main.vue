@@ -9,13 +9,13 @@
       <a href="https://github.com/kochrt/timeline-maker">Github</a>
     </div>
   </div>
-  <div class="flex flex-row p-3 h-100">
+  <div class="flex md:flex-row flex-col p-3 h-100">
     <storage
       :list="list"
       @selected="selectedTimeline"
       @delete="deleteTimeline"
     />
-    <div class="flex flex-col mr-3">
+    <div class="flex flex-col mr-3 mb-3">
       <textarea
         class="border shadow-md flex-grow p-2"
         name="eventsField"
@@ -30,7 +30,7 @@
         Save timeline
       </button>
     </div>
-    <timeline-maker :eventString="events" class="flex-grow" />
+    <timeline-maker :eventString="events" class="flex-grow mr-3 mb-3" />
   </div>
 </template>
 
