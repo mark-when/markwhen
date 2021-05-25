@@ -2,7 +2,7 @@
   <div class="flex">
     <a href="/">
       <img
-        src="https://api.sw.ink/v0/swink/761QQ2NQBM/image?innerText=Cascade"
+        src="https://api.sw.ink/v0/swink/761QQ2NQBM/image?textColor=384047"
       />
     </a>
     <div class="underline flex items-end">
@@ -151,6 +151,6 @@ export default {
 
 <style scoped>
 img {
-  height: 10rem;
+  height: 12rem;
 }
 </style>
