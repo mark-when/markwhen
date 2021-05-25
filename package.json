@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && echo 'cascade.page' > ./dist/CNAME && gh-pages -d dist"
   },
   "dependencies": {
     "throttle-debounce": "^3.0.1",

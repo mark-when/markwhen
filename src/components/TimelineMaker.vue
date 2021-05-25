@@ -173,7 +173,7 @@ export default {
     },
   },
   created() {
-    this.debouncedParse = debounce(1000, this.parse);
+    this.debouncedParse = debounce(400, this.parse);
   },
   methods: {
     debouncedParse: () => {},
