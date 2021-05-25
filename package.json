@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "throttle-debounce": "^3.0.1",
@@ -15,6 +16,7 @@
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.5",
+    "gh-pages": "^3.2.0",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.1.2",
     "typescript": "^4.1.3",
