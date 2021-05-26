@@ -1,36 +1,33 @@
 <template>
-  <div class="flex">
-    <a href="/">
-      <img
-        src="https://api.sw.ink/v0/swink/761QQ2NQBM/image?textColor=384047"
+  <div class="backdrop-filter backdrop-blur-sm ">
+    <div class="flex">
+      <div class="underline flex items-end">
+        <a href="https://github.com/kochrt/timeline-maker">Github</a>
+      </div>
+    </div>
+    <div class="flex md:flex-row flex-col p-3 h-100">
+      <storage
+        :list="list"
+        @selected="selectedTimeline"
+        @delete="deleteTimeline"
       />
-    </a>
-    <div class="underline flex items-end">
-      <a href="https://github.com/kochrt/timeline-maker">Github</a>
+      <div class="flex flex-col mr-3 mb-3 text-black">
+        <textarea
+          class="border shadow-md flex-grow p-2"
+          name="eventsField"
+          cols="40"
+          rows="10"
+          v-model="events"
+        ></textarea>
+        <button
+          class="bg-blue-100 mt-3 rounded shadow-md hover:shadow-none transition-all duration-100"
+          @click="save"
+        >
+          Save timeline
+        </button>
+      </div>
+      <timeline-maker :eventString="events" class="flex-grow mr-3 mb-3" />
     </div>
-  </div>
-  <div class="flex md:flex-row flex-col p-3 h-100">
-    <storage
-      :list="list"
-      @selected="selectedTimeline"
-      @delete="deleteTimeline"
-    />
-    <div class="flex flex-col mr-3 mb-3">
-      <textarea
-        class="border shadow-md flex-grow p-2"
-        name="eventsField"
-        cols="40"
-        rows="10"
-        v-model="events"
-      ></textarea>
-      <button
-        class="bg-blue-100 mt-3 rounded shadow-md hover:shadow-none transition-all duration-100"
-        @click="save"
-      >
-        Save timeline
-      </button>
-    </div>
-    <timeline-maker :eventString="events" class="flex-grow mr-3 mb-3" />
   </div>
 </template>
 
@@ -149,8 +146,11 @@ export default {
 };
 </script>
 
-<style scoped>
-img {
-  height: 12rem;
+<style>
+body {
+  background-color: #384047;
+  color: white;
+  height: 100vh;
+  margin: 0;
 }
 </style>
