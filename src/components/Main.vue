@@ -1,11 +1,47 @@
 <template>
-  <div class="backdrop-filter backdrop-blur-sm ">
-    <div class="flex">
+  <div class="backdrop-filter backdrop-blur-sm">
+    <div class="flex flex-row">
       <div class="underline flex items-end">
         <a href="https://github.com/kochrt/timeline-maker">Github</a>
       </div>
+      <button
+        class="ml-auto hover:bg-gray-500 rounded px-3 flex flex-row items-center"
+        @click="collapsed = !collapsed"
+      >
+        {{ collapsed ? "Expand" : "Collapse" }}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3 ml-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          v-if="!collapsed"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          v-if="collapsed"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 15l7-7 7 7"
+          />
+        </svg>
+      </button>
     </div>
-    <div class="flex md:flex-row flex-col p-3 h-100">
+    <div class="flex md:flex-row flex-col p-3 h-100" v-show="!collapsed">
       <storage
         :list="list"
         @selected="selectedTimeline"
@@ -39,6 +75,7 @@ export default {
   components: { TimelineMaker, Storage },
   data() {
     return {
+      collapsed: false,
       currentTimelineName: "",
       events: `08/2008-05/2012: Psych degree
 02/2010-06/2012: Dispatcher

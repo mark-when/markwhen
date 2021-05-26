@@ -107,7 +107,7 @@ export class Event {
 
   getInnerHtml(): string {
     return this.event.replace(this.linkRegex, (substring, linkText, link) => {
-      return `<a href="${link}">${linkText}</a>`;
+      return `<a class="underline" href="${link}">${linkText}</a>`;
     });
   }
 
