@@ -90,7 +90,7 @@ export class DateRange {
 export class Event {
   range: DateRange;
   event: string;
-  linkRegex = /\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
+  linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
 
   constructor(range: DateRange, event: string) {
     this.range = range;

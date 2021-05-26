@@ -136,7 +136,8 @@ export default {
 // 2021
 01/2021: qr.new featured on [Hacker News](https://news.ycombinator.com/item?id=25481772)
 02/2021: Hawaii
-02/01/2021-now: Working on [swink](https://sw.ink) full time`,
+02/01/2021-now: Working on [swink](https://sw.ink) full time
+05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)`,
       list: [] as string[],
     };
   },
