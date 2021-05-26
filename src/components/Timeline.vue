@@ -5,10 +5,10 @@
       v-for="year in range(years.end - years.start + 1, years.start)"
       :key="year"
       :style="`grid-column: ${year - years.start + 1} / ${
-        years - years.start + 1
+        year - years.start + 2
       }; grid-row: 1 / -1;`"
     >
-      <h6 class="yearTitle">{{ year }}</h6>
+      <h6 class="yearTitle text-sm">{{ year }}</h6>
     </div>
     <div
       class="eventRow"
