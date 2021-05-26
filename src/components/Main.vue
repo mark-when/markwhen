@@ -41,18 +41,18 @@
         </svg>
       </button>
     </div>
-    <div class="flex md:flex-row flex-col p-3 h-100" v-show="!collapsed">
+    <div class="flex md:flex-row flex-col pt-3" v-show="!collapsed">
       <storage
         :list="list"
         @selected="selectedTimeline"
         @delete="deleteTimeline"
       />
-      <div class="flex flex-col mr-3 mb-3 text-black">
+      <div class="flex flex-col mb-3 text-black">
         <textarea
           class="border shadow-md flex-grow p-2"
           name="eventsField"
-          cols="40"
-          rows="10"
+          cols="55"
+          rows="12"
           v-model="events"
         ></textarea>
         <button

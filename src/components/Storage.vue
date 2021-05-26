@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mx-3">
+  <div class="flex flex-col mr-3">
     <h3 class="text-xl border-b">My timelines</h3>
     <div class="" v-if="list && list.length > 0">
       <div
