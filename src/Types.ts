@@ -87,12 +87,46 @@ export class DateRange {
   }
 }
 
-export class Event {
-  range: DateRange;
-  event: string;
+export class EventDescription {
+  eventDescription: string
+  tags: Set<string>
   linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
 
-  constructor(range: DateRange, event: string) {
+  constructor(eventDescriptionString: string) {
+    let reversed = EventDescription.reverseString(eventDescriptionString)
+    this.tags = new Set()
+    let match
+    let substringAt = 0
+    while ((match = /(?:^(\w+)\! )/gm.exec(reversed)) !== null) {
+      match.forEach((match, groupIndex) => {
+        if (groupIndex === 1) {
+          this.tags.add(EventDescription.reverseString(match))
+          substringAt = match.length + 2
+        }
+      })
+      reversed = reversed.substring(substringAt)
+    }
+    this.eventDescription = EventDescription.reverseString(reversed.trim())
+    console.log("Event", this.eventDescription)
+    console.log("Tags", this.tags)
+  }
+
+  getInnerHtml() {
+    return this.eventDescription.replace(this.linkRegex, (substring, linkText, link) => {
+      return `<a class="underline" href="${link}">${linkText}</a>`;
+    });
+  }
+
+  static reverseString(s: string): string {
+    return s.split("").reverse().join("")
+  }
+}
+
+export class Event {
+  range: DateRange;
+  event: EventDescription;
+
+  constructor(range: DateRange, event: EventDescription) {
     this.range = range;
     this.event = event;
   }
@@ -106,9 +140,7 @@ export class Event {
   }
 
   getInnerHtml(): string {
-    return this.event.replace(this.linkRegex, (substring, linkText, link) => {
-      return `<a class="underline" href="${link}">${linkText}</a>`;
-    });
+    return this.event.getInnerHtml()
   }
 
   getDateHtml(): string {

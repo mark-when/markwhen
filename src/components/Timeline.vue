@@ -101,7 +101,6 @@ export default {
     },
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
       let base = (event.startingYear() - this.years.start) * this.columnWidth;
-      console.log(base);
       if (date.month) {
         return base + (120 / 12) * (date.month - 1);
       }
