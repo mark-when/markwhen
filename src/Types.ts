@@ -89,26 +89,30 @@ export class DateRange {
 
 export class EventDescription {
   eventDescription: string
-  tags: Set<string>
+  tags: string[]
   linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
 
   constructor(eventDescriptionString: string) {
     let reversed = EventDescription.reverseString(eventDescriptionString)
-    this.tags = new Set()
+    const tagSet = new Set()
+    this.tags = []
     let match
     let substringAt = 0
     while ((match = /(?:^(\w+)\! )/gm.exec(reversed)) !== null) {
       match.forEach((match, groupIndex) => {
         if (groupIndex === 1) {
-          this.tags.add(EventDescription.reverseString(match))
+          const reversedBack = EventDescription.reverseString(match)
+          if (!tagSet.has(reversedBack)) {
+            // We do it this way so we can keep the tags in order
+            tagSet.add(reversedBack)
+            this.tags.push(reversedBack)
+          }
           substringAt = match.length + 2
         }
       })
       reversed = reversed.substring(substringAt)
     }
     this.eventDescription = EventDescription.reverseString(reversed.trim())
-    console.log("Event", this.eventDescription)
-    console.log("Tags", this.tags)
   }
 
   getInnerHtml() {

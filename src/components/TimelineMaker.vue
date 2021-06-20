@@ -1,9 +1,8 @@
 <template>
   <div class="flex flex-col">
     <div class="flex">
-      <!-- <iframe frameborder="0" ref="frame" class="flex-grow"></iframe> -->
       <teleport to="body">
-        <timeline :events="events" />
+        <timeline :events="events" :tags="tags" />
       </teleport>
     </div>
   </div>
@@ -45,30 +44,41 @@ export default {
       let eventStrings = this.eventString.split("\n");
 
       // Filter empty strings and comments
-      eventStrings = eventStrings.filter((str) => !!str && str.match(/^\s*\/\/.*/) === null);
-      this.events = []
-      this.tags = {}
+      eventStrings = eventStrings.filter(
+        (str) => !!str && str.match(/^\s*\/\/.*/) === null
+      );
+      this.events = [];
+      this.tags = {};
       for (let i = 0; i < eventStrings.length; i++) {
-        const eventString = eventStrings[i];
+        const eventString = eventStrings[i].trim();
         const colonIndex = eventString.indexOf(":");
+
+        if (eventString.startsWith("!")) {
+          // This is a tag
+          const tagName = eventString.substring(1, colonIndex === -1 ? eventString.length : colonIndex);
+          this.tags[tagName] =
+            colonIndex === -1
+              ? ""
+              : eventString.substring(colonIndex + 1).trim();
+          continue;
+        }
+
         if (colonIndex === -1) {
           throw new Error(
             `Error parsing '${eventString}': missing separating colon (:)`
           );
         }
-        const key = eventString.substring(0, colonIndex).trim();
-        if (key.startsWith("!")) {
-          // This is a tag
-          const tagName = key.substring(1)
-          this.tags[tagName] = eventString.substring(colonIndex + 1).trim()
-        } else {
-          this.events.push(
-            new Event(
-              new DateRange(key),
-              new EventDescription(eventString.substring(colonIndex + 1).trim())
-            )
-          );
+        const dateString = eventString.substring(0, colonIndex).trim();
+        const dateRange = new DateRange(dateString);
+        const eventDescription = new EventDescription(
+          eventString.substring(colonIndex + 1).trim()
+        );
+        for (let tag of eventDescription.tags) {
+          if (!this.tags[tag]) {
+            this.tags[tag] = "";
+          }
         }
+        this.events.push(new Event(dateRange, eventDescription));
       }
     },
   },

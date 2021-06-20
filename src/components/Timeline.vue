@@ -22,7 +22,7 @@
     >
       <div
         class="eventBar"
-        :style="`width: ${this.getWidthForRange(event.range)}px;`"
+        :style="`width: ${this.getWidthForRange(event.range)}px; background-color: ${this.backgroundColor(event)}`"
       ></div>
       <p class="eventDate">{{ event.getDateHtml() }}</p>
       <p class="eventTitle" v-html="event.getInnerHtml()"></p>
@@ -36,8 +36,19 @@ import { BoundingYears, DateRange, Event, YearMonthDay } from "../Types";
 const EVENT_HEIGHT_PX = 10;
 const EVENT_SPACER_HEIGHT_PX = 5;
 
+const COLOR_MAP = {
+  red: "#ec1e1eb3",
+  orange: "#ffa500c2",
+  yellow: "#efef37a6",
+  green: "#08a9089e",
+  blue: "#7777e4a6",
+  indigo: "#ab43f794",
+  purple: '#d634d694',
+  pink: '#ffc0cba6',
+}
+
 export default {
-  props: ["events"],
+  props: ["events", "tags"],
   data() {
     return {
       numColumns: 0,
@@ -65,6 +76,9 @@ export default {
     },
   },
   methods: {
+    backgroundColor(event: Event) {
+      const eventTags = event.event.tags
+    },
     getWidthForRange(range: DateRange): number {
       if (range.to) {
         const restOfYear =
