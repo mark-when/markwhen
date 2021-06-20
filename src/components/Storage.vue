@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col mr-3">
-    <h3 class="text-xl border-b">My timelines</h3>
+    <h3 class="text-xl border-b">My cascades</h3>
     <div class="" v-if="list && list.length > 0">
       <div
         :class="selected ? 'bg-blue-100': ''"
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="" v-else>
-      <div class="">No saved timelines</div>
+      <div class="">No saved cascades</div>
     </div>
   </div>
 </template>

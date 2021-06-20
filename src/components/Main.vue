@@ -59,7 +59,7 @@
           class="bg-blue-100 mt-3 rounded shadow-md hover:shadow-none transition-all duration-100"
           @click="save"
         >
-          Save timeline
+          Save cascade
         </button>
       </div>
       <timeline-maker :eventString="events" class="flex-grow mr-3 mb-3" />
@@ -157,7 +157,7 @@ export default {
     },
     save() {
       const timelineName = prompt(
-        "Save timeline as: ",
+        "Save cascade as: ",
         this.currentTimelineName
       );
       if (timelineName) {
