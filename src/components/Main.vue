@@ -2,7 +2,7 @@
   <div class="backdrop-filter backdrop-blur-sm">
     <div class="flex flex-row">
       <div class="underline flex items-end">
-        <a href="https://github.com/kochrt/timeline-maker">Github</a>
+        <a href="https://github.com/kochrt/timeline-maker">GitHub</a>
       </div>
       <button
         class="ml-auto hover:bg-gray-500 rounded px-3 flex flex-row items-center"
