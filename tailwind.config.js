@@ -4,9 +4,7 @@ module.exports = {
       './src/**/*.html',
       './src/**/*.vue'
     ],
-    safelist: {
-      greedy: [/bg-/]
-    }
+    safelist: [/bg-/]
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
