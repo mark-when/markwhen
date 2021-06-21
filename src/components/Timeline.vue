@@ -17,13 +17,13 @@
       :style="{
         'grid-column': '1 / -1',
         'grid-row': index + 2,
-        'margin-left': `${this.getLeftMarginForDate(event, event.range.from)}px`,
+        'margin-left': `${this.getLeftMarginForDate(
+          event,
+          event.range.from
+        )}px`,
       }"
     >
-      <div
-        class="eventBar"
-        :style="eventBarStyle(event)"
-      ></div>
+      <div :class="eventBarClass(event)" :style="eventBarStyle(event)"></div>
       <p class="eventDate">{{ event.getDateHtml() }}</p>
       <p class="eventTitle" v-html="event.getInnerHtml()"></p>
     </div>
@@ -36,17 +36,13 @@ import { BoundingYears, DateRange, Event, YearMonthDay } from "../Types";
 const EVENT_HEIGHT_PX = 10;
 const EVENT_SPACER_HEIGHT_PX = 5;
 
-const COLOR_MAP = {
-  blue: "#7777e4a6",
-  indigo: "#ab43f794",
-  green: "#08a9089e",
-  purple: '#d634d694',
-  red: "#ec1e1eb3",
-  orange: "#ffa500c2",
-  yellow: "#efef37a6",
-  pink: '#ffc0cba6',
-}
-const PALETTE = Object.values(COLOR_MAP)
+/*
+ * If a user doesn't specify a color, use one from our colors array and use our color classes.
+ * If a user specifies a color from the color array, use our color classes.
+ * If a user specifies a different color, use that.
+ */
+
+const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
 export default {
   props: ["events", "tags"],
@@ -65,13 +61,14 @@ export default {
       this.numRows = val.length + 1;
     },
     tags(val, oldVal) {
-      let paletteIndex = 0
+      let paletteIndex = 0;
       for (let tag of Object.keys(val)) {
         if (!val[tag]) {
-          this.tags[tag] = PALETTE[paletteIndex++ % PALETTE.length]
+          this.tags[tag] = COLORS[paletteIndex++ % COLORS.length];
         }
       }
-    }
+      console.log(this.tags);
+    },
   },
   computed: {
     timelineStyles(): string {
@@ -85,12 +82,25 @@ export default {
     },
   },
   methods: {
-    eventBarStyle(event: Event): string {
-      let style =  `width: ${this.getWidthForRange(event.range)}px;`
-      if (event.event.tags.length > 0) {
-        style += ` background-color: ${this.tags[event.event.tags[0]]}`
+    eventBarClass(event: Event): string {
+      let c = "eventBar transition opacity-50 rounded shadow ";
+      const tag = event.event.tags[0];
+      if (this.tags[tag]) {
+        if (COLORS.includes(this.tags[tag])) {
+          c += `bg-${this.tags[tag].toLowerCase()}-300 `;
+        }
+      } else {
+        c += `bg-gray-300 `;
       }
-      return style
+      return c;
+    },
+    eventBarStyle(event: Event): string {
+      let style = `width: ${this.getWidthForRange(event.range)}px;`;
+      const tag = event.event.tags[0];
+      if (this.tags[tag] && !COLORS.includes(this.tags[tag])) {
+        style += ` background-color: ${this.tags[tag]}`;
+      }
+      return style;
     },
     getWidthForRange(range: DateRange): number {
       if (range.to) {
@@ -167,11 +177,12 @@ export default {
 
 .yearTitle {
   font-weight: 300;
-  margin: 0px 0px 0px 0px;
+  margin: 0px 0px 0px -1px;
   position: sticky;
   top: 0px;
   padding: 8px;
-  background: linear-gradient(to bottom, #384047, 77%, #38404700);
+  background: linear-gradient(to bottom, #384047, 67%, #38404700);
+  z-index: 1;
 }
 
 .eventRow {
@@ -181,16 +192,14 @@ export default {
   align-items: center;
 }
 
+.eventRow:hover .eventBar {
+  @apply opacity-90 shadow-lg;
+}
+
 .eventBar {
-  background-color: #ffffff4a;
   border-radius: 5px;
   height: 10px;
   flex-shrink: 0;
-  transition: background-color 0.075s ease-in-out;
-}
-
-.eventRow:hover .eventBar {
-  background-color: white;
 }
 
 .eventTitle {
