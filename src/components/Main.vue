@@ -77,30 +77,32 @@ export default {
     return {
       collapsed: false,
       currentTimelineName: "",
-      events: `08/2008-05/2012: Psych degree
-02/2010-06/2012: Dispatcher
+      events: `!work: #abc
+
+08/2008-05/2012: Psych degree !education
+02/2010-06/2012: Dispatcher !work
 10/2010: Barn built across the street
-06/2011-08/2011: Westover Air Reserve Base
+06/2011-08/2011: Westover Air Reserve Base !work
 
 // 2013
-03/15/2013-04/2015: China
+03/15/2013-04/2015: China !work
 
 // 2014
 07/2014: 4th of July in DC
 
 // 2015
-05/2015-08/2015: Summer classes so I can graduate in two years
+05/2015-08/2015: Summer classes so I can graduate in two years !education
 05/2015: James graduation
 06/2015: Built desk
 06/2015: Kim and Matt wedding
-08/2015-05/2017: CS degree
+08/2015-05/2017: CS degree !education
 
 // 2016
-05/22/2016-08/12/2016: Cardinal Health
+05/22/2016-08/12/2016: Cardinal Health !work
 08/16/2016-08/27/2016: Italy
 
 // 2017
-05/2017-05/2018: Cladwell
+05/2017-05/2018: Cladwell !work
 06/10/2017-06/17/2017: The Hague & Copenhagen
 
 // 2018
@@ -109,7 +111,7 @@ export default {
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
-10/01/2018-01/2021: [Google](https://www.google.com)
+10/01/2018-01/2021: [Google](https://www.google.com) !work
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019
@@ -136,7 +138,7 @@ export default {
 // 2021
 01/2021: qr.new featured on [Hacker News](https://news.ycombinator.com/item?id=25481772)
 02/2021: Hawaii
-02/01/2021-now: Working on [swink](https://sw.ink) full time
+02/01/2021-now: Working on [swink](https://sw.ink) full time !work
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)`,
       list: [] as string[],
     };

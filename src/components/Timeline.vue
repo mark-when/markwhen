@@ -22,7 +22,7 @@
     >
       <div
         class="eventBar"
-        :style="`width: ${this.getWidthForRange(event.range)}px; background-color: ${this.backgroundColor(event)}`"
+        :style="eventBarStyle(event)"
       ></div>
       <p class="eventDate">{{ event.getDateHtml() }}</p>
       <p class="eventTitle" v-html="event.getInnerHtml()"></p>
@@ -37,15 +37,16 @@ const EVENT_HEIGHT_PX = 10;
 const EVENT_SPACER_HEIGHT_PX = 5;
 
 const COLOR_MAP = {
+  blue: "#7777e4a6",
+  indigo: "#ab43f794",
+  green: "#08a9089e",
+  purple: '#d634d694',
   red: "#ec1e1eb3",
   orange: "#ffa500c2",
   yellow: "#efef37a6",
-  green: "#08a9089e",
-  blue: "#7777e4a6",
-  indigo: "#ab43f794",
-  purple: '#d634d694',
   pink: '#ffc0cba6',
 }
+const PALETTE = Object.values(COLOR_MAP)
 
 export default {
   props: ["events", "tags"],
@@ -63,6 +64,14 @@ export default {
       this.numColumns = this.years.end - this.years.start;
       this.numRows = val.length + 1;
     },
+    tags(val, oldVal) {
+      let paletteIndex = 0
+      for (let tag of Object.keys(val)) {
+        if (!val[tag]) {
+          this.tags[tag] = PALETTE[paletteIndex++ % PALETTE.length]
+        }
+      }
+    }
   },
   computed: {
     timelineStyles(): string {
@@ -76,8 +85,12 @@ export default {
     },
   },
   methods: {
-    backgroundColor(event: Event) {
-      const eventTags = event.event.tags
+    eventBarStyle(event: Event): string {
+      let style =  `width: ${this.getWidthForRange(event.range)}px;`
+      if (event.event.tags.length > 0) {
+        style += ` background-color: ${this.tags[event.event.tags[0]]}`
+      }
+      return style
     },
     getWidthForRange(range: DateRange): number {
       if (range.to) {
