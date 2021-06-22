@@ -12,7 +12,7 @@
     </div>
     <div
       class="eventRow"
-      v-for="(event, index) in events"
+      v-for="(event, index) in $store.getters.events"
       :key="index"
       :style="{
         'grid-column': '1 / -1',
@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { BoundingYears, DateRange, Event, YearMonthDay } from "../Types";
+import { BoundingYears, DateRange, Event, Tags, YearMonthDay } from "../Types";
 
 const EVENT_HEIGHT_PX = 10;
 const EVENT_SPACER_HEIGHT_PX = 5;
@@ -45,32 +45,13 @@ const EVENT_SPACER_HEIGHT_PX = 5;
 const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
 export default {
-  props: ["events", "tags"],
-  data() {
-    return {
-      numColumns: 0,
-      numRows: 0,
-      columnWidth: 120,
-      years: { start: 2000, end: 2010 },
-    };
-  },
-  watch: {
-    events(val, oldVal) {
-      this.years = this.getBoundingYears(this.events);
-      this.numColumns = this.years.end - this.years.start;
-      this.numRows = val.length + 1;
-    },
-    tags(val, oldVal) {
-      let paletteIndex = 0;
-      for (let tag of Object.keys(val)) {
-        if (!val[tag]) {
-          this.tags[tag] = COLORS[paletteIndex++ % COLORS.length];
-        }
-      }
-      console.log(this.tags);
-    },
-  },
   computed: {
+    columnWidth(): number {
+      return this.$store.getters.settings.yearWidth
+    },
+    tags(): Tags {
+      return this.$store.getters.tags
+    },
     timelineStyles(): string {
       return `
           grid-template-columns: repeat(${this.numColumns}, ${
@@ -80,26 +61,61 @@ export default {
         EVENT_HEIGHT_PX + EVENT_SPACER_HEIGHT_PX + 4
       }px) minmax(50vh, 1fr);`;
     },
+    years(): BoundingYears {
+      const events = this.$store.getters.events
+
+      if (!events || events.length === 0) {
+        return { start: 2000, end: 2010 }
+      }
+
+      let min = events[0].startingYear();
+      let max = events[0].getNextYear();
+      for (let event of events) {
+        if (event.startingYear() < min) {
+          min = event.startingYear();
+        }
+        if (event.getNextYear() > max) {
+          max = event.getNextYear();
+        }
+      }
+      return { start: min - 1, end: max + 6 };
+    },
+    numColumns(): number {
+      return this.years.end - this.years.start
+    },
+    numRows(): number {
+      return this.$store.getters.events.length + 1
+    }
+  },
+  watch: {
+    // tags(val, oldVal) {
+    //   let paletteIndex = 0;
+    //   for (let tag of Object.keys(val)) {
+    //     if (!val[tag]) {
+    //       this.tags[tag] = COLORS[paletteIndex++ % COLORS.length];
+    //     }
+    //   }
+    // },
   },
   methods: {
     eventBarClass(event: Event): string {
       let c = "eventBar transition opacity-50 rounded shadow ";
       const tag = event.event.tags[0];
-      if (this.tags[tag]) {
-        if (COLORS.includes(this.tags[tag])) {
-          c += `bg-${this.tags[tag].toLowerCase()}-300 `;
-        }
-      } else {
+      // if (this.tags[tag]) {
+      //   if (COLORS.includes(this.tags[tag])) {
+      //     c += `bg-${this.tags[tag].toLowerCase()}-300 `;
+      //   }
+      // } else {
         c += `bg-gray-300 `;
-      }
+      // }
       return c;
     },
     eventBarStyle(event: Event): string {
       let style = `width: ${this.getWidthForRange(event.range)}px;`;
       const tag = event.event.tags[0];
-      if (this.tags[tag] && !COLORS.includes(this.tags[tag])) {
-        style += ` background-color: ${this.tags[tag]}`;
-      }
+      // if (this.tags[tag] && !COLORS.includes(this.tags[tag])) {
+      //   style += ` background-color: ${this.tags[tag]}`;
+      // }
       return style;
     },
     getWidthForRange(range: DateRange): number {
@@ -139,25 +155,12 @@ export default {
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
       let base = (event.startingYear() - this.years.start) * this.columnWidth;
       if (date.month) {
-        return base + (120 / 12) * (date.month - 1);
+        return base + (this.columnWidth / 12) * (date.month - 1);
       }
       return base + 0;
     },
     range(size: number, startAt = 0) {
       return [...Array(size).keys()].map((i) => i + startAt);
-    },
-    getBoundingYears(events: Event[]): BoundingYears {
-      let min = events[0].startingYear();
-      let max = events[0].getNextYear();
-      for (let event of events) {
-        if (event.startingYear() < min) {
-          min = event.startingYear();
-        }
-        if (event.getNextYear() > max) {
-          max = event.getNextYear();
-        }
-      }
-      return { start: min - 1, end: max + 6 };
     },
   },
 };

@@ -1,3 +1,4 @@
+
 export type Year = number;
 export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export type Day =
@@ -87,6 +88,10 @@ export class DateRange {
   }
 }
 
+export interface Settings {
+  yearWidth: number
+}
+
 export class EventDescription {
   eventDescription: string
   tags: string[]
@@ -151,3 +156,9 @@ export class Event {
     return this.range.originalString
   }
 }
+
+export interface Settings {
+  yearWidth: number
+}
+
+export type Tags = { [tagName: string]: string }

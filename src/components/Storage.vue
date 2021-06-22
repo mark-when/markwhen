@@ -3,7 +3,6 @@
     <h3 class="text-xl border-b">My cascades</h3>
     <div class="" v-if="list && list.length > 0">
       <div
-        :class="selected ? 'bg-blue-100': ''"
         class="cursor-pointer flex flex-row align-baseline mb-1 hover:bg-blue-100 rounded px-1 transition-color duration-100"
         v-for="item in list"
         :key="item"
