@@ -103,7 +103,7 @@ export class EventDescription {
     this.tags = []
     let match
     let substringAt = 0
-    while ((match = /(?:^(\w+)\! )/gm.exec(reversed)) !== null) {
+    while ((match = /(?:^(\w+)# )/gm.exec(reversed)) !== null) {
       match.forEach((match, groupIndex) => {
         if (groupIndex === 1) {
           const reversedBack = EventDescription.reverseString(match)

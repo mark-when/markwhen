@@ -6,38 +6,38 @@ export default createStore({
   state(): State {
     return {
       eventsString: `// Comments start with two slashes: \`//\`
-// Tags start with an exclamation point: \`!\`
-// Settings start with a pound sign: \`#\`
+// Settings start with an exclamation point: \`!\`
+// Tags start with a pound sign: \`#\`
 
-#yearWidth: 120
+!yearWidth: 120
 
-// This is an indication that events tagged \`!work\` will be colored #e13
-!work: #e13
+// This is an indication that events tagged \`#work\` will be colored #e13
+#work: #e13
 
-08/2008-05/2012: Psych degree !education
-02/2010-06/2012: Dispatcher !work
+08/2008-05/2012: Psych degree #education
+02/2010-06/2012: Dispatcher #work
 10/2010: Barn built across the street
-06/2011-08/2011: Westover Air Reserve Base !work
+06/2011-08/2011: Westover Air Reserve Base #work
 
 // 2013
-03/15/2013-04/2015: China !work
+03/15/2013-04/2015: China #work
 
 // 2014
 07/2014: 4th of July in DC
 
 // 2015
-05/2015-08/2015: Summer classes so I can graduate in two years !education
+05/2015-08/2015: Summer classes so I can graduate in two years #education
 05/2015: James graduation
 06/2015: Built desk
 06/2015: Kim and Matt wedding
-08/2015-05/2017: CS degree !education
+08/2015-05/2017: CS degree #education
 
 // 2016
-05/22/2016-08/12/2016: Cardinal Health !work
+05/22/2016-08/12/2016: Cardinal Health #work
 08/16/2016-08/27/2016: Italy
 
 // 2017
-05/2017-05/2018: Cladwell !work
+05/2017-05/2018: Cladwell #work
 06/10/2017-06/17/2017: The Hague & Copenhagen
 
 // 2018
@@ -46,7 +46,7 @@ export default createStore({
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
-10/01/2018-01/2021: [Google](https://www.google.com) !work
+10/01/2018-01/2021: [Google](https://www.google.com) #work
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019
@@ -73,7 +73,7 @@ export default createStore({
 // 2021
 01/2021: qr.new featured on [Hacker News](https://news.ycombinator.com/item?id=25481772)
 02/2021: Hawaii
-02/01/2021-now: Working on [swink](https://sw.ink) full time !work
+02/01/2021-now: Working on [swink](https://sw.ink) full time #work
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
 06/05/2021-06/12/2021: Ohio and James's Party`
     }
@@ -116,13 +116,26 @@ export default createStore({
         let e = entry as string
         if (e.startsWith("!yearWidth")) {
           const num = parseInt(e.substring(e.indexOf(":") + 1).trim())
-          settings.yearWidth = num ? 120 : Math.min(1200, Math.max(10, num))
+          settings.yearWidth = !num ? 120 : Math.min(1200, Math.max(10, num))
         }
       }
       return settings
     },
     tags(state: State, getters: any): Tags {
-
+      const keys: Set<string> = new Set(getters.events.flatMap((event: Event) => event.event.tags))
+      const coloredTags = getters.trimmedAndFilteredEntries
+        .filter((str: string) => str.startsWith("#"))
+        .map((str: string) => str.substring(1).split(": "))
+      const tags = {} as { [tagName: string]: string }
+      for (let tag of coloredTags) {
+        tags[tag[0]] = tag[1]
+      }
+      for (let tag of keys) {
+        if (!tags[tag]) {
+          tags[tag] = ''
+        }
+      }
+      return tags
     }
   }
 })

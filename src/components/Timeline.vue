@@ -49,8 +49,18 @@ export default {
     columnWidth(): number {
       return this.$store.getters.settings.yearWidth
     },
-    tags(): Tags {
-      return this.$store.getters.tags
+    coloredTags(): Tags {
+      const tags = this.$store.getters.tags
+      let paletteIndex = 0;
+      const coloredTags = {} as { [tagName: string]: string }
+      for (let tag of Object.keys(tags)) {
+        if (!tags[tag]) {
+          coloredTags[tag] = COLORS[paletteIndex++ % COLORS.length];
+        } else {
+          coloredTags[tag] = tags[tag]
+        }
+      }
+      return coloredTags
     },
     timelineStyles(): string {
       return `
@@ -87,35 +97,25 @@ export default {
       return this.$store.getters.events.length + 1
     }
   },
-  watch: {
-    // tags(val, oldVal) {
-    //   let paletteIndex = 0;
-    //   for (let tag of Object.keys(val)) {
-    //     if (!val[tag]) {
-    //       this.tags[tag] = COLORS[paletteIndex++ % COLORS.length];
-    //     }
-    //   }
-    // },
-  },
   methods: {
     eventBarClass(event: Event): string {
       let c = "eventBar transition opacity-50 rounded shadow ";
       const tag = event.event.tags[0];
-      // if (this.tags[tag]) {
-      //   if (COLORS.includes(this.tags[tag])) {
-      //     c += `bg-${this.tags[tag].toLowerCase()}-300 `;
-      //   }
-      // } else {
+      if (this.coloredTags[tag]) {
+        if (COLORS.includes(this.coloredTags[tag])) {
+          c += `bg-${this.coloredTags[tag].toLowerCase()}-300 `;
+        }
+      } else {
         c += `bg-gray-300 `;
-      // }
+      }
       return c;
     },
     eventBarStyle(event: Event): string {
       let style = `width: ${this.getWidthForRange(event.range)}px;`;
       const tag = event.event.tags[0];
-      // if (this.tags[tag] && !COLORS.includes(this.tags[tag])) {
-      //   style += ` background-color: ${this.tags[tag]}`;
-      // }
+      if (this.coloredTags[tag] && !COLORS.includes(this.coloredTags[tag])) {
+        style += ` background-color: ${this.coloredTags[tag]}`;
+      }
       return style;
     },
     getWidthForRange(range: DateRange): number {
