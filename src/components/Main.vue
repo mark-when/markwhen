@@ -85,9 +85,7 @@
         </div>
       </div>
     </div>
-    <div class="flex">
-      <tags :tags="tags"></tags>
-    </div>
+    <tags :tags="tags"></tags>
   </div>
 </template>
 

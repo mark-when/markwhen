@@ -2,42 +2,45 @@ import { State } from "vue"
 import { createStore } from "vuex"
 import { DateRange, EventDescription, Event, Settings, Tags } from "./Types"
 
+export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
+
 export default createStore({
   state(): State {
     return {
+      filter: new Set(),
       eventsString: `// Comments start with two slashes: \`//\`
 // Settings start with an exclamation point: \`!\`
 // Tags start with a pound sign: \`#\`
 
 !yearWidth: 120
 
-// This is an indication that events tagged \`#work\` will be colored #e13
-#work: #e13
+// This is an indication that events tagged \`#Work\` will be colored #e13
+#Work: #e13
 
-08/2008-05/2012: Psych degree #education
-02/2010-06/2012: Dispatcher #work
+08/2008-05/2012: Psych degree #Education
+02/2010-06/2012: Dispatcher #Work
 10/2010: Barn built across the street
-06/2011-08/2011: Westover Air Reserve Base #work
+06/2011-08/2011: Westover Air Reserve Base #Work
 
 // 2013
-03/15/2013-04/2015: China #work
+03/15/2013-04/2015: China #Work
 
 // 2014
 07/2014: 4th of July in DC
 
 // 2015
-05/2015-08/2015: Summer classes so I can graduate in two years #education
+05/2015-08/2015: Summer classes so I can graduate in two years #Education
 05/2015: James graduation
 06/2015: Built desk
 06/2015: Kim and Matt wedding
-08/2015-05/2017: CS degree #education
+08/2015-05/2017: CS degree #Education
 
 // 2016
-05/22/2016-08/12/2016: Cardinal Health #work
+05/22/2016-08/12/2016: Cardinal Health #Work
 08/16/2016-08/27/2016: Italy
 
 // 2017
-05/2017-05/2018: Cladwell #work
+05/2017-05/2018: Cladwell #Work
 06/10/2017-06/17/2017: The Hague & Copenhagen
 
 // 2018
@@ -46,7 +49,7 @@ export default createStore({
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
-10/01/2018-01/2021: [Google](https://www.google.com) #work
+10/01/2018-01/2021: [Google](https://www.google.com) #Work
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019
@@ -73,7 +76,7 @@ export default createStore({
 // 2021
 01/2021: qr.new featured on [Hacker News](https://news.ycombinator.com/item?id=25481772)
 02/2021: Hawaii
-02/01/2021-now: Working on [swink](https://sw.ink) full time #work
+02/01/2021-now: Working on [swink](https://sw.ink) full time #Work
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
 06/05/2021-06/12/2021: Ohio and James's Party`
     }
@@ -82,6 +85,13 @@ export default createStore({
     setEventsString(state: State, str: string) {
       state.eventsString = str
     },
+    filterTag(state: State, tag: string) {
+      if (state.filter.has(tag)) {
+        state.filter.delete(tag)
+      } else {
+        state.filter.add(tag)
+      }
+    }
   },
   getters: {
     trimmedAndFilteredEntries(state: State): string[] {
@@ -108,6 +118,13 @@ export default createStore({
           return new Event(dateRange, eventDescription)
         }).filter((event: Event | null) => !!event)
     },
+    filteredEvents(state, getters: any): Event[] {
+      return (getters.events as Event[])
+        .filter(event => 
+          state.filter.size === 0 || 
+          event.event.tags.some(tag => 
+            state.filter.has(tag)))
+    },
     settings(state: State, getters: any): Settings {
       const settings: Settings = {
         yearWidth: 120
@@ -122,6 +139,7 @@ export default createStore({
       return settings
     },
     tags(state: State, getters: any): Tags {
+      let paletteIndex = 0
       const keys: Set<string> = new Set(getters.events.flatMap((event: Event) => event.event.tags))
       const coloredTags = getters.trimmedAndFilteredEntries
         .filter((str: string) => str.startsWith("#"))
@@ -132,7 +150,7 @@ export default createStore({
       }
       for (let tag of keys) {
         if (!tags[tag]) {
-          tags[tag] = ''
+          tags[tag] = COLORS[paletteIndex++ % COLORS.length]
         }
       }
       return tags

@@ -14,7 +14,7 @@
       <div class="h-24"></div>
       <div
         class="eventRow"
-        v-for="(event, index) in $store.getters.events"
+        v-for="(event, index) in $store.getters.filteredEvents"
         :key="index"
         :style="{
           'margin-left': `${this.getLeftMarginForDate(
@@ -51,19 +51,6 @@ export default {
     columnWidth(): number {
       return this.$store.getters.settings.yearWidth;
     },
-    coloredTags(): Tags {
-      const tags = this.$store.getters.tags;
-      let paletteIndex = 0;
-      const coloredTags = {} as { [tagName: string]: string };
-      for (let tag of Object.keys(tags)) {
-        if (!tags[tag]) {
-          coloredTags[tag] = COLORS[paletteIndex++ % COLORS.length];
-        } else {
-          coloredTags[tag] = tags[tag];
-        }
-      }
-      return coloredTags;
-    },
     years(): BoundingYears {
       const events = this.$store.getters.events;
 
@@ -94,9 +81,9 @@ export default {
     eventBarClass(event: Event): string {
       let c = "eventBar transition opacity-50 rounded shadow ";
       const tag = event.event.tags[0];
-      if (this.coloredTags[tag]) {
-        if (COLORS.includes(this.coloredTags[tag])) {
-          c += `bg-${this.coloredTags[tag].toLowerCase()}-300 `;
+      if (this.$store.getters.tags[tag]) {
+        if (COLORS.includes(this.$store.getters.tags[tag])) {
+          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
         }
       } else {
         c += `bg-gray-300 `;
@@ -106,8 +93,8 @@ export default {
     eventBarStyle(event: Event): string {
       let style = `width: ${this.getWidthForRange(event.range)}px;`;
       const tag = event.event.tags[0];
-      if (this.coloredTags[tag] && !COLORS.includes(this.coloredTags[tag])) {
-        style += ` background-color: ${this.coloredTags[tag]}`;
+      if (this.$store.getters.tags[tag] && !COLORS.includes(this.$store.getters.tags[tag])) {
+        style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;
     },
@@ -161,7 +148,7 @@ export default {
 
 <style>
 .year {
-  border-left: 1px dashed gray;
+  border-left: 1px dashed rgba(128, 128, 128, 0.678);
   height: 100%;
   font-family: system-ui;
 }
