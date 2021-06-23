@@ -105,18 +105,7 @@ export default createStore({
     events(state: State, getters: any): Event[] {
       return getters.trimmedAndFilteredEntries
         .filter((str: string) => !str.startsWith("!") && !str.startsWith("#"))
-        .map((eventString: string) => {
-          const colonIndex = eventString.indexOf(":");
-          if (colonIndex === -1) {
-            return null
-          }
-          const dateString = eventString.substring(0, colonIndex).trim();
-          const dateRange = new DateRange(dateString);
-          const eventDescription = new EventDescription(
-            eventString.substring(colonIndex + 1).trim()
-          );
-          return new Event(dateRange, eventDescription)
-        }).filter((event: Event | null) => !!event)
+        .map(Event.fromString).filter((event: Event | null) => !!event)
     },
     filteredEvents(state, getters: any): Event[] {
       return (getters.events as Event[])

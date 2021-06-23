@@ -4,7 +4,7 @@ module.exports = {
       './src/**/*.html',
       './src/**/*.vue'
     ],
-    safelist: [/bg-/]
+    safelist: [/bg-/, "overflow-auto", "h-full"]
   },
   darkMode: false, // or 'media' or 'class'
   theme: {

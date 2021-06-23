@@ -132,10 +132,12 @@ export class EventDescription {
 }
 
 export class Event {
+  eventString: string
   range: DateRange;
   event: EventDescription;
 
-  constructor(range: DateRange, event: EventDescription) {
+  constructor(eventString: string, range: DateRange, event: EventDescription) {
+    this.eventString = eventString
     this.range = range;
     this.event = event;
   }
@@ -154,6 +156,19 @@ export class Event {
 
   getDateHtml(): string {
     return this.range.originalString
+  }
+
+  static fromString(eventString: string): Event | undefined {
+    const colonIndex = eventString.indexOf(":");
+    if (colonIndex === -1) {
+      return
+    }
+    const dateString = eventString.substring(0, colonIndex).trim();
+    const dateRange = new DateRange(dateString);
+    const eventDescription = new EventDescription(
+      eventString.substring(colonIndex + 1).trim()
+    );
+    return new Event(eventString, dateRange, eventDescription)
   }
 }
 

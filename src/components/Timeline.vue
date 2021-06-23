@@ -12,21 +12,26 @@
     </div>
     <div id="events">
       <div class="h-24"></div>
-      <div
-        class="eventRow"
-        v-for="(event, index) in $store.getters.filteredEvents"
-        :key="index"
-        :style="{
-          'margin-left': `${this.getLeftMarginForDate(
-            event,
-            event.range.from
-          )}px`,
-        }"
-      >
-        <div :class="eventBarClass(event)" :style="eventBarStyle(event)"></div>
-        <p class="eventDate">{{ event.getDateHtml() }}</p>
-        <p class="eventTitle" v-html="event.getInnerHtml()"></p>
-      </div>
+      <transition-group name="eventRow">
+        <div
+          class="eventRow"
+          v-for="event in $store.getters.filteredEvents"
+          :key="event.eventString"
+          :style="{
+            'margin-left': `${this.getLeftMarginForDate(
+              event,
+              event.range.from
+            )}px`,
+          }"
+        >
+          <div
+            :class="eventBarClass(event)"
+            :style="eventBarStyle(event)"
+          ></div>
+          <p class="eventDate">{{ event.getDateHtml() }}</p>
+          <p class="eventTitle" v-html="event.getInnerHtml()"></p>
+        </div>
+      </transition-group>
       <div style="height: 50vh"></div>
     </div>
   </div>
@@ -93,7 +98,10 @@ export default {
     eventBarStyle(event: Event): string {
       let style = `width: ${this.getWidthForRange(event.range)}px;`;
       const tag = event.event.tags[0];
-      if (this.$store.getters.tags[tag] && !COLORS.includes(this.$store.getters.tags[tag])) {
+      if (
+        this.$store.getters.tags[tag] &&
+        !COLORS.includes(this.$store.getters.tags[tag])
+      ) {
         style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;
@@ -147,6 +155,35 @@ export default {
 </script>
 
 <style>
+/* .company {
+  backface-visibility: hidden;
+  z-index: 1;
+} */
+
+/* moving */
+.eventRow-move {
+  transition: all 600ms ease-in-out 50ms;
+}
+
+/* appearing */
+.eventRow-enter-active {
+  transition: all 400ms ease-out;
+}
+
+/* disappearing */
+.eventRow-leave-active {
+  transition: all 200ms ease-in;
+  position: absolute;
+  z-index: 0;
+}
+
+/* appear at / disappear to */
+.eventRow-enter-from,
+.eventRow-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
 .year {
   border-left: 1px dashed rgba(128, 128, 128, 0.678);
   height: 100%;
