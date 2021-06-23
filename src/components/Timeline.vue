@@ -41,7 +41,6 @@
 import { BoundingYears, DateRange, Event, Tags, YearMonthDay } from "../Types";
 
 const EVENT_HEIGHT_PX = 10;
-const EVENT_SPACER_HEIGHT_PX = 5;
 
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
@@ -51,8 +50,27 @@ const EVENT_SPACER_HEIGHT_PX = 5;
 
 const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
+interface Panning {
+  mouseStart?: {
+    x: number;
+    y: number;
+  };
+  containerStart?: {
+    x: number;
+    y: number;
+  };
+}
+
 export default {
+  data() {
+    return {
+      panning: {} as Panning,
+    };
+  },
   computed: {
+    isPanning(): boolean {
+      return !!this.panning?.mouseStart?.x && !!this.panning?.mouseStart?.y;
+    },
     columnWidth(): number {
       return this.$store.getters.settings.yearWidth;
     },
@@ -82,7 +100,44 @@ export default {
       return this.$store.getters.events.length + 1;
     },
   },
+  created() {
+    const container = document.getElementById("timelineContainer")!;
+    container.addEventListener("mousedown", this.mouseDown);
+    window.addEventListener("mouseup", this.mouseUp);
+    window.addEventListener("mousemove", this.mouseMove);
+  },
   methods: {
+    mouseDown(e: MouseEvent) {
+      e.stopPropagation()
+      const container = document.getElementById("timelineContainer")!;
+      container.style.cssText = "cursor: grabbing;"
+      this.panning = {
+        mouseStart: {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        containerStart: {
+          x: container.scrollLeft,
+          y: container.scrollTop,
+        },
+      };
+    },
+    mouseUp(e: MouseEvent) {
+      const container = document.getElementById("timelineContainer")!;
+      container.style.cssText = "cursor: grab;"
+      this.panning = {}
+    },
+    mouseMove(e: MouseEvent) {
+      if (!this.isPanning) {
+        return;
+      }
+      e.stopPropagation()
+      const container = document.getElementById("timelineContainer")!;
+      container.scrollLeft =
+        this.panning.containerStart!.x + (this.panning.mouseStart!.x - e.clientX);
+      container.scrollTop =
+        this.panning.containerStart!.y + (this.panning.mouseStart!.y - e.clientY);
+    },
     eventBarClass(event: Event): string {
       let c = "eventBar transition opacity-50 rounded shadow ";
       const tag = event.event.tags[0];

@@ -1,17 +1,17 @@
 <template>
-  <main-vue />
+  <main-vue/>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import MainVue from './components/Main.vue'
+import { defineComponent } from "vue";
+import MainVue from "./components/Main.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
-    MainVue
-  }
-})
+    MainVue,
+  },
+});
 </script>
 
 <style>

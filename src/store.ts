@@ -85,6 +85,9 @@ export default createStore({
     setEventsString(state: State, str: string) {
       state.eventsString = str
     },
+    clearFilters(state: State) {
+      state.filter.clear()
+    },
     filterTag(state: State, tag: string) {
       if (state.filter.has(tag)) {
         state.filter.delete(tag)

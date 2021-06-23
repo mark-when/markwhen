@@ -2,6 +2,13 @@
   <div class="flex flex-col justify-end ml-2 mb-3">
     <div class="flex flex-row">
       <button
+        class="mr-2 rounded bg-gray-800 hover:bg-gray-700 px-2"
+        @click="clearFilters"
+        v-if="Object.keys($store.getters.tags).length > 0"
+      >
+        Show all
+      </button>
+      <button
         class="
           flex flex-row
           items-center
@@ -61,8 +68,11 @@ export default {
       return "";
     },
     filterTag(tag: string) {
-      this.$store.commit("filterTag", tag)
-    }
+      this.$store.commit("filterTag", tag);
+    },
+    clearFilters() {
+      this.$store.commit("clearFilters");
+    },
   },
 };
 </script>
