@@ -1,31 +1,33 @@
 <template>
-  <div id="timeline" :style="timelineStyles">
-    <div
-      class="year"
-      v-for="year in range(years.end - years.start + 1, years.start)"
-      :key="year"
-      :style="`grid-column: ${year - years.start + 1} / ${
-        year - years.start + 2
-      }; grid-row: 1 / -1;`"
-    >
-      <h6 class="yearTitle text-sm">{{ year }}</h6>
+  <div class="relative">
+    <div id="years" class="flex absolute inset-0 pointer-events-none">
+      <div
+        class="year flex-shrink-0"
+        v-for="year in range(years.end - years.start + 1, years.start)"
+        :key="year"
+        :style="`width: ${this.columnWidth}px`"
+      >
+        <h6 class="yearTitle text-sm">{{ year }}</h6>
+      </div>
     </div>
-    <div
-      class="eventRow"
-      v-for="(event, index) in $store.getters.events"
-      :key="index"
-      :style="{
-        'grid-column': '1 / -1',
-        'grid-row': index + 2,
-        'margin-left': `${this.getLeftMarginForDate(
-          event,
-          event.range.from
-        )}px`,
-      }"
-    >
-      <div :class="eventBarClass(event)" :style="eventBarStyle(event)"></div>
-      <p class="eventDate">{{ event.getDateHtml() }}</p>
-      <p class="eventTitle" v-html="event.getInnerHtml()"></p>
+    <div id="events">
+      <div class="h-24"></div>
+      <div
+        class="eventRow"
+        v-for="(event, index) in $store.getters.events"
+        :key="index"
+        :style="{
+          'margin-left': `${this.getLeftMarginForDate(
+            event,
+            event.range.from
+          )}px`,
+        }"
+      >
+        <div :class="eventBarClass(event)" :style="eventBarStyle(event)"></div>
+        <p class="eventDate">{{ event.getDateHtml() }}</p>
+        <p class="eventTitle" v-html="event.getInnerHtml()"></p>
+      </div>
+      <div style="height: 50vh"></div>
     </div>
   </div>
 </template>
@@ -47,35 +49,26 @@ const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 export default {
   computed: {
     columnWidth(): number {
-      return this.$store.getters.settings.yearWidth
+      return this.$store.getters.settings.yearWidth;
     },
     coloredTags(): Tags {
-      const tags = this.$store.getters.tags
+      const tags = this.$store.getters.tags;
       let paletteIndex = 0;
-      const coloredTags = {} as { [tagName: string]: string }
+      const coloredTags = {} as { [tagName: string]: string };
       for (let tag of Object.keys(tags)) {
         if (!tags[tag]) {
           coloredTags[tag] = COLORS[paletteIndex++ % COLORS.length];
         } else {
-          coloredTags[tag] = tags[tag]
+          coloredTags[tag] = tags[tag];
         }
       }
-      return coloredTags
-    },
-    timelineStyles(): string {
-      return `
-          grid-template-columns: repeat(${this.numColumns}, ${
-        this.columnWidth
-      }px [year-start]);
-          grid-template-rows: 40px repeat(${this.numRows - 1}, ${
-        EVENT_HEIGHT_PX + EVENT_SPACER_HEIGHT_PX + 4
-      }px) minmax(50vh, 1fr);`;
+      return coloredTags;
     },
     years(): BoundingYears {
-      const events = this.$store.getters.events
+      const events = this.$store.getters.events;
 
       if (!events || events.length === 0) {
-        return { start: 2000, end: 2010 }
+        return { start: 2000, end: 2010 };
       }
 
       let min = events[0].startingYear();
@@ -91,11 +84,11 @@ export default {
       return { start: min - 1, end: max + 6 };
     },
     numColumns(): number {
-      return this.years.end - this.years.start
+      return this.years.end - this.years.start;
     },
     numRows(): number {
-      return this.$store.getters.events.length + 1
-    }
+      return this.$store.getters.events.length + 1;
+    },
   },
   methods: {
     eventBarClass(event: Event): string {
@@ -167,11 +160,6 @@ export default {
 </script>
 
 <style>
-#timeline {
-  display: grid;
-  overflow: auto;
-  height: 100%;
-}
 .year {
   border-left: 1px dashed gray;
   height: 100%;
