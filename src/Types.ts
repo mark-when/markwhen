@@ -124,7 +124,7 @@ export class DateRange {
     } else {
       const restOfTheYear = DateRange.numDaysBetween(startingDay, { year: startingDay.year, month: 12, day: 30 })
       const beginningOfTheYear = DateRange.numDaysBetween({ year: endingDay.year, month: 1, day: 1 }, endingDay)
-      days = restOfTheYear + ((endingDay.year - startingDay.year) * 360) + beginningOfTheYear
+      days = restOfTheYear + ((endingDay.year - startingDay.year - 1) * 360) + beginningOfTheYear
     }
 
     console.log("num days between ", startingDay, endingDay, days)
