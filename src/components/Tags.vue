@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col justify-end ml-2 mb-3">
+  <div class="flex flex-col">
+    <h3>Tags</h3>
     <div class="flex flex-row">
       <button
         class="mr-2 rounded bg-gray-800 hover:bg-gray-700 px-2"

@@ -34,10 +34,31 @@ export type Day =
   | 30
   | 31;
 
-export interface YearMonthDay {
+export class YearMonthDay {
   year: Year;
   month?: Month;
   day?: Day;
+
+  constructor(str: string) {
+    if (str === "now") {
+      str = new Date().toLocaleDateString();
+    }
+    let [year, day, month] = str.split("/").reverse();
+    const yearNumber = parseInt(year);
+    
+    this.year = yearNumber
+    if (!day) {
+      return
+    }
+
+    if (!month) {
+      this.month = parseInt(day) as Month
+      return
+    }
+    
+    this.month = parseInt(month) as Month
+    this.day = parseInt(day) as Day
+  }
 }
 
 export interface BoundingYears {
@@ -57,27 +78,8 @@ export class DateRange {
       dateString = dateString.substring(0, commentIndex);
     }
     const [unparsedFrom, unparsedTo] = dateString.split("-");
-    this.from = this.toYearMonthDay(unparsedFrom);
-    this.to = unparsedTo ? this.toYearMonthDay(unparsedTo) : undefined;
-  }
-
-  toYearMonthDay(str: string): YearMonthDay {
-    if (str === "now") {
-      str = new Date().toLocaleDateString();
-    }
-    let [year, day, month] = str.split("/").reverse();
-    const yearNumber = parseInt(year);
-    if (!day) {
-      return { year: yearNumber };
-    }
-    if (!month) {
-      return { year: yearNumber, month: parseInt(day) as Month };
-    }
-    return {
-      year: yearNumber,
-      month: parseInt(month) as Month,
-      day: parseInt(day) as Day,
-    };
+    this.from = new YearMonthDay(unparsedFrom);
+    this.to = unparsedTo ? new YearMonthDay(unparsedTo) : undefined;
   }
 
   getNextYear(): Year {
@@ -85,6 +87,48 @@ export class DateRange {
       return this.to.year + 1;
     }
     return this.from.year + 1;
+  }
+
+  startingDay(): YearMonthDay {
+    return {
+      year: this.from.year,
+      month: this.from.month ? this.from.month : 1,
+      day: this.from.day ? this.from.day : 1
+    }
+  }
+
+  endingDay(): YearMonthDay {
+    if (this.to) {
+      return {
+        year: this.to.year,
+        month: this.to.month ? this.to.month : 12,
+        day: this.to.day ? Math.min(this.to.day, 30) as Day : 30
+      }
+    } else {
+      return {
+        year: this.from.year,
+        month: this.from.month ? this.from.month : 12,
+        day: this.from.day ? Math.min(this.from.day, 30) as Day : 30
+      }
+    }
+  }
+
+  numDays(): number {
+    return DateRange.numDaysBetween(this.startingDay(), this.endingDay())
+  }
+
+  static numDaysBetween(startingDay: YearMonthDay, endingDay: YearMonthDay): number {
+    let days: number
+    if (startingDay.year === endingDay.year) {
+      days = ((endingDay.month! - startingDay.month!) * 30) + (endingDay.day! - startingDay.day!)
+    } else {
+      const restOfTheYear = DateRange.numDaysBetween(startingDay, { year: startingDay.year, month: 12, day: 30 })
+      const beginningOfTheYear = DateRange.numDaysBetween({ year: endingDay.year, month: 1, day: 1 }, endingDay)
+      days = restOfTheYear + ((endingDay.year - startingDay.year) * 360) + beginningOfTheYear
+    }
+
+    console.log("num days between ", startingDay, endingDay, days)
+    return days
   }
 }
 

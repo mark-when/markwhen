@@ -85,7 +85,10 @@
         </div>
       </div>
     </div>
-    <tags :tags="tags"></tags>
+    <div class="flex flex-col justify-end ml-2 mb-3">
+      <display-settings></display-settings>
+      <tags :tags="tags"></tags>
+    </div>
   </div>
 </template>
 
@@ -93,9 +96,10 @@
 import Storage from "./Storage.vue";
 import Timeline from "./Timeline.vue";
 import Tags from "./Tags.vue";
+import DisplaySettings from "./DisplaySettings.vue"
 
 export default {
-  components: { Timeline, Storage, Tags },
+  components: { Timeline, Storage, Tags, DisplaySettings },
   data() {
     return {
       collapsed: false,

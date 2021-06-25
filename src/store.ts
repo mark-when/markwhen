@@ -1,18 +1,18 @@
 import { State } from "vue"
 import { createStore } from "vuex"
-import { DateRange, EventDescription, Event, Settings, Tags } from "./Types"
+import { Event, Settings, Tags } from "./Types"
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
 export default createStore({
   state(): State {
     return {
+      settings: {
+        yearWidth: 120
+      },
       filter: new Set(),
       eventsString: `// Comments start with two slashes: \`//\`
-// Settings start with an exclamation point: \`!\`
 // Tags start with a pound sign: \`#\`
-
-!yearWidth: 120
 
 // This is an indication that events tagged \`#Work\` will be colored #e13
 #Work: #e13
@@ -82,6 +82,9 @@ export default createStore({
     }
   },
   mutations: {
+    setYearWidth(state: State, width: number) {
+      state.settings.yearWidth = width
+    },
     setEventsString(state: State, str: string) {
       state.eventsString = str
     },
@@ -116,19 +119,6 @@ export default createStore({
           state.filter.size === 0 || 
           event.event.tags.some(tag => 
             state.filter.has(tag)))
-    },
-    settings(state: State, getters: any): Settings {
-      const settings: Settings = {
-        yearWidth: 120
-      }
-      for (let entry of getters.trimmedAndFilteredEntries) {
-        let e = entry as string
-        if (e.startsWith("!yearWidth")) {
-          const num = parseInt(e.substring(e.indexOf(":") + 1).trim())
-          settings.yearWidth = !num ? 120 : Math.min(1200, Math.max(10, num))
-        }
-      }
-      return settings
     },
     tags(state: State, getters: any): Tags {
       let paletteIndex = 0

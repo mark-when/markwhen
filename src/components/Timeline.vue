@@ -14,7 +14,7 @@
       <div class="h-24"></div>
       <transition-group name="eventRow">
         <div
-          class="eventRow"
+          class="eventRow flex flex-row items-center"
           v-for="event in $store.getters.filteredEvents"
           :key="event.eventString"
           :style="{
@@ -29,7 +29,7 @@
             :style="eventBarStyle(event)"
           ></div>
           <p class="eventDate">{{ event.getDateHtml() }}</p>
-          <p class="eventTitle" v-html="event.getInnerHtml()"></p>
+          <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
         </div>
       </transition-group>
       <div style="height: 50vh"></div>
@@ -72,7 +72,7 @@ export default {
       return !!this.panning?.mouseStart?.x && !!this.panning?.mouseStart?.y;
     },
     columnWidth(): number {
-      return this.$store.getters.settings.yearWidth;
+      return this.$store.state.settings.yearWidth;
     },
     years(): BoundingYears {
       const events = this.$store.getters.events;
@@ -99,6 +99,9 @@ export default {
     numRows(): number {
       return this.$store.getters.events.length + 1;
     },
+    widthPerDay(): number {
+      return this.columnWidth / 12 / 30;
+    },
   },
   created() {
     const container = document.getElementById("timelineContainer")!;
@@ -108,9 +111,9 @@ export default {
   },
   methods: {
     mouseDown(e: MouseEvent) {
-      e.stopPropagation()
+      e.stopPropagation();
       const container = document.getElementById("timelineContainer")!;
-      container.style.cssText = "cursor: grabbing;"
+      container.style.cssText = "cursor: grabbing;";
       this.panning = {
         mouseStart: {
           x: e.clientX,
@@ -124,19 +127,21 @@ export default {
     },
     mouseUp(e: MouseEvent) {
       const container = document.getElementById("timelineContainer")!;
-      container.style.cssText = "cursor: grab;"
-      this.panning = {}
+      container.style.cssText = "cursor: grab;";
+      this.panning = {};
     },
     mouseMove(e: MouseEvent) {
       if (!this.isPanning) {
         return;
       }
-      e.stopPropagation()
+      e.stopPropagation();
       const container = document.getElementById("timelineContainer")!;
       container.scrollLeft =
-        this.panning.containerStart!.x + (this.panning.mouseStart!.x - e.clientX);
+        this.panning.containerStart!.x +
+        (this.panning.mouseStart!.x - e.clientX);
       container.scrollTop =
-        this.panning.containerStart!.y + (this.panning.mouseStart!.y - e.clientY);
+        this.panning.containerStart!.y +
+        (this.panning.mouseStart!.y - e.clientY);
     },
     eventBarClass(event: Event): string {
       let c = "eventBar transition opacity-50 rounded shadow ";
@@ -162,43 +167,20 @@ export default {
       return style;
     },
     getWidthForRange(range: DateRange): number {
-      if (range.to) {
-        const restOfYear =
-          (13 - (range.from.month ?? 1)) * (this.columnWidth / 12);
-        if (!range.to.month) {
-          // No 'to' month, go through full 'to' year
-          if (range.from.year === range.to.year) {
-            return restOfYear;
-          } else {
-            return (
-              restOfYear + (range.to.year - range.from.year) * this.columnWidth
-            );
-          }
-        } else {
-          if (range.from.year === range.to.year) {
-            return (
-              (1 + range.to.month - (range.from.month ?? 1)) *
-              (this.columnWidth / 12)
-            );
-          } else {
-            return (
-              restOfYear +
-              (range.to.year - range.from.year - 1) * this.columnWidth +
-              range.to.month * (this.columnWidth / 12)
-            );
-          }
-        }
-      } else {
-        if (!range.from.month) {
-          return this.columnWidth;
-        }
-        return EVENT_HEIGHT_PX;
-      }
+      const width = Math.max(EVENT_HEIGHT_PX, Math.max(1, range.numDays()) * this.widthPerDay);
+      console.log(range.numDays() * this.widthPerDay)
+      console.log("width for ", range, width)
+      return width
     },
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
       let base = (event.startingYear() - this.years.start) * this.columnWidth;
       if (date.month) {
-        return base + (this.columnWidth / 12) * (date.month - 1);
+        const monthOffset = (this.columnWidth / 12) * (date.month - 1);
+        if (date.day) {
+          return base + monthOffset + (date.day - 1) * (this.columnWidth / 12 / 30);
+        } else {
+          return base + monthOffset;
+        }
       }
       return base + 0;
     },
@@ -257,9 +239,6 @@ export default {
 
 .eventRow {
   margin-top: 5px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
 }
 
 .eventRow:hover .eventBar {
@@ -273,8 +252,6 @@ export default {
 }
 
 .eventTitle {
-  margin: 0px 0px 0px 8px;
-  padding: 0px 48px 0px 0px;
   font-family: system-ui;
   font-size: 80%;
   white-space: nowrap;
