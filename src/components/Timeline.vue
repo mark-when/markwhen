@@ -2,12 +2,18 @@
   <div class="relative">
     <div id="years" class="flex absolute inset-0 pointer-events-none">
       <div
-        class="year flex-shrink-0"
+        class="year flex-shrink-0 relative"
         v-for="year in range(years.end - years.start + 1, years.start)"
         :key="year"
         :style="`width: ${this.columnWidth}px`"
       >
         <h6 class="yearTitle text-sm">{{ year }}</h6>
+        <div
+          class="absolute h-full"
+          v-for="m in range(12, 0)"
+          :key="m"
+          :style="styleForMonth(m)"
+        ></div>
       </div>
     </div>
     <div id="events">
@@ -110,6 +116,19 @@ export default {
     window.addEventListener("mousemove", this.mouseMove);
   },
   methods: {
+    styleForMonth(m: number) {
+      const sty = {
+        top: "0px",
+        left: `${m * (this.columnWidth / 12)}px`,
+      } as any;
+      if (m !== 0 && m !== 12 && this.columnWidth > 600) {
+        let alpha = 0.2;
+        sty["border-left"] = `1px dashed rgba(128, 128, 128, ${
+          alpha + 0.3 * (this.columnWidth / 1600)
+        })`;
+      }
+      return sty;
+    },
     mouseDown(e: MouseEvent) {
       e.stopPropagation();
       const container = document.getElementById("timelineContainer")!;
@@ -167,24 +186,29 @@ export default {
       return style;
     },
     getWidthForRange(range: DateRange): number {
-      const width = Math.max(EVENT_HEIGHT_PX, Math.max(1, range.numDays()) * this.widthPerDay);
-      console.log(range.numDays() * this.widthPerDay)
-      console.log("width for ", range, width)
-      return width
+      const width = Math.max(
+        EVENT_HEIGHT_PX,
+        Math.max(1, range.numDays()) * this.widthPerDay
+      );
+      console.log(range.numDays() * this.widthPerDay);
+      console.log("width for ", range, width);
+      return width;
     },
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
       let base = (event.startingYear() - this.years.start) * this.columnWidth;
       if (date.month) {
         const monthOffset = (this.columnWidth / 12) * (date.month - 1);
         if (date.day) {
-          return base + monthOffset + (date.day - 1) * (this.columnWidth / 12 / 30);
+          return (
+            base + monthOffset + (date.day - 1) * (this.columnWidth / 12 / 30)
+          );
         } else {
           return base + monthOffset;
         }
       }
       return base + 0;
     },
-    range(size: number, startAt = 0) {
+    range(size: number, startAt = 0): number[] {
       return [...Array(size).keys()].map((i) => i + startAt);
     },
   },
