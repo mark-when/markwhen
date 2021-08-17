@@ -20,22 +20,45 @@
       <div class="h-24"></div>
       <transition-group name="eventRow">
         <div
-          class="eventRow flex flex-row items-center"
+          class="eventRow"
           v-for="event in $store.getters.filteredEvents"
           :key="event.eventString"
-          :style="{
-            'margin-left': `${this.getLeftMarginForDate(
-              event,
-              event.range.from
-            )}px`,
-          }"
+          :style="eventRowStyle(event)"
         >
           <div
-            :class="eventBarClass(event)"
-            :style="eventBarStyle(event)"
-          ></div>
-          <p class="eventDate">{{ event.getDateHtml() }}</p>
-          <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
+            class="
+              eventItem
+              flex-row
+              items-center
+              inline-flex
+              rounded
+              -mx-2
+              px-2
+              py-1
+              hover:bg-gray-900
+              cursor-pointer
+              transition
+            "
+          >
+            <div
+              :class="eventBarClass(event)"
+              :style="eventBarStyle(event)"
+            ></div>
+            <p class="eventDate">{{ event.getDateHtml() }}</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-2 mb-px"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
+          </div>
         </div>
       </transition-group>
       <div style="height: 50vh"></div>
@@ -116,6 +139,12 @@ export default {
     window.addEventListener("mousemove", this.mouseMove);
   },
   methods: {
+    eventRowStyle(event: Event) {
+      return `margin-left: ${this.getLeftMarginForDate(
+        event,
+        event.range.from
+      )}px`;
+    },
     styleForMonth(m: number) {
       const sty = {
         top: "0px",
@@ -163,7 +192,7 @@ export default {
         (this.panning.mouseStart!.y - e.clientY);
     },
     eventBarClass(event: Event): string {
-      let c = "eventBar transition opacity-50 rounded shadow ";
+      let c = "eventBar transition opacity-50 rounded-lg shadow ";
       const tag = event.event.tags[0];
       if (this.$store.getters.tags[tag]) {
         if (COLORS.includes(this.$store.getters.tags[tag])) {

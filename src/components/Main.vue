@@ -85,7 +85,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col justify-end ml-2 mb-3">
+    <div class="flex flex-col justify-end ml-2 mb-3 lg:flex-row lg:items-end">
       <display-settings></display-settings>
       <tags :tags="tags"></tags>
     </div>
