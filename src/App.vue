@@ -16,7 +16,6 @@ export default defineComponent({
 
 <style>
 #app {
-  position: absolute;
   bottom: 0px;
   left: 10px;
   font-family: Avenir, Helvetica, Arial, sans-serif;

@@ -45,7 +45,7 @@ export class YearMonthDay {
     }
     let [year, day, month] = str.split("/").reverse();
     const yearNumber = parseInt(year);
-    
+
     this.year = yearNumber
     if (!day) {
       return
@@ -55,7 +55,7 @@ export class YearMonthDay {
       this.month = parseInt(day) as Month
       return
     }
-    
+
     this.month = parseInt(month) as Month
     this.day = parseInt(day) as Day
   }
@@ -126,8 +126,6 @@ export class DateRange {
       const beginningOfTheYear = DateRange.numDaysBetween({ year: endingDay.year, month: 1, day: 1 }, endingDay)
       days = restOfTheYear + ((endingDay.year - startingDay.year - 1) * 360) + beginningOfTheYear
     }
-
-    console.log("num days between ", startingDay, endingDay, days)
     return days
   }
 }
@@ -139,9 +137,15 @@ export interface Settings {
 export class EventDescription {
   eventDescription: string
   tags: string[]
+  googlePhotosLink?: string
   linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
+  googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
 
   constructor(eventDescriptionString: string) {
+    eventDescriptionString = eventDescriptionString.replace(this.googlePhotosRegex, (match) => {
+      this.googlePhotosLink = match
+      return ""
+    })
     let reversed = EventDescription.reverseString(eventDescriptionString)
     const tagSet = new Set()
     this.tags = []

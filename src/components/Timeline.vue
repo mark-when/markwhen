@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative" :style="containerStyle">
     <div id="years" class="flex absolute inset-0 pointer-events-none">
       <div
         class="year flex-shrink-0 relative"
@@ -19,47 +19,14 @@
     <div id="events">
       <div class="h-24"></div>
       <transition-group name="eventRow">
-        <div
-          class="eventRow"
+        <event-row
           v-for="event in $store.getters.filteredEvents"
           :key="event.eventString"
-          :style="eventRowStyle(event)"
-        >
-          <div
-            class="
-              eventItem
-              flex-row
-              items-center
-              inline-flex
-              rounded
-              -mx-2
-              px-2
-              py-1
-              hover:bg-gray-900
-              cursor-pointer
-              transition
-            "
-          >
-            <div
-              :class="eventBarClass(event)"
-              :style="eventBarStyle(event)"
-            ></div>
-            <p class="eventDate">{{ event.getDateHtml() }}</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 ml-2 mb-px"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
-          </div>
-        </div>
+          :event="event"
+          :widthPerDay="widthPerDay"
+          :startYear="years.start"
+          :columnWidth="columnWidth"
+        ></event-row>
       </transition-group>
       <div style="height: 50vh"></div>
     </div>
@@ -67,9 +34,8 @@
 </template>
 
 <script lang="ts">
-import { BoundingYears, DateRange, Event, Tags, YearMonthDay } from "../Types";
-
-const EVENT_HEIGHT_PX = 10;
+import { BoundingYears } from "../Types";
+import EventRow from './EventRow.vue';
 
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
@@ -91,12 +57,16 @@ interface Panning {
 }
 
 export default {
+  components: { EventRow },
   data() {
     return {
       panning: {} as Panning,
     };
   },
   computed: {
+    containerStyle(): string {
+      return `width: ${this.columnWidth * this.numColumns}px`
+    },
     isPanning(): boolean {
       return !!this.panning?.mouseStart?.x && !!this.panning?.mouseStart?.y;
     },
@@ -132,19 +102,13 @@ export default {
       return this.columnWidth / 12 / 30;
     },
   },
-  created() {
-    const container = document.getElementById("timelineContainer")!;
-    container.addEventListener("mousedown", this.mouseDown);
-    window.addEventListener("mouseup", this.mouseUp);
-    window.addEventListener("mousemove", this.mouseMove);
-  },
+  // created() {
+  //   const container = document.getElementById("timelineContainer")!;
+  //   container.addEventListener("mousedown", this.mouseDown);
+  //   window.addEventListener("mouseup", this.mouseUp);
+  //   window.addEventListener("mousemove", this.mouseMove);
+  // },
   methods: {
-    eventRowStyle(event: Event) {
-      return `margin-left: ${this.getLeftMarginForDate(
-        event,
-        event.range.from
-      )}px`;
-    },
     styleForMonth(m: number) {
       const sty = {
         top: "0px",
@@ -190,52 +154,6 @@ export default {
       container.scrollTop =
         this.panning.containerStart!.y +
         (this.panning.mouseStart!.y - e.clientY);
-    },
-    eventBarClass(event: Event): string {
-      let c = "eventBar transition opacity-50 rounded-lg shadow ";
-      const tag = event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        if (COLORS.includes(this.$store.getters.tags[tag])) {
-          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
-        }
-      } else {
-        c += `bg-gray-300 `;
-      }
-      return c;
-    },
-    eventBarStyle(event: Event): string {
-      let style = `width: ${this.getWidthForRange(event.range)}px;`;
-      const tag = event.event.tags[0];
-      if (
-        this.$store.getters.tags[tag] &&
-        !COLORS.includes(this.$store.getters.tags[tag])
-      ) {
-        style += ` background-color: ${this.$store.getters.tags[tag]}`;
-      }
-      return style;
-    },
-    getWidthForRange(range: DateRange): number {
-      const width = Math.max(
-        EVENT_HEIGHT_PX,
-        Math.max(1, range.numDays()) * this.widthPerDay
-      );
-      console.log(range.numDays() * this.widthPerDay);
-      console.log("width for ", range, width);
-      return width;
-    },
-    getLeftMarginForDate(event: Event, date: YearMonthDay): number {
-      let base = (event.startingYear() - this.years.start) * this.columnWidth;
-      if (date.month) {
-        const monthOffset = (this.columnWidth / 12) * (date.month - 1);
-        if (date.day) {
-          return (
-            base + monthOffset + (date.day - 1) * (this.columnWidth / 12 / 30)
-          );
-        } else {
-          return base + monthOffset;
-        }
-      }
-      return base + 0;
     },
     range(size: number, startAt = 0): number[] {
       return [...Array(size).keys()].map((i) => i + startAt);

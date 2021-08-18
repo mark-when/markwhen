@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-row">
+  <timeline />
+  <div class="flex flex-row fixed bottom-0 z-40">
     <div class="backdrop-filter backdrop-blur-sm">
       <div class="flex flex-row">
         <div class="underline flex items-end">
@@ -79,15 +80,12 @@
               Save cascade
             </button>
           </div>
-          <teleport to="#timelineContainer">
-            <timeline />
-          </teleport>
         </div>
       </div>
     </div>
     <div class="flex flex-col justify-end ml-2 mb-3 lg:flex-row lg:items-end">
       <display-settings></display-settings>
-      <tags :tags="tags"></tags>
+      <tags></tags>
     </div>
   </div>
 </template>
@@ -96,7 +94,7 @@
 import Storage from "./Storage.vue";
 import Timeline from "./Timeline.vue";
 import Tags from "./Tags.vue";
-import DisplaySettings from "./DisplaySettings.vue"
+import DisplaySettings from "./DisplaySettings.vue";
 
 export default {
   components: { Timeline, Storage, Tags, DisplaySettings },
