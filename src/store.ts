@@ -14,6 +14,8 @@ export default createStore({
       eventsString: `// Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`
 
+// Add a shareable google photos link to display images - see the Cincinnati event for an example
+
 // This is an indication that events tagged \`#Work\` will be colored #e13
 #Work: #e13
 
@@ -78,7 +80,8 @@ export default createStore({
 02/2021: Hawaii
 02/01/2021-now: Working on [swink](https://sw.ink) full time #Work
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
-06/05/2021-06/12/2021: Ohio and James's Party`
+06/05/2021-06/12/2021: Ohio and James's Party
+08/11/2021-08/17/2021: Cincinnati https://photos.app.goo.gl/h5CfrZamP5Tw6yDn7`
     }
   },
   mutations: {

@@ -74,9 +74,9 @@
       <div class="flex flex-row overflow-x-scroll items-center rounded">
         <a
           :href="event.event.googlePhotosLink"
-          v-for="image in images"
+          v-for="(image, index) in images"
           :key="image"
-          class="mr-2"
+          :class="{ 'mr-2' : index !== images.length - 1 }"
         >
           <img :src="image" class="rounded max-w-none z-30"
         /></a>
