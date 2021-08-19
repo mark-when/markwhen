@@ -1,9 +1,9 @@
 <template>
   <div class="eventRow flex flex-col relative" :style="eventRowStyle">
     <div
-    v-if="showingImages"
+      v-if="showingImages"
       :class="photoBarClass"
-      class="absolute left-0 mr-2 bottom-2 z-20"
+      class="absolute left-0 mr-2 bottom-2 z-20 opacity-50"
       :style="photoBarStyle"
     ></div>
     <div class="flex flex-row">
@@ -76,7 +76,7 @@
           :href="event.event.googlePhotosLink"
           v-for="(image, index) in images"
           :key="image"
-          :class="{ 'mr-2' : index !== images.length - 1 }"
+          :class="{ 'mr-2': index !== images.length - 1 }"
         >
           <img :src="image" class="rounded max-w-none z-30"
         /></a>

@@ -14,21 +14,21 @@ export default createStore({
       eventsString: `// Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`
 
-// Add a shareable google photos link to display images - see the Cincinnati event for an example
+// Add a shareable google photos link to display images. Events with the image icon have displayable images.
 
 // This is an indication that events tagged \`#Work\` will be colored #e13
 #Work: #e13
 
 08/2008-05/2012: Psych degree #Education
 02/2010-06/2012: Dispatcher #Work
-10/2010: Barn built across the street
-06/2011-08/2011: Westover Air Reserve Base #Work
+10/2010: Barn built across the street https://photos.app.goo.gl/Er9D81cdiE2tUwDZA
+06/2011-08/2011: Westover Air Reserve Base https://photos.app.goo.gl/NZ5rnGS7vZTXHe7aA #Work
 
 // 2013
-03/15/2013-04/2015: China #Work
+03/15/2013-04/2015: China https://photos.app.goo.gl/4UEkw3EbUkUuNzKGA #Work
 
 // 2014
-07/2014: 4th of July in DC
+07/2014: 4th of July in DC https://photos.app.goo.gl/d418j6GSkCD5LGmY8
 
 // 2015
 05/2015-08/2015: Summer classes so I can graduate in two years #Education
