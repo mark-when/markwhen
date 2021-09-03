@@ -1,20 +1,12 @@
 <template>
   <div class="relative" :style="containerStyle">
     <div id="years" class="flex absolute inset-0 pointer-events-none">
-      <div
-        class="year flex-shrink-0 relative"
+      <year
         v-for="year in range(years.end - years.start + 1, years.start)"
         :key="year"
-        :style="`width: ${this.columnWidth}px`"
-      >
-        <h6 class="yearTitle text-sm">{{ year }}</h6>
-        <div
-          class="absolute h-full"
-          v-for="m in range(12, 0)"
-          :key="m"
-          :style="styleForMonth(m)"
-        ></div>
-      </div>
+        :year="year"
+        :columnWidth="columnWidth"
+      />
     </div>
     <div id="events">
       <div class="h-24"></div>
@@ -35,7 +27,8 @@
 
 <script lang="ts">
 import { BoundingYears } from "../Types";
-import EventRow from './EventRow.vue';
+import EventRow from "./EventRow.vue";
+import Year from "./Year.vue";
 
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
@@ -57,7 +50,7 @@ interface Panning {
 }
 
 export default {
-  components: { EventRow },
+  components: { EventRow, Year },
   data() {
     return {
       panning: {} as Panning,
@@ -65,7 +58,7 @@ export default {
   },
   computed: {
     containerStyle(): string {
-      return `width: ${this.columnWidth * this.numColumns}px`
+      return `width: ${this.columnWidth * this.numColumns}px`;
     },
     isPanning(): boolean {
       return !!this.panning?.mouseStart?.x && !!this.panning?.mouseStart?.y;
@@ -90,7 +83,7 @@ export default {
           max = event.getNextYear();
         }
       }
-      return { start: min - 1, end: max + 6 };
+      return { start: min - 1, end: max + 2 + Math.floor(5 * (100 / this.columnWidth)) };
     },
     numColumns(): number {
       return this.years.end - this.years.start;
@@ -109,19 +102,6 @@ export default {
   //   window.addEventListener("mousemove", this.mouseMove);
   // },
   methods: {
-    styleForMonth(m: number) {
-      const sty = {
-        top: "0px",
-        left: `${m * (this.columnWidth / 12)}px`,
-      } as any;
-      if (m !== 0 && m !== 12 && this.columnWidth > 600) {
-        let alpha = 0.2;
-        sty["border-left"] = `1px dashed rgba(128, 128, 128, ${
-          alpha + 0.3 * (this.columnWidth / 1600)
-        })`;
-      }
-      return sty;
-    },
     mouseDown(e: MouseEvent) {
       e.stopPropagation();
       const container = document.getElementById("timelineContainer")!;
@@ -190,22 +170,6 @@ export default {
 .eventRow-leave-to {
   opacity: 0;
   transform: translateX(-30px);
-}
-
-.year {
-  border-left: 1px dashed rgba(128, 128, 128, 0.678);
-  height: 100%;
-  font-family: system-ui;
-}
-
-.yearTitle {
-  font-weight: 300;
-  margin: 0px 0px 0px -1px;
-  position: sticky;
-  top: 0px;
-  padding: 8px;
-  background: linear-gradient(to bottom, #384047, 67%, #38404700);
-  z-index: 1;
 }
 
 .eventRow {

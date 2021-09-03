@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mr-3">
+  <div class="flex flex-col flex-grow">
     <h3 class="text-xl border-b">My cascades</h3>
     <div class="mt-1" v-if="$store.state.list && $store.state.list.length > 0">
       <timeline-item

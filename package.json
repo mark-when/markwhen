@@ -8,6 +8,8 @@
     "deploy": "npm run build && echo 'cascade.page' > ./dist/CNAME && gh-pages -d dist"
   },
   "dependencies": {
+    "@types/firebase": "^3.2.1",
+    "firebase": "^9.0.1",
     "throttle-debounce": "^3.0.1",
     "vue": "^3.0.5",
     "vuex": "^4.0.2"
