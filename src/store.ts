@@ -1,17 +1,13 @@
 import { State } from "vue"
 import { createStore } from "vuex"
-import { Event, Settings, Tags } from "./Types"
+import { Event, Tags } from "./Types"
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
-export default createStore({
-  state(): State {
-    return {
-      settings: {
-        yearWidth: 120
-      },
-      filter: new Set(),
-      eventsString: `// Comments start with two slashes: \`//\`
+const concatenatedList = localStorage.getItem("timelines")
+let list = concatenatedList ? concatenatedList.split(',') : []
+const currentTimelineName = list.length > 0 ? list[0] : ''
+const exampleTimeline = `// Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`
 
 // Add a shareable google photos link to display images. Events with the image icon have displayable images.
@@ -82,9 +78,43 @@ export default createStore({
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
 06/05/2021-06/12/2021: Ohio and James's Party
 08/11/2021-08/17/2021: Cincinnati https://photos.app.goo.gl/h5CfrZamP5Tw6yDn7`
+const eventsString = currentTimelineName ? localStorage.getItem(currentTimelineName) : exampleTimeline
+
+export default createStore({
+  state(): State {
+    return {
+      list: list,
+      currentTimelineName: currentTimelineName,
+      settings: {
+        yearWidth: 120
+      },
+      filter: new Set(),
+      eventsString: eventsString
     }
   },
   mutations: {
+    setCurrentTimeline(state: State, timelineName: string) {
+      state.eventsString = localStorage.getItem(timelineName) ?? ""
+      state.currentTimelineName = timelineName
+    },
+    removeTimeline(state: State, timelineName: string) {
+      localStorage.removeItem(timelineName);
+      state.list.splice(state.list.indexOf(timelineName), 1);
+      localStorage.setItem("timelines", state.list.join(","));
+      if (state.currentTimelineName === timelineName && state.list.length > 0) {
+        const nextTimeline = state.list[0]
+        state.eventsString = localStorage.getItem(nextTimeline) || ""
+      } else {
+        state.eventsString = ""
+      }
+    },
+    saveTimeline(state: State, timelineName: string) {
+      localStorage.setItem(timelineName, state.eventsString || "");
+      if (!state.list.includes(timelineName)) {
+        state.list.push(timelineName)
+        localStorage.setItem("timelines", state.list.join(","));
+      }
+    },
     setYearWidth(state: State, width: number) {
       state.settings.yearWidth = width
     },
