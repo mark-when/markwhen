@@ -1,8 +1,6 @@
 <template>
-  <div class="flex flex-col lg:mr-2">
-    <h3>Year width</h3>
+  <div class="flex flex-col mx-2">
     <input type="range" min="10" max="1600" v-model="width" class="my-1"/>
-    <div class="flex-grow"></div>
   </div>
 </template>
 

@@ -20,8 +20,8 @@
           transition
         "
         :class="{
-          'hover:bg-gray-900': !!event.event.googlePhotosLink,
-          'bg-gray-900': showingImages,
+          'hover:bg-gray-800 hover:shadow-lg': !!event.event.googlePhotosLink,
+          'bg-gray-900 shadow-lg': showingImages,
           'cursor-pointer': !!event.event.googlePhotosLink,
         }"
         v-on="!!event.event.googlePhotosLink ? { click: togglePhotos } : {}"
@@ -67,7 +67,7 @@
     </div>
     <div
       v-if="showingImages && imageStatus === 'loaded' && images.length > 0"
-      class="bg-gray-900 rounded p-2 -mx-2 inline-flex mt-1 z-10 relative"
+      class="bg-gray-900 rounded p-2 -mx-2 inline-flex mt-1 relative shadow-lg"
       style="max-width: 100vw"
     >
       <div class="ml-2 mr-3"></div>

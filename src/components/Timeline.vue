@@ -77,7 +77,7 @@ export default {
       const events = this.$store.getters.events;
 
       if (!events || events.length === 0) {
-        return { start: 2000, end: 2010 };
+        return { start: 2010, end: 2020 };
       }
 
       let min = events[0].startingYear();

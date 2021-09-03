@@ -16,8 +16,6 @@ export default defineComponent({
 
 <style>
 #app {
-  bottom: 0px;
-  left: 10px;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
