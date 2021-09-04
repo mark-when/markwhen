@@ -1,16 +1,41 @@
 <template>
   <div>
     <timeline />
-    <sidebar/>
+    <sidebar />
   </div>
 </template>
 
 <script lang="ts">
 import Timeline from "./Timeline.vue";
 import Sidebar from "./Sidebar.vue";
+import {
+  getAuth,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+} from "firebase/auth";
 
 export default {
   components: { Sidebar, Timeline, Storage },
+  async mounted() {
+    const auth = getAuth();
+    if (!isSignInWithEmailLink(auth, window.location.href)) {
+      return;
+    }
+    let email = window.localStorage.getItem("emailForSignIn");
+    if (!email) {
+      email = window.prompt("Confirm your email to sign in");
+    }
+    if (!email) {
+      alert("Missing email!");
+      return;
+    }
+    try {
+      await signInWithEmailLink(auth, email, window.location.href);
+    } catch (err) {
+      alert(err)
+    }
+    localStorage.removeItem('emailForSignIn')
+  },
 };
 </script>
 

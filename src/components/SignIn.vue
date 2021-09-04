@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-3">
+  <div class="my-3">
     <h3 class="text-red-400">Not signed in</h3>
     <form @submit.prevent="submit">
       <input
@@ -11,20 +11,26 @@
         class="px-1 text-black mt-1 w-full rounded"
       />
       <button
-        :disabled="!emailAddress && emailStatus === 'not sent'"
+        :disabled="
+          !emailAddress || emailStatus === 'sending' || emailStatus === 'sent'
+        "
         class="
+          whitespace-nowrap
           w-full
-          text-gray-900
           disabled:text-gray-400
-          disabled:bg-blue-100
+          disabled:bg-blue-900
           rounded
           bg-blue-100
           mt-3
           px-2
           rounded
-          hover:bg-blue-300
+          items-center
+          bg-blue-800
+          hover:bg-blue-700
           transition-all
           duration-100
+          text-gray-200
+          hover:text-gray-50
         "
       >
         {{ buttonText }}
@@ -59,24 +65,22 @@ export default {
   methods: {
     async submit() {
       if (this.emailStatus === "sending") {
-        return
+        return;
       }
-      this.emailStatus = "sending"
+      this.emailStatus = "sending";
       const enteredEmail = this.emailAddress;
       const auth = getAuth();
       const actionCodeSettings = {
-        url: "https://cascade.page/signin",
+        url: "https://cascade.page",
         handleCodeInApp: true,
       };
       try {
-        await sendSignInLinkToEmail(
-          auth,
-          this.emailAddress,
-          actionCodeSettings
-        );
+        await sendSignInLinkToEmail(auth, enteredEmail, actionCodeSettings);
         this.emailStatus = "sent";
-      } catch (err) {}
-      console.log("submit " + this.emailAddress);
+        localStorage.setItem("emailForSignIn", enteredEmail);
+      } catch (err) {
+        alert("Error sending signin email: " + err);
+      }
     },
   },
 };
