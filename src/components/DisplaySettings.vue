@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col mx-2">
-    <input type="range" min="0" max="100" v-model="width" class="my-1"/>
+    <input type="range" min="0" max="1000" v-model="width" class="my-1"/>
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
   data() {
     let minSelection = 0
-    let maxSelection = 100
+    let maxSelection = 1000
     let minWidth = Math.log(10)
     let maxWidth = Math.log(1600)
     const scale = (maxWidth - minWidth) / (maxSelection - minSelection)
@@ -20,7 +20,7 @@ export default {
   watch: {
     width(val, oldVal) {
       let minSelection = 0
-      let maxSelection = 100
+      let maxSelection = 1000
       let minWidth = Math.log(10)
       let maxWidth = Math.log(1600)
       const scale = (maxWidth - minWidth) / (maxSelection - minSelection)

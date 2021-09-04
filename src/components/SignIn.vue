@@ -1,9 +1,10 @@
 <template>
   <div class="my-3">
-    <h3 class="text-red-400">Not signed in</h3>
+    <h3 class="text-red-400" v-if="!user">Not signed in</h3>
+    <h3 class="text-gray-300" v-else>{{ user.email }}</h3>
     <form @submit.prevent="submit">
       <input
-        v-if="emailStatus !== 'sent'"
+        v-if="!user && emailStatus !== 'sent'"
         v-model="emailAddress"
         id="email"
         type="email"
@@ -11,6 +12,31 @@
         class="px-1 text-black mt-1 w-full rounded"
       />
       <button
+        v-if="user"
+        class="
+          whitespace-nowrap
+          w-full
+          disabled:text-gray-400
+          disabled:bg-blue-900
+          rounded
+          bg-blue-100
+          mt-3
+          px-2
+          rounded
+          items-center
+          bg-blue-800
+          hover:bg-blue-700
+          transition-all
+          duration-100
+          text-gray-200
+          hover:text-gray-50
+        "
+        @click="signOut"
+      >
+        Sign out
+      </button>
+      <button
+        v-else
         :disabled="
           !emailAddress || emailStatus === 'sending' || emailStatus === 'sent'
         "
@@ -47,7 +73,13 @@ export default {
     return {
       emailAddress: null,
       emailStatus: "not sent",
+      user: null,
     };
+  },
+  mounted() {
+    getAuth().onAuthStateChanged((user) => {
+      this.user = user;
+    });
   },
   computed: {
     buttonText() {
@@ -63,6 +95,11 @@ export default {
     },
   },
   methods: {
+    signOut() {
+      if (confirm("Sign out?")) {
+        getAuth().signOut();
+      }
+    },
     async submit() {
       if (this.emailStatus === "sending") {
         return;
