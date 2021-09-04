@@ -4,16 +4,16 @@
     <tags></tags>
     <button
       class="ml-auto hover:bg-gray-500 rounded px-3 flex flex-row items-center"
-      @click="$emit('update:modelValue', !modelValue)"
+      @click="$emit('input', !value)"
     >
-      <span class="hidden md:block">{{ modelValue ? "Expand" : "Collapse" }}</span
+      <span class="hidden md:block">{{ value ? "Expand" : "Collapse" }}</span
       ><svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4 ml-1"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        v-if="!modelValue"
+        v-if="!value"
       >
         <path
           stroke-linecap="round"
@@ -24,11 +24,11 @@
       </svg>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
+        class="h-4 w-4 ml-1"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        v-if="modelValue"
+        v-if="value"
       >
         <path
           stroke-linecap="round"
@@ -49,7 +49,7 @@ export default {
     Tags,
     DisplaySettings,
   },
-  props: ["modelValue"],
+  props: ["value"],
 };
 </script>
 

@@ -89,8 +89,9 @@
 import { DateRange, Event, YearMonthDay } from "../Types";
 const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
   props: ["event", "widthPerDay", "startYear", "columnWidth"],
   data() {
     return {
@@ -190,7 +191,7 @@ export default {
       return base + 0;
     },
   },
-};
+});
 </script>
 
 <style>

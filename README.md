@@ -3,8 +3,6 @@ Inspired by @cheeaun's [life](https://github.com/cheeaun/life).
 
 Use it [here](https://cascade.page).
 
-Setup should be as simple as `npm i` and `npm run dev`.
-
 Timeline sytax is markdown-ish:
 
 |||

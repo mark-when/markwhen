@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="year flex-shrink-0 relative"
-    :style="yearColumnStyle"
-  >
+  <div class="year flex-shrink-0 relative" :style="yearColumnStyle">
     <h6 class="yearTitle text-sm" :style="yearStyle">{{ year }}</h6>
     <div
       class="absolute h-full"
@@ -14,7 +11,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue from "vue";
+
+export default Vue.extend({
   props: ["year", "columnWidth"],
   methods: {
     styleForMonth(m: number) {
@@ -33,27 +32,30 @@ export default {
   },
   computed: {
     yearColumnStyle(): string {
-      let alpha
+      let alpha;
       if (this.columnWidth < 80) {
-        alpha = (this.columnWidth - 30) / 70
+        alpha = (this.columnWidth - 30) / 70;
       } else {
-        alpha = 1
+        alpha = 1;
       }
-      alpha = this.year % 10 === 0 ? 0.678 : 0.678 * alpha
-      return `width: ${this.columnWidth}px; border-left: 1px dashed rgba(128, 128, 128, ${alpha})`
+      alpha = this.year % 10 === 0 ? 0.678 : 0.678 * alpha;
+      return `width: ${this.columnWidth}px; border-left: 1px dashed rgba(128, 128, 128, ${alpha})`;
     },
     yearStyle(): string {
-      let alpha
+      let alpha;
       if (this.columnWidth < 80) {
-        alpha = (this.columnWidth - 30) / 70
+        alpha = (this.columnWidth - 30) / 70;
       } else {
-        alpha = 1
+        alpha = 1;
       }
-      const color = this.year % 10 === 0 ? 'white' : `rgba(255, 255, 255, ${alpha})`
-      return `background: linear-gradient(to bottom, #384047, ${67 * alpha}%, #38404700); color: ${color};`
-    }
-  }
-};
+      const color =
+        this.year % 10 === 0 ? "white" : `rgba(255, 255, 255, ${alpha})`;
+      return `background: linear-gradient(to bottom, #384047, ${
+        67 * alpha
+      }%, #38404700); color: ${color};`;
+    },
+  },
+});
 </script>
 
 <style>
@@ -72,5 +74,4 @@ export default {
   background: linear-gradient(to bottom, #384047, 67%, #38404700);
   z-index: 1;
 }
-
 </style>

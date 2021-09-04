@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <timeline />
     <sidebar />
   </div>
@@ -15,7 +15,7 @@ import {
 } from "firebase/auth";
 
 export default {
-  components: { Sidebar, Timeline, Storage },
+  components: { Sidebar, Timeline },
   async mounted() {
     const auth = getAuth();
     if (!isSignInWithEmailLink(auth, window.location.href)) {
@@ -46,5 +46,10 @@ body {
   color: white;
   height: 100vh;
   margin: 0;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>

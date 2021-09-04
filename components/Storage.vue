@@ -18,8 +18,9 @@
 
 <script lang="ts">
 import TimelineItem from "./TimelineItem.vue"
+import Vue from "vue"
 
-export default {
+export default Vue.extend({
   components: { TimelineItem },
   methods: {
     selected(item: string) {
@@ -31,7 +32,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style>

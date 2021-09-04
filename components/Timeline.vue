@@ -29,7 +29,7 @@
 import { BoundingYears } from "../Types";
 import EventRow from "./EventRow.vue";
 import Year from "./Year.vue";
-
+import Vue from "vue"
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
@@ -49,7 +49,7 @@ interface Panning {
   };
 }
 
-export default {
+export default Vue.extend({
   components: { EventRow, Year },
   data() {
     return {
@@ -139,7 +139,7 @@ export default {
       return [...Array(size).keys()].map((i) => i + startAt);
     },
   },
-};
+});
 </script>
 
 <style>

@@ -11,8 +11,9 @@ import Storage from "./Storage.vue";
 import SignIn from "./SignIn.vue";
 import SignedIn from "./SignedIn.vue"
 import { getAuth, User } from "firebase/auth";
+import Vue from "vue"
 
-export default {
+export default Vue.extend({
   components: { Storage, SignIn, SignedIn },
   data() {
     return {
@@ -24,7 +25,7 @@ export default {
       this.user = user;
     });
   },
-};
+});
 </script>
 
 <style>
