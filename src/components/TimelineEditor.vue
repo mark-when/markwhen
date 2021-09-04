@@ -6,7 +6,7 @@
     wrap="off"
     v-model="$store.state.eventsString"
   ></textarea>
-  <div class="mt-3">
+  <div class="mt-3 flex flex-row">
     <button
       class="
         flex flex-row
@@ -23,21 +23,25 @@
       @click="save"
     >
       <svg
-        xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4 mr-1"
-        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke="currentColor"
+        width="24px"
+        fill="currentColor"
       >
+        <path d="M0 0h24v24H0z" fill="none" />
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"
         />
       </svg>
       Save cascade
     </button>
+    <a
+      class="underline ml-auto"
+      href="https://github.com/kochrt/cascade.page"
+      target="_blank"
+      >GitHub</a
+    >
   </div>
 </template>
 

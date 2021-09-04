@@ -35,6 +35,7 @@ export default {
       alert(err)
     }
     localStorage.removeItem('emailForSignIn')
+    window.location.href = window.location.origin
   },
 };
 </script>

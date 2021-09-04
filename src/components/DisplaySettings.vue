@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mx-2">
+  <div class="flex flex-col mr-2">
     <input type="range" min="0" max="1000" v-model="width" class="my-1"/>
   </div>
 </template>

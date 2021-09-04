@@ -1,10 +1,5 @@
 <template>
   <div class="flex flex-row pb-2">
-    <div class="underline flex items-end">
-      <a href="https://github.com/kochrt/cascade.page" target="_blank"
-        >GitHub</a
-      >
-    </div>
     <display-settings></display-settings>
     <tags></tags>
     <button
