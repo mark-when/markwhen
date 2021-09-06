@@ -1,8 +1,8 @@
 <template>
-    <RecycleScroller
+  <custom-scroller
       ref="recyclerScroller"
       page-mode
-      class="flex absolute inset-0 pointer-events-none z-10"
+      class="flex absolute inset-0"
       :items="allYears"
       :item-size="columnWidth"
       key-field="item"
@@ -10,15 +10,24 @@
       :buffer="1000"
       v-slot="{ item }"
       ><year :year="item" :columnWidth="columnWidth"
-    /></RecycleScroller>
+    /></custom-scroller>
+  <!-- <div class="flex absolute inset-0">
+    <year
+      v-for="year in allYears"
+      :key="year"
+      :year="year"
+      :columnWidth="columnWidth"
+    ></year>
+  </div> -->
 </template>
 
 <script lang="ts">
 import Year from "./Year.vue";
-import { RecycleScroller } from "vue-virtual-scroller";
-import Vue from "vue"
+//@ts-ignore
+import Vue from "vue";
+import CustomScroller from "./CustomScroller.vue";
 export default Vue.extend({
-  components: { Year, RecycleScroller },
+  components: { Year, CustomScroller },
   props: ["columnWidth", "years"],
   methods: {
     range(size: number, startAt = 0): number[] {

@@ -1,12 +1,6 @@
 <template>
   <div id="events" >
     <div class="h-24"></div>
-    <!-- <RecycleScroller
-      :items="$store.getters.filteredEvents"
-      :item-size="10"
-      key-field="eventString"
-      v-slot="{ item }"
-    > -->
       <transition-group name="eventRow">
         <event-row
           v-for="event in $store.getters.filteredEvents"
@@ -17,7 +11,6 @@
           :columnWidth="columnWidth"
         ></event-row>
       </transition-group>
-    <!-- </RecycleScroller> -->
     <div style="height: 50vh"></div>
   </div>
 </template>
