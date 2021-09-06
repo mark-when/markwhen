@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+import Vue from "vue"
 import Timeline from "./Timeline.vue";
 import Sidebar from "./Sidebar.vue";
 import {
@@ -13,6 +14,8 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from "firebase/auth";
+import { RecycleScroller } from "vue-virtual-scroller";
+Vue.component("RecycleScroller", RecycleScroller);
 
 export default {
   components: { Sidebar, Timeline },

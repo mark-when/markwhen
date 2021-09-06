@@ -6,7 +6,7 @@ interface State {
     yearWidth: number
   },
   filter: string[]
-  eventsString: string | null
+  eventsString: string | null,
 }
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
@@ -135,7 +135,7 @@ export const mutations = {
   },
   filterTag(state: State, tag: string) {
     const index = state.filter.indexOf(tag)
-    if (index >= 0 ) {
+    if (index >= 0) {
       state.filter.splice(index, 1)
     } else {
       state.filter.push(tag)
@@ -182,5 +182,5 @@ export const getters = {
       }
     }
     return tags
-  }
+  },
 }
