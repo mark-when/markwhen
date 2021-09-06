@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-import { RecycleScroller } from "vue-virtual-scroller";
 import EventRow from "./EventRow.vue";
+import Vue from "vue"
 
-export default {
+export default Vue.extend({
   components: { EventRow },
   props: ["years", "columnWidth"],
   computed: {
@@ -34,7 +34,7 @@ export default {
       return this.columnWidth / 12 / 30;
     },
   },
-};
+});
 </script>
 
 <style>

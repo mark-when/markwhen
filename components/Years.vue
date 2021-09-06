@@ -1,5 +1,4 @@
 <template>
-    <!-- <div id="years" class="flex absolute inset-0"> -->
     <RecycleScroller
       ref="recyclerScroller"
       page-mode
@@ -17,8 +16,8 @@
 <script lang="ts">
 import Year from "./Year.vue";
 import { RecycleScroller } from "vue-virtual-scroller";
-
-export default {
+import Vue from "vue"
+export default Vue.extend({
   components: { Year, RecycleScroller },
   props: ["columnWidth", "years"],
   methods: {
@@ -34,7 +33,7 @@ export default {
       );
     },
   },
-};
+});
 </script>
 
 <style>
