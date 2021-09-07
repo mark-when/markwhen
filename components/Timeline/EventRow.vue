@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { DateRange, Event, YearMonthDay } from "../Types";
+import { DateRange, Event, YearMonthDay } from "../../Types";
 const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
 import Vue from "vue";

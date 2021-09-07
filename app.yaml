@@ -18,3 +18,4 @@ handlers:
 
 env_variables:
   HOST: '0.0.0.0'
+  API_URL_BROWSER: https://cascade.page

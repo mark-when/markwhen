@@ -42,10 +42,9 @@
 </template>
 
 <script lang="ts">
-import { COLORS } from "../store";
 import Vue from "vue";
 import { mapGetters, mapState } from "vuex";
-import Tag from "~/components/Tag.vue"
+import Tag from "./Tag.vue"
 
 export default Vue.extend({
   components: { Tag },

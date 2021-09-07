@@ -12,11 +12,6 @@ export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pi
 
 let currentTimelineName = ''
 let list = [] as string[]
-if (process.browser) {
-  const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
-  list = concatenatedList ? concatenatedList.split(',') : []
-  currentTimelineName = list.length > 0 ? list[0] : ''
-}
 
 const exampleTimeline = `// Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`
@@ -102,6 +97,15 @@ export const state = () => ({
 })
 
 export const mutations = {
+  getLocalTimelines(state: State) {
+    if (!process.browser) {
+      return
+    }
+    const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
+    state.list = concatenatedList ? concatenatedList.split(',') : []
+    state.currentTimelineName = list.length > 0 ? list[0] : ''  
+    state.eventsString = state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline
+  },
   setCurrentTimeline(state: State, timelineName: string) {
     state.eventsString = localStorage.getItem(timelineName) ?? ""
     state.currentTimelineName = timelineName
@@ -149,14 +153,21 @@ export const getters = {
     }
     let eventStrings = state.eventsString.split("\n");
 
-    // Filter empty strings and comments
-    return eventStrings.filter(
-      (str: string) => !!str && str.match(/^\s*\/\/.*/) === null
-    ).map((str: string) => str.trim());
+    // Filter empty strings, comments, and malformatted lines
+    const filter = function (eventString: string): boolean {
+      if (!eventString) {
+        return false
+      }
+      if (eventString.match(/^\s*\/\/.*/)) {
+        return false
+      }
+      return true
+    }
+    return eventStrings.filter(filter).map((str: string) => str.trim());
   },
   events(state: State, getters: any): Event[] {
     return getters.trimmedAndFilteredEntries
-      .filter((str: string) => !str.startsWith("!") && !str.startsWith("#"))
+      .filter((str: string) => str.match(/^\d/))
       .map(Event.fromString).filter((event: Event | null) => !!event)
   },
   filteredEvents(state: State, getters: any): Event[] {

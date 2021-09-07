@@ -3,7 +3,7 @@
     <input
       type="text"
       class="bg-gray-900 pl-px ml-px rounded"
-      placeholder="Username"
+      placeholder="username"
     />
     <button class="ml-1">
       <svg

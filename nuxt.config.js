@@ -29,7 +29,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    "~/plugins/firebase.ts"
+    "~/plugins/rpc.ts"
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -54,7 +54,11 @@ export default {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    browserBaseUrl: process.env.API_URL_BROWSER || 'http://cascade.test:3001',
+    proxyHeaders: false,
+    credentials: false
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

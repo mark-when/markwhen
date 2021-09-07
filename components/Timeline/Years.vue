@@ -11,21 +11,13 @@
       v-slot="{ item }"
       ><year :year="item" :columnWidth="columnWidth"
     /></custom-scroller>
-  <!-- <div class="flex absolute inset-0">
-    <year
-      v-for="year in allYears"
-      :key="year"
-      :year="year"
-      :columnWidth="columnWidth"
-    ></year>
-  </div> -->
 </template>
 
 <script lang="ts">
 import Year from "./Year.vue";
 //@ts-ignore
 import Vue from "vue";
-import CustomScroller from "./CustomScroller.vue";
+import CustomScroller from "../Timeline/CustomScroller.vue";
 export default Vue.extend({
   components: { Year, CustomScroller },
   props: ["columnWidth", "years"],

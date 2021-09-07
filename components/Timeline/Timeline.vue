@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { BoundingYears } from "../Types";
+import { BoundingYears } from "../../Types";
 import Events from "./Events.vue";
 import Vue from "vue";
 import Years from "./Years.vue";

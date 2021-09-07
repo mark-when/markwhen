@@ -10,15 +10,14 @@
         whitespace-nowrap
         w-full
         disabled:text-gray-400
-        disabled:bg-blue-900
+        disabled:bg-gray-900
         rounded
-        bg-blue-100
         mt-3
         px-2
         rounded
         items-center
-        bg-blue-800
-        hover:bg-blue-700
+        bg-gray-800
+        hover:bg-gray-700
         transition-all
         duration-100
         text-gray-200
