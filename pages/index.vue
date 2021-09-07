@@ -1,5 +1,5 @@
 <template>
-  <Main/>
+  <Main :edittable="true"/>
 </template>
 
 <script lang="ts">

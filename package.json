@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "core-js": "^3.15.1",
+    "dotenv": "^9.0.2",
     "express": "^4.17.1",
     "firebase": "^9.0.1",
     "firebase-admin": "^9.11.1",

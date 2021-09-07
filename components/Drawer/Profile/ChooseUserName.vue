@@ -69,11 +69,10 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
-    </button>
-    <button class="ml-2" type="button">
       <svg
+        v-else-if="usernameStatus === 'unavailable'"
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
+        class="h-4 w-4 text-red-600"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -82,7 +81,7 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          d="M6 18L18 6M6 6l12 12"
         />
       </svg>
     </button>
@@ -112,7 +111,12 @@ export default Vue.extend({
   },
   mounted() {
     if (this.focusInput) {
-      (this.$refs.input as HTMLInputElement).focus()
+      (this.$refs.input as HTMLInputElement).focus();
+    }
+  },
+  watch: {
+    username(val, oldVal) {
+      this.usernameStatus = 'not chosen'
     }
   },
   methods: {

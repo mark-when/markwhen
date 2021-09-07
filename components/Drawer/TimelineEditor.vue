@@ -1,7 +1,7 @@
 <template>
   <div>
     <textarea
-      class="flex-grow p-2 font-mono text-sm w-full text-gray-300 bg-gray-900"
+      class="flex-grow p-2 font-mono text-sm w-full text-gray-300 bg-gray-900 outline-none"
       name="eventsField"
       rows="12"
       wrap="off"

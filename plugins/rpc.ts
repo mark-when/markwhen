@@ -23,6 +23,13 @@ declare module '@nuxt/types' {
   }
 }
 
+declare module 'connect' {
+  interface IncomingMessage {
+    timelinePath?: string
+    timelineFile?: string
+  }
+}
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"

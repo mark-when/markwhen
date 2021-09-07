@@ -44,7 +44,7 @@ export default {
   ],
 
   serverMiddleware: {
-    '/api': '~/server-middleware/index'
+    '/': '~/server-middleware/index'
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -55,7 +55,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    browserBaseUrl: process.env.API_URL_BROWSER || 'http://cascade.test:3001',
+    browserBaseUrl: '/',
     proxyHeaders: false,
     credentials: false
   },

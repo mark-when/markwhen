@@ -15,14 +15,17 @@
     "
     style="max-height: 50vh"
   >
-    <drawer-header v-model="collapsed" />
+    <drawer-header
+      v-model="collapsed"
+      :collapsible="collapsible"
+    />
     <div
       class="flex flex-col md:flex-row pt-1 overflow-auto"
-      v-show="!collapsed"
+      v-if="!collapsed && collapsible"
     >
       <profile />
       <div class="flex flex-col mb-3 w-full order-1 md:order-2">
-        <timeline-editor /> 
+        <timeline-editor />
       </div>
     </div>
   </div>
@@ -32,14 +35,15 @@
 import Storage from "./Storage.vue";
 import Profile from "./Profile/Profile.vue";
 import DrawerHeader from "./DrawerHeader.vue";
-import TimelineEditor from "./TimelineEditor.vue"
+import TimelineEditor from "./TimelineEditor.vue";
 
 export default {
+  props: ["collapsible"],
   components: {
     Storage,
     Profile,
     DrawerHeader,
-    TimelineEditor
+    TimelineEditor,
   },
   data() {
     return { collapsed: false };

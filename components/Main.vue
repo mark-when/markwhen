@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <timeline />
-    <sidebar />
+    <sidebar :collapsible="edittable"/>
   </div>
 </template>
 
@@ -16,6 +16,7 @@ import {
 } from "firebase/auth";
 
 export default Vue.extend({
+  props: ['edittable'],
   components: { Sidebar, Timeline },
   mounted() {
     this.signInIfNecessary()

@@ -1,3 +1,4 @@
+import { Context } from "@nuxt/types";
 import { Event, Tags } from "../Types"
 interface State {
   list: string[],
@@ -7,6 +8,7 @@ interface State {
   },
   filter: string[]
   eventsString: string | null,
+  timelinePath: string | null
 }
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
@@ -93,12 +95,16 @@ export const state = () => ({
     yearWidth: 120
   },
   filter: [],
-  eventsString: eventsString
+  eventsString: eventsString,
+  timelinePath: ''
 })
 
 export const mutations = {
+  setTimelinePath(state: State, path: string) {
+    state.timelinePath = path
+  },
   getLocalTimelines(state: State) {
-    if (!process.browser) {
+    if (!process.browser || state.timelinePath) {
       return
     }
     const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
@@ -195,4 +201,15 @@ export const getters = {
     }
     return tags
   },
+}
+
+export const actions = {
+  nuxtServerInit(store: any, context: Context) {
+    if (context.req.timelineFile) {
+      store.commit('setEventsString', context.req.timelineFile)
+    }
+    if (context.req.timelinePath) {
+      store.commit('setTimelinePath', context.req.timelinePath)
+    }
+  }
 }

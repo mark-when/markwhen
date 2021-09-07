@@ -23,7 +23,7 @@ function failUnauthorized(res, message) {
   res.status(401).json(response).end()
 }
 
-app.use(async (req, res, next) => {
+app.use('/api', async (req, res, next) => {
   let token
   if (req.headers && req.headers.authorization) {
     const parts = req.headers.authorization.split(' ');
@@ -46,7 +46,8 @@ app.use(async (req, res, next) => {
   next()
 })
 
-app.post('/chooseUserName', async (req, res) => {
+const RESERVED_USERNAMES = ['api', 'assets']
+app.post('/api/chooseUserName', async (req, res) => {
   const username = req.body.username
   if (!username) {
     return res.status(400).json({
@@ -57,6 +58,12 @@ app.post('/chooseUserName', async (req, res) => {
   if (!username.match(/^[\w\d_-]+$/)) {
     return res.status(400).json({
       error: "Usernames can only have letters, digits, underscores, and dashes."
+    }).end()
+  }
+
+  if (RESERVED_USERNAMES.includes(username) || username.startsWith("_")) {
+    return res.status(400).json({
+      error: "Username unavailable."
     }).end()
   }
 
@@ -77,6 +84,43 @@ app.post('/chooseUserName', async (req, res) => {
     console.error(err)
     return res.status(409).json({ error: "Username already in use" })
   }
+})
+
+app.post('/api/share', async (req, res) => {
+  const timeline = req.body.timeline
+  if (!timeline) {
+    return res.status(400).json({
+      error: "Missing timeline"
+    }).end()
+  }
+
+  const name = req.body.name
+  if (!name) {
+    return res.status(400).json({
+      error: "Missing timeline name"
+    }).end()
+  }
+})
+
+app.get('/:user/:timeline?', async (req, res, next) => {
+  const user = await admin.firestore().collection(`users`).where('username', '==', req.params.user).get()
+  if (!user || user.empty) {
+    return res.redirect('/')
+  }
+  if (user.size > 1) {
+    console.warn('More than one user with this username!', req.params.user)
+  }
+  const userId = user.docs[0].id
+  const path = `${userId}/${req.params.timeline ? req.params.timeline : req.params.user}`
+  const file = admin.storage().bucket().file(path)
+  const exists = await file.exists()
+  if (!exists[0]) {
+    return res.redirect('/')
+  }
+  const timelineFile = await file.download()
+  req.timelineFile = timelineFile.toString()
+  req.timelinePath = `/${req.params.user}${req.params.timeline ? ('/' + req.params.timeline) : ''}`
+  next()
 })
 
 module.exports = app
