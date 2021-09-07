@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import Storage from "./Storage.vue";
+import Storage from "../Storage.vue";
 import SignIn from "./SignIn.vue";
 import SignedIn from "./SignedIn.vue"
 import { getAuth, User } from "firebase/auth";

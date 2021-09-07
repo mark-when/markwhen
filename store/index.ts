@@ -103,7 +103,7 @@ export const mutations = {
     }
     const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
     state.list = concatenatedList ? concatenatedList.split(',') : []
-    state.currentTimelineName = list.length > 0 ? list[0] : ''  
+    state.currentTimelineName = list.length > 0 ? list[0] : ''
     state.eventsString = state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline
   },
   setCurrentTimeline(state: State, timelineName: string) {
@@ -146,6 +146,7 @@ export const mutations = {
     }
   }
 }
+
 export const getters = {
   trimmedAndFilteredEntries(state: State): string[] {
     if (!state.eventsString) {

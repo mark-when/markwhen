@@ -36,7 +36,7 @@ export default Vue.extend({
         return;
       }
       try {
-        await signInWithEmailLink(auth, email, window.location.href);
+        const user = await signInWithEmailLink(auth, email, window.location.href);
       } catch (err) {
         alert(err);
       }

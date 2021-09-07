@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import Storage from "./Storage.vue";
-import Profile from "./Profile.vue";
+import Profile from "./Profile/Profile.vue";
 import DrawerHeader from "./DrawerHeader.vue";
 import TimelineEditor from "./TimelineEditor.vue"
 
