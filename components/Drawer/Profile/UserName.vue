@@ -54,6 +54,9 @@ export default Vue.extend({
           return;
         }
         this.username = snapshot.data()!.username as string;
+        if (!this.username) {
+          this.choosingUsername = true
+        }
       },
       console.error
     );

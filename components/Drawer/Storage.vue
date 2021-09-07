@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col flex-grow">
-    <h3 class="border-b border-gray-500 text-gray-300">My cascades</h3>
+    <h3 class="border-b border-gray-500 text-gray-400">My cascades</h3>
     <div class="mt-1" v-if="$store.state.list && $store.state.list.length > 0">
       <timeline-item
         v-for="item in $store.state.list"

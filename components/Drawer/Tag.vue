@@ -10,6 +10,8 @@
       md:px-2
       md:py-0
       p-1
+      text-gray-400
+      hover:text-gray-100
     "
     @click="filterTag"
   >
@@ -17,7 +19,7 @@
       <svg
         v-if="filter.includes(tag)"
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
+        class="h-4 w-4 text-gray-100"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

@@ -18,6 +18,8 @@
         p-1
         flex flex-row
         items-center
+        text-gray-400
+        hover:text-gray-100
       "
       @click="clearFilters"
       v-if="Object.keys(tags).length > 0"
@@ -44,7 +46,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters, mapState } from "vuex";
-import Tag from "./Tag.vue"
+import Tag from "./Tag.vue";
 
 export default Vue.extend({
   components: { Tag },

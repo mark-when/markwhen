@@ -8,6 +8,7 @@
       required
       v-model="username"
       pattern="[\w\d_-]+"
+      @blur="$emit('goBack')"
     />
     <button
       type="button"

@@ -100,6 +100,8 @@ app.post('/api/share', async (req, res) => {
       error: "Missing timeline name"
     }).end()
   }
+
+  
 })
 
 app.get('/:user/:timeline?', async (req, res, next) => {

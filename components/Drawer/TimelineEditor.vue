@@ -1,15 +1,15 @@
 <template>
   <div>
     <textarea
-      class="flex-grow p-2 font-mono text-sm w-full text-gray-300 bg-gray-900 outline-none"
+      class="flex-grow p-2 font-mono text-sm w-full text-gray-400 bg-gray-900 outline-none"
       name="eventsField"
       rows="12"
       wrap="off"
       :value="$store.state.eventsString"
       @input="updateEventsString"
     ></textarea>
-    <div class="mt-3 flex flex-row">
-      <save-button @click="share"/>
+    <div class="mt-3 flex flex-row text-gray-300">
+      <share-button @click="share"/>
       <save-locally-button @click="saveLocally" />
       <a
         class="underline ml-auto"
@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import SaveButton from './ShareButton.vue';
+import ShareButton from './ShareButton.vue';
 import SaveLocallyButton from './SaveLocallyButton.vue';
 
 export default {
-  components: { SaveLocallyButton, SaveButton },
+  components: { SaveLocallyButton, ShareButton },
   methods: {
     updateEventsString(e) {
       this.$store.commit("setEventsString", e.target.value);

@@ -5,12 +5,14 @@
       flex flex-row
       align-baseline
       mb-1
-      hover:bg-blue-500
+      hover:bg-blue-700
       rounded
       px-2
       py-1
       transition-color
       duration-100
+      text-gray-300
+      hover:text-gray-100
     "
     @click="$emit('selected', item)"
   >
