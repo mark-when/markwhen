@@ -1,10 +1,10 @@
 <template>
   <div id="events" >
     <div class="h-24"></div>
-      <transition-group name="eventRow">
+      <transition-group :name="transitionName">
         <event-row
           v-for="event in $store.getters.filteredEvents"
-          :key="event.eventString"
+          :key="event.eventString.substring(0, 20)"
           :event="event"
           :widthPerDay="widthPerDay"
           :startYear="years.start"
@@ -26,6 +26,9 @@ export default Vue.extend({
     widthPerDay(): number {
       return this.columnWidth / 12 / 30;
     },
+    transitionName(): string {
+      return 'eventRow'
+    }
   },
 });
 </script>

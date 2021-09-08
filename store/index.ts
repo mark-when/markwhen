@@ -18,13 +18,14 @@ let list = [] as string[]
 const exampleTimeline = `// Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`
 
-// Add a shareable google photos link to display images. Events with the image icon have displayable images.
-
-// This is an indication that events tagged \`#Work\` will be colored #e13
-#Work: #e13
+// You can color tags
+#Work: pink
+#Education: #111
 
 08/2008-05/2012: Psych degree #Education
 02/2010-06/2012: Dispatcher #Work
+
+// Add a shareable google photos link to display images. 
 10/2010: Barn built across the street https://photos.app.goo.gl/Er9D81cdiE2tUwDZA
 06/2011-08/2011: Westover Air Reserve Base https://photos.app.goo.gl/NZ5rnGS7vZTXHe7aA #Work
 
@@ -109,7 +110,7 @@ export const mutations = {
     }
     const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
     state.list = concatenatedList ? concatenatedList.split(',') : []
-    state.currentTimelineName = list.length > 0 ? list[0] : ''
+    state.currentTimelineName = state.list.length > 0 ? state.list[0] : ''
     state.eventsString = state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline
   },
   setCurrentTimeline(state: State, timelineName: string) {

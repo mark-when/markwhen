@@ -140,6 +140,7 @@ export class EventDescription {
   googlePhotosLink?: string
   linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
   googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
+  atRegex = /@([\w\d\/]+)/g
 
   constructor(eventDescriptionString: string) {
     eventDescriptionString = eventDescriptionString.replace(this.googlePhotosRegex, (match) => {
@@ -171,6 +172,8 @@ export class EventDescription {
   getInnerHtml() {
     return this.eventDescription.replace(this.linkRegex, (substring, linkText, link) => {
       return `<a class="underline" href="${link}">${linkText}</a>`;
+    }).replace(this.atRegex, (substring, at) => {
+      return `<a class="underline" href="/${at}">@${at}</a>`
     });
   }
 

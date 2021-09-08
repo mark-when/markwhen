@@ -3,14 +3,12 @@ import * as express from "express"
 const app = express.default()
 app.use(express.json())
 
-if (!admin.app()) {
   admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https:/timelinecascade.firebaseio.com",
     storageBucket: "timelinecascade.appspot.com",
     projectId: "timelinecascade"
   });
-}
 
 function failUnauthorized(res, message) {
   let response =
@@ -101,7 +99,10 @@ app.post('/api/share', async (req, res) => {
     }).end()
   }
 
-  
+  const path = `${req.auth.uid}/${req.body.name}`
+  const file = admin.storage().bucket().file(path)
+  await file.save(req.body.timeline, { contentType: "text/plain" })
+  return res.status(200).send()
 })
 
 app.get('/:user/:timeline?', async (req, res, next) => {

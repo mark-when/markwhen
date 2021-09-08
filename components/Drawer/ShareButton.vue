@@ -15,7 +15,7 @@
       disabled:bg-blue-900
       mr-2
     "
-    :disabled="!(userId && username)"
+    :disabled="disabled"
     @click="$emit('click')"
   >
     <svg
@@ -37,59 +37,8 @@
 </template>
 
 <script lang="ts">
-import { getApp } from "firebase/app";
-import { onSnapshot, doc, getFirestore } from "firebase/firestore";
-import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
-
 export default {
-  data() {
-    return {
-      userId: "" as string | undefined,
-      username: "",
-      usernameListener: undefined as Unsubscribe | undefined,
-    };
-  },
-  computed: {
-    buttonTitle(): string {
-      if (!!this.userId) {
-        if (!!this.username) {
-          return "Share";
-        } else {
-          return "Create a username to share";
-        }
-      }
-      return "Sign in to share";
-    },
-  },
-  watch: {
-    userId(val, oldVal) {
-      const vm = this;
-      if (val) {
-        this.usernameListener = onSnapshot(
-          this.doc(`users/${val}`),
-          (snapshot) => {
-            if (!snapshot.exists()) {
-              return;
-            }
-            vm.username = snapshot.data().username;
-          }
-        );
-      } else if (this.usernameListener) {
-        this.usernameListener();
-      }
-    },
-  },
-  methods: {
-    doc(path: string) {
-      return doc(getFirestore(getApp()), path);
-    },
-  },
-  mounted() {
-    const vm = this;
-    onAuthStateChanged(getAuth(), function (user) {
-      vm.userId = user?.uid;
-    });
-  },
+  props: ["disabled", "buttonTitle"]
 };
 </script>
 
