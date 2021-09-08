@@ -1,23 +1,25 @@
 <template>
-  <div id="events" >
+  <div id="events">
     <div class="h-24"></div>
-      <transition-group :name="transitionName">
-        <event-row
-          v-for="event in $store.getters.filteredEvents"
-          :key="event.eventString.substring(0, 20)"
-          :event="event"
-          :widthPerDay="widthPerDay"
-          :startYear="years.start"
-          :columnWidth="columnWidth"
-        ></event-row>
-      </transition-group>
+    <!-- <transition-group
+      :name="transitionName"
+    > -->
+      <event-row
+        v-for="event in $store.getters.filteredEvents"
+        :key="event.eventString.substring(0, 20)"
+        :event="event"
+        :widthPerDay="widthPerDay"
+        :startYear="years.start"
+        :columnWidth="columnWidth"
+      ></event-row>
+    <!-- </transition-group> -->
     <div style="height: 50vh"></div>
   </div>
 </template>
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
-import Vue from "vue"
+import Vue from "vue";
 
 export default Vue.extend({
   components: { EventRow },
@@ -27,8 +29,8 @@ export default Vue.extend({
       return this.columnWidth / 12 / 30;
     },
     transitionName(): string {
-      return 'eventRow'
-    }
+      return "eventRow";
+    },
   },
 });
 </script>
@@ -40,9 +42,9 @@ export default Vue.extend({
 } */
 
 /* moving */
-.eventRow-move {
+/* .eventRow-move {
   transition: all 600ms ease-in-out 50ms;
-}
+} */
 
 /* appearing */
 .eventRow-enter-active {

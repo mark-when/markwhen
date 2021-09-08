@@ -1,16 +1,16 @@
 <template>
   <custom-scroller
-      ref="recyclerScroller"
-      page-mode
-      class="flex absolute inset-0"
-      :items="allYears"
-      :item-size="columnWidth"
-      key-field="item"
-      direction="horizontal"
-      :buffer="1000"
-      v-slot="{ item }"
-      ><year :year="item" :columnWidth="columnWidth"
-    /></custom-scroller>
+    ref="recyclerScroller"
+    page-mode
+    class="flex absolute inset-0"
+    :items="allYears"
+    :item-size="columnWidth"
+    key-field="item"
+    direction="horizontal"
+    :buffer="1000"
+    v-slot="{ item }"
+    ><year :year="item" :columnWidth="columnWidth"
+  /></custom-scroller>
 </template>
 
 <script lang="ts">

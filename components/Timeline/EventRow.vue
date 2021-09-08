@@ -108,7 +108,7 @@ export default Vue.extend({
       return `margin-left: ${this.getLeftMarginForDate(
         this.event,
         this.event.range.from
-      )}px`;
+      )}px;`;
     },
     photoBarClass(): string {
       let c = "photoBar transition rounded-lg shadow ";

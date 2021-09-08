@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <timeline />
-    <sidebar :collapsible="edittable"/>
+    <drawer :collapsible="edittable"/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
 import Timeline from "./Timeline/Timeline.vue";
-import Sidebar from "./Drawer/Sidebar.vue";
+import Drawer from "./Drawer/Drawer.vue";
 import {
   getAuth,
   isSignInWithEmailLink,
@@ -17,7 +17,7 @@ import {
 
 export default Vue.extend({
   props: ['edittable'],
-  components: { Sidebar, Timeline },
+  components: { Drawer, Timeline },
   mounted() {
     this.signInIfNecessary()
     this.$store.commit('getLocalTimelines')
@@ -52,7 +52,6 @@ export default Vue.extend({
 body {
   background-color: #384047;
   color: white;
-  height: 100vh;
   margin: 0;
 }
 #app {

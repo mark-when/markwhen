@@ -1,5 +1,6 @@
 <template>
-  <div class="relative" :style="containerStyle">
+  <div class="relative" 
+  :style="containerStyle">
     <years :years="years" :columnWidth="columnWidth" />
     <events :years="years" :columnWidth="columnWidth" />
   </div>
@@ -10,28 +11,34 @@ import { BoundingYears } from "../../Types";
 import Events from "./Events.vue";
 import Vue from "vue";
 import Years from "./Years.vue";
+
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
  * If a user specifies a different color, use that.
  */
 
-interface Panning {
-  mouseStart?: {
-    x: number;
-    y: number;
-  };
-  containerStart?: {
-    x: number;
-    y: number;
-  };
-}
-
 export default Vue.extend({
   components: { Events, Years },
+  data() {
+    return {
+      pinchDelta: {
+        x: 0, y: 0
+      }
+    }
+  },
+  methods: {
+    pinch(a) {
+      const delta = { x: a.deltaX, y: a.deltaY }
+      console.log(delta);
+      this.pinchDelta.x = this.pinchDelta.x - a.deltaX
+      this.pinchDelta.y = this.pinchDelta.y - a.deltaY
+      this.$store.commit('setYearWidth', this.$store.state.settings.yearWidth + a.deltaX)
+    },
+  },
   computed: {
     containerStyle(): string {
-      return `width: ${this.columnWidth * this.numColumns}px`;
+      return `width: ${this.columnWidth * this.numColumns}px;`;
     },
     columnWidth(): number {
       return this.$store.state.settings.yearWidth;

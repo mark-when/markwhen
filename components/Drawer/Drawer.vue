@@ -15,10 +15,7 @@
     "
     style="max-height: 50vh"
   >
-    <drawer-header
-      v-model="collapsed"
-      :collapsible="collapsible"
-    />
+    <drawer-header v-model="collapsed" :collapsible="collapsible" />
     <div
       class="flex flex-col md:flex-row pt-1 overflow-auto"
       v-if="!collapsed && collapsible"

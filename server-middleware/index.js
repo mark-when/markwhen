@@ -122,7 +122,7 @@ app.get('/:user/:timeline?', async (req, res, next) => {
   }
   const timelineFile = await file.download()
   req.timelineFile = timelineFile.toString()
-  req.timelinePath = `/${req.params.user}${req.params.timeline ? ('/' + req.params.timeline) : ''}`
+  req.timelinePath = `${req.params.user}${req.params.timeline ? ('/' + req.params.timeline) : ''}`
   next()
 })
 

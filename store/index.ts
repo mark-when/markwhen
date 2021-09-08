@@ -136,7 +136,7 @@ export const mutations = {
     }
   },
   setYearWidth(state: State, width: number) {
-    state.settings.yearWidth = width
+    state.settings.yearWidth = Math.max(10, Math.min(1600, width))
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
