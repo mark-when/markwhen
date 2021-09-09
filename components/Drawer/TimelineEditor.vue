@@ -50,13 +50,13 @@ export default Vue.extend({
       userId: "" as string | undefined,
       username: "",
       usernameListener: undefined as Unsubscribe | undefined,
-      sharing: false
+      sharing: false,
     };
   },
   computed: {
     buttonTitle(): string {
       if (this.sharing) {
-        return "Sharing..."
+        return "Sharing...";
       }
       if (!!this.userId) {
         if (!!this.username) {
@@ -68,8 +68,8 @@ export default Vue.extend({
       return "Sign in to share";
     },
     buttonDisabled(): boolean {
-      return this.sharing || !(this.userId && this.username)
-    }
+      return this.sharing || !(this.userId && this.username);
+    },
   },
   methods: {
     doc(path: string) {
@@ -89,12 +89,18 @@ export default Vue.extend({
       if (!name) {
         return;
       }
-      this.sharing = true
-      await this.$rpc.post("/api/share", {
-        timeline: this.$store.state.eventsString,
-        name,
-      });
-      this.sharing = false
+      this.sharing = true;
+      try {
+        await this.$rpc.post("/api/share", {
+          timeline: this.$store.state.eventsString,
+          name,
+        });
+        this.sharing = false;
+        this.$router.push(`/${this.username}${name === this.username ? '' : '/' + name}`);
+      } catch (err) {
+        console.error(err)
+        alert("Unable to share timeline :(")
+      }
     },
     saveLocally() {
       const timelineName = prompt(

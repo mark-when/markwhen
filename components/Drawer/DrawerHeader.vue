@@ -58,6 +58,7 @@
         />
       </svg>
     </button>
+    <a v-else href="/" class="ml-auto underline text-gray-300 hidden md:block">Make your own cascade</a>
   </div>
 </template>
 
