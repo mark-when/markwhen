@@ -44,7 +44,14 @@ export class YearMonthDay {
       str = new Date().toLocaleDateString();
     }
     let [year, day, month] = str.split("/").reverse();
-    const yearNumber = parseInt(year);
+    let yearNumber = parseInt(year);
+
+    // If we can't parse what was given to us, we're going to recast it to `now`
+    if (isNaN(yearNumber)) {
+      str = new Date().toLocaleDateString();
+      [year, day, month] = str.split("/").reverse();
+      yearNumber = parseInt(year);
+    }
 
     this.year = yearNumber
     if (!day) {

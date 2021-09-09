@@ -13,7 +13,7 @@
       </svg>
     </a>
     <a
-      :href="$store.state.timelinePath"
+      :href="'/' + $store.state.timelinePath"
       class="mr-4 flex items-center text-gray-300"
       v-if="$store.state.timelinePath"
     >

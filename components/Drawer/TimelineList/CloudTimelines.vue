@@ -13,15 +13,11 @@
 
 <script lang="ts">
 import CloudTimelineItem from "./CloudTimelineItem.vue";
-import {
-  getStorage,
-  ref,
-  listAll,
-  StorageReference,
-} from "firebase/storage";
+import { getStorage, ref, listAll, StorageReference } from "firebase/storage";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
   components: { CloudTimelineItem },
   data() {
     return {
@@ -55,7 +51,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style>

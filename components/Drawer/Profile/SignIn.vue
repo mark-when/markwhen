@@ -1,6 +1,5 @@
 <template>
   <div class="my-3">
-    <h3 class="text-red-400">Not signed in</h3>
     <form @submit.prevent="submit">
       <input
         v-if="emailStatus !== 'sent'"
@@ -38,14 +37,15 @@
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4 mr-1"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
           <path
-            d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"
-          />
-          <path
-            d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
           />
         </svg>
         {{ buttonText }}

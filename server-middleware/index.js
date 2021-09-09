@@ -46,7 +46,7 @@ app.use('/api', async (req, res, next) => {
   next()
 })
 
-const RESERVED_USERNAMES = ['api', 'assets']
+const RESERVED_USERNAMES = ['api', 'assets', 'from']
 app.post('/api/chooseUserName', async (req, res) => {
   const username = req.body.username
   if (!username) {
