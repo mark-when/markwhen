@@ -88,3 +88,7 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# Google cloud stuff
+app.yaml
+dispatch.yaml

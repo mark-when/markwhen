@@ -50,9 +50,7 @@ export default Vue.extend({
       }
       const color =
         this.year % 10 === 0 ? "white" : `rgba(255, 255, 255, ${alpha})`;
-      return `background: linear-gradient(to bottom, #384047, ${
-        67 * alpha
-      }%, #38404700); color: ${color};`;
+      return `color: ${color};`;
     },
   },
 });
@@ -71,7 +69,6 @@ export default Vue.extend({
   position: sticky;
   top: 0px;
   padding: 8px;
-  background: linear-gradient(to bottom, #384047, 67%, #38404700);
   z-index: 1;
 }
 </style>

@@ -1,3 +1,0 @@
-dispatch:
-  - url: "cascade.page/"
-    service: default

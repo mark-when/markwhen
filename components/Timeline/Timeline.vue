@@ -28,13 +28,13 @@ export default Vue.extend({
     }
   },
   methods: {
-    pinch(a) {
-      const delta = { x: a.deltaX, y: a.deltaY }
-      console.log(delta);
-      this.pinchDelta.x = this.pinchDelta.x - a.deltaX
-      this.pinchDelta.y = this.pinchDelta.y - a.deltaY
-      this.$store.commit('setYearWidth', this.$store.state.settings.yearWidth + a.deltaX)
-    },
+    // pinch(a) {
+    //   const delta = { x: a.deltaX, y: a.deltaY }
+    //   console.log(delta);
+    //   this.pinchDelta.x = this.pinchDelta.x - a.deltaX
+    //   this.pinchDelta.y = this.pinchDelta.y - a.deltaY
+    //   this.$store.commit('setYearWidth', this.$store.state.settings.yearWidth + a.deltaX)
+    // },
   },
   computed: {
     containerStyle(): string {
