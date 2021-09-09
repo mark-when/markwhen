@@ -101,6 +101,12 @@ app.post('/api/share', async (req, res) => {
     }).end()
   }
 
+  if (!name.match(/^[\w\d_-]+$/)) {
+    return res.status(400).json({
+      error: "Timeline names can only contain letters, digits, underscores, and dashes."
+    }).end()
+  }
+
   const path = `${req.auth.uid}/${req.body.name}`
   const file = admin.storage().bucket().file(path)
   await file.save(req.body.timeline, { contentType: "text/plain" })

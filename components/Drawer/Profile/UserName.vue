@@ -44,19 +44,21 @@ export default Vue.extend({
     },
   },
   async created() {
+    const vm = this
     const currentUser = getAuth()?.currentUser?.uid;
     onSnapshot(
-      this.doc(`users/${currentUser}`),
+      vm.doc(`users/${currentUser}`),
       (snapshot) => {
         if (!snapshot.exists()) {
-          this.username = "";
-          this.choosingUsername = true;
+          vm.username = "";
+          vm.choosingUsername = true;
           return;
         }
-        this.username = snapshot.data()!.username as string;
-        if (!this.username) {
-          this.choosingUsername = true
+        vm.username = snapshot.data()!.username as string;
+        if (!vm.username) {
+          vm.choosingUsername = true
         }
+        vm.$store.commit('setUsername', vm.username)
       },
       console.error
     );

@@ -10,6 +10,7 @@
         text-gray-400
         bg-gray-900
         outline-none
+        shadow-inner-2xl
       "
       name="eventsField"
       rows="12"

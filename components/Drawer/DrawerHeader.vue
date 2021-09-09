@@ -17,7 +17,7 @@
       class="mr-4 flex items-center text-gray-300"
       v-if="$store.state.timelinePath"
     >
-      {{ $store.state.timelinePath }}
+      @{{ $store.state.timelinePath }}
     </a>
     <display-settings></display-settings>
     <tags></tags>

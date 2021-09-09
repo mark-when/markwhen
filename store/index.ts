@@ -8,7 +8,8 @@ interface State {
   },
   filter: string[]
   eventsString: string | null,
-  timelinePath: string | null
+  timelinePath: string | null,
+  username: string | null
 }
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
@@ -97,10 +98,14 @@ export const state = () => ({
   },
   filter: [],
   eventsString: eventsString,
-  timelinePath: ''
+  timelinePath: '',
+  username: ''
 })
 
 export const mutations = {
+  setUsername(state: State, username: string) {
+    state.username = username
+  },
   setTimelinePath(state: State, path: string) {
     state.timelinePath = path
   },
