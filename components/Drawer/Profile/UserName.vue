@@ -11,7 +11,7 @@
       v-if="choosingUsername"
       :currentUsername="username"
       :focusInput="focusInput"
-      @goBack="choosingUsername = false"
+      @goBack="choosingUsername = !username"
     />
   </div>
 </template>

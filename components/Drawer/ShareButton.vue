@@ -13,6 +13,7 @@
       hover:text-gray-50
       disabled:text-gray-400
       disabled:bg-blue-900
+      disabled:cursor-default
       mr-2
     "
     :disabled="disabled"

@@ -20,6 +20,7 @@
           w-full
           disabled:text-gray-400
           disabled:bg-blue-900
+          disabled:cursor-default
           rounded
           bg-blue-100
           mt-3

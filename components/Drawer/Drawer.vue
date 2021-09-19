@@ -16,15 +16,17 @@
     style="max-height: 50vh"
   >
     <drawer-header v-model="collapsed" :collapsible="collapsible" />
-    <div
-      class="flex flex-col md:flex-row pt-1 overflow-auto"
-      v-if="!collapsed && collapsible"
-    >
-      <profile />
-      <div class="flex flex-col mb-3 w-full order-1 md:order-2">
-        <timeline-editor/>
+    <template v-if="collapsible">
+      <div
+        class="flex flex-col md:flex-row pt-1 overflow-auto"
+        v-show="!collapsed"
+      >
+        <profile />
+        <div class="flex flex-col mb-3 w-full order-1 md:order-2">
+          <timeline-editor />
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 

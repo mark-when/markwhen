@@ -12,9 +12,8 @@
       duration-100
       text-gray-300
       hover:text-gray-100
-      bg-gradient-to-r
-      hover:from-blue-700
-      hover:to-blue-800
+      hover:bg-gray-800
+      group
     "
     @click="selected"
   >
@@ -85,7 +84,14 @@
       <svg
         v-else
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4 mr-1"
+        class="
+          h-4
+          w-4
+          mr-1
+          text-blue-100
+          group-hover:text-blue-300
+          transition transition-all
+        "
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -121,7 +127,11 @@
 </template>
 
 <script lang="ts">
-import { deleteObject, StorageReference, getDownloadURL } from "firebase/storage";
+import {
+  deleteObject,
+  StorageReference,
+  getDownloadURL,
+} from "firebase/storage";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -129,7 +139,7 @@ export default Vue.extend({
   data() {
     return {
       deleting: false,
-      loading: false
+      loading: false,
     };
   },
   computed: {
@@ -151,10 +161,10 @@ export default Vue.extend({
     },
     async selected() {
       this.loading = true;
-      const downloadLink = await getDownloadURL(this.item)
-      const timelineText = await fetch(downloadLink)
-      this.$store.commit('setEventsString', await timelineText.text())
-      this.loading = false
+      const downloadLink = await getDownloadURL(this.item);
+      const timelineText = await fetch(downloadLink);
+      this.$store.commit("setEventsString", await timelineText.text());
+      this.loading = false;
     },
   },
 });
