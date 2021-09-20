@@ -1,7 +1,7 @@
 <template>
-  <div class="eventRow flex flex-col relative" :style="eventRowStyle">
+  <div class="eventRow relative" :style="eventRowStyle">
     <div
-      v-if="showingImages"
+      v-if="showingMeta"
       :class="photoBarClass"
       class="absolute left-0 mr-2 bottom-2 z-20 opacity-50"
       :style="photoBarStyle"
@@ -20,16 +20,16 @@
           transition
         "
         :class="{
-          'hover:bg-gray-800 hover:shadow-lg': !!event.event.googlePhotosLink,
-          'bg-gray-900 shadow-lg': showingImages,
-          'cursor-pointer': !!event.event.googlePhotosLink,
+          'hover:bg-gray-800 hover:shadow-lg': hasMeta,
+          'bg-gray-900 shadow-lg': showingMeta,
+          'cursor-pointer': hasMeta,
         }"
-        v-on="!!event.event.googlePhotosLink ? { click: togglePhotos } : {}"
+        v-on="hasMeta ? { click: togglePhotos } : {}"
       >
         <div :class="eventBarClass" :style="eventBarStyle"></div>
         <p class="eventDate">{{ event.getDateHtml() }}</p>
         <svg
-          v-if="event.event.googlePhotosLink && imageStatus !== 'loading'"
+          v-if="hasImages && imageStatus !== 'loading'"
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4 ml-2 mb-px"
           viewBox="0 0 20 20"
@@ -42,7 +42,7 @@
           />
         </svg>
         <svg
-          v-else-if="event.event.googlePhotosLink && imageStatus === 'loading'"
+          v-else-if="hasImages && imageStatus === 'loading'"
           class="animate-spin h-3 w-3 ml-3 mb-px"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -62,26 +62,23 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
+        <svg
+          v-if="hasLocations"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 ml-2 mb-px"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+            clip-rule="evenodd"
+          />
+        </svg>
         <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
       </div>
     </div>
-    <div
-      v-if="showingImages && imageStatus === 'loaded' && images.length > 0"
-      class="bg-gray-900 rounded p-2 -mx-2 inline-flex mt-1 relative shadow-lg"
-      style="max-width: 100vw"
-    >
-      <div class="ml-2 mr-3"></div>
-      <div class="flex flex-row overflow-x-scroll items-center rounded">
-        <a
-          :href="event.event.googlePhotosLink"
-          v-for="(image, index) in images"
-          :key="image"
-          :class="{ 'mr-2': index !== images.length - 1 }"
-        >
-          <img :src="image" class="rounded max-w-none z-30"
-        /></a>
-      </div>
-    </div>
+    <event-meta v-if="canShowMeta" :locations="locations" :images="images" />
   </div>
 </template>
 
@@ -90,17 +87,40 @@ import { DateRange, Event, YearMonthDay } from "../../Types";
 const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
 import Vue from "vue";
+import EventMeta from "./EventMeta.vue";
 
 export default Vue.extend({
+  components: { EventMeta },
   props: ["event", "widthPerDay", "startYear", "columnWidth"],
   data() {
     return {
       imageStatus: "not loaded",
       images: [],
-      showingImages: false,
+      showingMeta: false,
     };
   },
   computed: {
+    locations(): string[] {
+      return this.event.event.locations.map(
+        (location: string) =>
+          `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${location}`
+      );
+    },
+    canShowMeta(): boolean {
+      if (this.images.length > 0) {
+        return this.showingMeta && this.imageStatus === "loaded";
+      }
+      if (this.hasLocations) {
+        return this.showingMeta;
+      }
+      return false;
+    },
+    hasMeta(): boolean {
+      return this.hasImages || this.hasLocations;
+    },
+    hasLocations(): boolean {
+      return this.event.event.locations.length > 0;
+    },
     hasImages(): boolean {
       return !!this.event.event.googlePhotosLink;
     },
@@ -164,7 +184,7 @@ export default Vue.extend({
       this.imageStatus = "loaded";
     },
     togglePhotos() {
-      this.showingImages = !this.showingImages;
+      this.showingMeta = !this.showingMeta;
       if (this.imageStatus === "not loaded") {
         this.loadImages();
       }

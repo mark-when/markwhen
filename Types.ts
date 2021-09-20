@@ -145,13 +145,19 @@ export class EventDescription {
   eventDescription: string
   tags: string[]
   googlePhotosLink?: string
-  linkRegex = /\[([\w\s\d\.]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
+  locations: string[] = []
+  linkRegex = /\[([^\]]+)\]\((https?:\/\/[\w\d./?=\-#]+)\)/g;
+  locationRegex = /\[([^\]]+)\]\((location|map)\)/g;
   googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
   atRegex = /@([\w\d\/]+)/g
 
   constructor(eventDescriptionString: string) {
     eventDescriptionString = eventDescriptionString.replace(this.googlePhotosRegex, (match) => {
       this.googlePhotosLink = match
+      return ""
+    })
+    eventDescriptionString = eventDescriptionString.replace(this.locationRegex, (match, locationString) => {
+      this.locations.push(locationString)
       return ""
     })
     let reversed = EventDescription.reverseString(eventDescriptionString)

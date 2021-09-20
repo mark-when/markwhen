@@ -1,5 +1,5 @@
 <template>
-  <div id="events">
+  <div id="events" class="flex flex-col">
     <div class="h-24"></div>
     <!-- <transition-group
       :name="transitionName"
