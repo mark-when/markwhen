@@ -6,7 +6,7 @@
     > -->
       <event-row
         v-for="event in $store.getters.filteredEvents"
-        :key="event.eventString.substring(0, 20)"
+        :key="event.eventString.substring(0, 30)"
         :event="event"
         :widthPerDay="widthPerDay"
         :startYear="years.start"

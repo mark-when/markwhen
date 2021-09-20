@@ -180,7 +180,7 @@ export const getters = {
   },
   events(state: State, getters: any): Event[] {
     return getters.trimmedAndFilteredEntries
-      .filter((str: string) => str.match(/^\d/))
+      .filter((str: string) => str.match(/(?:^\d|^now)/))
       .map(Event.fromString).filter((event: Event | null) => !!event)
   },
   filteredEvents(state: State, getters: any): Event[] {
