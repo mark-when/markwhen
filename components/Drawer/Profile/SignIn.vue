@@ -1,5 +1,5 @@
 <template>
-  <div class="my-3">
+  <div class="my-1">
     <form @submit.prevent="submit">
       <input
         v-if="emailStatus !== 'sent'"

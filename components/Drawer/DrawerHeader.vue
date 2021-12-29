@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row pb-2">
+  <div class="flex flex-row p-2 mx-2 my-2 bg-gray-900">
     <a href="/" class="ml-2 mr-4 flex items-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,9 @@
         />
       </svg>
     </button>
-    <a v-else href="/" class="ml-auto underline text-gray-300 hidden md:block">Make your own cascade</a>
+    <a v-else href="/" class="ml-auto underline text-gray-300 hidden md:block flex-shrink-0 pl-2"
+      >Make your own cascade</a
+    >
   </div>
 </template>
 

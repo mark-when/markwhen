@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col w-full flex-grow bg-gray-900 h-full">
     <textarea
       class="
         flex-grow
@@ -13,7 +13,6 @@
         shadow-inner-2xl
       "
       name="eventsField"
-      rows="12"
       wrap="off"
       :value="$store.state.eventsString"
       @input="updateEventsString"
@@ -25,12 +24,6 @@
         :disabled="buttonDisabled"
       />
       <save-locally-button @click="saveLocally" />
-      <a
-        class="underline ml-auto"
-        href="https://github.com/kochrt/cascade.page"
-        target="_blank"
-        >GitHub</a
-      >
     </div>
   </div>
 </template>
@@ -96,10 +89,12 @@ export default Vue.extend({
           name,
         });
         this.sharing = false;
-        this.$router.push(`/${this.username}${name === this.username ? '' : '/' + name}`);
+        this.$router.push(
+          `/${this.username}${name === this.username ? "" : "/" + name}`
+        );
       } catch (err) {
-        console.error(err)
-        alert("Unable to share timeline :(")
+        console.error(err);
+        alert("Unable to share timeline :(");
       }
     },
     saveLocally() {

@@ -1,7 +1,5 @@
 <template>
-  <div class="relative" 
-  :style="containerStyle">
-    <years :years="years" :columnWidth="columnWidth" />
+  <div class="relative h-full overflow-auto" :style="containerStyle">
     <events :years="years" :columnWidth="columnWidth" />
   </div>
 </template>
@@ -23,9 +21,10 @@ export default Vue.extend({
   data() {
     return {
       pinchDelta: {
-        x: 0, y: 0
-      }
-    }
+        x: 0,
+        y: 0,
+      },
+    };
   },
   methods: {
     // pinch(a) {
@@ -38,7 +37,8 @@ export default Vue.extend({
   },
   computed: {
     containerStyle(): string {
-      return `width: ${this.columnWidth * this.numColumns}px;`;
+      return ''
+      // return `width: ${this.columnWidth * this.numColumns}px;`;
     },
     columnWidth(): number {
       return this.$store.state.settings.yearWidth;

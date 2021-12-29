@@ -1,5 +1,5 @@
 <template>
-  <div class="my-3">
+  <div class="my-1">
     <h3 class="text-gray-400">{{ user.email }}</h3>
     <div class="flex flex-row">
       <a class="text-gray-400" href="/">cascade.page/</a>

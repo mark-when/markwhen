@@ -1,5 +1,6 @@
 <template>
-  <div id="events" class="flex flex-col">
+  <div id="events" class="flex flex-col relative">
+    <years :years="years" :columnWidth="columnWidth" />
     <div class="h-24"></div>
     <!-- <transition-group
       :name="transitionName"
@@ -19,10 +20,11 @@
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
+import Years from "./Years.vue"
 import Vue from "vue";
 
 export default Vue.extend({
-  components: { EventRow },
+  components: { EventRow, Years },
   props: ["years", "columnWidth"],
   computed: {
     widthPerDay(): number {

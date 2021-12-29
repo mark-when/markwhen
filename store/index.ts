@@ -90,7 +90,7 @@ const exampleTimeline = `// Comments start with two slashes: \`//\`
 08/11/2021-08/17/2021: Cincinnati https://photos.app.goo.gl/h5CfrZamP5Tw6yDn7`
 const eventsString = currentTimelineName ? localStorage.getItem(currentTimelineName) : exampleTimeline
 
-export const state = () => ({
+export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
   settings: {
@@ -99,7 +99,7 @@ export const state = () => ({
   filter: [],
   eventsString: eventsString,
   timelinePath: '',
-  username: ''
+  username: '',
 })
 
 export const mutations = {

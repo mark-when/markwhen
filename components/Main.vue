@@ -1,12 +1,14 @@
 <template>
   <div id="app">
-    <timeline />
-    <drawer :collapsible="edittable"/>
+    <div class="flex flex-row h-full">
+      <sidebar />
+      <timeline />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue"
+import Vue from "vue";
 import Timeline from "./Timeline/Timeline.vue";
 import Drawer from "./Drawer/Drawer.vue";
 import {
@@ -14,13 +16,14 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from "firebase/auth";
+import Sidebar from "./Drawer/Sidebar.vue";
 
 export default Vue.extend({
-  props: ['edittable'],
-  components: { Drawer, Timeline },
+  props: ["edittable"],
+  components: { Drawer, Timeline, Sidebar },
   mounted() {
-    this.signInIfNecessary()
-    this.$store.commit('getLocalTimelines')
+    this.signInIfNecessary();
+    this.$store.commit("getLocalTimelines");
   },
   methods: {
     async signInIfNecessary() {
@@ -37,7 +40,11 @@ export default Vue.extend({
         return;
       }
       try {
-        const user = await signInWithEmailLink(auth, email, window.location.href);
+        const user = await signInWithEmailLink(
+          auth,
+          email,
+          window.location.href
+        );
       } catch (err) {
         alert(err);
       }

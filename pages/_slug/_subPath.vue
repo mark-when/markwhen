@@ -32,6 +32,10 @@ export default Vue.extend({
           property: "og:image",
           content: `https://api.sw.ink/v0/swink?key=${swinkApiKey}&dotStyle=${dotStyle}&font=${font}&innerText=${innerText}&url=${url}`,
         },
+        { 
+          name: 'viewport',
+          content: 'width=device-width, user-scalable=no'
+        }
       ],
     };
   },

@@ -2,31 +2,61 @@
   <div
     class="
       fixed
-      bottom-0
+      bottom-1
       left-0
+      md:right-auto
       right-0
-      pt-2
-      px-2
       z-30
-      backdrop-filter backdrop-blur-2xl
-      border-t border-gray-600
       flex flex-col
       overflow-hidden
+      md:max-w-1/2
     "
-    style="max-height: 50vh"
+    :class="
+      !collapsed && collapsible ? 'md:top-6 top-auto h-1/2 md:h-auto' : ''
+    "
   >
-    <drawer-header v-model="collapsed" :collapsible="collapsible" />
     <template v-if="collapsible">
       <div
-        class="flex flex-col md:flex-row pt-1 overflow-auto"
+        class="
+          flex flex-col
+          md:flex-row
+          p-2
+          mx-2
+          mt-2
+          overflow-auto
+          bg-gray-900
+          flex-grow
+        "
+        v-show="!collapsed"
+      >
+        <timeline-editor />
+      </div>
+      <div
+        class="
+          flex flex-col
+          md:flex-row
+          p-2
+          mx-2
+          mt-2
+          overflow-auto
+          bg-gray-900
+          flex-shrink
+        "
         v-show="!collapsed"
       >
         <profile />
-        <div class="flex flex-col mb-3 w-full order-1 md:order-2">
-          <timeline-editor />
-        </div>
       </div>
     </template>
+
+    <drawer-header v-model="collapsed" :collapsible="collapsible" />
+    <div class="flex">
+      <a
+        class="underline ml-2 text-gray-300 text-sm"
+        href="https://github.com/kochrt/cascade.page"
+        target="_blank"
+        >GitHub</a
+      >
+    </div>
   </div>
 </template>
 
@@ -34,6 +64,7 @@
 import Profile from "./Profile/Profile.vue";
 import DrawerHeader from "./DrawerHeader.vue";
 import TimelineEditor from "./TimelineEditor.vue";
+import { mapState } from "vuex";
 
 export default {
   props: ["collapsible"],
@@ -43,7 +74,7 @@ export default {
     TimelineEditor,
   },
   data() {
-    return { collapsed: false };
+    return { collapsed: false, ...mapState(["selectedComponent"]) };
   },
 };
 </script>

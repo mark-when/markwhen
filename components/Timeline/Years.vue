@@ -1,27 +1,24 @@
 <template>
-  <div>
-    <custom-scroller
-      ref="recyclerScroller"
-      page-mode
-      class="flex absolute inset-0"
-      :items="allYears"
-      :item-size="columnWidth"
-      key-field="item"
-      direction="horizontal"
-      :buffer="1000"
-      ><template #before
-        ><div
-          class="fixed w-full h-12"
-          style="
-            background: linear-gradient(to bottom, #384047, 67%, #38404700);
-            z-index: 1;
-          "
-        ></div
-      ></template>
-      <template v-slot="{ item }"
-        ><year :year="item" :columnWidth="columnWidth" /></template
-    ></custom-scroller>
-  </div>
+  <custom-scroller
+    ref="recyclerScroller"
+    class="flex absolute inset-0"
+    :items="allYears"
+    :item-size="columnWidth"
+    key-field="item"
+    direction="horizontal"
+    :buffer="1000"
+    ><template #before
+      ><div
+        class="fixed w-full h-12"
+        style="
+          background: linear-gradient(to bottom, #384047, 67%, #38404700);
+          z-index: 1;
+        "
+      ></div
+    ></template>
+    <template v-slot="{ item }"
+      ><year :year="item" :columnWidth="columnWidth" /></template
+  ></custom-scroller>
 </template>
 
 <script lang="ts">

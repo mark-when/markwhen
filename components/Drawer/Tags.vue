@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-row"
+    class="flex flex-row tags"
     style="
       flex-wrap: nowrap;
       overflow-x: auto;
@@ -17,6 +17,7 @@
         md:py-0
         p-1
         flex flex-row
+        flex-shrink-0
         items-center
         text-gray-400
         hover:text-gray-100
@@ -62,4 +63,7 @@ export default Vue.extend({
 </script>
 
 <style>
+.tags::-webkit-scrollbar {
+  display: none;
+}
 </style>
