@@ -2,7 +2,7 @@
   <div
     class="
       h-full
-      overflow-auto
+      overflow-y-auto overflow-x-hidden
       flex-shrink-0
       hover:bg-gray-800
       flex flex-row
@@ -10,10 +10,10 @@
     "
     :class="selectedComponent ? 'bg-gray-800' : ''"
   >
-    <div class="flex flex-col justify-end">
+    <div class="flex flex-col justify-end mb-4">
       <button
         class="p-2 hover:bg-gray-900"
-        :class="selectedComponent === 'edit' ? 'bg-gray-900' : ''"
+        :class="selectedComponent === 'editor' ? 'bg-gray-900' : ''"
         @click="selectEdit"
       >
         <svg
@@ -45,22 +45,6 @@
           ></path>
         </svg>
       </button>
-      <button
-        class="p-2 hover:bg-gray-900"
-        :class="selectedComponent === 'viewOptions' ? 'bg-gray-900' : ''"
-        @click="selectViewOptions"
-      >
-        <svg
-          class="h-6 w-6"
-          focusable="false"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-          fill="currentColor"
-          style="transform: scalex(-1)"
-        >
-          <path d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"></path>
-        </svg>
-      </button>
       <a href="/" class="p-2 my-2 hover:bg-gray-900">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -75,11 +59,13 @@
       </a>
     </div>
     <div
-      v-if="selectedComponent"
+      v-show="selectedComponent"
       class="relative"
       :style="`width: ${tempWidth ? tempWidth : width}px;`"
     >
-      <component :is="selectedComponentComponent" />
+      <keep-alive>
+        <component :is="selectedComponentComponent" />
+      </keep-alive>
       <div
         class="
           bg-transparent
@@ -101,7 +87,6 @@
 import Vue from "vue";
 import TimelineEditor from "./TimelineEditor.vue";
 import Profile from "./Profile/Profile.vue";
-import DrawerHeader from "./DrawerHeader.vue";
 import { mapState } from "vuex";
 
 export default Vue.extend({
@@ -112,10 +97,10 @@ export default Vue.extend({
         state.sidebar.selectedComponent as string,
     }),
     selectedComponentComponent(): any {
-      if (this.selectedComponent === "edit") {
+      if (this.selectedComponent === "editor") {
         return TimelineEditor;
       }
-      return this.selectedComponent === "profile" ? Profile : DrawerHeader;
+      return Profile;
     },
   },
   data() {
@@ -123,12 +108,12 @@ export default Vue.extend({
       width: 350,
       resizeStarted: false,
       resizeStartX: 0,
-      tempWidth: 0
+      tempWidth: 0,
     };
   },
   methods: {
     selectEdit() {
-      this.$store.commit("sidebar/setSelectedComponent", "edit");
+      this.$store.commit("sidebar/setSelectedComponent", "editor");
     },
     selectProfile() {
       this.$store.commit("sidebar/setSelectedComponent", "profile");
@@ -144,8 +129,10 @@ export default Vue.extend({
     },
     resizeMouseUp(e: MouseEvent) {
       this.resizeStarted = false;
-      this.width = Math.max(this.tempWidth, 50)
-      this.tempWidth = 0
+      if (this.tempWidth) {
+        this.width = Math.max(this.tempWidth, 50);
+        this.tempWidth = 0;
+      }
       document.removeEventListener("mouseup", this.resizeMouseUp);
       document.removeEventListener("mousemove", this.resizeMouseMove);
     },

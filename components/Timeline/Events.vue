@@ -5,14 +5,14 @@
     <!-- <transition-group
       :name="transitionName"
     > -->
-      <event-row
-        v-for="event in $store.getters.filteredEvents"
-        :key="event.eventString.substring(0, 30)"
-        :event="event"
-        :widthPerDay="widthPerDay"
-        :startYear="years.start"
-        :columnWidth="columnWidth"
-      ></event-row>
+    <event-row
+      v-for="event in $store.getters.filteredEvents"
+      :key="event.eventString.substring(0, 30)"
+      :event="event"
+      :widthPerDay="widthPerDay"
+      :startYear="years.start"
+      :columnWidth="columnWidth"
+    ></event-row>
     <!-- </transition-group> -->
     <div style="height: 50vh"></div>
   </div>
@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
-import Years from "./Years.vue"
+import Years from "./Years.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 

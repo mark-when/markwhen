@@ -1,6 +1,7 @@
 <template>
-  <div class="relative h-full overflow-auto">
+  <div class="relative h-full overflow-auto w-full">
     <events :years="years" :columnWidth="columnWidth" />
+    <drawer-header :edittable="edittable"/>
   </div>
 </template>
 
@@ -9,6 +10,7 @@ import { BoundingYears } from "../../Types";
 import Events from "./Events.vue";
 import Vue from "vue";
 import Years from "./Years.vue";
+import DrawerHeader from "../Drawer/DrawerHeader.vue";
 
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
@@ -16,7 +18,8 @@ import Years from "./Years.vue";
  */
 
 export default Vue.extend({
-  components: { Events, Years },
+  components: { Events, Years, DrawerHeader },
+  props: ['edittable'],
   data() {
     return {
       pinchDelta: {

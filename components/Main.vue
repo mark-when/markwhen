@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <div class="flex flex-row h-full">
-      <sidebar />
-      <timeline />
+      <template v-if="edittable">
+        <sidebar v-show="$store.state.sidebar.visible"
+      /></template>
+      <timeline :edittable="edittable" />
     </div>
   </div>
 </template>

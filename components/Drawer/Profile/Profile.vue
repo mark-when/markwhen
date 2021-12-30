@@ -1,16 +1,16 @@
 <template>
-  <div class="flex flex-col order-2 md:order-1 md:mr-4">
+  <div class="flex flex-col bg-gray-900 h-full pb-6 px-2 pt-2">
     <timeline-list />
     <sign-in v-if="!user" />
-    <signed-in v-else :user="user"/>
+    <signed-in v-else :user="user" />
   </div>
 </template>
 
 <script lang="ts">
 import SignIn from "./SignIn.vue";
-import SignedIn from "./SignedIn.vue"
+import SignedIn from "./SignedIn.vue";
 import { getAuth, User } from "firebase/auth";
-import Vue from "vue"
+import Vue from "vue";
 import TimelineList from "../TimelineList/TimelineList.vue";
 
 export default Vue.extend({

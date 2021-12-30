@@ -3,10 +3,12 @@ export type SelectedComponent = "" | "editor" | "profile"
 
 interface State {
   selectedComponent: SelectedComponent
+  visible: boolean
 }
 
 export const state: () => State = () => ({
-  selectedComponent: ''
+  selectedComponent: 'editor',
+  visible: true
 })
 
 export const mutations: MutationTree<State> = {
@@ -16,5 +18,8 @@ export const mutations: MutationTree<State> = {
     } else {
       state.selectedComponent = component
     }
+  },
+  toggle(state: State) {
+    state.visible = !state.visible
   }
 }

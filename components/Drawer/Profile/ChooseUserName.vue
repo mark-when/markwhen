@@ -1,9 +1,9 @@
 <template>
-  <form class="flex flex-row" @submit.prevent="chooseUserName">
+  <form class="flex flex-row flex-grow" @submit.prevent="chooseUserName">
     <input
       ref="input"
       type="text"
-      class="bg-gray-900 rounded outline-none"
+      class="bg-gray-800 rounded outline-none w-full"
       placeholder="username"
       required
       v-model="username"
@@ -117,8 +117,8 @@ export default Vue.extend({
   },
   watch: {
     username(val, oldVal) {
-      this.usernameStatus = 'not chosen'
-    }
+      this.usernameStatus = "not chosen";
+    },
   },
   methods: {
     async chooseUserName() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full flex-grow bg-gray-900 h-full">
+  <div class="flex flex-col w-full flex-grow bg-gray-900 h-full pb-4">
     <textarea
       class="
         flex-grow
@@ -18,7 +18,7 @@
       :value="$store.state.eventsString"
       @input="updateEventsString"
     ></textarea>
-    <div class="mt-3 flex flex-row text-gray-300">
+    <div class="my-3 flex flex-row text-gray-300 ml-2">
       <share-button
         @click="share"
         :buttonTitle="buttonTitle"
@@ -54,7 +54,7 @@ export default Vue.extend({
       }
       if (!!this.userId) {
         if (!!this.username) {
-          return "Share";
+          return "Share...";
         } else {
           return "Create a username to share";
         }

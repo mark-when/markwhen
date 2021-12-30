@@ -1,12 +1,14 @@
 <template>
   <div class="year flex-shrink-0 relative" :style="yearColumnStyle">
     <h6 class="yearTitle text-sm" :style="yearStyle">{{ year }}</h6>
-    <div
-      class="absolute h-full"
-      v-for="m in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
-      :key="m"
-      :style="styleForMonth(m)"
-    ></div>
+    <template v-if="this.columnWidth > 600">
+      <div
+        class="absolute h-full"
+        v-for="m in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+        :key="m"
+        :style="styleForMonth(m)"
+      ></div>
+    </template>
   </div>
 </template>
 
