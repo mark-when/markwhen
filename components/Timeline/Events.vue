@@ -22,9 +22,10 @@
 import EventRow from "./EventRow.vue";
 import Years from "./Years.vue"
 import Vue from "vue";
+import DrawerHeader from "../Drawer/DrawerHeader.vue";
 
 export default Vue.extend({
-  components: { EventRow, Years },
+  components: { EventRow, Years, DrawerHeader },
   props: ["years", "columnWidth"],
   computed: {
     widthPerDay(): number {

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative h-full overflow-auto" :style="containerStyle">
+  <div class="relative h-full overflow-auto">
     <events :years="years" :columnWidth="columnWidth" />
   </div>
 </template>
@@ -13,7 +13,6 @@ import Years from "./Years.vue";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
- * If a user specifies a different color, use that.
  */
 
 export default Vue.extend({
@@ -36,10 +35,6 @@ export default Vue.extend({
     // },
   },
   computed: {
-    containerStyle(): string {
-      return ''
-      // return `width: ${this.columnWidth * this.numColumns}px;`;
-    },
     columnWidth(): number {
       return this.$store.state.settings.yearWidth;
     },

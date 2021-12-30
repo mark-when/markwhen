@@ -2,6 +2,7 @@
   <custom-scroller
     ref="recyclerScroller"
     class="flex absolute inset-0"
+    page-mode
     :items="allYears"
     :item-size="columnWidth"
     key-field="item"

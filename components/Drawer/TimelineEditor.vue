@@ -11,6 +11,7 @@
         bg-gray-900
         outline-none
         shadow-inner-2xl
+        resize-none
       "
       name="eventsField"
       wrap="off"

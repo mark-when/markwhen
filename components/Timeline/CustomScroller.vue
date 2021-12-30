@@ -540,7 +540,7 @@ export default Vue.extend({
         const bounds = el.getBoundingClientRect()
         const boundsSize = isVertical ? bounds.height : bounds.width
         let start = -(isVertical ? bounds.top : bounds.left)
-        let size = isVertical ? window.innerHeight : window.innerWidth
+        let size = boundsSize
         if (start < 0) {
           size += start
           start = 0
@@ -550,7 +550,7 @@ export default Vue.extend({
         }
         scrollState = {
           start,
-          end: start + size,
+          end: start + boundsSize,
         }
       } else if (isVertical) {
         scrollState = {
@@ -563,7 +563,6 @@ export default Vue.extend({
           end: el.scrollLeft + el.clientWidth,
         }
       }
-
       return scrollState
     },
 
