@@ -20,23 +20,6 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 export default Vue.extend({
   components: { Events, Years, DrawerHeader },
   props: ['edittable'],
-  data() {
-    return {
-      pinchDelta: {
-        x: 0,
-        y: 0,
-      },
-    };
-  },
-  methods: {
-    // pinch(a) {
-    //   const delta = { x: a.deltaX, y: a.deltaY }
-    //   console.log(delta);
-    //   this.pinchDelta.x = this.pinchDelta.x - a.deltaX
-    //   this.pinchDelta.y = this.pinchDelta.y - a.deltaY
-    //   this.$store.commit('setYearWidth', this.$store.state.settings.yearWidth + a.deltaX)
-    // },
-  },
   computed: {
     columnWidth(): number {
       return this.$store.state.settings.yearWidth;
