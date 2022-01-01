@@ -27,7 +27,7 @@ export default Vue.extend({
   },
   components: { Main },
   mounted() {
-    window.onbeforeunload = function (e) {
+    window.onbeforeunload = function (e: any) {
       return "Do you want to exit this page?";
     };
   },

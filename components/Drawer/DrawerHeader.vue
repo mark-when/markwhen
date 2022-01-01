@@ -107,7 +107,9 @@
 <script lang="ts">
 import Tags from "./Tags.vue";
 import DisplaySettings from "./DisplaySettings.vue";
-export default {
+import Vue from "vue"
+
+export default Vue.extend({
   components: {
     Tags,
     DisplaySettings,
@@ -121,7 +123,7 @@ export default {
       e.stopPropagation()
     }
   },
-};
+});
 </script>
 
 <style>
