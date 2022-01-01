@@ -12,7 +12,7 @@
       ><div
         class="fixed w-full h-12"
         style="
-          background: linear-gradient(to bottom, #384047, 67%, #38404700);
+          background: linear-gradient(to bottom, #384047, 50%, #38404700);
           z-index: 1;
         "
       ></div

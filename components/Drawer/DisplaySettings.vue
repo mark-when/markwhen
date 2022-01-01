@@ -38,7 +38,7 @@ export default {
       this.updateWidth(Math.exp(minWidth + scale * (val - minSelection)));
     },
     "$store.state.settings.yearWidth": function (val, oldVal) {
-      this.width = this.calculateScaledPosition(val)
+      this.width = this.calculateScaledPosition(val);
     },
   },
 };

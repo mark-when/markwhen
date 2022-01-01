@@ -1,7 +1,14 @@
 <template>
-  <div class="relative h-full overflow-auto w-full">
-    <events :years="years" :columnWidth="columnWidth" />
-    <drawer-header :edittable="edittable"/>
+  <div
+    class="relative h-full overflow-auto w-full"
+    @mousedown="panStart"
+    :style="eventsStyle"
+  >
+    <events
+      :years="years"
+      :columnWidth="columnWidth"
+    />
+    <drawer-header :edittable="edittable" />
   </div>
 </template>
 
@@ -11,6 +18,7 @@ import Events from "./Events.vue";
 import Vue from "vue";
 import Years from "./Years.vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
+import Hammer from "@squadette/hammerjs";
 
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
@@ -19,8 +27,91 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 
 export default Vue.extend({
   components: { Events, Years, DrawerHeader },
-  props: ['edittable'],
+  props: ["edittable"],
+  data() {
+    return {
+      mc: null as any,
+      panningInfo: null as any,
+      panStartX: null as number | null,
+      panStartY: null as number | null,
+      startingScrollLeft: null as number | null,
+      startingScrollTop: null as number | null,
+      startingZoom: null as number | null,
+      startScrollLeft: null as number | null,
+      centerOffsetLeft: null as number | null,
+    };
+  },
+  mounted() {
+    this.setupHammer();
+  },
+  methods: {
+    setupHammer() {
+      this.$el.addEventListener("touchstart", this.touchStart);
+      this.$el.addEventListener("touchend", this.touchEnd);
+      this.mc = new Hammer.Manager(this.$el);
+      this.mc.add(new Hammer.Pinch({ touchAction: "none" }));
+      this.mc.on("pinch", this.pinch);
+      this.mc.on("pinchend", this.pinchEnd);
+    },
+    pinch(e: any) {
+      e.preventDefault();
+      if (!this.startingZoom) {
+        this.startingZoom = this.$store.state.settings.yearWidth;
+        this.startScrollLeft = this.$el.scrollLeft;
+        this.centerOffsetLeft = e.center.x;
+      }
+      this.$el.scrollLeft =
+        e.scale * (this.startScrollLeft! + this.centerOffsetLeft!) -
+        e.center.x!;
+      this.$store.commit("setYearWidth", this.startingZoom! * e.scale);
+    },
+    pinchEnd(e: any) {
+      e.preventDefault();
+      this.startingZoom = null;
+      this.startScrollLeft = null;
+      this.centerOffsetLeft = null;
+    },
+    touchStart(e: any) {
+      const event = e as TouchEvent;
+      if (event.touches.length >= 2) {
+        this.mc.get("pinch").set({ enable: true });
+        e.preventDefault();
+      }
+    },
+    touchEnd(e: any) {
+      const event = e as TouchEvent;
+      if (event.touches.length < 2) {
+        this.mc.get("pinch").set({ enable: false });
+      }
+    },
+    panStart(e: MouseEvent) {
+      if (this.panStartX === null) {
+        this.startingScrollLeft = this.$el.scrollLeft;
+        this.startingScrollTop = this.$el.scrollTop;
+        this.panStartX = e.clientX;
+        this.panStartY = e.clientY;
+      }
+      window.addEventListener("mousemove", this.panning);
+      window.addEventListener("mouseup", this.endPanning);
+    },
+    panning(e: MouseEvent) {
+      e.preventDefault();
+      this.$el.scrollLeft =
+        this.startingScrollLeft! + this.panStartX! - e.clientX;
+      this.$el.scrollTop =
+        this.startingScrollTop! + this.panStartY! - e.clientY;
+    },
+    endPanning(e: MouseEvent) {
+      this.panStartX = null;
+      this.panStartY = null;
+      window.removeEventListener("mousemove", this.panning);
+      window.removeEventListener("mouseup", this.endPanning);
+    },
+  },
   computed: {
+    eventsStyle(): string {
+      return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
+    },
     columnWidth(): number {
       return this.$store.state.settings.yearWidth;
     },
