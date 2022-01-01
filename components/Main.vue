@@ -4,7 +4,7 @@
       <template v-if="edittable">
         <sidebar v-show="$store.state.sidebar.visible"
       /></template>
-      <timeline :edittable="edittable" />
+      <timeline :edittable="edittable"/>
     </div>
   </div>
 </template>

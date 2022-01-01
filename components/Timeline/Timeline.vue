@@ -2,6 +2,7 @@
   <div
     id="timeline"
     class="relative h-full overflow-auto w-full"
+    :class="{ 'order-1': $store.state.sidebar.position === 'right' }"
     @mousedown="panStart"
     :style="eventsStyle"
   >
