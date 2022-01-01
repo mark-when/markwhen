@@ -4,10 +4,7 @@
     @mousedown="panStart"
     :style="eventsStyle"
   >
-    <events
-      :years="years"
-      :columnWidth="columnWidth"
-    />
+    <events :years="years" :columnWidth="columnWidth" />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
@@ -34,11 +31,13 @@ export default Vue.extend({
       panningInfo: null as any,
       panStartX: null as number | null,
       panStartY: null as number | null,
-      startingScrollLeft: null as number | null,
-      startingScrollTop: null as number | null,
+      panStartScrollLeft: null as number | null,
+      panStartScrollTop: null as number | null,
       startingZoom: null as number | null,
-      startScrollLeft: null as number | null,
-      centerOffsetLeft: null as number | null,
+      pinchStartScrollLeft: null as number | null,
+      pinchStartScrollTop: null as number | null,
+      pinchStartCenterX: null as number | null,
+      pinchStartCenterY: null as number | null,
     };
   },
   mounted() {
@@ -57,19 +56,25 @@ export default Vue.extend({
       e.preventDefault();
       if (!this.startingZoom) {
         this.startingZoom = this.$store.state.settings.yearWidth;
-        this.startScrollLeft = this.$el.scrollLeft;
-        this.centerOffsetLeft = e.center.x;
+        this.pinchStartScrollTop = this.$el.scrollTop;
+        this.pinchStartScrollLeft = this.$el.scrollLeft;
+        this.pinchStartCenterX = e.center.x;
+        this.pinchStartCenterY = e.center.y;
       }
       this.$el.scrollLeft =
-        e.scale * (this.startScrollLeft! + this.centerOffsetLeft!) -
+        e.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
         e.center.x!;
+      this.$el.scrollTop =
+        this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
       this.$store.commit("setYearWidth", this.startingZoom! * e.scale);
     },
     pinchEnd(e: any) {
       e.preventDefault();
       this.startingZoom = null;
-      this.startScrollLeft = null;
-      this.centerOffsetLeft = null;
+      this.pinchStartScrollLeft = null;
+      this.pinchStartScrollTop = null;
+      this.pinchStartCenterX = null;
+      this.pinchStartCenterY = null;
     },
     touchStart(e: any) {
       const event = e as TouchEvent;
@@ -86,8 +91,8 @@ export default Vue.extend({
     },
     panStart(e: MouseEvent) {
       if (this.panStartX === null) {
-        this.startingScrollLeft = this.$el.scrollLeft;
-        this.startingScrollTop = this.$el.scrollTop;
+        this.panStartScrollLeft = this.$el.scrollLeft;
+        this.panStartScrollTop = this.$el.scrollTop;
         this.panStartX = e.clientX;
         this.panStartY = e.clientY;
       }
@@ -97,9 +102,9 @@ export default Vue.extend({
     panning(e: MouseEvent) {
       e.preventDefault();
       this.$el.scrollLeft =
-        this.startingScrollLeft! + this.panStartX! - e.clientX;
+        this.panStartScrollLeft! + this.panStartX! - e.clientX;
       this.$el.scrollTop =
-        this.startingScrollTop! + this.panStartY! - e.clientY;
+        this.panStartScrollTop! + this.panStartY! - e.clientY;
     },
     endPanning(e: MouseEvent) {
       this.panStartX = null;
