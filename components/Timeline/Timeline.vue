@@ -1,5 +1,6 @@
 <template>
   <div
+    id="timeline"
     class="relative h-full overflow-auto w-full"
     @mousedown="panStart"
     :style="eventsStyle"
@@ -150,4 +151,7 @@ export default Vue.extend({
 </script>
 
 <style>
+#timeline::-webkit-scrollbar {
+  display: none;
+}
 </style>
