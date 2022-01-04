@@ -1,4 +1,5 @@
 import { Context } from "@nuxt/types";
+import { parse } from "~/Parser";
 import { Event, Tags } from "../Types"
 interface State {
   list: string[],
@@ -10,6 +11,7 @@ interface State {
   eventsString: string | null,
   timelinePath: string | null,
   username: string | null
+  dirtyEditor: boolean
 }
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
@@ -100,6 +102,7 @@ export const state: () => State = () => ({
   eventsString: eventsString,
   timelinePath: '',
   username: '',
+  dirtyEditor: false
 })
 
 export const mutations = {
@@ -146,6 +149,9 @@ export const mutations = {
   setEventsString(state: State, str: string) {
     state.eventsString = str
   },
+  setDirtyEditor(state: State, dirty: boolean) {
+    state.dirtyEditor = dirty
+  },
   clearFilters(state: State) {
     state.filter = []
   },
@@ -182,6 +188,9 @@ export const getters = {
     return getters.trimmedAndFilteredEntries
       .filter((str: string) => str.match(/(?:^\d|^now)/))
       .map(Event.fromString).filter((event: Event | null) => !!event)
+  },
+  events2(state: State, getters: any): Event[] {
+    return state.eventsString ? parse(state.eventsString) : []
   },
   filteredEvents(state: State, getters: any): Event[] {
     return (getters.events as Event[])

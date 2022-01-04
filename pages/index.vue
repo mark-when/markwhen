@@ -5,6 +5,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Main from "~/components/Main.vue";
+import { mapState } from "vuex";
 
 export default Vue.extend({
   head() {
@@ -26,10 +27,17 @@ export default Vue.extend({
     };
   },
   components: { Main },
-  mounted() {
-    window.onbeforeunload = function (e: any) {
-      return "Do you want to exit this page?";
-    };
+  computed: mapState(["dirtyEditor"]),
+  watch: {
+    dirtyEditor(val) {
+      if (val) {
+        window.onbeforeunload = function (e: any) {
+          return "Exit this page? Unsaved changes will be lost.";
+        };
+      } else {
+        window.onbeforeunload = null;
+      }
+    },
   },
 });
 </script>

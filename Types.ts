@@ -144,6 +144,7 @@ export interface Settings {
 export class EventDescription {
   eventDescription: string
   tags: string[]
+  supplemental: string[]
   googlePhotosLink?: string
   locations: string[] = []
   linkRegex = /\[([^\]]+)\]\((https?:\/\/[\w\d./?=\-#]+)\)/g;
@@ -151,7 +152,7 @@ export class EventDescription {
   googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
   atRegex = /@([\w\d\/]+)/g
 
-  constructor(eventDescriptionString: string) {
+  constructor(eventDescriptionString: string, supplemental: string[] = []) {
     eventDescriptionString = eventDescriptionString.replace(this.googlePhotosRegex, (match) => {
       this.googlePhotosLink = match
       return ""
@@ -180,14 +181,19 @@ export class EventDescription {
       reversed = reversed.substring(substringAt)
     }
     this.eventDescription = EventDescription.reverseString(reversed.trim())
+    this.supplemental = supplemental
   }
 
   getInnerHtml() {
-    return this.eventDescription.replace(this.linkRegex, (substring, linkText, link) => {
-      return `<a class="underline" href="${link}">${linkText}</a>`;
-    }).replace(this.atRegex, (substring, at) => {
-      return `<a class="underline" href="/${at}">@${at}</a>`
-    });
+    return this.eventDescription
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(this.linkRegex, (substring, linkText, link) => {
+        return `<a class="underline" href="${link}">${linkText}</a>`;
+      }).replace(this.atRegex, (substring, at) => {
+        return `<a class="underline" href="/${at}">@${at}</a>`
+      })
   }
 
   static reverseString(s: string): string {
@@ -233,6 +239,24 @@ export class Event {
       eventString.substring(colonIndex + 1).trim()
     );
     return new Event(eventString, dateRange, eventDescription)
+  }
+
+  static fromLineGroup(lines: string[]): Event | undefined {
+    if (!lines || !lines.length) {
+      return
+    }
+    const firstLine = lines[0]
+    const colonIndex = firstLine.indexOf(":");
+    if (colonIndex === -1) {
+      return
+    }
+    const dateString = firstLine.substring(0, colonIndex).trim();
+    const dateRange = new DateRange(dateString);
+    const eventDescription = new EventDescription(
+      firstLine.substring(colonIndex + 1).trim(),
+      lines.slice(1)
+    );
+    return new Event(firstLine, dateRange, eventDescription)
   }
 }
 

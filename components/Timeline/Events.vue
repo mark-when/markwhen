@@ -2,19 +2,17 @@
   <div id="events" class="flex flex-col relative">
     <years :years="years" :columnWidth="columnWidth" />
     <div class="h-24"></div>
-    <!-- <transition-group
-      :name="transitionName"
-    > -->
-    <event-row
-      v-for="event in $store.getters.filteredEvents"
-      :key="event.eventString.substring(0, 30)"
-      :event="event"
-      :widthPerDay="widthPerDay"
-      :startYear="years.start"
-      :columnWidth="columnWidth"
-    ></event-row>
+    <!-- <transition-group :name="transitionName"> -->
+      <event-row
+        v-for="event in $store.getters.events2"
+        :key="event.eventString.substring(0, 30)"
+        :event="event"
+        :widthPerDay="widthPerDay"
+        :startYear="years.start"
+        :columnWidth="columnWidth"
+      ></event-row>
     <!-- </transition-group> -->
-    <div style="height: 50vh"></div>
+    <div style="height: 80vh"></div>
   </div>
 </template>
 

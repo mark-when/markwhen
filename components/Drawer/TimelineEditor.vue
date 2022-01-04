@@ -13,6 +13,7 @@
         shadow-inner-2xl
         resize-none
       "
+      style="padding-top: 10vh; padding-bottom: 80vh"
       name="eventsField"
       wrap="off"
       :value="$store.state.eventsString"
@@ -74,6 +75,7 @@ export default Vue.extend({
         "setEventsString",
         (e?.target as HTMLInputElement).value
       );
+      this.$store.commit("setDirtyEditor", true);
     },
     async share() {
       const name = prompt(
@@ -90,6 +92,7 @@ export default Vue.extend({
           name,
         });
         this.sharing = false;
+        this.$store.commit("setDirtyEditor", false);
         this.$router.push(
           `/${this.username}${name === this.username ? "" : "/" + name}`
         );
@@ -105,6 +108,7 @@ export default Vue.extend({
       );
       if (timelineName) {
         this.$store.commit("saveTimeline", timelineName);
+        this.$store.commit("setDirtyEditor", false);
       }
     },
   },

@@ -6,12 +6,14 @@
       flex-shrink-0
       hover:bg-gray-800
       flex flex-row
-      border-r border-gray-600
+      border-gray-600
       z-10
     "
     :class="{
       'bg-gray-800': selectedComponent,
       'order-2': !isLeft,
+      'border-l': !isLeft,
+      'border-r': isLeft,
     }"
     style="-webkit-transform: translate3d(0, 0, 0)"
   >
@@ -29,7 +31,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
+            class="h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -52,7 +54,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
+            class="h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -144,7 +146,6 @@
           w-2
           hover:bg-gray-700
           absolute
-          right-0
           bottom-0
           top-0
         "
@@ -237,7 +238,7 @@ export default Vue.extend({
         if (this.isLeft) {
           this.tempWidth = this.width - this.resizeStartX + e.pageX;
         } else {
-          this.tempWidth = this.width + this.resizeStartX - e.pageX
+          this.tempWidth = this.width + this.resizeStartX - e.pageX;
         }
       }
     },

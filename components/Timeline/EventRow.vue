@@ -75,10 +75,19 @@
             clip-rule="evenodd"
           />
         </svg>
-        <p class="eventTitle ml-2" v-html="event.getInnerHtml()"></p>
+        <p class="eventTitle ml-2">
+          <span v-html="event.getInnerHtml()"></span>
+          <span v-if="hasSupplemental && !showingMeta">...</span>
+        </p>
       </div>
     </div>
-    <event-meta v-if="canShowMeta" :locations="locations" :images="images" />
+    <event-meta
+      v-if="canShowMeta"
+      :locations="locations"
+      :images="images"
+      :supplemental="supplemental"
+      :photosLink="event.event.googlePhotosLink"
+    />
   </div>
 </template>
 
@@ -106,23 +115,29 @@ export default Vue.extend({
           `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${location}`
       );
     },
+    supplemental(): string[] {
+      return this.event.event.supplemental;
+    },
     canShowMeta(): boolean {
       if (this.images.length > 0) {
         return this.showingMeta && this.imageStatus === "loaded";
       }
-      if (this.hasLocations) {
+      if (this.hasLocations || this.hasSupplemental) {
         return this.showingMeta;
       }
       return false;
     },
     hasMeta(): boolean {
-      return this.hasImages || this.hasLocations;
+      return this.hasImages || this.hasLocations || this.hasSupplemental;
     },
     hasLocations(): boolean {
       return this.event.event.locations.length > 0;
     },
     hasImages(): boolean {
       return !!this.event.event.googlePhotosLink;
+    },
+    hasSupplemental(): boolean {
+      return !!this.supplemental.length;
     },
     eventRowStyle(): string {
       return `margin-left: ${this.getLeftMarginForDate(
@@ -185,7 +200,7 @@ export default Vue.extend({
     },
     togglePhotos() {
       this.showingMeta = !this.showingMeta;
-      if (this.imageStatus === "not loaded") {
+      if (this.imageStatus === "not loaded" && this.hasImages) {
         this.loadImages();
       }
     },
