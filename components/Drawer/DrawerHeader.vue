@@ -1,5 +1,8 @@
 <template>
-  <div class="sticky bottom-6 left-4 flex flex-row items-center ml-4" @mousedown="mousedown">
+  <div
+    class="sticky bottom-6 left-4 flex flex-row items-center ml-4 z-20"
+    @mousedown="mousedown"
+  >
     <button
       class="
         mr-2
@@ -107,7 +110,7 @@
 <script lang="ts">
 import Tags from "./Tags.vue";
 import DisplaySettings from "./DisplaySettings.vue";
-import Vue from "vue"
+import Vue from "vue";
 
 export default Vue.extend({
   components: {
@@ -120,8 +123,8 @@ export default Vue.extend({
       this.$store.commit("sidebar/toggle");
     },
     mousedown(e: MouseEvent) {
-      e.stopPropagation()
-    }
+      e.stopPropagation();
+    },
   },
 });
 </script>

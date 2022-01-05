@@ -3,7 +3,7 @@
     <div
       v-if="showingMeta"
       :class="photoBarClass"
-      class="absolute left-0 mr-2 bottom-2 z-20 opacity-50"
+      class="absolute left-0 mr-2 bottom-2 z-10 opacity-50"
       :style="photoBarStyle"
     ></div>
     <div class="flex flex-row">

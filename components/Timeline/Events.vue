@@ -4,7 +4,7 @@
     <div class="h-24"></div>
     <!-- <transition-group :name="transitionName"> -->
       <event-row
-        v-for="event in $store.getters.events2"
+        v-for="event in $store.getters.filteredEvents"
         :key="event.eventString.substring(0, 30)"
         :event="event"
         :widthPerDay="widthPerDay"

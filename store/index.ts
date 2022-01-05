@@ -1,6 +1,6 @@
 import { Context } from "@nuxt/types";
 import { parse } from "~/Parser";
-import { Event, Tags } from "../Types"
+import { Cascade, Event, Tags } from "../Types"
 interface State {
   list: string[],
   currentTimelineName: string,
@@ -184,13 +184,11 @@ export const getters = {
     }
     return eventStrings.filter(filter).map((str: string) => str.trim());
   },
-  events(state: State, getters: any): Event[] {
-    return getters.trimmedAndFilteredEntries
-      .filter((str: string) => str.match(/(?:^\d|^now)/))
-      .map(Event.fromString).filter((event: Event | null) => !!event)
+  cascade(state: State, getters: any): Cascade {
+    return state.eventsString ? parse(state.eventsString) : { events: [], tags: {} }
   },
-  events2(state: State, getters: any): Event[] {
-    return state.eventsString ? parse(state.eventsString) : []
+  events(state: State, getters: any): Event[] {
+    return getters.cascade.events
   },
   filteredEvents(state: State, getters: any): Event[] {
     return (getters.events as Event[])
@@ -200,21 +198,7 @@ export const getters = {
           state.filter.includes(tag)))
   },
   tags(state: State, getters: any): Tags {
-    let paletteIndex = 0
-    const keys: Set<string> = new Set(getters.events.flatMap((event: Event) => event.event.tags))
-    const coloredTags = getters.trimmedAndFilteredEntries
-      .filter((str: string) => str.startsWith("#"))
-      .map((str: string) => str.substring(1).split(": "))
-    const tags = {} as { [tagName: string]: string }
-    for (let tag of coloredTags) {
-      tags[tag[0]] = tag[1]
-    }
-    for (let tag of keys) {
-      if (!tags[tag]) {
-        tags[tag] = COLORS[paletteIndex++ % COLORS.length]
-      }
-    }
-    return tags
+    return getters.cascade.tags
   },
 }
 

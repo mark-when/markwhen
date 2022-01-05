@@ -143,7 +143,7 @@ export interface Settings {
 
 export class EventDescription {
   eventDescription: string
-  tags: string[]
+  tags: string[] = []
   supplemental: string[]
   googlePhotosLink?: string
   locations: string[] = []
@@ -152,36 +152,29 @@ export class EventDescription {
   googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
   atRegex = /@([\w\d\/]+)/g
 
-  constructor(eventDescriptionString: string, supplemental: string[] = []) {
-    eventDescriptionString = eventDescriptionString.replace(this.googlePhotosRegex, (match) => {
-      this.googlePhotosLink = match
-      return ""
-    })
-    eventDescriptionString = eventDescriptionString.replace(this.locationRegex, (match, locationString) => {
-      this.locations.push(locationString)
-      return ""
-    })
-    let reversed = EventDescription.reverseString(eventDescriptionString)
-    const tagSet = new Set()
-    this.tags = []
-    let match
-    let substringAt = 0
-    while ((match = /(?:^(\w+)# )/gm.exec(reversed)) !== null) {
-      match.forEach((match, groupIndex) => {
-        if (groupIndex === 1) {
-          const reversedBack = EventDescription.reverseString(match)
-          if (!tagSet.has(reversedBack)) {
-            // We do it this way so we can keep the tags in order
-            tagSet.add(reversedBack)
-            this.tags.push(reversedBack)
-          }
-          substringAt = match.length + 2
+  constructor(lines: string[]) {
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i]
+      line = line.replace(this.googlePhotosRegex, (match) => {
+        if (!this.googlePhotosLink) {
+          this.googlePhotosLink = match
         }
+        return ''
       })
-      reversed = reversed.substring(substringAt)
+      line = line.replace(this.locationRegex, (match, locationString) => {
+        this.locations.push(locationString)
+        return ''
+      })
+      line = line.replace(/(?: |^)#(\w+)/g, (match, tag) => {
+        if (!this.tags.includes(tag)) {
+          this.tags.push(tag)
+        }
+        return ''
+      })
+      lines[i] = line
     }
-    this.eventDescription = EventDescription.reverseString(reversed.trim())
-    this.supplemental = supplemental
+    this.eventDescription = lines[0]
+    this.supplemental = lines.filter(l => !!l.trim()).slice(1)
   }
 
   getInnerHtml() {
@@ -228,19 +221,6 @@ export class Event {
     return this.range.originalString
   }
 
-  static fromString(eventString: string): Event | undefined {
-    const colonIndex = eventString.indexOf(":");
-    if (colonIndex === -1) {
-      return
-    }
-    const dateString = eventString.substring(0, colonIndex).trim();
-    const dateRange = new DateRange(dateString);
-    const eventDescription = new EventDescription(
-      eventString.substring(colonIndex + 1).trim()
-    );
-    return new Event(eventString, dateRange, eventDescription)
-  }
-
   static fromLineGroup(lines: string[]): Event | undefined {
     if (!lines || !lines.length) {
       return
@@ -252,10 +232,8 @@ export class Event {
     }
     const dateString = firstLine.substring(0, colonIndex).trim();
     const dateRange = new DateRange(dateString);
-    const eventDescription = new EventDescription(
-      firstLine.substring(colonIndex + 1).trim(),
-      lines.slice(1)
-    );
+    lines[0] = lines[0].substring(colonIndex + 1).trim()
+    const eventDescription = new EventDescription(lines);
     return new Event(firstLine, dateRange, eventDescription)
   }
 }
@@ -265,3 +243,8 @@ export interface Settings {
 }
 
 export type Tags = { [tagName: string]: string }
+
+export interface Cascade {
+  events: Event[]
+  tags: Tags
+}
