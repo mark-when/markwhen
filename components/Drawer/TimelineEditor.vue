@@ -15,7 +15,6 @@
       "
       style="padding-top: 10vh; padding-bottom: 80vh"
       name="eventsField"
-      wrap="off"
       :value="$store.state.eventsString"
       @input="updateEventsString"
     ></textarea>
@@ -70,7 +69,7 @@ export default Vue.extend({
     doc(path: string) {
       return doc(getFirestore(getApp()), path);
     },
-    updateEventsString(e: TextEvent) {
+    updateEventsString(e: InputEvent) {
       this.$store.commit(
         "setEventsString",
         (e?.target as HTMLInputElement).value

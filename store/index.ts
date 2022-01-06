@@ -5,7 +5,8 @@ interface State {
   list: string[],
   currentTimelineName: string,
   settings: {
-    yearWidth: number
+    yearWidth: number,
+    startedWidthChange: boolean
   },
   filter: string[]
   eventsString: string | null,
@@ -96,7 +97,8 @@ export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
   settings: {
-    yearWidth: 120
+    yearWidth: 120,
+    startedWidthChange: false
   },
   filter: [],
   eventsString: eventsString,
@@ -106,6 +108,9 @@ export const state: () => State = () => ({
 })
 
 export const mutations = {
+  setStartedWidthChange(state: State, changing: boolean) {
+    state.settings.startedWidthChange = changing
+  },
   setUsername(state: State, username: string) {
     state.username = username
   },

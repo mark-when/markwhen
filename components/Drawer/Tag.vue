@@ -6,9 +6,8 @@
       mr-2
       rounded
       bg-gray-800
-      hover:bg-gray-700
-      md:px-2
-      md:py-0
+      hover:bg-gray-600
+      md:px-2 md:py-0
       p-1
       text-gray-400
       hover:text-gray-100

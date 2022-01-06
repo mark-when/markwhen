@@ -1,6 +1,16 @@
 <template>
   <div class="flex flex-col mr-2">
-    <input type="range" min="0" max="1000" v-model="width" class="my-1" />
+    <input
+      type="range"
+      min="0"
+      max="1000"
+      v-model="width"
+      class="my-1"
+      @mousedown="startYearWidthChange"
+      @mouseup="endYearWidthChange"
+      @touchstart="startYearWidthChange"
+      @touchEnd="endYearWidthChange"
+    />
   </div>
 </template>
 
@@ -26,6 +36,12 @@ export default {
       let maxWidth = Math.log(1600);
       const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
       return (Math.log(width) - minWidth) / scale + minSelection;
+    },
+    startYearWidthChange() {
+      this.$store.commit("setStartedWidthChange", true);
+    },
+    endYearWidthChange() {
+      this.$store.commit("setStartedWidthChange", false);
     },
   },
   watch: {

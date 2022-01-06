@@ -64,16 +64,15 @@
         </svg>
         <svg
           v-if="hasLocations"
-          xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4 ml-2 mb-px"
-          viewBox="0 0 20 20"
+          focusable="false"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
           fill="currentColor"
         >
           <path
-            fill-rule="evenodd"
-            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-            clip-rule="evenodd"
-          />
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+          ></path>
         </svg>
         <p class="eventTitle ml-2">
           <span v-html="event.getInnerHtml()"></span>
@@ -198,7 +197,8 @@ export default Vue.extend({
       this.images = await imagesResponse.json();
       this.imageStatus = "loaded";
     },
-    togglePhotos() {
+    togglePhotos(e: MouseEvent) {
+      e.preventDefault()
       this.showingMeta = !this.showingMeta;
       if (this.imageStatus === "not loaded" && this.hasImages) {
         this.loadImages();
