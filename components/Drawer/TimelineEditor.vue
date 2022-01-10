@@ -78,7 +78,7 @@ export default Vue.extend({
     },
     async share() {
       const name = prompt(
-        "To share to \ncascade.page/[username], share as [username]. \n\nOtherwise, cascades will be shared from \ncascade.page/[username]/[timeline name].",
+        `To share to \ncascade.page/${this.username}, share as ${this.username}. \n\nOtherwise, cascades will be shared from \ncascade.page/${this.username}/[timeline name].`,
         this.username
       );
       if (!name) {

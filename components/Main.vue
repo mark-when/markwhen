@@ -26,6 +26,7 @@ export default Vue.extend({
   mounted() {
     this.signInIfNecessary();
     this.$store.commit("getLocalTimelines");
+    this.$store.commit("checkHasSeenHowTo")
   },
   methods: {
     async signInIfNecessary() {

@@ -12,7 +12,8 @@ interface State {
   eventsString: string | null,
   timelinePath: string | null,
   username: string | null
-  dirtyEditor: boolean
+  dirtyEditor: boolean,
+  hasSeenHowTo: boolean
 }
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
@@ -104,7 +105,8 @@ export const state: () => State = () => ({
   eventsString: eventsString,
   timelinePath: '',
   username: '',
-  dirtyEditor: false
+  dirtyEditor: false,
+  hasSeenHowTo: true,
 })
 
 export const mutations = {
@@ -116,6 +118,23 @@ export const mutations = {
   },
   setTimelinePath(state: State, path: string) {
     state.timelinePath = path
+  },
+  setHasSeenHowTo(state: State, hasSeen: boolean) {
+    state.hasSeenHowTo = hasSeen
+    if (!process.browser) {
+      return
+    }
+    if (hasSeen) {
+      localStorage.setItem('hasSeenHowTo', 'true')
+    } else {
+      localStorage.removeItem('hasSeenHowTo')
+    }
+  },
+  checkHasSeenHowTo(state: State) {
+    if (!process.browser) {
+      return
+    }
+    state.hasSeenHowTo = !!localStorage.getItem('hasSeenHowTo')
   },
   getLocalTimelines(state: State) {
     if (!process.browser || state.timelinePath) {
