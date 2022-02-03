@@ -10,6 +10,11 @@
     "deploy": "npm run build && gcloud app deploy --project timelinecascade --quiet"
   },
   "dependencies": {
+    "@codemirror/commands": "^0.19.6",
+    "@codemirror/highlight": "^0.19.7",
+    "@codemirror/state": "^0.19.6",
+    "@codemirror/view": "^0.19.39",
+    "@lezer/lr": "^0.15.5",
     "@nuxtjs/axios": "^5.13.6",
     "@squadette/hammerjs": "^2.1.0-pre3",
     "chrono-node": "^2.3.8",

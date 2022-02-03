@@ -24,6 +24,9 @@
         :value="$store.state.eventsString"
         @input="updateEventsString"
       ></textarea>
+      <client-only>
+        <code-mirror />
+      </client-only>
     </div>
     <div
       class="
@@ -54,9 +57,10 @@ import { getApp } from "firebase/app";
 import { onSnapshot, doc, getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import Vue from "vue";
+import CodeMirror from "./CodeMirror.vue";
 
 export default Vue.extend({
-  components: { SaveLocallyButton, ShareButton },
+  components: { SaveLocallyButton, ShareButton, CodeMirror },
   data() {
     return {
       userId: "" as string | undefined,
