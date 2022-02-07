@@ -174,7 +174,7 @@ export class EventDescription {
       lines[i] = line
     }
     this.eventDescription = lines[0]
-    this.supplemental = lines.filter(l => !!l.trim()).slice(1)
+    this.supplemental = lines.slice(1).filter(l => !!l.trim())
   }
 
   getInnerHtml() {
@@ -219,22 +219,6 @@ export class Event {
 
   getDateHtml(): string {
     return this.range.originalString
-  }
-
-  static fromLineGroup(lines: string[]): Event | undefined {
-    if (!lines || !lines.length) {
-      return
-    }
-    const firstLine = lines[0]
-    const colonIndex = firstLine.indexOf(":");
-    if (colonIndex === -1) {
-      return
-    }
-    const dateString = firstLine.substring(0, colonIndex).trim();
-    const dateRange = new DateRange(dateString);
-    lines[0] = lines[0].substring(colonIndex + 1).trim()
-    const eventDescription = new EventDescription(lines);
-    return new Event(firstLine, dateRange, eventDescription)
   }
 }
 

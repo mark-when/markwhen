@@ -1,7 +1,12 @@
-import { Cascade, Event, Tags } from "./Types"
+import { Cascade, DateRange, Event, EventDescription, Tags } from "./Types"
 
-const DATE_REGEX = /\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?|now/
-const EVENT_START_REGEX = new RegExp(`^\\s*(${DATE_REGEX.source})(-(${DATE_REGEX.source}))?:.*`)
+const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/
+const NOW_REGEX = /now/
+const DATE_REGEX = /\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?/
+
+const START_OR_END_TIME_REGEX = new RegExp(`(${ISO8601_REGEX.source})|(${NOW_REGEX.source})|(${DATE_REGEX.source})`)
+
+const EVENT_START_REGEX = new RegExp(`^\\s*((${START_OR_END_TIME_REGEX.source})(?:-(${START_OR_END_TIME_REGEX.source}))?):(.*)`)
 const COMMENT_REGEX = /^\s*\/\/.*/
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
 const TAG_REGEX = /(?:^| )#(\w*)/g
@@ -33,14 +38,26 @@ export function parse(eventsString: string): Cascade {
         }
       }
     }
-    if (line.match(EVENT_START_REGEX)) {
+    const eventStart = line.match(EVENT_START_REGEX)
+    if (eventStart) {
       let end = i
       let nextLine
       do {
         nextLine = lines[++end]
       } while (typeof nextLine === 'string' && !nextLine.match(EVENT_START_REGEX))
       const eventGroup = lines.slice(i, end).filter(l => l && !l.match(COMMENT_REGEX))
-      const event = Event.fromLineGroup(eventGroup)
+
+      // Initial date range and first line description
+      const firstLine = eventGroup[0]
+
+      // What the regex matched as the date range part
+      const datePart = eventStart[1]
+
+      // Remove the date part from the first line
+      eventGroup[0] = eventGroup[0].substring(eventGroup[0].indexOf(datePart) + datePart.length + 1).trim()
+      const dateRange = new DateRange(datePart)
+      const eventDescription = new EventDescription(eventGroup)
+      const event = new Event(firstLine, dateRange, eventDescription)
       if (event) {
         events.push(event)
       }
