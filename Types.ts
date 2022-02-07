@@ -141,31 +141,33 @@ export interface Settings {
   yearWidth: number
 }
 
+export const LINK_REGEX = /\[([^\]]+)\]\(((https?:\/\/)?[\w\d./?=\-#]+)\)/g;
+export const LOCATION_REGEX = /\[([^\]]+)\]\((location|map)\)/g;
+export const GOOGLE_PHOTOS_REGEX = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
+export const AT_REGEX = /@([\w\d\/]+)/g
+export const TAG_REGEX = /(?: |^)#(\w+)/g
+
 export class EventDescription {
   eventDescription: string
   tags: string[] = []
   supplemental: string[]
   googlePhotosLink?: string
   locations: string[] = []
-  linkRegex = /\[([^\]]+)\]\((https?:\/\/[\w\d./?=\-#]+)\)/g;
-  locationRegex = /\[([^\]]+)\]\((location|map)\)/g;
-  googlePhotosRegex = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g
-  atRegex = /@([\w\d\/]+)/g
 
   constructor(lines: string[]) {
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i]
-      line = line.replace(this.googlePhotosRegex, (match) => {
+      line = line.replace(GOOGLE_PHOTOS_REGEX, (match) => {
         if (!this.googlePhotosLink) {
           this.googlePhotosLink = match
         }
         return ''
       })
-      line = line.replace(this.locationRegex, (match, locationString) => {
+      line = line.replace(LOCATION_REGEX, (match, locationString) => {
         this.locations.push(locationString)
         return ''
       })
-      line = line.replace(/(?: |^)#(\w+)/g, (match, tag) => {
+      line = line.replace(TAG_REGEX, (match, tag) => {
         if (!this.tags.includes(tag)) {
           this.tags.push(tag)
         }
@@ -178,15 +180,27 @@ export class EventDescription {
   }
 
   getInnerHtml() {
-    return this.eventDescription
+    return EventDescription.toInnerHtml(this.eventDescription)
+  }
+
+  static toInnerHtml(s: string): string {
+    return s
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(this.linkRegex, (substring, linkText, link) => {
-        return `<a class="underline" href="${link}">${linkText}</a>`;
-      }).replace(this.atRegex, (substring, at) => {
+      .replace(LINK_REGEX, (substring, linkText, link) => {
+        console.log(substring, linkText, link)
+        return `<a class="underline" href="${EventDescription.addHttpIfNeeded(link)}">${linkText}</a>`;
+      }).replace(AT_REGEX, (substring, at) => {
         return `<a class="underline" href="/${at}">@${at}</a>`
       })
+  }
+
+  static addHttpIfNeeded(s: string): string {
+    if (s.startsWith('http://') || s.startsWith('https://')) {
+      return s
+    }
+    return `http://${s}`
   }
 
   static reverseString(s: string): string {

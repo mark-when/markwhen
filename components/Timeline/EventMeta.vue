@@ -11,8 +11,8 @@
             v-for="(item, index) in supplemental"
             :key="item"
             style="font-size: 80%; font-family: system-ui"
+            v-html="toInnerHtml(item)"
           >
-            {{ item }}
           </p>
         </div>
       </div>
@@ -55,6 +55,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { EventDescription } from "../../Types"
 
 export default Vue.extend({
   props: ["locations", "images", "supplemental", "photosLink"],
@@ -66,6 +67,11 @@ export default Vue.extend({
       return this.locations.length > 0;
     },
   },
+  methods: {
+    toInnerHtml(s: string): string {
+      return EventDescription.toInnerHtml(s)
+    }
+  }
 });
 </script>
 
