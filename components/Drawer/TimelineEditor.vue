@@ -1,24 +1,26 @@
 <template>
-  <div class="flex flex-col w-full flex-grow bg-gray-900 h-full pb-4">
-    <textarea
-      class="
-        flex-grow
-        p-2
-        font-mono
-        text-sm
-        w-full
-        text-gray-400
-        bg-gray-900
-        outline-none
-        shadow-inner-2xl
-        resize-none
-      "
-      style="padding-top: 10vh; padding-bottom: 80vh"
-      name="eventsField"
-      :value="$store.state.eventsString"
-      @input="updateEventsString"
-    ></textarea>
-    <div class="my-3 flex flex-row text-gray-300 ml-2">
+  <div class="w-full bg-gray-900 h-full flex flex-col">
+    <div class="flex-grow">
+      <textarea
+        class="
+        h-full
+          p-2
+          font-mono
+          text-sm
+          w-full
+          text-gray-400
+          bg-gray-900
+          outline-none
+          shadow-inner-2xl
+          resize-none
+        "
+        style="padding-top: 8rem; padding-bottom: 20rem"
+        name="eventsField"
+        :value="$store.state.eventsString"
+        @input="updateEventsString"
+      ></textarea>
+    </div>
+    <div class="flex flex-row text-gray-300 ml-2 flex-shrink-0 pb-7 pt-2">
       <share-button
         @click="share"
         :buttonTitle="buttonTitle"

@@ -189,7 +189,6 @@ export class EventDescription {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(LINK_REGEX, (substring, linkText, link) => {
-        console.log(substring, linkText, link)
         return `<a class="underline" href="${EventDescription.addHttpIfNeeded(link)}">${linkText}</a>`;
       }).replace(AT_REGEX, (substring, at) => {
         return `<a class="underline" href="/${at}">@${at}</a>`
