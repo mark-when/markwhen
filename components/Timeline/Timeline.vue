@@ -6,7 +6,7 @@
     @mousedown.prevent="panStart"
     :style="eventsStyle"
   >
-    <events :years="years" :columnWidth="columnWidth" />
+    <events :years="years" />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
@@ -67,12 +67,10 @@ export default Vue.extend({
     ...mapState({
       yearWidth: (state: any) => state.settings.yearWidth,
       startedWidthChange: (state: any) => state.settings.startedWidthChange,
+      columnWidth: (state: any) => state.settings.yearWidth
     }),
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
-    },
-    columnWidth(): number {
-      return this.$store.state.settings.yearWidth;
     },
     years(): BoundingYears {
       const events = this.$store.getters.events;

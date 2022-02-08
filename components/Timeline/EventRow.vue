@@ -96,10 +96,11 @@ const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
+import { mapState } from "vuex"
 
 export default Vue.extend({
   components: { EventMeta },
-  props: ["event", "widthPerDay", "startYear", "columnWidth"],
+  props: ["event", "widthPerDay", "startYear"],
   data() {
     return {
       imageStatus: "not loaded",
@@ -108,6 +109,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapState({
+      columnWidth: (state: any) => state.settings.yearWidth
+    }),
     locations(): string[] {
       return this.event.event.locations.map(
         (location: string) =>

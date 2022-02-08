@@ -6,7 +6,8 @@ interface State {
   currentTimelineName: string,
   settings: {
     yearWidth: number,
-    startedWidthChange: boolean
+    startedWidthChange: boolean,
+    scale: number
   },
   filter: string[]
   eventsString: string | null,
@@ -99,7 +100,8 @@ export const state: () => State = () => ({
   currentTimelineName: currentTimelineName,
   settings: {
     yearWidth: 120,
-    startedWidthChange: false
+    startedWidthChange: false,
+    scale: 1
   },
   filter: [],
   eventsString: eventsString,

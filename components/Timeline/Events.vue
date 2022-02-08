@@ -1,16 +1,15 @@
 <template>
   <div id="events" class="flex flex-col relative">
-    <years :years="years" :columnWidth="columnWidth" />
+    <years :years="years"/>
     <div class="h-24"></div>
     <!-- <transition-group :name="transitionName"> -->
-      <event-row
-        v-for="event in $store.getters.filteredEvents"
-        :key="event.eventString.substring(0, 30)"
-        :event="event"
-        :widthPerDay="widthPerDay"
-        :startYear="years.start"
-        :columnWidth="columnWidth"
-      ></event-row>
+    <event-row
+      v-for="event in $store.getters.filteredEvents"
+      :key="event.eventString.substring(0, 30)"
+      :event="event"
+      :widthPerDay="widthPerDay"
+      :startYear="years.start"
+    ></event-row>
     <!-- </transition-group> -->
     <div style="height: 80vh"></div>
   </div>
@@ -21,11 +20,15 @@ import EventRow from "./EventRow.vue";
 import Years from "./Years.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
+import { mapState } from "vuex";
 
 export default Vue.extend({
   components: { EventRow, Years, DrawerHeader },
-  props: ["years", "columnWidth"],
+  props: ["years"],
   computed: {
+    ...mapState({
+      columnWidth: (state: any) => state.settings.yearWidth,
+    }),
     widthPerDay(): number {
       return this.columnWidth / 12 / 30;
     },

@@ -27,15 +27,20 @@ import Year from "./Year.vue";
 //@ts-ignore
 import Vue from "vue";
 import CustomScroller from "../Timeline/CustomScroller.vue";
+import { mapState } from "vuex";
+
 export default Vue.extend({
   components: { Year, CustomScroller },
-  props: ["columnWidth", "years"],
+  props: ["years"],
   methods: {
     range(size: number, startAt = 0): number[] {
       return [...Array(size).keys()].map((i) => i + startAt);
     },
   },
   computed: {
+    ...mapState({
+      columnWidth: (state: any) => state.settings.yearWidth,
+    }),
     allYears(): number[] {
       return this.range(
         this.years.end - this.years.start + 1,

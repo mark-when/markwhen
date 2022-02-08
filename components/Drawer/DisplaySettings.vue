@@ -14,13 +14,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { throttle } from "throttle-debounce";
+import Vue from "vue";
 
-export default {
+function calculateScaledPosition(width: number): number {
+  let minSelection = 0;
+  let maxSelection = 1000;
+  let minWidth = Math.log(10);
+  let maxWidth = Math.log(1600);
+  const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
+  return (Math.log(width) - minWidth) / scale + minSelection;
+}
+
+export default Vue.extend({
   data() {
     return {
-      width: this.calculateScaledPosition(this.$store.state.settings.yearWidth),
+      width: calculateScaledPosition(this.$store.state.settings.yearWidth),
     };
   },
   created() {
@@ -29,20 +39,13 @@ export default {
     });
   },
   methods: {
-    calculateScaledPosition(width) {
-      let minSelection = 0;
-      let maxSelection = 1000;
-      let minWidth = Math.log(10);
-      let maxWidth = Math.log(1600);
-      const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
-      return (Math.log(width) - minWidth) / scale + minSelection;
-    },
     startYearWidthChange() {
       this.$store.commit("setStartedWidthChange", true);
     },
     endYearWidthChange() {
       this.$store.commit("setStartedWidthChange", false);
     },
+    updateWidth(width: number) {},
   },
   watch: {
     width(val, oldVal) {
@@ -54,10 +57,10 @@ export default {
       this.updateWidth(Math.exp(minWidth + scale * (val - minSelection)));
     },
     "$store.state.settings.yearWidth": function (val, oldVal) {
-      this.width = this.calculateScaledPosition(val);
+      this.width = calculateScaledPosition(val);
     },
   },
-};
+});
 </script>
 
 <style>
