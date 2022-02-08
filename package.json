@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "firebase": "^9.0.1",
     "firebase-admin": "^9.11.1",
+    "luxon": "^2.3.0",
     "nuxt": "^2.15.7",
     "nuxt-hammer": "^2.1.3",
     "throttle-debounce": "^3.0.1",
@@ -28,6 +29,7 @@
     "@nuxtjs/tailwindcss": "^4.2.0",
     "@types/express": "^4.17.13",
     "@types/firebase": "^3.2.1",
+    "@types/luxon": "^2.0.9",
     "@types/throttle-debounce": "^2.1.0",
     "postcss": "^8.3.5"
   }

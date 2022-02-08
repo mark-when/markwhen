@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 
 export type Year = number;
 export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -33,6 +34,16 @@ export type Day =
   | 29
   | 30
   | 31;
+
+export type DateTimeGranularity = "instant" | "year" | "month" | "day"
+export type GranularDateTime = {
+  dateTime: DateTime
+  granularity: DateTimeGranularity
+}
+
+export const DATE_TIME_FORMAT_FULL = 'M/d/y'
+export const DATE_TIME_FORMAT_MONTH_YEAR = 'M/y'
+export const DATE_TIME_FORMAT_YEAR = 'y'
 
 export class YearMonthDay {
   year: Year;
@@ -74,19 +85,24 @@ export interface BoundingYears {
 }
 
 export class DateRange {
+  fromDateTime: DateTime
+  toDateTime?: DateTime
   from: YearMonthDay;
   to?: YearMonthDay;
   originalString: string
 
-  constructor(dateString: string) {
-    this.originalString = dateString
-    const commentIndex = dateString.indexOf("//");
-    if (commentIndex >= 0) {
-      dateString = dateString.substring(0, commentIndex);
+  constructor(from: string, to: string, originalString: string) {
+    this.from = new YearMonthDay(from);
+    this.to = to ? new YearMonthDay(to) : undefined;
+    this.originalString = originalString
+
+    const { dateTime: fromDateTime, granularity } = DateRange.stringToDateTime(from)
+    this.fromDateTime = fromDateTime
+    if (to) {
+      this.toDateTime = DateRange.roundDateUp(DateRange.stringToDateTime(to))
+    } else {
+      this.toDateTime = DateRange.roundDateUp({ dateTime: this.fromDateTime, granularity })
     }
-    const [unparsedFrom, unparsedTo] = dateString.split("-");
-    this.from = new YearMonthDay(unparsedFrom);
-    this.to = unparsedTo ? new YearMonthDay(unparsedTo) : undefined;
   }
 
   getNextYear(): Year {
@@ -122,6 +138,33 @@ export class DateRange {
 
   numDays(): number {
     return DateRange.numDaysBetween(this.startingDay(), this.endingDay())
+  }
+
+  static stringToDateTime(s: string): GranularDateTime {
+    let dateTime = DateTime.fromFormat(s, DATE_TIME_FORMAT_FULL)
+    if (dateTime.isValid) {
+      return { dateTime, granularity: 'day' }
+    }
+    dateTime = DateTime.fromFormat(s, DATE_TIME_FORMAT_MONTH_YEAR)
+    if (dateTime.isValid) {
+      return { dateTime, granularity: 'month' }
+    }
+    dateTime = DateTime.fromFormat(s, DATE_TIME_FORMAT_YEAR)
+    if (dateTime.isValid) {
+      return { dateTime, granularity: 'year' }
+    }
+    dateTime = DateTime.fromISO(s)
+    if (dateTime.isValid) {
+      return { dateTime, granularity: 'instant' }
+    }
+    return { dateTime: DateTime.now(), granularity: 'instant' }
+  }
+
+  static roundDateUp(granularDateTime: GranularDateTime): DateTime {
+    if (granularDateTime.granularity === 'instant') {
+      return granularDateTime.dateTime
+    }
+    return granularDateTime.dateTime.plus({ [granularDateTime.granularity]: 1 })
   }
 
   static numDaysBetween(startingDay: YearMonthDay, endingDay: YearMonthDay): number {

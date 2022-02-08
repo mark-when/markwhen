@@ -52,10 +52,12 @@ export function parse(eventsString: string): Cascade {
 
       // What the regex matched as the date range part
       const datePart = eventStart[1]
+      const eventStartDate = eventStart[2] || eventStart[5]
+      const eventEndDate = eventStart[8] || eventStart[11]
 
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0].substring(eventGroup[0].indexOf(datePart) + datePart.length + 1).trim()
-      const dateRange = new DateRange(datePart)
+      const dateRange = new DateRange(eventStartDate, eventEndDate, datePart)
       const eventDescription = new EventDescription(eventGroup)
       const event = new Event(firstLine, dateRange, eventDescription)
       if (event) {

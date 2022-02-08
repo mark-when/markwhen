@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-gray-900 h-full w-full overflow-scroll pb-5">
-    <div class="flex flex-col p-2 text-gray-200">
-      <h3 class="text-lg text-gray-300">Cascade.page</h3>
+  <div class="bg-gray-900 h-full w-full overflow-scroll pb-5 text-gray-300">
+    <div class="flex flex-col p-2 ">
+      <h3 class="text-lg">Cascade.page</h3>
       <h3 class="text-lg">Help and How To</h3>
     </div>
     <div class="p-2 flex flex-col items-start">
