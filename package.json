@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "GOOGLE_APPLICATION_CREDENTIALS=~/timelinecascade-796a6cd097cb.json nuxt",
+    "dev": "GOOGLE_APPLICATION_CREDENTIALS=~/timelinecascade-796a6cd097cb.json DEV=true nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",

@@ -30,7 +30,7 @@ export default Vue.extend({
   computed: mapState(["dirtyEditor"]),
   watch: {
     dirtyEditor(val) {
-      if (val) {
+      if (val && !process.env.DEV) {
         window.onbeforeunload = function (e: any) {
           return "Exit this page? Unsaved changes will be lost.";
         };
