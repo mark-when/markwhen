@@ -1,3 +1,4 @@
+import { DateTime } from "luxon"
 import { Cascade, DateRange, Event, EventDescription, Tags } from "./Types"
 
 const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/
@@ -12,11 +13,26 @@ const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
 const TAG_REGEX = /(?:^| )#(\w*)/g
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 // const EVENT_START_REGEX = /^\s*(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?|now)(-(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?|now))?:/
-export function parse(eventsString: string): Cascade {
+export function parse(eventsString?: string): Cascade {
+
+  if (!eventsString) {
+    return {
+      events: [],
+      tags: {},
+      metadata: {
+        earliestTime:  DateTime.now().minus({ years: 5 }),
+        latestTime: DateTime.now().plus({ years: 5 })
+      }
+    }
+  }
+
   const lines = eventsString.split('\n')
   const events = [] as Event[]
   const tags = {} as Tags
   let paletteIndex = 0
+  
+  let earliest: DateTime | null = null, latest: DateTime | null = null
+  
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
     const line = lines[i].trim()
@@ -62,8 +78,25 @@ export function parse(eventsString: string): Cascade {
       const event = new Event(firstLine, dateRange, eventDescription)
       if (event) {
         events.push(event)
+        if (!earliest || dateRange.fromDateTime < earliest) {
+          earliest = dateRange.fromDateTime
+        }
+        if (!latest || dateRange.toDateTime > latest) {
+          latest = dateRange.toDateTime
+        }
       }
     }
   }
-  return { events, tags }
+  if (!earliest) {
+    earliest = DateTime.now().minus({ years: 5 })
+  }
+  if (!latest) {
+    latest = DateTime.now().plus({ years: 5 })
+  }
+  return {
+    events, tags, metadata: {
+      earliestTime: earliest,
+      latestTime: latest
+    }
+  }
 }
