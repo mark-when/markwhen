@@ -3,9 +3,9 @@
     ref="recyclerScroller"
     class="flex absolute inset-0"
     page-mode
-    :items="allYears"
-    :item-size="columnWidth"
-    key-field="item"
+    :items="years"
+    :item-size="scale"
+    key-field="ts"
     direction="horizontal"
     :buffer="1000"
     ><template #before
@@ -17,8 +17,7 @@
         "
       ></div
     ></template>
-    <template v-slot="{ item }"
-      ><year :year="item" :columnWidth="columnWidth" /></template
+    <template v-slot="{ item }"><year :year="item" /></template
   ></custom-scroller>
 </template>
 
@@ -27,25 +26,23 @@ import Year from "./Year.vue";
 //@ts-ignore
 import Vue from "vue";
 import CustomScroller from "../Timeline/CustomScroller.vue";
-import { mapState } from "vuex";
+import { DateTime } from "luxon";
+import { CascadeMetadata } from "~/Types";
+import { mapState } from "vuex"
 
 export default Vue.extend({
   components: { Year, CustomScroller },
-  props: ["years"],
-  methods: {
-    range(size: number, startAt = 0): number[] {
-      return [...Array(size).keys()].map((i) => i + startAt);
-    },
-  },
   computed: {
     ...mapState({
-      columnWidth: (state: any) => state.settings.yearWidth,
+      scale: (state: any) => state.settings.scale
     }),
-    allYears(): number[] {
-      return this.range(
-        this.years.end - this.years.start + 1,
-        this.years.start
-      );
+    years(): DateTime[] {
+      const cascadeMetadata = this.$store.getters.metadata as CascadeMetadata;
+      let years: DateTime[] = [cascadeMetadata.earliestTime];
+      while (years[years.length - 1] < cascadeMetadata.latestTime) {
+        years.push(years[years.length - 1].plus({ years: 1 }));
+      }
+      return years;
     },
   },
 });

@@ -6,13 +6,12 @@
     @mousedown.prevent="panStart"
     :style="eventsStyle"
   >
-    <events :years="years" />
+    <events />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
 
 <script lang="ts">
-import { BoundingYears } from "../../Types";
 import Events from "./Events.vue";
 import Vue from "vue";
 import Years from "./Years.vue";
@@ -51,9 +50,9 @@ export default Vue.extend({
   watch: {
     startedWidthChange(val) {
       this.widthChangeStartScrollLeft = val ? this.$el.scrollLeft : null;
-      this.widthChangeStartYearWidth = this.yearWidth;
+      this.widthChangeStartYearWidth = this.scale;
     },
-    yearWidth(val, oldVal) {
+    scale(val, oldVal) {
       if (!this.startedWidthChange) {
         return;
       }
@@ -65,37 +64,11 @@ export default Vue.extend({
   },
   computed: {
     ...mapState({
-      yearWidth: (state: any) => state.settings.yearWidth,
+      scale: (state: any) => state.settings.scale,
       startedWidthChange: (state: any) => state.settings.startedWidthChange,
-      columnWidth: (state: any) => state.settings.yearWidth
     }),
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
-    },
-    years(): BoundingYears {
-      const events = this.$store.getters.events;
-
-      if (!events || events.length === 0) {
-        return { start: 2010, end: 2020 };
-      }
-
-      let min = events[0].startingYear();
-      let max = events[0].getNextYear();
-      for (let event of events) {
-        if (event.startingYear() < min) {
-          min = event.startingYear();
-        }
-        if (event.getNextYear() > max) {
-          max = event.getNextYear();
-        }
-      }
-      return {
-        start: min - 1,
-        end: max + 2 + Math.floor(5 * (100 / this.columnWidth)),
-      };
-    },
-    numColumns(): number {
-      return this.years.end - this.years.start;
     },
   },
   methods: {
@@ -110,7 +83,7 @@ export default Vue.extend({
     pinch(e: any) {
       e.preventDefault();
       if (!this.startingZoom) {
-        this.startingZoom = this.$store.state.settings.yearWidth;
+        this.startingZoom = this.$store.state.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
         this.pinchStartScrollLeft = this.$el.scrollLeft;
         this.pinchStartCenterX = e.center.x;
@@ -121,7 +94,7 @@ export default Vue.extend({
         e.center.x!;
       this.$el.scrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
-      this.$store.commit("setYearWidth", this.startingZoom! * e.scale);
+      this.$store.commit("setScale", this.startingZoom! * e.scale);
     },
     pinchEnd(e: any) {
       e.preventDefault();

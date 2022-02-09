@@ -21,8 +21,8 @@ import Vue from "vue";
 function calculateScaledPosition(width: number): number {
   let minSelection = 0;
   let maxSelection = 1000;
-  let minWidth = Math.log(10);
-  let maxWidth = Math.log(1600);
+  let minWidth = Math.log(1);
+  let maxWidth = Math.log(10000);
   const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
   return (Math.log(width) - minWidth) / scale + minSelection;
 }
@@ -30,12 +30,12 @@ function calculateScaledPosition(width: number): number {
 export default Vue.extend({
   data() {
     return {
-      width: calculateScaledPosition(this.$store.state.settings.yearWidth),
+      width: calculateScaledPosition(this.$store.state.settings.scale),
     };
   },
   created() {
     this.updateWidth = throttle(50, (width) => {
-      this.$store.commit("setYearWidth", width);
+      this.$store.commit("setScale", width);
     });
   },
   methods: {
@@ -51,12 +51,12 @@ export default Vue.extend({
     width(val, oldVal) {
       let minSelection = 0;
       let maxSelection = 1000;
-      let minWidth = Math.log(10);
-      let maxWidth = Math.log(1600);
+      let minWidth = Math.log(1);
+      let maxWidth = Math.log(10000);
       const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
       this.updateWidth(Math.exp(minWidth + scale * (val - minSelection)));
     },
-    "$store.state.settings.yearWidth": function (val, oldVal) {
+    "$store.state.settings.scale": function (val, oldVal) {
       this.width = calculateScaledPosition(val);
     },
   },

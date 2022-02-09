@@ -96,11 +96,10 @@ const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
-import { mapState } from "vuex"
 
 export default Vue.extend({
   components: { EventMeta },
-  props: ["event", "widthPerDay", "startYear"],
+  props: ["event"],
   data() {
     return {
       imageStatus: "not loaded",
@@ -109,9 +108,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState({
-      columnWidth: (state: any) => state.settings.yearWidth
-    }),
     locations(): string[] {
       return this.event.event.locations.map(
         (location: string) =>
@@ -202,32 +198,26 @@ export default Vue.extend({
       this.imageStatus = "loaded";
     },
     togglePhotos(e: MouseEvent) {
-      e.preventDefault()
+      e.preventDefault();
       this.showingMeta = !this.showingMeta;
       if (this.imageStatus === "not loaded" && this.hasImages) {
         this.loadImages();
       }
     },
     getWidthForRange(range: DateRange): number {
-      const width = Math.max(
-        EVENT_HEIGHT_PX,
-        Math.max(1, range.numDays()) * this.widthPerDay
+      const distance = this.$store.getters.distanceBetweenDates(
+        range.fromDateTime,
+        range.toDateTime
       );
-      return width;
+      const newWidth = Math.max(EVENT_HEIGHT_PX, distance);
+      return newWidth;
     },
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
-      let base = (event.startingYear() - this.startYear) * this.columnWidth;
-      if (date.month) {
-        const monthOffset = (this.columnWidth / 12) * (date.month - 1);
-        if (date.day) {
-          return (
-            base + monthOffset + (date.day - 1) * (this.columnWidth / 12 / 30)
-          );
-        } else {
-          return base + monthOffset;
-        }
-      }
-      return base + 0;
+      const leftMostDate = this.$store.getters.metadata.earliestTime;
+      return this.$store.getters.distanceBetweenDates(
+        leftMostDate,
+        event.range.fromDateTime
+      );
     },
   },
 });

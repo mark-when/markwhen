@@ -86,7 +86,7 @@ export interface BoundingYears {
 
 export class DateRange {
   fromDateTime: DateTime
-  toDateTime?: DateTime
+  toDateTime: DateTime
   from: YearMonthDay;
   to?: YearMonthDay;
   originalString: string
@@ -178,10 +178,16 @@ export class DateRange {
     }
     return days
   }
+
+  static distanceBetweenDates(dateA: DateTime, dateB: DateTime, scale: number): number {
+    const diff = dateB.diff(dateA).as('years')
+    console.log(diff * scale)
+    return diff * scale
+  }
 }
 
 export interface Settings {
-  yearWidth: number
+  scale: number
 }
 
 export const LINK_REGEX = /\[([^\]]+)\]\(((https?:\/\/)?[\w\d./?=\-#]+)\)/g;
@@ -278,13 +284,15 @@ export class Event {
   }
 }
 
-export interface Settings {
-  yearWidth: number
-}
-
 export type Tags = { [tagName: string]: string }
 
 export interface Cascade {
   events: Event[]
   tags: Tags
+  metadata: CascadeMetadata
+}
+
+export interface CascadeMetadata {
+  earliestTime: DateTime
+  latestTime: DateTime
 }

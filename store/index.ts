@@ -1,16 +1,17 @@
 import { Context } from "@nuxt/types";
 import { parse } from "~/Parser";
-import { Cascade, Event, Tags } from "../Types"
+import { Cascade, CascadeMetadata, DateRange, Event, Tags } from "../Types"
+import { MutationTree, GetterTree } from "vuex"
+import { DateTime } from "luxon";
 interface State {
   list: string[],
   currentTimelineName: string,
   settings: {
-    yearWidth: number,
     startedWidthChange: boolean,
     scale: number
   },
   filter: string[]
-  eventsString: string | null,
+  eventsString: string | undefined,
   timelinePath: string | null,
   username: string | null
   dirtyEditor: boolean,
@@ -99,19 +100,18 @@ export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
   settings: {
-    yearWidth: 120,
     startedWidthChange: false,
-    scale: 1
+    scale: 100
   },
   filter: [],
-  eventsString: eventsString,
+  eventsString: eventsString || undefined,
   timelinePath: '',
   username: '',
   dirtyEditor: false,
   hasSeenHowTo: true,
 })
 
-export const mutations = {
+export const mutations: MutationTree<State> = {
   setStartedWidthChange(state: State, changing: boolean) {
     state.settings.startedWidthChange = changing
   },
@@ -145,7 +145,7 @@ export const mutations = {
     const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
     state.list = concatenatedList ? concatenatedList.split(',') : []
     state.currentTimelineName = state.list.length > 0 ? state.list[0] : ''
-    state.eventsString = state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline
+    state.eventsString = (state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline) || undefined
   },
   setCurrentTimeline(state: State, timelineName: string) {
     state.eventsString = localStorage.getItem(timelineName) ?? ""
@@ -169,8 +169,8 @@ export const mutations = {
       localStorage.setItem("timelines", state.list.join(","));
     }
   },
-  setYearWidth(state: State, width: number) {
-    state.settings.yearWidth = Math.max(10, Math.min(1600, width))
+  setScale(state: State, width: number) {
+    state.settings.scale = Math.max(1, Math.min(10000, width))
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
@@ -191,7 +191,7 @@ export const mutations = {
   }
 }
 
-export const getters = {
+export const getters: GetterTree<State, State> = {
   trimmedAndFilteredEntries(state: State): string[] {
     if (!state.eventsString) {
       return []
@@ -211,7 +211,8 @@ export const getters = {
     return eventStrings.filter(filter).map((str: string) => str.trim());
   },
   cascade(state: State, getters: any): Cascade {
-    return state.eventsString ? parse(state.eventsString) : { events: [], tags: {} }
+    const cascade = parse(state.eventsString)
+    return cascade
   },
   events(state: State, getters: any): Event[] {
     return getters.cascade.events
@@ -226,6 +227,12 @@ export const getters = {
   tags(state: State, getters: any): Tags {
     return getters.cascade.tags
   },
+  metadata(state: State, getters: any): CascadeMetadata {
+    return getters.cascade.metadata
+  },
+  distanceBetweenDates(state: State, getters: any) {
+    return (a: DateTime, b: DateTime) => DateRange.distanceBetweenDates(a, b, state.settings.scale)
+  }
 }
 
 export const actions = {
