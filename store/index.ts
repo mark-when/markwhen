@@ -1,8 +1,9 @@
 import { Context } from "@nuxt/types";
 import { parse } from "~/Parser";
-import { Cascade, CascadeMetadata, DateRange, Event, Tags } from "../Types"
-import { MutationTree, GetterTree } from "vuex"
+import { Cascade, CascadeMetadata, Event, Tags } from "../Types"
+import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
+import e from "express";
 interface State {
   list: string[],
   currentTimelineName: string,
@@ -15,8 +16,15 @@ interface State {
   timelinePath: string | null,
   username: string | null
   dirtyEditor: boolean,
-  hasSeenHowTo: boolean
+  hasSeenHowTo: boolean,
+  viewportDateInterval: DateInterval
 }
+
+interface DateInterval {
+  from: DateTime
+  to: DateTime
+}
+
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
 let currentTimelineName = ''
@@ -109,7 +117,20 @@ export const state: () => State = () => ({
   username: '',
   dirtyEditor: false,
   hasSeenHowTo: true,
+  viewportDateInterval: {
+    from: DateTime.now(),
+    to: DateTime.now()
+  }
 })
+
+export type DisplayScale =
+  | "decade"
+  | "years"
+  | "months"
+  | "days"
+  | "hours"
+  | "minutes"
+  | "seconds";
 
 export const mutations: MutationTree<State> = {
   setStartedWidthChange(state: State, changing: boolean) {
@@ -188,7 +209,39 @@ export const mutations: MutationTree<State> = {
     } else {
       state.filter.push(tag)
     }
+  },
+  setViewportDateInterval(state: State, interval: DateInterval) {
+    state.viewportDateInterval = interval
+  },
+}
+
+function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
+  const year = dateTime.year
+  if (toScale === 'decade') {
+    const roundedYear = year - year % 10
+    return DateTime.fromObject({ year: roundedYear })
   }
+  if (toScale === 'years') {
+    return DateTime.fromObject({ year })
+  }
+  const month = dateTime.month
+  if (toScale === 'months') {
+    return DateTime.fromObject({ year, month })
+  }
+  const day = dateTime.day
+  if (toScale === 'days') {
+    return DateTime.fromObject({ year, month, day })
+  }
+  const hour = dateTime.hour
+  if (toScale === 'hours') {
+    return DateTime.fromObject({ year, month, day, hour })
+  }
+  const minute = dateTime.minute
+  if (toScale === 'minutes') {
+    return DateTime.fromObject({ year, month, day, hour, minute })
+  }
+  const second = dateTime.second
+  return DateTime.fromObject({ year, month, day, hour, minute, second })
 }
 
 export const getters: GetterTree<State, State> = {
@@ -231,11 +284,92 @@ export const getters: GetterTree<State, State> = {
     return getters.cascade.metadata
   },
   distanceBetweenDates(state: State, getters: any) {
-    return (a: DateTime, b: DateTime) => DateRange.distanceBetweenDates(a, b, state.settings.scale)
+    return (a: DateTime, b: DateTime) => b.diff(a).as('years') * state.settings.scale
+  },
+  viewportDateInterval(state: State, getters: any): DateInterval {
+    if (typeof state.viewportDateInterval.from === 'string' && typeof state.viewportDateInterval.to === 'string') {
+      return {
+        from: DateTime.fromISO(state.viewportDateInterval.from),
+        to: DateTime.fromISO(state.viewportDateInterval.to)
+      }
+    }
+    return state.viewportDateInterval
+  },
+  setDateIntervalFromViewport(state: State, getters: any): (scrollLeft: number, width: number) => DateInterval {
+    return (scrollLeft: number, width: number) => {
+      const earliest = getters.metadata.earliestTime as DateTime
+      const leftDate = earliest.plus({ years: scrollLeft / state.settings.scale })
+      const rightDate = earliest.plus({ years: (scrollLeft + width) / state.settings.scale })
+      return { from: leftDate, to: rightDate }
+    }
+  },
+  scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
+    const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
+
+    const MINUTE = 60
+    if (diff < MINUTE) {
+      return "seconds"
+    }
+
+    const HOUR = 60 * MINUTE
+    if (diff < HOUR) {
+      return "minutes"
+    }
+
+    const DAY = 24 * HOUR
+    if (diff < DAY) {
+      return 'hours'
+    }
+
+    const MONTH = 30 * DAY
+    if (diff < MONTH) {
+      return 'days'
+    }
+
+    const YEAR = 12 * MONTH
+    if (diff < YEAR) {
+      return 'months'
+    }
+
+    const DECADE = 10 * YEAR
+    if (diff < DECADE) {
+      return "years"
+    }
+    return 'decade'
+  },
+  timeMarkers(state: State, getters: any) {
+    const markers = []
+    const scale = getters.scaleOfViewportDateInterval as DisplayScale
+    const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
+
+    let rightmost
+    if (scale === 'decade') {
+      rightmost = rightViewportDate.plus({ years: 10 })
+    } else {
+      rightmost = rightViewportDate.plus({ [scale]: 30 })
+    }
+
+    let nextLeft
+    if (scale === 'decade') {
+      nextLeft = floorDateTime(leftViewportDate, scale).minus({ years: 10 })
+    } else {
+      nextLeft = floorDateTime(leftViewportDate, scale).minus({ [scale]: 30 })
+    }
+
+    while (nextLeft < rightmost && markers.length < 300) {
+      markers.push(nextLeft)
+      if (scale === 'decade') {
+        nextLeft = nextLeft.plus({ years: 10 })
+      } else {
+        nextLeft = nextLeft.plus({ [scale]: 1 })
+      }
+    }
+    console.log(`${markers.length} markers at ${scale} scale`)
+    return markers
   }
 }
 
-export const actions = {
+export const actions: ActionTree<State, State> = {
   nuxtServerInit(store: any, context: Context) {
     if (context.req.timelineFile) {
       store.commit('setEventsString', context.req.timelineFile)

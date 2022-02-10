@@ -178,12 +178,6 @@ export class DateRange {
     }
     return days
   }
-
-  static distanceBetweenDates(dateA: DateTime, dateB: DateTime, scale: number): number {
-    const diff = dateB.diff(dateA).as('years')
-    console.log(diff * scale)
-    return diff * scale
-  }
 }
 
 export interface Settings {
