@@ -286,8 +286,11 @@ export const getters: GetterTree<State, State> = {
   distanceBetweenDates(state: State, getters: any) {
     return (a: DateTime, b: DateTime) => b.diff(a).as('years') * state.settings.scale
   },
-  distanceFromLeftmostDate(state: State, getters: any) {
-    return (a: DateTime) => (getters.metadata as CascadeMetadata).earliestTime.diff(a).as('years') * state.settings.scale
+  baselineLeftmostDate(state: State, getters: any) {
+    return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
+  },
+  distanceFromBaselineLeftmostDate(state: State, getters: any) {
+    return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as('years') * state.settings.scale
   },
   viewportDateInterval(state: State, getters: any): DateInterval {
     if (typeof state.viewportDateInterval.from === 'string' && typeof state.viewportDateInterval.to === 'string') {
@@ -345,19 +348,21 @@ export const getters: GetterTree<State, State> = {
     const scale = getters.scaleOfViewportDateInterval as DisplayScale
     const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
 
-    let rightmost
+    const bufferAmount = 30
+
+    let increment
     if (scale === 'decade') {
-      rightmost = rightViewportDate.plus({ years: 10 })
+      increment = {
+        years: 10 * bufferAmount
+      }
     } else {
-      rightmost = rightViewportDate.plus({ [scale]: 30 })
+      increment = {
+        [scale]: bufferAmount
+      }
     }
 
-    let nextLeft
-    if (scale === 'decade') {
-      nextLeft = floorDateTime(leftViewportDate, scale).minus({ years: 10 })
-    } else {
-      nextLeft = floorDateTime(leftViewportDate, scale).minus({ [scale]: 30 })
-    }
+    const rightmost = rightViewportDate.plus(increment)
+    let nextLeft = floorDateTime(leftViewportDate, scale).minus(increment)
 
     while (nextLeft < rightmost && markers.length < 300) {
       markers.push(nextLeft)

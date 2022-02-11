@@ -96,6 +96,7 @@ const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 const EVENT_HEIGHT_PX = 10;
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
+import { mapGetters } from "vuex"
 
 export default Vue.extend({
   components: { EventMeta },
@@ -108,6 +109,7 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapGetters(['distanceFromBaselineLeftmostDate']),
     locations(): string[] {
       return this.event.event.locations.map(
         (location: string) =>
@@ -213,11 +215,7 @@ export default Vue.extend({
       return newWidth;
     },
     getLeftMarginForDate(event: Event, date: YearMonthDay): number {
-      const leftMostDate = this.$store.getters.metadata.earliestTime;
-      return this.$store.getters.distanceBetweenDates(
-        leftMostDate,
-        event.range.fromDateTime
-      );
+      return this.distanceFromBaselineLeftmostDate(event.range.fromDateTime)
     },
   },
 });
