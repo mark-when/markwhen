@@ -26,15 +26,15 @@ import Year from "./Year.vue";
 //@ts-ignore
 import Vue from "vue";
 import CustomScroller from "../Timeline/CustomScroller.vue";
+import { mapState, mapGetters } from "vuex";
 import { DateTime } from "luxon";
 import { CascadeMetadata } from "~/Types";
-import { mapState } from "vuex"
 
 export default Vue.extend({
   components: { Year, CustomScroller },
   computed: {
     ...mapState({
-      scale: (state: any) => state.settings.scale
+      scale: (state: any) => state.settings.scale,
     }),
     years(): DateTime[] {
       const cascadeMetadata = this.$store.getters.metadata as CascadeMetadata;
@@ -43,6 +43,14 @@ export default Vue.extend({
         years.push(years[years.length - 1].plus({ years: 1 }));
       }
       return years;
+    },
+    ...mapGetters(["metadata", "timeMarkers"]),
+    totalWidth(): number {
+      const distance = this.$store.getters.distanceBetweenDates(
+        this.metadata.earliestTime,
+        this.metadata.latestTime
+      );
+      return distance;
     },
   },
 });

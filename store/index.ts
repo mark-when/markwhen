@@ -125,12 +125,12 @@ export const state: () => State = () => ({
 
 export type DisplayScale =
   | "decade"
-  | "years"
-  | "months"
-  | "days"
-  | "hours"
-  | "minutes"
-  | "seconds";
+  | "year"
+  | "month"
+  | "day"
+  | "hour"
+  | "minute"
+  | "second";
 
 export const mutations: MutationTree<State> = {
   setStartedWidthChange(state: State, changing: boolean) {
@@ -221,23 +221,23 @@ function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
     const roundedYear = year - year % 10
     return DateTime.fromObject({ year: roundedYear })
   }
-  if (toScale === 'years') {
+  if (toScale === 'year') {
     return DateTime.fromObject({ year })
   }
   const month = dateTime.month
-  if (toScale === 'months') {
+  if (toScale === 'month') {
     return DateTime.fromObject({ year, month })
   }
   const day = dateTime.day
-  if (toScale === 'days') {
+  if (toScale === 'day') {
     return DateTime.fromObject({ year, month, day })
   }
   const hour = dateTime.hour
-  if (toScale === 'hours') {
+  if (toScale === 'hour') {
     return DateTime.fromObject({ year, month, day, hour })
   }
   const minute = dateTime.minute
-  if (toScale === 'minutes') {
+  if (toScale === 'minute') {
     return DateTime.fromObject({ year, month, day, hour, minute })
   }
   const second = dateTime.second
@@ -286,6 +286,9 @@ export const getters: GetterTree<State, State> = {
   distanceBetweenDates(state: State, getters: any) {
     return (a: DateTime, b: DateTime) => b.diff(a).as('years') * state.settings.scale
   },
+  distanceFromLeftmostDate(state: State, getters: any) {
+    return (a: DateTime) => (getters.metadata as CascadeMetadata).earliestTime.diff(a).as('years') * state.settings.scale
+  },
   viewportDateInterval(state: State, getters: any): DateInterval {
     if (typeof state.viewportDateInterval.from === 'string' && typeof state.viewportDateInterval.to === 'string') {
       return {
@@ -308,36 +311,36 @@ export const getters: GetterTree<State, State> = {
 
     const MINUTE = 60
     if (diff < MINUTE) {
-      return "seconds"
+      return "second"
     }
 
     const HOUR = 60 * MINUTE
     if (diff < HOUR) {
-      return "minutes"
+      return "minute"
     }
 
     const DAY = 24 * HOUR
     if (diff < DAY) {
-      return 'hours'
+      return 'hour'
     }
 
     const MONTH = 30 * DAY
     if (diff < MONTH) {
-      return 'days'
+      return 'day'
     }
 
     const YEAR = 12 * MONTH
     if (diff < YEAR) {
-      return 'months'
+      return 'month'
     }
 
     const DECADE = 10 * YEAR
     if (diff < DECADE) {
-      return "years"
+      return "year"
     }
     return 'decade'
   },
-  timeMarkers(state: State, getters: any) {
+  timeMarkers(state: State, getters: any): DateTime[] {
     const markers = []
     const scale = getters.scaleOfViewportDateInterval as DisplayScale
     const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
@@ -364,7 +367,6 @@ export const getters: GetterTree<State, State> = {
         nextLeft = nextLeft.plus({ [scale]: 1 })
       }
     }
-    console.log(`${markers.length} markers at ${scale} scale`)
     return markers
   }
 }

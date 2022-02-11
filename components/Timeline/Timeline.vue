@@ -4,8 +4,10 @@
     class="relative h-full overflow-auto w-full"
     :class="{ 'order-1': $store.state.sidebar.position === 'right' }"
     @mousedown.prevent="panStart"
+    @scroll="scroll"
     :style="eventsStyle"
   >
+    <!-- @mousewheel.prevent="resize" -->
     <events />
     <drawer-header :edittable="edittable" />
   </div>
@@ -46,6 +48,7 @@ export default Vue.extend({
   },
   mounted() {
     this.setupHammer();
+    this.setViewportDateInterval();
   },
   watch: {
     startedWidthChange(val) {
@@ -72,6 +75,21 @@ export default Vue.extend({
     },
   },
   methods: {
+    setViewportDateInterval() {
+      this.$store.commit(
+        "setViewportDateInterval",
+        this.$store.getters.setDateIntervalFromViewport(
+          this.$el.scrollLeft,
+          this.$el.clientWidth
+        )
+      );
+    },
+    scroll() {
+      this.setViewportDateInterval();
+    },
+    // resize() {
+    //   console.log('resize')
+    // },
     setupHammer() {
       this.$el.addEventListener("touchstart", this.touchStart);
       this.$el.addEventListener("touchend", this.touchEnd);
