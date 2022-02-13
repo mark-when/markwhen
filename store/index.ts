@@ -25,6 +25,12 @@ interface DateInterval {
   to: DateTime
 }
 
+export interface TimeMarker {
+  ts: number
+  dateTime: DateTime
+  size: number
+}
+
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 
 let currentTimelineName = ''
@@ -290,7 +296,7 @@ export const getters: GetterTree<State, State> = {
     return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
   },
   baselineRightmostDate(state: State, getters: any) {
-    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1}), 'year')
+    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1 }), 'year')
   },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
     return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as('years') * state.settings.scale
@@ -306,7 +312,7 @@ export const getters: GetterTree<State, State> = {
   },
   setDateIntervalFromViewport(state: State, getters: any): (scrollLeft: number, width: number) => DateInterval {
     return (scrollLeft: number, width: number) => {
-      const earliest = getters.metadata.earliestTime as DateTime
+      const earliest = getters.baselineLeftmostDate
       const leftDate = earliest.plus({ years: scrollLeft / state.settings.scale })
       const rightDate = earliest.plus({ years: (scrollLeft + width) / state.settings.scale })
       return { from: leftDate, to: rightDate }
@@ -331,12 +337,12 @@ export const getters: GetterTree<State, State> = {
     }
 
     const MONTH = 30 * DAY
-    if (diff < MONTH) {
+    if (diff < 2 * MONTH) {
       return 'day'
     }
 
     const YEAR = 12 * MONTH
-    if (diff < YEAR) {
+    if (diff < 2 * YEAR) {
       return 'month'
     }
 
@@ -346,39 +352,62 @@ export const getters: GetterTree<State, State> = {
     }
     return 'decade'
   },
-  timeMarkers(state: State, getters: any): DateTime[] {
-    const markers = []
+  timeMarkers(state: State, getters: any): TimeMarker[] {
+    const markers = [] as TimeMarker[]
     const scale = getters.scaleOfViewportDateInterval as DisplayScale
     const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
 
     const bufferAmount = 30
 
-    let increment
+    let leftBufferAmount
     if (scale === 'decade') {
-      increment = {
+      leftBufferAmount = {
         years: 10 * bufferAmount
       }
     } else {
-      increment = {
+      leftBufferAmount = {
         [scale]: bufferAmount
       }
     }
 
-    let rightmost = rightViewportDate.plus(increment)
+    let rightmost = rightViewportDate.plus(leftBufferAmount)
     rightmost = rightmost > getters.baselineRightmostDate ? getters.baselineRightmostDate : rightmost
-    let nextLeft = floorDateTime(leftViewportDate, scale).minus(increment)
-    nextLeft = nextLeft > getters.baselineLeftmostDate ? nextLeft : getters.baselineLeftmostDate
 
-    while (nextLeft < rightmost && markers.length < 200) {
-      markers.push(nextLeft)
+    let nextLeft = floorDateTime(leftViewportDate, scale).minus(leftBufferAmount)
+    if (nextLeft > getters.baselineLeftmostDate) {
+      // We have to add the first block that will be a custom width to account for stuff we 
+      // aren't showing.
+      markers.push({
+        dateTime: getters.baselineLeftmostDate,
+        size: getters.distanceFromBaselineLeftmostDate(nextLeft),
+        ts: getters.baselineLeftmostDate.toMillis()
+      })
+    } else {
+      nextLeft = getters.baselineLeftmostDate
+    }
+
+    while (nextLeft < rightmost && markers.length < 100) {
+      markers.push({ dateTime: nextLeft, size: 0, ts: nextLeft.toMillis() })
       if (scale === 'decade') {
         nextLeft = nextLeft.plus({ years: 10 })
       } else {
         nextLeft = nextLeft.plus({ [scale]: 1 })
       }
+      markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, nextLeft)
     }
+
+    // Get the last one
+    markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
+    console.log('scale:', getters.scaleOfViewportDateInterval)
+    console.log('num markers:', markers.length)
+    console.log('leftmost marker', m(markers[0]))
+    console.log('rightmost marker', m(markers[markers.length - 1]))
     return markers
   }
+}
+
+function m(m: TimeMarker): string {
+  return `${m.dateTime.toLocaleString()}, ${m.size}px`
 }
 
 export const actions: ActionTree<State, State> = {

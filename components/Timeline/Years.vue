@@ -4,7 +4,6 @@
     class="flex absolute inset-0"
     page-mode
     :items="timeMarkers"
-    :item-size="scale"
     key-field="ts"
     direction="horizontal"
     :buffer="1000"
@@ -17,7 +16,7 @@
         "
       ></div
     ></template>
-    <template v-slot="{ item }"><year :year="item" /></template
+    <template v-slot="{ item }"><time-marker :timeMarker="item" /></template
   ></custom-scroller>
 </template>
 
@@ -29,9 +28,10 @@ import CustomScroller from "../Timeline/CustomScroller.vue";
 import { mapState, mapGetters } from "vuex";
 import { DateTime } from "luxon";
 import { CascadeMetadata } from "~/Types";
+import TimeMarker from "./TimeMarker.vue";
 
 export default Vue.extend({
-  components: { Year, CustomScroller },
+  components: { CustomScroller, TimeMarker },
   computed: {
     ...mapState({
       scale: (state: any) => state.settings.scale,

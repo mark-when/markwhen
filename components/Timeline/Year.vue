@@ -1,6 +1,6 @@
 <template>
   <div class="year flex-shrink-0 relative" :style="yearColumnStyle">
-    <h6 class="yearTitle text-sm" :style="yearStyle">{{ year.year }}</h6>
+    <h6 class="yearTitle text-sm" :style="yearStyle">{{ dateText }}</h6>
     <!-- <template v-if="this.columnWidth > 600">
       <div
         class="absolute h-full"
@@ -14,10 +14,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapState } from "vuex"
+import { mapState } from "vuex";
+import { DisplayScale } from "~/store";
 
 export default Vue.extend({
-  props: ["year"],
+  props: ["timeMarker"],
   // methods: {
   //   styleForMonth(m: number) {
   //     const sty = {
@@ -33,27 +34,32 @@ export default Vue.extend({
   //     return sty;
   //   },
   // },
-  data() {
-    return {
-      columnWidth: 30
-    }
-  },
   computed: {
     ...mapState({
-      scale: (state: any) => state.settings.scale
+      scale: (state: any) => state.settings.scale as DisplayScale,
     }),
     yearColumnStyle(): string {
-      return `width: ${this.columnWidth}px; border-left: 1px dashed rgba(128, 128, 128, 1)`;
+      return `width: ${this.timeMarker.size}px; border-left: 1px dashed rgba(128, 128, 128, 1)`;
+    },
+    dateText(): string {
+      if (this.scale === 'year' || this.scale === 'decade') {
+        return this.timeMarker.dateTime.year;
+      }
+      if (this.scale === 'month') {
+        
+      }
     },
     yearStyle(): string {
       let alpha;
-      if (this.columnWidth < 80) {
-        alpha = (this.columnWidth - 30) / 70;
+      if (this.timeMarker.size < 80) {
+        alpha = (this.timeMarker.size - 30) / 70;
       } else {
         alpha = 1;
       }
       const color =
-        this.year % 10 === 0 ? "white" : `rgba(255, 255, 255, ${alpha})`;
+        this.timeMarker.dateTime.year % 10 === 0
+          ? "white"
+          : `rgba(255, 255, 255, ${alpha})`;
       return `color: ${color};`;
     },
   },

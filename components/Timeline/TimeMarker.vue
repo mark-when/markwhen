@@ -1,6 +1,6 @@
 <template>
   <div class="timeMarker flex-shrink-0 relative" :style="columnStyle">
-    <h6 class="timeMarkerTitle text-sm text-white">
+    <h6 class="timeMarkerTitle text-sm text-white whitespace-nowrap">
       {{ text }}
     </h6>
   </div>
@@ -13,19 +13,16 @@ import { mapGetters, mapState } from "vuex";
 import { DisplayScale } from "~/store";
 
 function scaledDisplayText(time: DateTime, scale: DisplayScale): string {
-  if (scale === "decade" || scale === 'year') {
+  if (scale === "decade" || scale === "year") {
     return "" + time.year;
   }
-  if (scale === 'month') {
-    if (time.month === 1 || time.month === 6) {
-      return `${time.monthShort} ${time.year}`
-    }
-    return time.monthShort
+  if (scale === "month") {
+    const monthPadded = `${time.month < 10 ? "0" : ""}${time.month}`;
+    return `${monthPadded}-${time.year}`;
   }
-  if (scale === 'day') {
+  if (scale === "day") {
     if (time.day === 1) {
       if (time.month === 1) {
-
       }
     }
   }
@@ -41,7 +38,7 @@ export default Vue.extend({
     },
     text(): string {
       return scaledDisplayText(
-        this.timeMarker,
+        this.timeMarker.dateTime,
         this.scaleOfViewportDateInterval
       );
     },
