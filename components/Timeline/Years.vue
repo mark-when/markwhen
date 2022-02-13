@@ -3,7 +3,7 @@
     ref="recyclerScroller"
     class="flex absolute inset-0"
     page-mode
-    :items="years"
+    :items="timeMarkers"
     :item-size="scale"
     key-field="ts"
     direction="horizontal"

@@ -289,6 +289,9 @@ export const getters: GetterTree<State, State> = {
   baselineLeftmostDate(state: State, getters: any) {
     return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
   },
+  baselineRightmostDate(state: State, getters: any) {
+    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1}), 'year')
+  },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
     return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as('years') * state.settings.scale
   },
@@ -337,7 +340,7 @@ export const getters: GetterTree<State, State> = {
       return 'month'
     }
 
-    const DECADE = 10 * YEAR
+    const DECADE = 30 * YEAR
     if (diff < DECADE) {
       return "year"
     }
@@ -361,10 +364,12 @@ export const getters: GetterTree<State, State> = {
       }
     }
 
-    const rightmost = rightViewportDate.plus(increment)
+    let rightmost = rightViewportDate.plus(increment)
+    rightmost = rightmost > getters.baselineRightmostDate ? getters.baselineRightmostDate : rightmost
     let nextLeft = floorDateTime(leftViewportDate, scale).minus(increment)
+    nextLeft = nextLeft > getters.baselineLeftmostDate ? nextLeft : getters.baselineLeftmostDate
 
-    while (nextLeft < rightmost && markers.length < 300) {
+    while (nextLeft < rightmost && markers.length < 200) {
       markers.push(nextLeft)
       if (scale === 'decade') {
         nextLeft = nextLeft.plus({ years: 10 })
