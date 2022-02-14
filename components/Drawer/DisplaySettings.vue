@@ -17,12 +17,13 @@
 <script lang="ts">
 import { throttle } from "throttle-debounce";
 import Vue from "vue";
+import { MAX_SCALE } from "~/store";
 
 function calculateScaledPosition(width: number): number {
   let minSelection = 0;
   let maxSelection = 1000;
   let minWidth = Math.log(1);
-  let maxWidth = Math.log(10000);
+  let maxWidth = Math.log(MAX_SCALE);
   const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
   return (Math.log(width) - minWidth) / scale + minSelection;
 }
@@ -52,7 +53,7 @@ export default Vue.extend({
       let minSelection = 0;
       let maxSelection = 1000;
       let minWidth = Math.log(1);
-      let maxWidth = Math.log(10000);
+      let maxWidth = Math.log(MAX_SCALE);
       const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
       this.updateWidth(Math.exp(minWidth + scale * (val - minSelection)));
     },

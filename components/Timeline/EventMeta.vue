@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { EventDescription } from "../../Types"
+import { EventDescription } from "../../src/Types"
 
 export default Vue.extend({
   props: ["locations", "images", "supplemental", "photosLink"],

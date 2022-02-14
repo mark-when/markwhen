@@ -27,7 +27,7 @@ import Vue from "vue";
 import CustomScroller from "../Timeline/CustomScroller.vue";
 import { mapState, mapGetters } from "vuex";
 import { DateTime } from "luxon";
-import { CascadeMetadata } from "~/Types";
+import { CascadeMetadata } from "~/src/Types";
 import TimeMarker from "./TimeMarker.vue";
 
 export default Vue.extend({

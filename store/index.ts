@@ -1,9 +1,9 @@
 import { Context } from "@nuxt/types";
-import { parse } from "~/Parser";
-import { Cascade, CascadeMetadata, Event, Tags } from "../Types"
+import { parse } from "~/src/Parser";
+import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
-import e from "express";
+
 interface State {
   list: string[],
   currentTimelineName: string,
@@ -32,7 +32,7 @@ export interface TimeMarker {
 }
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
-
+export const MAX_SCALE = 10000
 let currentTimelineName = ''
 let list = [] as string[]
 
@@ -197,7 +197,7 @@ export const mutations: MutationTree<State> = {
     }
   },
   setScale(state: State, width: number) {
-    state.settings.scale = Math.max(1, Math.min(10000, width))
+    state.settings.scale = Math.max(1, Math.min(MAX_SCALE, width))
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
@@ -398,10 +398,10 @@ export const getters: GetterTree<State, State> = {
 
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
-    console.log('scale:', getters.scaleOfViewportDateInterval)
-    console.log('num markers:', markers.length)
-    console.log('leftmost marker', m(markers[0]))
-    console.log('rightmost marker', m(markers[markers.length - 1]))
+    // console.log('scale:', getters.scaleOfViewportDateInterval)
+    // console.log('num markers:', markers.length)
+    // console.log('leftmost marker', m(markers[0]))
+    // console.log('rightmost marker', m(markers[markers.length - 1]))
     return markers
   }
 }

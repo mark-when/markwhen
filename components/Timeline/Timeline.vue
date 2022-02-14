@@ -7,7 +7,6 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
-    <!-- @mousewheel.prevent="resize" -->
     <events />
     <drawer-header :edittable="edittable" />
   </div>
@@ -21,6 +20,8 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 // @ts-ignore
 import Hammer from "@squadette/hammerjs";
 import { mapState } from "vuex";
+import { zoomer, WheelGesture } from "~/src/zoomer";
+import { MAX_SCALE } from "~/store";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
@@ -48,6 +49,7 @@ export default Vue.extend({
   },
   mounted() {
     this.setupHammer();
+    this.setupZoomer();
     this.setViewportDateInterval();
   },
   watch: {
@@ -87,8 +89,16 @@ export default Vue.extend({
     scroll() {
       this.setViewportDateInterval();
     },
-    // resize() {
-    //   console.log('resize')
+    // resize(e: WheelEvent) {
+    //   console.log(e.ctrlKey)
+    //   // if (e.deltaY % 1 === 0) {
+    //   //   return;
+    //   // }
+    //   if (!e.cancelable) {
+    //     e.preventDefault();
+    //   }
+    //   // console.log(e.x, e.y, e.deltaY)
+    //   // console.log(e.deltaMode)
     // },
     setupHammer() {
       this.$el.addEventListener("touchstart", this.touchStart);
@@ -97,6 +107,47 @@ export default Vue.extend({
       this.mc.add(new Hammer.Pinch({ touchAction: "none" }));
       this.mc.on("pinch", this.pinch);
       this.mc.on("pinchend", this.pinchEnd);
+    },
+    setupZoomer() {
+      const gestures = {
+        startGesture: this.startGesture,
+        doGesture: this.doGesture,
+        endGesture: this.endGesture,
+      };
+      zoomer(this.$el as HTMLElement, gestures);
+    },
+    startGesture(wg: WheelGesture) {
+      if (!this.startingZoom) {
+        this.startingZoom = this.$store.state.settings.scale;
+        this.pinchStartScrollTop = this.$el.scrollTop;
+        this.pinchStartScrollLeft = this.$el.scrollLeft;
+        this.pinchStartCenterX = wg.origin.x;
+        this.pinchStartCenterY = wg.origin.y;
+      }
+      this.$el.scrollLeft =
+        wg.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
+        wg.origin.x!;
+      this.$el.scrollTop =
+        this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
+      this.$store.commit("setScale", this.startingZoom! * wg.scale);
+    },
+    doGesture(wg: WheelGesture) {
+      if (this.startingZoom! * wg.scale > MAX_SCALE) {
+        return;
+      }
+      this.$el.scrollLeft =
+        wg.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
+        wg.origin.x!;
+      this.$el.scrollTop =
+        this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
+      this.$store.commit("setScale", this.startingZoom! * wg.scale);
+    },
+    endGesture(wg: WheelGesture) {
+      this.startingZoom = null;
+      this.pinchStartScrollLeft = null;
+      this.pinchStartScrollTop = null;
+      this.pinchStartCenterX = null;
+      this.pinchStartCenterY = null;
     },
     pinch(e: any) {
       e.preventDefault();
@@ -107,12 +158,20 @@ export default Vue.extend({
         this.pinchStartCenterX = e.center.x;
         this.pinchStartCenterY = e.center.y;
       }
-      this.$el.scrollLeft =
-        e.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-        e.center.x!;
-      this.$el.scrollTop =
-        this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
-      this.$store.commit("setScale", this.startingZoom! * e.scale);
+      if (this.startingZoom! * e.scale > MAX_SCALE) {
+        this.$el.scrollLeft =
+          1 * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
+          e.center.x!;
+        this.$el.scrollTop =
+          this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
+      } else {
+        this.$el.scrollLeft =
+          e.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
+          e.center.x!;
+        this.$el.scrollTop =
+          this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
+        this.$store.commit("setScale", this.startingZoom! * e.scale);
+      }
     },
     pinchEnd(e: any) {
       e.preventDefault();
