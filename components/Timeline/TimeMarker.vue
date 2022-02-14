@@ -9,7 +9,7 @@
 <script lang="ts">
 import { DateTime } from "luxon";
 import Vue from "vue";
-import { mapGetters, mapState } from "vuex";
+import { mapGetters } from "vuex";
 import { DisplayScale } from "~/store";
 
 function scaledDisplayText(time: DateTime, scale: DisplayScale): string {
@@ -34,7 +34,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters(["scaleOfViewportDateInterval"]),
     columnStyle(): string {
-      return "border-left: 1px dashed rgba(128, 128, 128, 1);";
+      return "border-left: 1px dashed rgba(128, 128, 128, 0.8);";
     },
     text(): string {
       return scaledDisplayText(

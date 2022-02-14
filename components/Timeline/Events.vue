@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
-import Years from "./Years.vue";
+import Years from "./TimeMarkers.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 

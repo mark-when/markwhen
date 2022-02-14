@@ -15,7 +15,7 @@
 <script lang="ts">
 import Events from "./Events.vue";
 import Vue from "vue";
-import Years from "./Years.vue";
+import Years from "./TimeMarkers.vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 // @ts-ignore
 import Hammer from "@squadette/hammerjs";

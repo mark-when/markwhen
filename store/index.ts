@@ -1,6 +1,6 @@
 import { Context } from "@nuxt/types";
 import { parse } from "~/src/Parser";
-import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
+import { Cascade, CascadeMetadata, Event, Tags, Year } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
 
@@ -130,13 +130,31 @@ export const state: () => State = () => ({
 })
 
 export type DisplayScale =
-  | "decade"
-  | "year"
-  | "month"
-  | "day"
-  | "hour"
+  | "second"
   | "minute"
-  | "second";
+  | "hour"
+  | "day"
+  | "month"
+  | "year"
+  | "decade"
+
+export type TimeMarkerWeights = [
+  number, /* second */
+  number, /* minute */
+  number, /* hour */
+  number, /* day */
+  number, /* month */
+  number, /* year */
+  number, /* decade */
+]
+
+const SECOND = 1
+const MINUTE = 60
+const HOUR = 60 * MINUTE
+const DAY = 24 * HOUR
+const MONTH = 30 * DAY
+const YEAR = 12 * MONTH
+const DECADE = 10 * YEAR
 
 export const mutations: MutationTree<State> = {
   setStartedWidthChange(state: State, changing: boolean) {
@@ -250,6 +268,14 @@ function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
   return DateTime.fromObject({ year, month, day, hour, minute, second })
 }
 
+function roundToTwoDecimalPlaces(n: number): number {
+  return Math.floor(n * 100) / 100
+}
+
+function clamp(value: number, min: number = 0, max: number = 1) {
+  return Math.min(max, Math.max(value, min))
+}
+
 export const getters: GetterTree<State, State> = {
   trimmedAndFilteredEntries(state: State): string[] {
     if (!state.eventsString) {
@@ -318,36 +344,42 @@ export const getters: GetterTree<State, State> = {
       return { from: leftDate, to: rightDate }
     }
   },
+  timeMarkerWeights(state: State, getters: any): TimeMarkerWeights {
+    const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
+    return [
+      clamp(roundToTwoDecimalPlaces(30 * SECOND / diff)),
+      clamp(roundToTwoDecimalPlaces(30 * MINUTE / diff)),
+      clamp(roundToTwoDecimalPlaces(15 * HOUR / diff)),
+      clamp(roundToTwoDecimalPlaces(15 * DAY / diff)),
+      clamp(roundToTwoDecimalPlaces(10 * MONTH / diff)),
+      clamp(roundToTwoDecimalPlaces(10 * YEAR / diff)),
+      clamp(roundToTwoDecimalPlaces(10 * DECADE / diff))
+    ]
+  },
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
     const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
 
-    const MINUTE = 60
     if (diff < MINUTE) {
       return "second"
     }
 
-    const HOUR = 60 * MINUTE
     if (diff < HOUR) {
       return "minute"
     }
 
-    const DAY = 24 * HOUR
     if (diff < DAY) {
       return 'hour'
     }
 
-    const MONTH = 30 * DAY
     if (diff < 2 * MONTH) {
       return 'day'
     }
 
-    const YEAR = 12 * MONTH
     if (diff < 2 * YEAR) {
       return 'month'
     }
 
-    const DECADE = 30 * YEAR
-    if (diff < DECADE) {
+    if (diff < 3 * DECADE) {
       return "year"
     }
     return 'decade'
