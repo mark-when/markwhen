@@ -32,7 +32,7 @@ export interface TimeMarker {
 }
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
-export const MAX_SCALE = 10000
+export const MAX_SCALE = 1000000
 let currentTimelineName = ''
 let list = [] as string[]
 

@@ -124,12 +124,6 @@ export default Vue.extend({
         this.pinchStartCenterX = wg.origin.x;
         this.pinchStartCenterY = wg.origin.y;
       }
-      this.$el.scrollLeft =
-        wg.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-        wg.origin.x!;
-      this.$el.scrollTop =
-        this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
-      this.$store.commit("setScale", this.startingZoom! * wg.scale);
     },
     doGesture(wg: WheelGesture) {
       if (this.startingZoom! * wg.scale > MAX_SCALE) {
