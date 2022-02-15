@@ -8,7 +8,7 @@
       required
       v-model="username"
       pattern="[\w\d_-]+"
-      @blur="$emit('goBack')"
+      @blur="delayedGoBack"
     />
     <button
       type="button"
@@ -121,6 +121,14 @@ export default Vue.extend({
     },
   },
   methods: {
+    delayedGoBack() {
+      const vm = this;
+      setTimeout(() => {
+        if (vm.usernameStatus === "chosen" || !vm.enabled) {
+          vm.$emit("goBack");
+        }
+      }, 100);
+    },
     async chooseUserName() {
       if (!this.enabled) {
         return;
