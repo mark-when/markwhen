@@ -211,7 +211,7 @@ export default Vue.extend({
         height: "100%",
         left: `${~~view.position}px`,
       };
-      if (view.position <= 0) {
+      if (view.position < 0) {
         styles.display = "none";
       }
       return styles;

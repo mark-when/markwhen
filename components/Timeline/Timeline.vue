@@ -49,7 +49,10 @@ export default Vue.extend({
     };
   },
   created() {
-    this.throttledSetViewportDateInterval = throttle(200, this.setViewportDateInterval)
+    this.throttledSetViewportDateInterval = throttle(
+      200,
+      this.setViewportDateInterval
+    );
   },
   mounted() {
     this.setupHammer();
@@ -94,17 +97,6 @@ export default Vue.extend({
     scroll() {
       this.throttledSetViewportDateInterval();
     },
-    // resize(e: WheelEvent) {
-    //   console.log(e.ctrlKey)
-    //   // if (e.deltaY % 1 === 0) {
-    //   //   return;
-    //   // }
-    //   if (!e.cancelable) {
-    //     e.preventDefault();
-    //   }
-    //   // console.log(e.x, e.y, e.deltaY)
-    //   // console.log(e.deltaMode)
-    // },
     setupHammer() {
       this.$el.addEventListener("touchstart", this.touchStart);
       this.$el.addEventListener("touchend", this.touchEnd);
@@ -126,7 +118,8 @@ export default Vue.extend({
         this.startingZoom = this.$store.state.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
         this.pinchStartScrollLeft = this.$el.scrollLeft;
-        this.pinchStartCenterX = wg.origin.x;
+        this.pinchStartCenterX =
+          wg.origin.x - (this.$el as HTMLElement).offsetLeft;
         this.pinchStartCenterY = wg.origin.y;
       }
     },
@@ -134,13 +127,14 @@ export default Vue.extend({
       if (this.startingZoom! * wg.scale > MAX_SCALE) {
         return;
       }
+      const offsetLeft = (this.$el as HTMLElement).offsetLeft;
       this.$el.scrollLeft =
         wg.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-        wg.origin.x!;
+        (wg.origin.x! - offsetLeft);
       this.$el.scrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
       this.$store.commit("setScale", this.startingZoom! * wg.scale);
-      this.throttledSetViewportDateInterval()
+      this.throttledSetViewportDateInterval();
     },
     endGesture(wg: WheelGesture) {
       this.startingZoom = null;
@@ -151,28 +145,29 @@ export default Vue.extend({
     },
     pinch(e: any) {
       e.preventDefault();
+      const offsetLeft = (this.$el as HTMLElement).offsetLeft;
       if (!this.startingZoom) {
         this.startingZoom = this.$store.state.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
-        this.pinchStartScrollLeft = this.$el.scrollLeft;
+        this.pinchStartScrollLeft = this.$el.scrollLeft - offsetLeft;
         this.pinchStartCenterX = e.center.x;
         this.pinchStartCenterY = e.center.y;
       }
       if (this.startingZoom! * e.scale > MAX_SCALE) {
         this.$el.scrollLeft =
           1 * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-          e.center.x!;
+          (e.center.x! - offsetLeft);
         this.$el.scrollTop =
           this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
       } else {
         this.$el.scrollLeft =
           e.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-          e.center.x!;
+          (e.center.x! - offsetLeft);
         this.$el.scrollTop =
           this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
         this.$store.commit("setScale", this.startingZoom! * e.scale);
       }
-      this.throttledSetViewportDateInterval()
+      this.throttledSetViewportDateInterval();
     },
     pinchEnd(e: any) {
       e.preventDefault();
