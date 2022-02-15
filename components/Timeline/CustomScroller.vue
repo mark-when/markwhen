@@ -324,7 +324,7 @@ export default Vue.extend({
       } else {
         const scroll = this.getScroll();
 
-        // Skip update if use hasn't scrolled enough
+        // Skip update if user hasn't scrolled enough
         if (checkPositionDiff) {
           let positionDiff = scroll.start - this.$_lastUpdateScrollPosition;
           if (positionDiff < 0) positionDiff = -positionDiff;

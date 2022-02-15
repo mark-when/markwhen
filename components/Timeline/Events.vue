@@ -1,6 +1,6 @@
 <template>
   <div id="events" class="flex flex-col relative">
-    <years />
+    <TimeMarkers />
     <!-- <years-2 :years="years" /> -->
     <div class="h-24"></div>
     <!-- <transition-group :name="transitionName"> -->
@@ -16,12 +16,12 @@
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
-import Years from "./TimeMarkers.vue";
+import TimeMarkers from "./TimeMarkers.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 
 export default Vue.extend({
-  components: { EventRow, Years, DrawerHeader },
+  components: { EventRow, TimeMarkers, DrawerHeader },
 });
 </script>
 
