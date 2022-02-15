@@ -10,11 +10,15 @@
 import { DateTime } from "luxon";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { clamp, scales } from "~/store";
+import { clamp } from "~/store";
+import { granularities } from "~/src/DateTimeDisplay";
 
 export default Vue.extend({
   props: ["timeMarker"],
   computed: {
+    dateTime(): DateTime {
+      return this.timeMarker.dateTime;
+    },
     ...mapGetters(["scaleOfViewportDateInterval", "timeMarkerWeights"]),
     scaleForThisDate(): number {
       const dateTime = this.timeMarker.dateTime as DateTime;
@@ -48,13 +52,19 @@ export default Vue.extend({
       const alpha = clamp((this.borderAlpha - 0.3) * 5);
       return `color: rgba(255, 255, 255, ${alpha})`;
     },
-    text(): string {
-      if (this.scaleForThisDate === 6) {
-        return this.timeMarker.dateTime.year
+    currentDateResolution(): number {
+      const weights = this.timeMarkerWeights;
+      for (let i = 0; i < weights.length; i++) {
+        if (weights[i] > 0.1) {
+          return i;
+        }
       }
-      return this.borderAlpha > 0.3
-        ? this.timeMarker.dateTime[scales[this.scaleForThisDate]]
-        : "";
+      return 6;
+    },
+    text(): string | number {
+      return granularities[this.currentDateResolution][this.scaleForThisDate](
+        this.dateTime
+      );
     },
   },
 });

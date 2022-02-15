@@ -42,7 +42,7 @@ function normalizeWheel(e: WheelEvent) {
   return [limit(dx, MAX_WHEEL_DELTA), limit(dy, MAX_WHEEL_DELTA)];
 }
 
-function zoomer(container: HTMLElement, opts?: Options) {
+function zoomer(container: HTMLElement, opts?: Options): () => void {
   function noop() {
     /* do nothing */
   }
@@ -55,6 +55,14 @@ function zoomer(container: HTMLElement, opts?: Options) {
 
   let wheel_gesture = null as WheelGesture | null;
   let timer: number;
+
+  function end() {
+    if (wheel_gesture) {
+      endGesture(wheel_gesture);
+      wheel_gesture = null;
+    }
+  }
+
   container.addEventListener(
     'wheel',
     function wheelListener(e: WheelEvent) {
@@ -109,12 +117,8 @@ function zoomer(container: HTMLElement, opts?: Options) {
       if (timer) {
         window.clearTimeout(timer);
       }
-      timer = window.setTimeout(function () {
-        if (wheel_gesture) {
-          endGesture(wheel_gesture);
-          wheel_gesture = null;
-        }
-      }, 200);
+
+      timer = window.setTimeout(end, 200);
     },
     {
       passive: false
@@ -174,6 +178,8 @@ function zoomer(container: HTMLElement, opts?: Options) {
       }
     });
   }
+
+  return end
 }
 
 export { zoomer };

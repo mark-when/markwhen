@@ -109,9 +109,8 @@ export default Vue.extend({
       const gestures = {
         startGesture: this.startGesture,
         doGesture: this.doGesture,
-        endGesture: this.endGesture,
       };
-      zoomer(this.$el as HTMLElement, gestures);
+      this.endGesture = zoomer(this.$el as HTMLElement, gestures);
     },
     startGesture(wg: WheelGesture) {
       if (!this.startingZoom) {
@@ -135,14 +134,16 @@ export default Vue.extend({
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
       this.$store.commit("setScale", this.startingZoom! * wg.scale);
       this.throttledSetViewportDateInterval();
-    },
-    endGesture(wg: WheelGesture) {
+
       this.startingZoom = null;
       this.pinchStartScrollLeft = null;
       this.pinchStartScrollTop = null;
       this.pinchStartCenterX = null;
       this.pinchStartCenterY = null;
+
+      this.endGesture()
     },
+    endGesture() {},
     pinch(e: any) {
       e.preventDefault();
       const offsetLeft = (this.$el as HTMLElement).offsetLeft;
