@@ -22,6 +22,7 @@ import Hammer from "@squadette/hammerjs";
 import { mapState } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
 import { MAX_SCALE } from "~/store";
+import { throttle } from "throttle-debounce";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
@@ -46,6 +47,9 @@ export default Vue.extend({
       widthChangeStartScrollLeft: null as number | null,
       widthChangeStartYearWidth: null as number | null,
     };
+  },
+  created() {
+    this.throttledSetViewportDateInterval = throttle(200, this.setViewportDateInterval)
   },
   mounted() {
     this.setupHammer();
@@ -77,6 +81,7 @@ export default Vue.extend({
     },
   },
   methods: {
+    throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       this.$store.commit(
         "setViewportDateInterval",
@@ -87,7 +92,7 @@ export default Vue.extend({
       );
     },
     scroll() {
-      this.setViewportDateInterval();
+      this.throttledSetViewportDateInterval();
     },
     // resize(e: WheelEvent) {
     //   console.log(e.ctrlKey)
@@ -135,6 +140,7 @@ export default Vue.extend({
       this.$el.scrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
       this.$store.commit("setScale", this.startingZoom! * wg.scale);
+      this.throttledSetViewportDateInterval()
     },
     endGesture(wg: WheelGesture) {
       this.startingZoom = null;
@@ -166,6 +172,7 @@ export default Vue.extend({
           this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
         this.$store.commit("setScale", this.startingZoom! * e.scale);
       }
+      this.throttledSetViewportDateInterval()
     },
     pinchEnd(e: any) {
       e.preventDefault();

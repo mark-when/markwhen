@@ -10,18 +10,14 @@
 import { DateTime } from "luxon";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { clamp, DisplayScale, scales } from "~/store";
-
-function scaledDisplayText(time: DateTime, scaleForThisDate: number): string {
-  return time[scales[scaleForThisDate]];
-}
+import { clamp, scales } from "~/store";
 
 export default Vue.extend({
   props: ["timeMarker"],
   computed: {
     ...mapGetters(["scaleOfViewportDateInterval", "timeMarkerWeights"]),
     scaleForThisDate(): number {
-      const dateTime = this.timeMarker.dateTime;
+      const dateTime = this.timeMarker.dateTime as DateTime;
       if (dateTime.second === 0) {
         if (dateTime.minute === 0) {
           if (dateTime.hour === 0) {
@@ -46,7 +42,7 @@ export default Vue.extend({
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
     },
     columnStyle(): string {
-      return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha});`;
+      return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); width: ${this.timeMarker.size}px`;
     },
     textStyle(): string {
       const alpha = clamp((this.borderAlpha - 0.3) * 5);

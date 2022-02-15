@@ -359,9 +359,7 @@ export const getters: GetterTree<State, State> = {
     ]
   },
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
-    const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
     const weights = getters.timeMarkerWeights
-
     for (let i = 0; i < weights.length; i++) {
       if (weights[i] > 0.1) {
         return scales[i]
@@ -416,10 +414,10 @@ export const getters: GetterTree<State, State> = {
 
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
-    console.log('scale:', getters.scaleOfViewportDateInterval)
-    console.log('num markers:', markers.length)
-    console.log('leftmost marker', m(markers[0]))
-    console.log('rightmost marker', m(markers[markers.length - 1]))
+    // console.log('interval:', getters.viewportDateInterval)
+    // console.log('num markers:', markers.length)
+    // console.log('leftmost marker', m(markers[0]))
+    // console.log('rightmost marker', m(markers[markers.length - 1]))
     return markers
   }
 }

@@ -12,7 +12,6 @@
     <div v-if="$slots.before" class="vue-recycle-scroller__slot">
       <slot name="before" />
     </div>
-
     <div
       ref="wrapper"
       :style="{
@@ -23,7 +22,7 @@
       <div
         v-for="view of pool"
         :key="view.nr.id"
-        :style="ready ? { left: `${view.position}px` } : null"
+        :style="styleForView(view)"
         class="vue-recycle-scroller__item-view"
         :class="{ hover: hoverKey === view.nr.key }"
         @mouseenter="hoverKey = view.nr.key"
@@ -32,11 +31,9 @@
         <slot :item="view.item" :index="view.nr.index" :active="view.nr.used" />
       </div>
     </div>
-
     <div v-if="$slots.after" class="vue-recycle-scroller__slot">
       <slot name="after" />
     </div>
-
     <ResizeObserver @notify="handleResize" />
   </div>
 </template>
@@ -65,12 +62,10 @@ const props = {
     type: Array,
     required: true,
   },
-
   keyField: {
     type: String,
     default: "id",
   },
-
   direction: {
     type: String,
     default: "vertical",
@@ -89,56 +84,45 @@ export default Vue.extend({
   components: {
     ResizeObserver,
   },
-
   directives: {
     ObserveVisibility,
   },
-
   props: {
     ...props,
-
-    itemSize: {
+     itemSize: {
       type: Number,
       default: null,
     },
-
-    minItemSize: {
+     minItemSize: {
       type: [Number, String],
       default: null,
     },
-
-    sizeField: {
+     sizeField: {
       type: String,
       default: "size",
     },
-
-    typeField: {
+     typeField: {
       type: String,
       default: "type",
     },
-
-    buffer: {
+     buffer: {
       type: Number,
       default: 200,
     },
-
-    pageMode: {
+     pageMode: {
       type: Boolean,
       default: false,
     },
-
-    prerender: {
+     prerender: {
       type: Number,
       default: 0,
     },
-
-    emitUpdate: {
+     emitUpdate: {
       type: Boolean,
       default: false,
     },
   },
-
-  data() {
+   data() {
     return {
       pool: [],
       totalSize: 0,
@@ -146,8 +130,7 @@ export default Vue.extend({
       hoverKey: null,
     };
   },
-
-  computed: {
+   computed: {
     sizes() {
       if (this.itemSize === null) {
         const sizes = {
@@ -173,29 +156,24 @@ export default Vue.extend({
       }
       return [];
     },
-
     simpleArray,
   },
-
-  watch: {
+   watch: {
     items() {
       this.updateVisibleItems(true);
     },
-
-    pageMode() {
+     pageMode() {
       this.applyPageMode();
       this.updateVisibleItems(false);
     },
-
-    sizes: {
+     sizes: {
       handler() {
         this.updateVisibleItems(false);
       },
       deep: true,
     },
   },
-
-  created() {
+   created() {
     this.$_startIndex = 0;
     this.$_endIndex = 0;
     this.$_views = new Map();
@@ -210,8 +188,7 @@ export default Vue.extend({
       this.updateVisibleItems(false);
     }
   },
-
-  mounted() {
+   mounted() {
     this.applyPageMode();
     this.$nextTick(() => {
       // In SSR mode, render the real number of visible items
@@ -220,12 +197,25 @@ export default Vue.extend({
       this.ready = true;
     });
   },
-
-  beforeDestroy() {
+   beforeDestroy() {
     this.removeListeners();
   },
-
-  methods: {
+   methods: {
+    styleForView(view) {
+      if (!this.ready) {
+        return null;
+      }
+      const styles = {
+        position: "absolute",
+        top: "0px",
+        height: "100%",
+        left: `${~~view.position}px`,
+      };
+      if (view.position <= 0) {
+        styles.display = "none";
+      }
+      return styles;
+    },
     addView(pool, index, item, key, type) {
       const view = {
         item,
@@ -245,7 +235,6 @@ export default Vue.extend({
       pool.push(view);
       return view;
     },
-
     unuseView(view, fake = false) {
       const unusedViews = this.$_unusedViews;
       const type = view.nr.type;
@@ -261,20 +250,17 @@ export default Vue.extend({
         this.$_views.delete(view.nr.key);
       }
     },
-
     handleResize() {
       this.$emit("resize");
       if (this.ready) this.updateVisibleItems(false);
     },
-
     handleScroll(event) {
       if (!this.$_scrollDirty) {
         this.$_scrollDirty = true;
         requestAnimationFrame(() => {
           this.$_scrollDirty = false;
           const { continuous } = this.updateVisibleItems(false, true);
-
-          // It seems sometimes chrome doesn't fire scroll event :/
+           // It seems sometimes chrome doesn't fire scroll event :/
           // When non continous scrolling is ending, we force a refresh
           if (!continuous) {
             clearTimeout(this.$_refreshTimout);
@@ -283,7 +269,6 @@ export default Vue.extend({
         });
       }
     },
-
     handleVisibilityChange(isVisible, entry) {
       if (this.ready) {
         if (
@@ -300,7 +285,6 @@ export default Vue.extend({
         }
       }
     },
-
     updateVisibleItems(checkItem, checkPositionDiff = false) {
       const itemSize = this.itemSize;
       const minItemSize = this.$_computedMinItemSize;
@@ -526,8 +510,7 @@ export default Vue.extend({
         continuous,
       };
     },
-
-    getListenerTarget() {
+     getListenerTarget() {
       let target = ScrollParent(this.$el);
       // Fix global scroll target for Chrome and Safari
       if (
@@ -539,13 +522,11 @@ export default Vue.extend({
       }
       return target;
     },
-
     getScroll() {
       const { $el: el, direction } = this;
       const isVertical = direction === "vertical";
       let scrollState;
-
-      if (this.pageMode) {
+       if (this.pageMode) {
         const bounds = el.getBoundingClientRect();
         const boundsSize = isVertical ? bounds.height : bounds.width;
         let start = -(isVertical ? bounds.top : bounds.left);
@@ -574,16 +555,14 @@ export default Vue.extend({
       }
       return scrollState;
     },
-
-    applyPageMode() {
+     applyPageMode() {
       if (this.pageMode) {
         this.addListeners();
       } else {
         this.removeListeners();
       }
     },
-
-    addListeners() {
+     addListeners() {
       this.listenerTarget = this.getListenerTarget();
       this.listenerTarget.addEventListener(
         "scroll",
@@ -596,8 +575,7 @@ export default Vue.extend({
       );
       this.listenerTarget.addEventListener("resize", this.handleResize);
     },
-
-    removeListeners() {
+     removeListeners() {
       if (!this.listenerTarget) {
         return;
       }
@@ -607,8 +585,7 @@ export default Vue.extend({
 
       this.listenerTarget = null;
     },
-
-    scrollToItem(index) {
+     scrollToItem(index) {
       let scroll;
       if (this.itemSize === null) {
         scroll = index > 0 ? this.sizes[index - 1].accumulator : 0;
@@ -617,16 +594,14 @@ export default Vue.extend({
       }
       this.scrollToPosition(scroll);
     },
-
-    scrollToPosition(position) {
+     scrollToPosition(position) {
       if (this.direction === "vertical") {
         this.$el.scrollTop = position;
       } else {
         this.$el.scrollLeft = position;
       }
     },
-
-    itemsLimitError() {
+     itemsLimitError() {
       setTimeout(() => {
         console.log(
           "It seems the scroller element isn't scrolling, so it tries to render all the items at once.",
@@ -639,8 +614,7 @@ export default Vue.extend({
       });
       throw new Error("Rendered items limit reached");
     },
-
-    sortViews() {
+     sortViews() {
       this.pool.sort((viewA, viewB) => viewA.nr.index - viewB.nr.index);
     },
   },
@@ -648,4 +622,7 @@ export default Vue.extend({
 </script>
 
 <style>
+.resize-observer {
+  @apply hidden;
+}
 </style>

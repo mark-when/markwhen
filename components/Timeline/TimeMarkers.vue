@@ -36,10 +36,4 @@ export default Vue.extend({
 </script>
 
 <style>
-.vue-recycle-scroller__item-view {
-  @apply absolute top-0 left-0 h-full;
-}
-.resize-observer {
-  @apply hidden;
-}
 </style>
