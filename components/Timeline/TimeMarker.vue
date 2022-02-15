@@ -1,6 +1,6 @@
 <template>
   <div class="timeMarker flex-shrink-0 relative" :style="columnStyle">
-    <h6 class="timeMarkerTitle text-sm text-white whitespace-nowrap">
+    <h6 class="timeMarkerTitle text-sm whitespace-nowrap" :style="textStyle">
       {{ text }}
     </h6>
   </div>
@@ -10,37 +10,55 @@
 import { DateTime } from "luxon";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { DisplayScale } from "~/store";
+import { clamp, DisplayScale, scales } from "~/store";
 
-function scaledDisplayText(time: DateTime, scale: DisplayScale): string {
-  if (scale === "decade" || scale === "year") {
-    return "" + time.year;
-  }
-  if (scale === "month") {
-    const monthPadded = `${time.month < 10 ? "0" : ""}${time.month}`;
-    return `${monthPadded}-${time.year}`;
-  }
-  if (scale === "day") {
-    if (time.day === 1) {
-      if (time.month === 1) {
-      }
-    }
-  }
-  return time[scale];
+function scaledDisplayText(time: DateTime, scaleForThisDate: number): string {
+  return time[scales[scaleForThisDate]];
 }
 
 export default Vue.extend({
   props: ["timeMarker"],
   computed: {
-    ...mapGetters(["scaleOfViewportDateInterval"]),
+    ...mapGetters(["scaleOfViewportDateInterval", "timeMarkerWeights"]),
+    scaleForThisDate(): number {
+      const dateTime = this.timeMarker.dateTime;
+      if (dateTime.second === 0) {
+        if (dateTime.minute === 0) {
+          if (dateTime.hour === 0) {
+            if (dateTime.day === 1) {
+              if (dateTime.month === 1) {
+                if (dateTime.year % 10 === 0) {
+                  return 6;
+                }
+                return 5;
+              }
+              return 4;
+            }
+            return 3;
+          }
+          return 2;
+        }
+        return 1;
+      }
+      return 0;
+    },
+    borderAlpha(): number {
+      return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
+    },
     columnStyle(): string {
-      return "border-left: 1px dashed rgba(128, 128, 128, 0.8);";
+      return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha});`;
+    },
+    textStyle(): string {
+      const alpha = clamp((this.borderAlpha - 0.3) * 5);
+      return `color: rgba(255, 255, 255, ${alpha})`;
     },
     text(): string {
-      return scaledDisplayText(
-        this.timeMarker.dateTime,
-        this.scaleOfViewportDateInterval
-      );
+      if (this.scaleForThisDate === 6) {
+        return this.timeMarker.dateTime.year
+      }
+      return this.borderAlpha > 0.3
+        ? this.timeMarker.dateTime[scales[this.scaleForThisDate]]
+        : "";
     },
   },
 });

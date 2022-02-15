@@ -138,6 +138,8 @@ export type DisplayScale =
   | "year"
   | "decade"
 
+export const scales: DisplayScale[] = ['second', 'minute', 'hour', 'day', 'month', 'year', 'decade']
+
 export type TimeMarkerWeights = [
   number, /* second */
   number, /* minute */
@@ -272,7 +274,7 @@ function roundToTwoDecimalPlaces(n: number): number {
   return Math.floor(n * 100) / 100
 }
 
-function clamp(value: number, min: number = 0, max: number = 1) {
+export function clamp(value: number, min: number = 0, max: number = 1) {
   return Math.min(max, Math.max(value, min))
 }
 
@@ -350,7 +352,7 @@ export const getters: GetterTree<State, State> = {
       clamp(roundToTwoDecimalPlaces(30 * SECOND / diff)),
       clamp(roundToTwoDecimalPlaces(30 * MINUTE / diff)),
       clamp(roundToTwoDecimalPlaces(15 * HOUR / diff)),
-      clamp(roundToTwoDecimalPlaces(15 * DAY / diff)),
+      clamp(roundToTwoDecimalPlaces(20 * DAY / diff)),
       clamp(roundToTwoDecimalPlaces(10 * MONTH / diff)),
       clamp(roundToTwoDecimalPlaces(10 * YEAR / diff)),
       clamp(roundToTwoDecimalPlaces(10 * DECADE / diff))
@@ -358,29 +360,12 @@ export const getters: GetterTree<State, State> = {
   },
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
     const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
+    const weights = getters.timeMarkerWeights
 
-    if (diff < MINUTE) {
-      return "second"
-    }
-
-    if (diff < HOUR) {
-      return "minute"
-    }
-
-    if (diff < DAY) {
-      return 'hour'
-    }
-
-    if (diff < 2 * MONTH) {
-      return 'day'
-    }
-
-    if (diff < 2 * YEAR) {
-      return 'month'
-    }
-
-    if (diff < 3 * DECADE) {
-      return "year"
+    for (let i = 0; i < weights.length; i++) {
+      if (weights[i] > 0.1) {
+        return scales[i]
+      }
     }
     return 'decade'
   },
@@ -418,7 +403,8 @@ export const getters: GetterTree<State, State> = {
       nextLeft = getters.baselineLeftmostDate
     }
 
-    while (nextLeft < rightmost && markers.length < 100) {
+    // 256 is an arbitrary number
+    while (nextLeft < rightmost && markers.length < 256) {
       markers.push({ dateTime: nextLeft, size: 0, ts: nextLeft.toMillis() })
       if (scale === 'decade') {
         nextLeft = nextLeft.plus({ years: 10 })
@@ -430,10 +416,10 @@ export const getters: GetterTree<State, State> = {
 
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
-    // console.log('scale:', getters.scaleOfViewportDateInterval)
-    // console.log('num markers:', markers.length)
-    // console.log('leftmost marker', m(markers[0]))
-    // console.log('rightmost marker', m(markers[markers.length - 1]))
+    console.log('scale:', getters.scaleOfViewportDateInterval)
+    console.log('num markers:', markers.length)
+    console.log('leftmost marker', m(markers[0]))
+    console.log('rightmost marker', m(markers[markers.length - 1]))
     return markers
   }
 }
