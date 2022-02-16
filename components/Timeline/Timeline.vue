@@ -7,6 +7,7 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
+    <!-- <custom-scroller-2 /> -->
     <events />
     <drawer-header :edittable="edittable" />
   </div>
@@ -23,13 +24,14 @@ import { mapState } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
 import { MAX_SCALE } from "~/store";
 import { throttle } from "throttle-debounce";
+import CustomScroller2 from "./CustomScroller2.vue";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
  */
 
 export default Vue.extend({
-  components: { Events, Years, DrawerHeader },
+  components: { Events, Years, DrawerHeader, CustomScroller2 },
   props: ["edittable"],
   data() {
     return {

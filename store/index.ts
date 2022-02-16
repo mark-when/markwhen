@@ -35,6 +35,9 @@ export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pi
 export const MIN_SCALE = 0.1
 export const MAX_SCALE = 1000000
 const initialScale = 0.3
+
+export const viewportLeftMarginPixels = 0
+
 let currentTimelineName = ''
 let list = [] as string[]
 
@@ -126,8 +129,8 @@ export const state: () => State = () => ({
   dirtyEditor: false,
   hasSeenHowTo: true,
   viewportDateInterval: {
-    from: DateTime.now(),
-    to: DateTime.now()
+    from: DateTime.now().minus({ years: 10 }),
+    to: DateTime.now().plus({ years: 10 })
   }
 })
 
@@ -245,6 +248,10 @@ export const mutations: MutationTree<State> = {
   },
 }
 
+function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
+  return floorDateTime(dateTime.plus({ [toScale]: 1 }), toScale)
+}
+
 function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
   const year = dateTime.year
   if (toScale === 'decade') {
@@ -344,6 +351,11 @@ export const getters: GetterTree<State, State> = {
   },
   setDateIntervalFromViewport(state: State, getters: any): (scrollLeft: number, width: number) => DateInterval {
     return (scrollLeft: number, width: number) => {
+      // We're adding these so that when we are scrolling it looks like the left 
+      // time markers are going off the screen
+      scrollLeft = scrollLeft - viewportLeftMarginPixels
+      width = width + viewportLeftMarginPixels
+      
       const earliest = getters.baselineLeftmostDate
       const leftDate = earliest.plus({ [diffScale]: scrollLeft / state.settings.scale })
       const rightDate = earliest.plus({ [diffScale]: (scrollLeft + width) / state.settings.scale })
@@ -376,31 +388,31 @@ export const getters: GetterTree<State, State> = {
     const scale = getters.scaleOfViewportDateInterval as DisplayScale
     const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
 
-    const bufferAmount = 30
+    // const bufferAmount = 30
 
-    let leftBufferAmount
-    if (scale === 'decade') {
-      leftBufferAmount = {
-        years: 10 * bufferAmount
-      }
-    } else {
-      leftBufferAmount = {
-        [scale]: bufferAmount
-      }
-    }
+    // let leftBufferAmount
+    // if (scale === 'decade') {
+    //   leftBufferAmount = {
+    //     years: 10 * bufferAmount
+    //   }
+    // } else {
+    //   leftBufferAmount = {
+    //     [scale]: bufferAmount
+    //   }
+    // }
 
-    let rightmost = rightViewportDate.plus(leftBufferAmount)
-    rightmost = rightmost > getters.baselineRightmostDate ? getters.baselineRightmostDate : rightmost
+    let rightmost = ceilDateTime(rightViewportDate, scale)
+    // rightmost = rightmost > getters.baselineRightmostDate ? getters.baselineRightmostDate : rightmost
 
-    let nextLeft = floorDateTime(leftViewportDate, scale).minus(leftBufferAmount)
+    let nextLeft = ceilDateTime(leftViewportDate, scale)
     if (nextLeft > getters.baselineLeftmostDate) {
       // We have to add the first block that will be a custom width to account for stuff we 
       // aren't showing.
-      markers.push({
-        dateTime: getters.baselineLeftmostDate,
-        size: getters.distanceFromBaselineLeftmostDate(nextLeft),
-        ts: getters.baselineLeftmostDate.toMillis()
-      })
+      // markers.push({
+      //   dateTime: getters.baselineLeftmostDate,
+      //   size: getters.distanceFromBaselineLeftmostDate(nextLeft),
+      //   ts: getters.baselineLeftmostDate.toMillis()
+      // })
     } else {
       nextLeft = getters.baselineLeftmostDate
     }
@@ -419,7 +431,7 @@ export const getters: GetterTree<State, State> = {
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
     // console.log('scale:', scale)
-    // console.log('interval:', getters.viewportDateInterval)
+    console.log('from', leftViewportDate.toLocaleString(), 'to', rightViewportDate.toLocaleString())
     // console.log('num markers:', markers.length)
     // console.log('leftmost marker', m(markers[0]))
     // console.log('rightmost marker', m(markers[markers.length - 1]))
