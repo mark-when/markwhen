@@ -1,15 +1,12 @@
 <template>
   <div id="events" class="flex flex-col relative">
-    <TimeMarkers />
-    <!-- <years-2 :years="years" /> -->
+    <!-- <TimeMarkers /> -->
     <div class="h-24"></div>
-    <!-- <transition-group :name="transitionName"> -->
     <event-row
       v-for="event in $store.getters.filteredEvents"
       :key="event.eventString.substring(0, 30)"
       :event="event"
     ></event-row>
-    <!-- </transition-group> -->
     <div style="height: 80vh"></div>
   </div>
 </template>

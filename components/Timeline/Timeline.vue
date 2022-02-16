@@ -126,13 +126,19 @@ export default Vue.extend({
       if (this.startingZoom! * wg.scale > MAX_SCALE) {
         return;
       }
+
       const offsetLeft = (this.$el as HTMLElement).offsetLeft;
-      this.$el.scrollLeft =
+      const newScrollLeft =
         wg.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
         (wg.origin.x! - offsetLeft);
-      this.$el.scrollTop =
+      const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
-      this.$store.commit("setScale", this.startingZoom! * wg.scale);
+      window.requestAnimationFrame(() => {
+        this.$el.scrollLeft = ~~newScrollLeft;
+        this.$el.scrollTop = ~~newScrollTop;
+      });
+
+      this.setScale(this.startingZoom! * wg.scale);
       this.throttledSetViewportDateInterval();
 
       this.startingZoom = null;
@@ -141,12 +147,16 @@ export default Vue.extend({
       this.pinchStartCenterX = null;
       this.pinchStartCenterY = null;
 
-      this.endGesture()
+      this.endGesture();
     },
     endGesture() {},
+    setScale(scale: number) {
+      this.$store.commit("setScale", scale);
+    },
     pinch(e: any) {
       e.preventDefault();
       const offsetLeft = (this.$el as HTMLElement).offsetLeft;
+
       if (!this.startingZoom) {
         this.startingZoom = this.$store.state.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
@@ -154,20 +164,26 @@ export default Vue.extend({
         this.pinchStartCenterX = e.center.x;
         this.pinchStartCenterY = e.center.y;
       }
-      if (this.startingZoom! * e.scale > MAX_SCALE) {
-        this.$el.scrollLeft =
-          1 * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-          (e.center.x! - offsetLeft);
-        this.$el.scrollTop =
-          this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
-      } else {
-        this.$el.scrollLeft =
-          e.scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
-          (e.center.x! - offsetLeft);
-        this.$el.scrollTop =
-          this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
-        this.$store.commit("setScale", this.startingZoom! * e.scale);
+
+      const newScrollTop =
+        this.pinchStartScrollTop! + this.pinchStartCenterY! - e.center.y;
+      let scale = e.scale;
+      if (this.startingZoom! * scale > MAX_SCALE) {
+        scale = 1;
       }
+      const newScrollLeft =
+        scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
+        (e.center.x! - offsetLeft);
+
+      window.requestAnimationFrame(() => {
+        this.$el.scrollLeft = ~~newScrollLeft;
+        this.$el.scrollTop = ~~newScrollTop;
+      });
+
+      if (scale !== 1) {
+        this.setScale(this.startingZoom! * e.scale);
+      }
+
       this.throttledSetViewportDateInterval();
     },
     pinchEnd(e: any) {

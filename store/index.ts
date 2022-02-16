@@ -1,6 +1,6 @@
 import { Context } from "@nuxt/types";
 import { parse } from "~/src/Parser";
-import { Cascade, CascadeMetadata, Event, Tags, Year } from "../src/Types"
+import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
 
@@ -32,7 +32,9 @@ export interface TimeMarker {
 }
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
+export const MIN_SCALE = 0.1
 export const MAX_SCALE = 1000000
+const initialScale = 0.3
 let currentTimelineName = ''
 let list = [] as string[]
 
@@ -115,7 +117,7 @@ export const state: () => State = () => ({
   currentTimelineName: currentTimelineName,
   settings: {
     startedWidthChange: false,
-    scale: 100
+    scale: initialScale
   },
   filter: [],
   eventsString: eventsString || undefined,
@@ -149,6 +151,8 @@ export type TimeMarkerWeights = [
   number, /* year */
   number, /* decade */
 ]
+
+const diffScale = "days"
 
 const SECOND = 1
 const MINUTE = 60
@@ -217,7 +221,7 @@ export const mutations: MutationTree<State> = {
     }
   },
   setScale(state: State, width: number) {
-    state.settings.scale = Math.max(1, Math.min(MAX_SCALE, width))
+    state.settings.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, width))
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
@@ -318,7 +322,7 @@ export const getters: GetterTree<State, State> = {
     return getters.cascade.metadata
   },
   distanceBetweenDates(state: State, getters: any) {
-    return (a: DateTime, b: DateTime) => b.diff(a).as('years') * state.settings.scale
+    return (a: DateTime, b: DateTime) => b.diff(a).as(diffScale) * state.settings.scale
   },
   baselineLeftmostDate(state: State, getters: any) {
     return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
@@ -327,7 +331,7 @@ export const getters: GetterTree<State, State> = {
     return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1 }), 'year')
   },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
-    return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as('years') * state.settings.scale
+    return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as(diffScale) * state.settings.scale
   },
   viewportDateInterval(state: State, getters: any): DateInterval {
     if (typeof state.viewportDateInterval.from === 'string' && typeof state.viewportDateInterval.to === 'string') {
