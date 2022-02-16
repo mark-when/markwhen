@@ -7,7 +7,7 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
-    <!-- <custom-scroller-2 /> -->
+    <custom-scroller-2 />
     <events />
     <drawer-header :edittable="edittable" />
   </div>
