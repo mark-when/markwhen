@@ -345,8 +345,8 @@ export const getters: GetterTree<State, State> = {
   setDateIntervalFromViewport(state: State, getters: any): (scrollLeft: number, width: number) => DateInterval {
     return (scrollLeft: number, width: number) => {
       const earliest = getters.baselineLeftmostDate
-      const leftDate = earliest.plus({ years: scrollLeft / state.settings.scale })
-      const rightDate = earliest.plus({ years: (scrollLeft + width) / state.settings.scale })
+      const leftDate = earliest.plus({ [diffScale]: scrollLeft / state.settings.scale })
+      const rightDate = earliest.plus({ [diffScale]: (scrollLeft + width) / state.settings.scale })
       return { from: leftDate, to: rightDate }
     }
   },
@@ -418,10 +418,12 @@ export const getters: GetterTree<State, State> = {
 
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
+    // console.log('scale:', scale)
     // console.log('interval:', getters.viewportDateInterval)
     // console.log('num markers:', markers.length)
     // console.log('leftmost marker', m(markers[0]))
     // console.log('rightmost marker', m(markers[markers.length - 1]))
+    // console.log('')
     return markers
   }
 }

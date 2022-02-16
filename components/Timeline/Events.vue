@@ -1,6 +1,6 @@
 <template>
   <div id="events" class="flex flex-col relative">
-    <!-- <TimeMarkers /> -->
+    <TimeMarkers />
     <div class="h-24"></div>
     <event-row
       v-for="event in $store.getters.filteredEvents"
