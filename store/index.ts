@@ -251,7 +251,13 @@ export const mutations: MutationTree<State> = {
 }
 
 function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
-  return floorDateTime(dateTime.plus({ [toScale]: 1 }), toScale)
+  let increment
+  if (toScale === 'decade') {
+    increment = { years: 10 }
+  } else {
+    increment = { [toScale]: 1 }
+  }
+  return floorDateTime(dateTime, toScale).plus(increment)
 }
 
 function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
