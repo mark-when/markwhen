@@ -3,9 +3,11 @@
   <div class="timeMarkerContainer h-full pointer-events-none">
     <div class="fixed w-full h-12 markerShader top-0"></div>
     <div class="flex flex-row h-full" :style="`margin-left: -${leftMargin}px`">
-      <div v-for="timeMarker in markers" :key="timeMarker.ts">
-        <time-marker-vue :timeMarker="timeMarker" />
-      </div>
+      <time-marker-vue
+        v-for="timeMarker in markers"
+        :key="timeMarker.ts"
+        :timeMarker="timeMarker"
+      />
     </div>
   </div>
   <!-- </div> -->
@@ -41,6 +43,7 @@ export default Vue.extend({
       }
 
       let oldMarkersIndex = 0;
+
       for (const newMarker of newMarkers) {
         let nextOld = this.markers[oldMarkersIndex];
 
@@ -51,12 +54,6 @@ export default Vue.extend({
           removed = true;
           this.markers.splice(oldMarkersIndex, 1);
           nextOld = this.markers[oldMarkersIndex];
-        }
-
-        if (removed) {
-          this.markers.splice(oldMarkersIndex, 0, newMarker);
-          oldMarkersIndex++;
-          continue;
         }
 
         if (!nextOld) {
@@ -74,6 +71,9 @@ export default Vue.extend({
           // This is the same marker. Just update it's visual stuff.
           nextOld.size = newMarker.size;
           nextOld.left = newMarker.left;
+          oldMarkersIndex++;
+        } else if (removed) {
+          this.markers.splice(oldMarkersIndex, 0, newMarker);
           oldMarkersIndex++;
         }
       }
