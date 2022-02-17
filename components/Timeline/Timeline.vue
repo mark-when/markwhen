@@ -97,7 +97,7 @@ export default Vue.extend({
       );
     },
     scroll() {
-      this.throttledSetViewportDateInterval();
+      this.setViewportDateInterval();
     },
     setupHammer() {
       this.$el.addEventListener("touchstart", this.touchStart);
@@ -135,9 +135,10 @@ export default Vue.extend({
         (wg.origin.x! - offsetLeft);
       const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
+
       window.requestAnimationFrame(() => {
-        this.$el.scrollLeft = ~~newScrollLeft;
-        this.$el.scrollTop = ~~newScrollTop;
+        this.$el.scrollLeft = newScrollLeft;
+        this.$el.scrollTop = newScrollTop;
       });
 
       this.setScale(this.startingZoom! * wg.scale);
@@ -178,8 +179,8 @@ export default Vue.extend({
         (e.center.x! - offsetLeft);
 
       window.requestAnimationFrame(() => {
-        this.$el.scrollLeft = ~~newScrollLeft;
-        this.$el.scrollTop = ~~newScrollTop;
+        this.$el.scrollLeft = newScrollLeft;
+        this.$el.scrollTop = newScrollTop;
       });
 
       if (scale !== 1) {

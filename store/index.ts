@@ -29,6 +29,7 @@ export interface TimeMarker {
   ts: number
   dateTime: DateTime
   size: number
+  left: number
 }
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
@@ -36,7 +37,7 @@ export const MIN_SCALE = 0.1
 export const MAX_SCALE = 1000000
 const initialScale = 0.3
 
-export const viewportLeftMarginPixels = 0
+export const viewportLeftMarginPixels = 64
 
 let currentTimelineName = ''
 let list = [] as string[]
@@ -329,7 +330,7 @@ export const getters: GetterTree<State, State> = {
     return getters.cascade.metadata
   },
   distanceBetweenDates(state: State, getters: any) {
-    return (a: DateTime, b: DateTime) => b.diff(a).as(diffScale) * state.settings.scale
+    return (a: DateTime, b: DateTime) => (b.diff(a).as(diffScale) * state.settings.scale)
   },
   baselineLeftmostDate(state: State, getters: any) {
     return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
@@ -338,7 +339,7 @@ export const getters: GetterTree<State, State> = {
     return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1 }), 'year')
   },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
-    return (a: DateTime) => a.diff(getters.baselineLeftmostDate).as(diffScale) * state.settings.scale
+    return (a: DateTime) => (a.diff(getters.baselineLeftmostDate).as(diffScale) * state.settings.scale)
   },
   viewportDateInterval(state: State, getters: any): DateInterval {
     if (typeof state.viewportDateInterval.from === 'string' && typeof state.viewportDateInterval.to === 'string') {
@@ -355,7 +356,7 @@ export const getters: GetterTree<State, State> = {
       // time markers are going off the screen
       scrollLeft = scrollLeft - viewportLeftMarginPixels
       width = width + viewportLeftMarginPixels
-      
+
       const earliest = getters.baselineLeftmostDate
       const leftDate = earliest.plus({ [diffScale]: scrollLeft / state.settings.scale })
       const rightDate = earliest.plus({ [diffScale]: (scrollLeft + width) / state.settings.scale })
@@ -388,38 +389,19 @@ export const getters: GetterTree<State, State> = {
     const scale = getters.scaleOfViewportDateInterval as DisplayScale
     const { from: leftViewportDate, to: rightViewportDate } = getters.viewportDateInterval as DateInterval
 
-    // const bufferAmount = 30
-
-    // let leftBufferAmount
-    // if (scale === 'decade') {
-    //   leftBufferAmount = {
-    //     years: 10 * bufferAmount
-    //   }
-    // } else {
-    //   leftBufferAmount = {
-    //     [scale]: bufferAmount
-    //   }
-    // }
-
-    let rightmost = ceilDateTime(rightViewportDate, scale)
-    // rightmost = rightmost > getters.baselineRightmostDate ? getters.baselineRightmostDate : rightmost
-
     let nextLeft = ceilDateTime(leftViewportDate, scale)
-    if (nextLeft > getters.baselineLeftmostDate) {
-      // We have to add the first block that will be a custom width to account for stuff we 
-      // aren't showing.
-      // markers.push({
-      //   dateTime: getters.baselineLeftmostDate,
-      //   size: getters.distanceFromBaselineLeftmostDate(nextLeft),
-      //   ts: getters.baselineLeftmostDate.toMillis()
-      // })
-    } else {
-      nextLeft = getters.baselineLeftmostDate
-    }
+    let rightmost = ceilDateTime(rightViewportDate, scale)
+
+    markers.push({
+      dateTime: leftViewportDate,
+      size: getters.distanceBetweenDates(leftViewportDate, nextLeft),
+      left: getters.distanceBetweenDates(leftViewportDate, nextLeft),
+      ts: leftViewportDate.toMillis()
+    })
 
     // 256 is an arbitrary number
     while (nextLeft < rightmost && markers.length < 256) {
-      markers.push({ dateTime: nextLeft, size: 0, ts: nextLeft.toMillis() })
+      markers.push({ dateTime: nextLeft, size: 0, ts: nextLeft.toMillis(), left: getters.distanceBetweenDates(leftViewportDate, nextLeft) })
       if (scale === 'decade') {
         nextLeft = nextLeft.plus({ years: 10 })
       } else {

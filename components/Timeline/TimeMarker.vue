@@ -46,6 +46,9 @@ export default Vue.extend({
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
     },
     columnStyle(): string {
+      // if (this.timeMarker.left) {
+      //   return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); left: ${this.timeMarker.left}px;`
+      // }
       return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); width: ${this.timeMarker.size}px`;
     },
     textStyle(): string {

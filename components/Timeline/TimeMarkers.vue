@@ -2,11 +2,10 @@
   <custom-scroller
     ref="recyclerScroller"
     class="flex absolute inset-0"
-    page-mode
     :items="timeMarkers"
     key-field="ts"
     direction="horizontal"
-    :buffer="1000"
+    :buffer="100"
     ><template #before
       ><div
         class="fixed w-full h-12"
