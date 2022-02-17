@@ -2,9 +2,8 @@
   <div
     id="events"
     class="flex flex-col relative"
-    :style="`min-width: ${distanceBetweenBaselineDates}px;`"
+    :style="`min-width: ${distanceBetweenBaselineDates}px; margin-top: -100vh;`"
   >
-    <!-- <TimeMarkers /> -->
     <div class="h-24"></div>
     <event-row
       v-for="event in $store.getters.filteredEvents"
@@ -17,13 +16,12 @@
 
 <script lang="ts">
 import EventRow from "./EventRow.vue";
-import TimeMarkers from "./TimeMarkers.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import { mapGetters } from "vuex";
 
 export default Vue.extend({
-  components: { EventRow, TimeMarkers, DrawerHeader },
+  components: { EventRow, DrawerHeader },
   computed: {
     ...mapGetters(["distanceBetweenBaselineDates"]),
   },

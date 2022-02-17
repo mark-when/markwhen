@@ -7,8 +7,8 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
+    <TimeMarkers />
     <events />
-    <custom-scroller-2 />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
@@ -16,7 +16,6 @@
 <script lang="ts">
 import Events from "./Events.vue";
 import Vue from "vue";
-import Years from "./TimeMarkers.vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 // @ts-ignore
 import Hammer from "@squadette/hammerjs";
@@ -24,14 +23,14 @@ import { mapState } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
 import { MAX_SCALE } from "~/store";
 import { throttle } from "throttle-debounce";
-import CustomScroller2 from "./CustomScroller2.vue";
+import TimeMarkers from "./TimeMarkers.vue";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
  */
 
 export default Vue.extend({
-  components: { Events, Years, DrawerHeader, CustomScroller2 },
+  components: { Events, DrawerHeader, TimeMarkers },
   props: ["edittable"],
   data() {
     return {
