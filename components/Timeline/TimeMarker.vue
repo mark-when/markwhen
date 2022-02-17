@@ -86,6 +86,6 @@ export default Vue.extend({
   position: sticky;
   top: 0px;
   padding: 8px;
-  z-index: 1;
+  z-index: 3;
 }
 </style>

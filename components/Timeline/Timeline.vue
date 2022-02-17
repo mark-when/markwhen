@@ -7,8 +7,8 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
-    <custom-scroller-2 />
     <events />
+    <custom-scroller-2 />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
@@ -136,14 +136,21 @@ export default Vue.extend({
       const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
 
-      this.$el.scrollLeft = newScrollLeft;
-      this.$el.scrollTop = newScrollTop;
+      if (this.pinchStartScrollLeft !== this.$el.scrollLeft) {
+        window.requestAnimationFrame(() => {
+          this.$el.scrollLeft = newScrollLeft;
+          this.$el.scrollTop = newScrollTop;
+        });
+      } else {
+        this.$el.scrollLeft = newScrollLeft;
+        this.$el.scrollTop = newScrollTop;
+      }
 
       this.setScale(this.startingZoom! * wg.scale);
       this.throttledSetViewportDateInterval();
 
       this.startingZoom = null;
-      this.pinchStartScrollLeft = null;
+      // this.pinchStartScrollLeft = null;
       this.pinchStartScrollTop = null;
       this.pinchStartCenterX = null;
       this.pinchStartCenterY = null;

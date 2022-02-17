@@ -1,8 +1,7 @@
 <template>
   <!-- <div class="h-full w-full"> -->
-  <div class="timeMarkerContainer border border-red-500 h-full">
-    <!-- <time-markers :style="`margin-left: -${leftMargin}px`" /> -->
-    <!-- <div class="fixed w-full h-12 markerShader"></div> -->
+  <div class="timeMarkerContainer h-full pointer-events-none">
+    <div class="fixed w-full h-12 markerShader top-0"></div>
     <div class="flex flex-row h-full" :style="`margin-left: -${leftMargin}px`">
       <div v-for="timeMarker in markers" :key="timeMarker.ts">
         <time-marker-vue :timeMarker="timeMarker" />
@@ -30,12 +29,12 @@ export default Vue.extend({
   computed: {
     ...mapGetters(["timeMarkers"]),
   },
-  watch: {
-    timeMarkers(newMarkers: TimeMarker[], oldMarkers: TimeMarker[]) {
+  methods: {
+    setNewMarkers(newMarkers: TimeMarker[]) {
       if (!newMarkers) {
         this.markers = [];
       }
-      
+
       if (this.markers.length === 0) {
         this.markers = newMarkers;
         return;
@@ -85,6 +84,11 @@ export default Vue.extend({
       }
     },
   },
+  watch: {
+    timeMarkers(newMarkers: TimeMarker[], oldMarkers: TimeMarker[]) {
+      this.setNewMarkers(newMarkers);
+    },
+  },
 });
 </script>
 
@@ -97,7 +101,7 @@ export default Vue.extend({
   right: 0px;
 }
 .markerShader {
-  background: linear-gradient(to bottom, #384047, 50%, #38404700);
-  z-index: 1;
+  background: linear-gradient(to bottom, #384047, 65%, #38404700);
+  z-index: 2;
 }
 </style>

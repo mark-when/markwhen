@@ -340,10 +340,13 @@ export const getters: GetterTree<State, State> = {
     return (a: DateTime, b: DateTime) => (b.diff(a).as(diffScale) * state.settings.scale)
   },
   baselineLeftmostDate(state: State, getters: any) {
-    return floorDateTime((getters.metadata as CascadeMetadata).earliestTime, 'year')
+    return floorDateTime((getters.metadata as CascadeMetadata).earliestTime.minus({ years: 1 }), 'year')
   },
   baselineRightmostDate(state: State, getters: any) {
-    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 1 }), 'year')
+    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 2 }), 'year')
+  },
+  distanceBetweenBaselineDates(state: State, getters: any) {
+    return getters.distanceFromBaselineLeftmostDate(getters.baselineRightmostDate)
   },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
     return (a: DateTime) => (a.diff(getters.baselineLeftmostDate).as(diffScale) * state.settings.scale)
@@ -398,6 +401,7 @@ export const getters: GetterTree<State, State> = {
 
     let nextLeft = ceilDateTime(leftViewportDate, scale)
     let rightmost = ceilDateTime(rightViewportDate, scale)
+    
 
     markers.push({
       dateTime: leftViewportDate,
@@ -420,7 +424,7 @@ export const getters: GetterTree<State, State> = {
     // Get the last one
     markers[markers.length - 1].size = getters.distanceBetweenDates(markers[markers.length - 1].dateTime, rightmost)
     // console.log('scale:', scale)
-    console.log('from', leftViewportDate.toLocaleString(), 'to', rightViewportDate.toLocaleString())
+    // console.log('from', leftViewportDate.toLocaleString(), 'to', rightViewportDate.toLocaleString())
     // console.log('num markers:', markers.length)
     // console.log('leftmost marker', m(markers[0]))
     // console.log('rightmost marker', m(markers[markers.length - 1]))
