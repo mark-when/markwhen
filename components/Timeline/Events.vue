@@ -29,16 +29,6 @@ export default Vue.extend({
 </script>
 
 <style>
-/* .company {
-  backface-visibility: hidden;
-  z-index: 1;
-} */
-
-/* moving */
-/* .eventRow-move {
-  transition: all 600ms ease-in-out 50ms;
-} */
-
 /* appearing */
 .eventRow-enter-active {
   transition: all 400ms ease-out;
@@ -48,7 +38,6 @@ export default Vue.extend({
 .eventRow-leave-active {
   transition: all 200ms ease-in;
   position: absolute;
-  z-index: 0;
 }
 
 /* appear at / disappear to */
