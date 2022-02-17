@@ -13,11 +13,9 @@
         rounded
         bg-gray-800
         hover:bg-gray-700
-        md:px-2
-        md:py-0
+        md:px-2 md:py-0
         p-1
-        flex flex-row
-        flex-shrink-0
+        flex flex-row flex-shrink-0
         items-center
         text-gray-400
         hover:text-gray-100
@@ -41,6 +39,7 @@
       ><span class="hidden md:block">Show all</span>
     </button>
     <tag v-for="tag in Object.keys(tags)" :key="tag" :tag="tag"></tag>
+    <div class="font-mono text-gray-400" v-if="false">{{ JSON.stringify(timeMarkerWeights) }}</div>
   </div>
 </template>
 
@@ -52,7 +51,7 @@ import Tag from "./Tag.vue";
 export default Vue.extend({
   components: { Tag },
   computed: {
-    ...mapGetters(["tags"]),
+    ...mapGetters(["tags", "timeMarkerWeights"]),
   },
   methods: {
     clearFilters() {
