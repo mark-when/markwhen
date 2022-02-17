@@ -136,10 +136,8 @@ export default Vue.extend({
       const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
 
-      window.requestAnimationFrame(() => {
-        this.$el.scrollLeft = newScrollLeft;
-        this.$el.scrollTop = newScrollTop;
-      });
+      this.$el.scrollLeft = newScrollLeft;
+      this.$el.scrollTop = newScrollTop;
 
       this.setScale(this.startingZoom! * wg.scale);
       this.throttledSetViewportDateInterval();
@@ -178,10 +176,10 @@ export default Vue.extend({
         scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
         (e.center.x! - offsetLeft);
 
-      window.requestAnimationFrame(() => {
-        this.$el.scrollLeft = newScrollLeft;
-        this.$el.scrollTop = newScrollTop;
-      });
+      // window.requestAnimationFrame(() => {
+      this.$el.scrollLeft = newScrollLeft;
+      this.$el.scrollTop = newScrollTop;
+      // });
 
       if (scale !== 1) {
         this.setScale(this.startingZoom! * e.scale);

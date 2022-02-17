@@ -38,6 +38,7 @@ export const MAX_SCALE = 1000000
 const initialScale = 0.3
 
 export const viewportLeftMarginPixels = 64
+export const timeMarkerWeightMinimum = 0.25
 
 let currentTimelineName = ''
 let list = [] as string[]
@@ -378,7 +379,7 @@ export const getters: GetterTree<State, State> = {
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
     const weights = getters.timeMarkerWeights
     for (let i = 0; i < weights.length; i++) {
-      if (weights[i] > 0.1) {
+      if (weights[i] > timeMarkerWeightMinimum) {
         return scales[i]
       }
     }

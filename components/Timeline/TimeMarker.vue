@@ -1,5 +1,5 @@
 <template>
-  <div class="timeMarker flex-shrink-0 relative" :style="columnStyle">
+  <div class="timeMarker flex-shrink-0" :style="columnStyle">
     <h6 class="timeMarkerTitle text-sm whitespace-nowrap" :style="textStyle">
       {{ text }}
     </h6>
@@ -10,7 +10,7 @@
 import { DateTime } from "luxon";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { clamp } from "~/store";
+import { clamp, timeMarkerWeightMinimum } from "~/store";
 import { granularities } from "~/src/DateTimeDisplay";
 
 export default Vue.extend({
@@ -58,7 +58,7 @@ export default Vue.extend({
     currentDateResolution(): number {
       const weights = this.timeMarkerWeights;
       for (let i = 0; i < weights.length; i++) {
-        if (weights[i] > 0.1) {
+        if (weights[i] > timeMarkerWeightMinimum) {
           return i;
         }
       }

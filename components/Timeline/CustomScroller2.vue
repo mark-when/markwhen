@@ -3,15 +3,8 @@
   <div class="timeMarkerContainer border border-red-500 h-full">
     <!-- <time-markers :style="`margin-left: -${leftMargin}px`" /> -->
     <!-- <div class="fixed w-full h-12 markerShader"></div> -->
-    <div
-      class="flex flex-row h-full relative"
-      :style="`margin-left: -${leftMargin}px`"
-    >
-      <div
-        v-for="timeMarker in markers"
-        :key="timeMarker.ts"
-        :style="`position: absolute; left: ${timeMarker.left}px; bottom: 0px; top: 0px;`"
-      >
+    <div class="flex flex-row h-full" :style="`margin-left: -${leftMargin}px`">
+      <div v-for="timeMarker in markers" :key="timeMarker.ts">
         <time-marker-vue :timeMarker="timeMarker" />
       </div>
     </div>
@@ -39,53 +32,56 @@ export default Vue.extend({
   },
   watch: {
     timeMarkers(newMarkers: TimeMarker[], oldMarkers: TimeMarker[]) {
+      if (!newMarkers) {
+        this.markers = [];
+      }
+      
       if (this.markers.length === 0) {
-        this.markers = newMarkers
-        return
+        this.markers = newMarkers;
+        return;
       }
 
-      let oldMarkersIndex = 0
+      let oldMarkersIndex = 0;
       for (const newMarker of newMarkers) {
-        
-        let nextOld = this.markers[oldMarkersIndex]
+        let nextOld = this.markers[oldMarkersIndex];
 
         // This new marker is later than the next earliest that we already have.
         // Remove everything before it.
-        let removed = false
+        let removed = false;
         while (!!nextOld && newMarker.dateTime > nextOld.dateTime) {
-          removed = true
-          this.markers.splice(oldMarkersIndex, 1)
-          nextOld = this.markers[oldMarkersIndex]
+          removed = true;
+          this.markers.splice(oldMarkersIndex, 1);
+          nextOld = this.markers[oldMarkersIndex];
         }
 
         if (removed) {
-          this.markers.splice(oldMarkersIndex, 0, newMarker)
-          oldMarkersIndex++
-          continue
+          this.markers.splice(oldMarkersIndex, 0, newMarker);
+          oldMarkersIndex++;
+          continue;
         }
 
         if (!nextOld) {
-          this.markers.push(newMarker)
-          continue
+          this.markers.push(newMarker);
+          continue;
         }
 
         if (newMarker.dateTime < nextOld.dateTime) {
           // This is earlier than the earliest that we already have.
-          // We can insert it and incrememnt our oldMarkerIndex by one 
+          // We can insert it and incrememnt our oldMarkerIndex by one
           // since we will have shifted all other elements to the right.
-          this.markers.splice(oldMarkersIndex, 0, newMarker)
-          oldMarkersIndex++
+          this.markers.splice(oldMarkersIndex, 0, newMarker);
+          oldMarkersIndex++;
         } else if (+newMarker.dateTime === +nextOld.dateTime) {
           // This is the same marker. Just update it's visual stuff.
-          nextOld.size = newMarker.size
-          nextOld.left = newMarker.left
-          oldMarkersIndex++
+          nextOld.size = newMarker.size;
+          nextOld.left = newMarker.left;
+          oldMarkersIndex++;
         }
       }
 
       // Remove all the others
       if (oldMarkersIndex < this.markers.length - 1) {
-        this.markers.splice(oldMarkersIndex)
+        this.markers.splice(oldMarkersIndex);
       }
     },
   },
