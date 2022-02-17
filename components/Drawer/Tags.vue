@@ -39,7 +39,14 @@
       ><span class="hidden md:block">Show all</span>
     </button>
     <tag v-for="tag in Object.keys(tags)" :key="tag" :tag="tag"></tag>
-    <div class="font-mono text-gray-400" v-if="false">{{ JSON.stringify(timeMarkerWeights) }}</div>
+    <div class="flex flex-row font-mono text-gray-400" v-if="debug">
+      <div>
+        {{ JSON.stringify(timeMarkerWeights) }}
+      </div>
+      <div class="ml-2">
+        {{ JSON.stringify(Math.floor(settings.scale * 100) / 100) }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -52,6 +59,12 @@ export default Vue.extend({
   components: { Tag },
   computed: {
     ...mapGetters(["tags", "timeMarkerWeights"]),
+    ...mapState(["settings"]),
+  },
+  data() {
+    return {
+      debug: this.$config.dev,
+    };
   },
   methods: {
     clearFilters() {

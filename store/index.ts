@@ -2,7 +2,7 @@ import { Context } from "@nuxt/types";
 import { parse } from "~/src/Parser";
 import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
-import { DateTime } from "luxon";
+import { DateTime, DateTimeFormatOptions } from "luxon";
 
 interface State {
   list: string[],
@@ -34,7 +34,7 @@ export interface TimeMarker {
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 export const MIN_SCALE = 0.1
-export const MAX_SCALE = 1000000
+export const MAX_SCALE = 3000
 const initialScale = 0.3
 
 export const viewportLeftMarginPixels = 64
@@ -343,7 +343,7 @@ export const getters: GetterTree<State, State> = {
     return floorDateTime((getters.metadata as CascadeMetadata).earliestTime.minus({ years: 1 }), 'year')
   },
   baselineRightmostDate(state: State, getters: any) {
-    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 2 }), 'year')
+    return floorDateTime((getters.metadata as CascadeMetadata).latestTime.plus({ years: 30 }), 'year')
   },
   distanceBetweenBaselineDates(state: State, getters: any) {
     return getters.distanceFromBaselineLeftmostDate(getters.baselineRightmostDate)
