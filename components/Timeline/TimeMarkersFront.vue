@@ -3,7 +3,7 @@
     <div class="flex h-full" :style="`margin-left: -${leftMargin}px`">
       <div
         class="timeMarkerShader w-full h-12 fixed top-0"
-        :style="`margin-right: ${leftMargin}px`"
+        :style="`margin-left: ${leftMargin}px`"
       ></div>
       <time-marker-front
         v-for="timeMarker in markers"
