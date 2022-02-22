@@ -10,8 +10,13 @@ const START_OR_END_TIME_REGEX = new RegExp(`(${ISO8601_REGEX.source})|(${NOW_REG
 const EVENT_START_REGEX = new RegExp(`^\\s*((${START_OR_END_TIME_REGEX.source})(?:-(${START_OR_END_TIME_REGEX.source}))?):(.*)`)
 const COMMENT_REGEX = /^\s*\/\/.*/
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
+const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/
 const TAG_REGEX = /(?:^| )#(\w*)/g
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
+
+const AMERICAN_DATE_FORMAT = 'M/d/y'
+const EUROPEAN_DATE_FORMAT = 'd/M/y'
+
 // const EVENT_START_REGEX = /^\s*(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?|now)(-(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?|now))?:/
 export function parse(eventsString?: string): Cascade {
 
@@ -20,8 +25,9 @@ export function parse(eventsString?: string): Cascade {
       events: [],
       tags: {},
       metadata: {
-        earliestTime:  DateTime.now().minus({ years: 5 }),
-        latestTime: DateTime.now().plus({ years: 5 })
+        earliestTime: DateTime.now().minus({ years: 5 }),
+        latestTime: DateTime.now().plus({ years: 5 }),
+        dateFormat: AMERICAN_DATE_FORMAT
       }
     }
   }
@@ -30,20 +36,22 @@ export function parse(eventsString?: string): Cascade {
   const events = [] as Event[]
   const tags = {} as Tags
   let paletteIndex = 0
-  
+  let dateFormat = AMERICAN_DATE_FORMAT
   let earliest: DateTime | null = null, latest: DateTime | null = null
-  
+
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
     const line = lines[i].trim()
     if (line.match(COMMENT_REGEX)) {
       continue
     }
-    const match = line.match(TAG_COLOR_REGEX)
-    if (match) {
-      // console.log(match)
-      tags[match[1]] = match[2]
-      // parseTag(line)
+    const tagColorMatch = line.match(TAG_COLOR_REGEX)
+    if (tagColorMatch) {
+      tags[tagColorMatch[1]] = tagColorMatch[2]
+      continue
+    }
+    if (line.match(DATE_FORMAT_REGEX)) {
+      dateFormat = EUROPEAN_DATE_FORMAT
       continue
     }
     const matches = line.matchAll(TAG_REGEX)
@@ -73,7 +81,7 @@ export function parse(eventsString?: string): Cascade {
 
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0].substring(eventGroup[0].indexOf(datePart) + datePart.length + 1).trim()
-      const dateRange = new DateRange(eventStartDate, eventEndDate, datePart)
+      const dateRange = new DateRange(eventStartDate, eventEndDate, datePart, dateFormat)
       const eventDescription = new EventDescription(eventGroup)
       const event = new Event(firstLine, dateRange, eventDescription)
       if (event) {
@@ -96,7 +104,8 @@ export function parse(eventsString?: string): Cascade {
   return {
     events, tags, metadata: {
       earliestTime: earliest,
-      latestTime: latest
+      latestTime: latest,
+      dateFormat
     }
   }
 }

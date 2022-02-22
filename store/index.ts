@@ -130,6 +130,7 @@ export const state: () => State = () => ({
   username: '',
   dirtyEditor: false,
   hasSeenHowTo: true,
+  dateFormatFull: 'M/d/y',
   viewportDateInterval: {
     from: DateTime.now().minus({ years: 10 }),
     to: DateTime.now().plus({ years: 10 })

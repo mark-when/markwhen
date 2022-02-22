@@ -41,7 +41,6 @@ export type GranularDateTime = {
   granularity: DateTimeGranularity
 }
 
-export const DATE_TIME_FORMAT_FULL = 'M/d/y'
 export const DATE_TIME_FORMAT_MONTH_YEAR = 'M/y'
 export const DATE_TIME_FORMAT_YEAR = 'y'
 
@@ -91,15 +90,15 @@ export class DateRange {
   to?: YearMonthDay;
   originalString: string
 
-  constructor(from: string, to: string, originalString: string) {
+  constructor(from: string, to: string, originalString: string, dateFormat: string) {
     this.from = new YearMonthDay(from);
     this.to = to ? new YearMonthDay(to) : undefined;
     this.originalString = originalString
 
-    const { dateTime: fromDateTime, granularity } = DateRange.stringToDateTime(from)
+    const { dateTime: fromDateTime, granularity } = DateRange.stringToDateTime(from, dateFormat)
     this.fromDateTime = fromDateTime
     if (to) {
-      this.toDateTime = DateRange.roundDateUp(DateRange.stringToDateTime(to))
+      this.toDateTime = DateRange.roundDateUp(DateRange.stringToDateTime(to, dateFormat))
     } else {
       this.toDateTime = DateRange.roundDateUp({ dateTime: this.fromDateTime, granularity })
     }
@@ -136,12 +135,8 @@ export class DateRange {
     }
   }
 
-  numDays(): number {
-    return DateRange.numDaysBetween(this.startingDay(), this.endingDay())
-  }
-
-  static stringToDateTime(s: string): GranularDateTime {
-    let dateTime = DateTime.fromFormat(s, DATE_TIME_FORMAT_FULL)
+  static stringToDateTime(s: string, fullFormat: string): GranularDateTime {
+    let dateTime = DateTime.fromFormat(s, fullFormat)
     if (dateTime.isValid) {
       return { dateTime, granularity: 'day' }
     }
@@ -165,18 +160,6 @@ export class DateRange {
       return granularDateTime.dateTime
     }
     return granularDateTime.dateTime.plus({ [granularDateTime.granularity]: 1 })
-  }
-
-  static numDaysBetween(startingDay: YearMonthDay, endingDay: YearMonthDay): number {
-    let days: number
-    if (startingDay.year === endingDay.year) {
-      days = ((endingDay.month! - startingDay.month!) * 30) + (endingDay.day! - startingDay.day!) + 1
-    } else {
-      const restOfTheYear = DateRange.numDaysBetween(startingDay, { year: startingDay.year, month: 12, day: 30 })
-      const beginningOfTheYear = DateRange.numDaysBetween({ year: endingDay.year, month: 1, day: 1 }, endingDay)
-      days = restOfTheYear + ((endingDay.year - startingDay.year - 1) * 360) + beginningOfTheYear
-    }
-    return days
   }
 }
 
@@ -289,4 +272,5 @@ export interface Cascade {
 export interface CascadeMetadata {
   earliestTime: DateTime
   latestTime: DateTime
+  dateFormat: string
 }
