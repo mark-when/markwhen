@@ -401,7 +401,6 @@ export const getters: GetterTree<State, State> = {
 
     let nextLeft = ceilDateTime(leftViewportDate, scale)
     let rightmost = ceilDateTime(rightViewportDate, scale)
-    
 
     markers.push({
       dateTime: leftViewportDate,

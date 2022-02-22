@@ -7,8 +7,9 @@
     @scroll="scroll"
     :style="eventsStyle"
   >
-    <TimeMarkers />
+    <TimeMarkersBack :markers="markers" />
     <events />
+    <TimeMarkersFront :markers="markers" />
     <drawer-header :edittable="edittable" />
   </div>
 </template>
@@ -19,18 +20,19 @@ import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 // @ts-ignore
 import Hammer from "@squadette/hammerjs";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
-import { MAX_SCALE } from "~/store";
+import { MAX_SCALE, TimeMarker } from "~/store";
 import { throttle } from "throttle-debounce";
-import TimeMarkers from "./TimeMarkers.vue";
+import TimeMarkersBack from "./TimeMarkersBack.vue";
+import TimeMarkersFront from "./TimeMarkersFront.vue";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
  */
 
 export default Vue.extend({
-  components: { Events, DrawerHeader, TimeMarkers },
+  components: { Events, DrawerHeader, TimeMarkersBack, TimeMarkersFront },
   props: ["edittable"],
   data() {
     return {
@@ -47,6 +49,7 @@ export default Vue.extend({
       pinchStartCenterY: null as number | null,
       widthChangeStartScrollLeft: null as number | null,
       widthChangeStartYearWidth: null as number | null,
+      markers: [] as TimeMarker[],
     };
   },
   created() {
@@ -61,6 +64,9 @@ export default Vue.extend({
     this.setViewportDateInterval();
   },
   watch: {
+    timeMarkers(newMarkers: TimeMarker[], oldMarkers: TimeMarker[]) {
+      this.setNewMarkers(newMarkers);
+    },
     startedWidthChange(val) {
       this.widthChangeStartScrollLeft = val ? this.$el.scrollLeft : null;
       this.widthChangeStartYearWidth = this.scale;
@@ -83,8 +89,60 @@ export default Vue.extend({
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
     },
+    ...mapGetters(["timeMarkers"]),
   },
   methods: {
+    setNewMarkers(newMarkers: TimeMarker[]) {
+      if (!newMarkers) {
+        this.markers = [];
+      }
+
+      if (this.markers.length === 0) {
+        this.markers = newMarkers;
+        return;
+      }
+
+      let oldMarkersIndex = 0;
+
+      for (const newMarker of newMarkers) {
+        let nextOld = this.markers[oldMarkersIndex];
+
+        // This new marker is later than the next earliest that we already have.
+        // Remove everything before it.
+        let removed = false;
+        while (!!nextOld && newMarker.dateTime > nextOld.dateTime) {
+          removed = true;
+          this.markers.splice(oldMarkersIndex, 1);
+          nextOld = this.markers[oldMarkersIndex];
+        }
+
+        if (!nextOld) {
+          this.markers.push(newMarker);
+          continue;
+        }
+
+        if (newMarker.dateTime < nextOld.dateTime) {
+          // This is earlier than the earliest that we already have.
+          // We can insert it and incrememnt our oldMarkerIndex by one
+          // since we will have shifted all other elements to the right.
+          this.markers.splice(oldMarkersIndex, 0, newMarker);
+          oldMarkersIndex++;
+        } else if (+newMarker.dateTime === +nextOld.dateTime) {
+          // This is the same marker. Just update it's visual stuff.
+          nextOld.size = newMarker.size;
+          nextOld.left = newMarker.left;
+          oldMarkersIndex++;
+        } else if (removed) {
+          this.markers.splice(oldMarkersIndex, 0, newMarker);
+          oldMarkersIndex++;
+        }
+      }
+
+      // Remove all the others
+      if (oldMarkersIndex < this.markers.length - 1) {
+        this.markers.splice(oldMarkersIndex);
+      }
+    },
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       this.$store.commit(

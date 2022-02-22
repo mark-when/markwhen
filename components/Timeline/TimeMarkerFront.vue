@@ -1,5 +1,5 @@
 <template>
-  <div class="timeMarker flex-shrink-0" :style="columnStyle">
+  <div class="flex-shrink-0" :style="columnStyle">
     <h6 class="timeMarkerTitle text-sm whitespace-nowrap" :style="textStyle">
       {{ text }}
     </h6>
@@ -19,7 +19,7 @@ export default Vue.extend({
     dateTime(): DateTime {
       return this.timeMarker.dateTime;
     },
-    ...mapGetters(["scaleOfViewportDateInterval", "timeMarkerWeights"]),
+    ...mapGetters(["timeMarkerWeights"]),
     scaleForThisDate(): number {
       const dateTime = this.timeMarker.dateTime as DateTime;
       if (dateTime.second === 0) {
@@ -46,10 +46,7 @@ export default Vue.extend({
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
     },
     columnStyle(): string {
-      // if (this.timeMarker.left) {
-      //   return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); left: ${this.timeMarker.left}px;`
-      // }
-      return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); width: ${this.timeMarker.size}px`;
+      return `width: ${this.timeMarker.size}px`;
     },
     textStyle(): string {
       const alpha = clamp((this.borderAlpha - 0.3) * 5);
@@ -74,18 +71,9 @@ export default Vue.extend({
 </script>
 
 <style>
-.timeMarker {
-  border-left: 1px dashed rgba(128, 128, 128, 0.678);
-  height: 100%;
-  font-family: system-ui;
-}
-
 .timeMarkerTitle {
   font-weight: 300;
   margin: 0px 0px 0px -1px;
-  position: sticky;
-  top: 0px;
   padding: 8px;
-  z-index: 3;
 }
 </style>
