@@ -55,7 +55,6 @@ import { mapState } from "vuex";
 import SidebarComponentSelector from "./SidebarComponentSelector.vue";
 import SidebarLinks from "./SidebarLinks.vue";
 import SidebarVisibility from "./SidebarVisibility.vue";
-import HowTo from "./HowTo.vue";
 
 export default Vue.extend({
   components: {
@@ -74,9 +73,6 @@ export default Vue.extend({
     selectedComponentComponent(): any {
       if (this.selectedComponent === "editor") {
         return TimelineEditor;
-      }
-      if (this.selectedComponent === "howto") {
-        return HowTo;
       }
       return Profile;
     },

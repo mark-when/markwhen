@@ -35,7 +35,7 @@
       </svg>
     </button>
     <button
-      class="p-2 hover:bg-gray-900"
+      class="p-2 mt-3"
       :class="selectedComponent === 'howto' ? 'bg-gray-900' : ''"
       @click="selectHowTo"
     >
@@ -73,10 +73,10 @@ export default Vue.extend({
       this.$store.commit("sidebar/setSelectedComponent", "profile");
     },
     selectHowTo() {
-      this.$store.commit("sidebar/setSelectedComponent", "howto");
       if (process.browser) {
         this.$store.commit('setHasSeenHowTo', true)
       }
+      window.location.href = "https://github.com/kochrt/cascade.page#readme"
     },
   },
 });
