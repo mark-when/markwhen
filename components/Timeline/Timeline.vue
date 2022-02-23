@@ -1,8 +1,8 @@
 <template>
   <div
     id="timeline"
-    class="relative h-full overflow-auto w-full"
-    :class="{ 'order-1': $store.state.sidebar.position === 'right' }"
+    class="relative h-full overflow-auto w-full order-1"
+    :class="{ 'md:order-1': isRight, 'md:order-2': !isRight }"
     @mousedown.prevent="panStart"
     @scroll="scroll"
     :style="eventsStyle"
@@ -90,6 +90,9 @@ export default Vue.extend({
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
     },
     ...mapGetters(["timeMarkers"]),
+    isRight(): boolean {
+      return this.$store.state.sidebar.position === "right";
+    },
   },
   methods: {
     setNewMarkers(newMarkers: TimeMarker[]) {

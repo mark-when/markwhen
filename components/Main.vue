@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="flex flex-row h-full">
+    <div class="flex flex-col md:flex-row h-full">
       <template v-if="edittable">
         <sidebar v-show="$store.state.sidebar.visible"
       /></template>
@@ -12,7 +12,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Timeline from "./Timeline/Timeline.vue";
-import Drawer from "./Drawer/Drawer.vue";
 import {
   getAuth,
   isSignInWithEmailLink,
@@ -22,7 +21,7 @@ import Sidebar from "./Drawer/Sidebar.vue";
 
 export default Vue.extend({
   props: ["edittable"],
-  components: { Drawer, Timeline, Sidebar },
+  components: { Timeline, Sidebar },
   mounted() {
     this.signInIfNecessary();
     this.$store.commit("getLocalTimelines");

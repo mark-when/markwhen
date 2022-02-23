@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mr-2">
+  <div class="flex flex-col mr-2 hidden md:block">
     <input
       type="range"
       min="0"

@@ -3,7 +3,7 @@
     <div class="flex-grow">
       <textarea
         class="
-        h-full
+          h-full
           p-2
           font-mono
           text-sm
@@ -13,14 +13,18 @@
           outline-none
           shadow-inner-2xl
           resize-none
+          md:pb-80 md:pt-32
+          pt-20
+          pb-32
         "
-        style="padding-top: 8rem; padding-bottom: 20rem"
         name="eventsField"
         :value="$store.state.eventsString"
         @input="updateEventsString"
       ></textarea>
     </div>
-    <div class="flex flex-row text-gray-300 ml-2 flex-shrink-0 pb-7 pt-2">
+    <div
+      class="flex flex-row text-gray-300 ml-2 flex-shrink-0 pb-2 md:pb-7 pt-2"
+    >
       <share-button
         @click="share"
         :buttonTitle="buttonTitle"

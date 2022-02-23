@@ -1,12 +1,12 @@
 <template>
-  <div class="flex mb-auto items-center flex-col">
+  <div class="md:flex flex-col md:mb-auto items-center justify-center hidden">
     <button
       @click="close"
       class="
         hover:bg-gray-300 hover:text-gray-800
         transition
         p-2
-        mt-2
+        md:mt-2
         text-gray-400
       "
     >
@@ -30,6 +30,8 @@
         p-2
         mt-2
         text-gray-400
+        hidden
+        md:block
       "
       @click="switchSides"
     >

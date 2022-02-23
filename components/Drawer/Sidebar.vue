@@ -1,33 +1,50 @@
 <template>
   <div
     class="
-      h-full
+      md:h-full
       overflow-y-auto overflow-x-hidden
       flex-shrink-0
       hover:bg-gray-800
-      flex flex-row
+      flex flex-col
+      md:flex-row
       border-gray-600
       z-10
+      order-2
     "
     :class="{
       'bg-gray-800': selectedComponent,
-      'order-2': !isLeft,
-      'border-l': !isLeft,
-      'border-r': isLeft,
+      'md:order-2': !isLeft,
+      'md:order-1': isLeft,
+      'md:border-l': !isLeft,
+      'md:border-r': isLeft,
     }"
     style="-webkit-transform: translate3d(0, 0, 0)"
   >
-    <div class="flex flex-col justify-end mb-4" :class="{ 'order-2': !isLeft }">
+    <div
+      class="
+        flex flex-row
+        md:flex-col
+        justify-center
+        md:justify-end md:mb-4
+        order-2
+      "
+      :class="{ 'md:order-2': !isLeft, 'md:order-1': !isLeft }"
+    >
       <sidebar-visibility />
-      <div class="flex flex-col items-center">
+      <div class="flex flex-row md:flex-col items-center">
         <sidebar-component-selector />
         <sidebar-links />
       </div>
     </div>
+    <div class="relative order-1 md:hidden">
+      <keep-alive>
+        <component :is="selectedComponentComponent" />
+      </keep-alive>
+    </div>
     <div
       v-show="selectedComponent"
-      class="relative"
-      :class="{ 'order-1': !isLeft }"
+      class="relative order-1 hidden md:block"
+      :class="{ 'md:order-1': !isLeft, 'md:order-2': isLeft }"
       :style="`width: ${tempWidth ? tempWidth : width}px;`"
     >
       <keep-alive>

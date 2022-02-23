@@ -31,7 +31,7 @@
         />
       </svg>
     </div>
-    <span class="hidden md:block md:ml-2">{{ tag }}</span>
+    <span class="ml-2">{{ tag }}</span>
   </button>
 </template>
 

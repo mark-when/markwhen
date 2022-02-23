@@ -1,6 +1,15 @@
 <template>
   <div
-    class="sticky bottom-6 left-4 flex flex-row items-center ml-4 z-20"
+    class="
+      sticky
+      bottom-0
+      md:bottom-6
+      left-4
+      flex flex-row
+      items-center
+      ml-4
+      z-20
+    "
     @mousedown="mousedown"
   >
     <button
@@ -41,7 +50,7 @@
       </svg>
     </a>
     <div
-      class="flex flex-row p-2 backdrop-filter backdrop-blur"
+      class="flex flex-row p-2 backdrop-filter backdrop-blur overflow-x-scroll"
       style="width: fit-content"
     >
       <a
@@ -53,56 +62,6 @@
       </a>
       <display-settings></display-settings>
       <tags></tags>
-      <button
-        v-if="collapsible"
-        class="
-          ml-auto
-          hover:bg-gray-500
-          rounded
-          px-3
-          flex flex-row
-          items-center
-        "
-        @click="$emit('input', !value)"
-      >
-        <span class="hidden md:block">{{ value ? "Expand" : "Collapse" }}</span
-        ><svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 ml-1"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          v-if="!value"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 ml-1"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          v-if="value"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 15l7-7 7 7"
-          />
-        </svg>
-      </button>
-      <!-- <a
-      v-else
-      href="/"
-      class="underline text-gray-300 hidden md:block flex-shrink-0 pl-2"
-      >Make your own cascade</a
-    > -->
     </div>
   </div>
 </template>
@@ -117,7 +76,7 @@ export default Vue.extend({
     Tags,
     DisplaySettings,
   },
-  props: ["value", "collapsible", "timelinePath", "edittable"],
+  props: ["value", "timelinePath", "edittable"],
   methods: {
     toggleSidebar() {
       this.$store.commit("sidebar/toggle");

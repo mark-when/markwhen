@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-gray-900 h-full pb-6 px-2 pt-2">
+  <div class="flex flex-col bg-gray-900 h-full pb-2 md:pb-6 px-2 pt-2">
     <timeline-list />
     <sign-in v-if="!user" />
     <signed-in v-else :user="user" />
