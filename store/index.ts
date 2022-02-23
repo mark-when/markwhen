@@ -2,7 +2,7 @@ import { Context } from "@nuxt/types";
 import { parse } from "~/src/Parser";
 import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
-import { DateTime, DateTimeFormatOptions } from "luxon";
+import { DateTime } from "luxon";
 
 interface State {
   list: string[],

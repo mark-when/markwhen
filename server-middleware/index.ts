@@ -3,27 +3,33 @@ import * as express from "express"
 const app = express.default()
 app.use(express.json())
 
-// if (!admin.app()) {
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: "https:/timelinecascade.firebaseio.com",
-  storageBucket: "timelinecascade.appspot.com",
-  projectId: "timelinecascade"
-});
-// }
+if (!admin.app()) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    databaseURL: "https:/timelinecascade.firebaseio.com",
+    storageBucket: "timelinecascade.appspot.com",
+    projectId: "timelinecascade"
+  });
+}
 
-function failUnauthorized(res, message) {
+interface Request extends express.Request {
+  auth?: any
+  timelineFile?: string
+  timelinePath?: string
+}
+
+function failUnauthorized(res: express.Response, message: string) {
   let response =
-  {
-    error: 'Unauthorized.'
-  }
+    {
+      error: 'Unauthorized.'
+    } as { error: string, message?: string }
   if (message) {
     response.message = message
   }
   res.status(401).json(response).end()
 }
 
-app.use('/api', async (req, res, next) => {
+app.use('/api', async (req: Request, res, next) => {
   let token
   if (req.headers && req.headers.authorization) {
     const parts = req.headers.authorization.split(' ');
@@ -47,7 +53,7 @@ app.use('/api', async (req, res, next) => {
 })
 
 const RESERVED_USERNAMES = ['api', 'assets', 'from']
-app.post('/api/chooseUserName', async (req, res) => {
+app.post('/api/chooseUserName', async (req: Request, res) => {
   const username = req.body.username
   if (!username) {
     return res.status(400).json({
@@ -86,7 +92,7 @@ app.post('/api/chooseUserName', async (req, res) => {
   }
 })
 
-app.post('/api/share', async (req, res) => {
+app.post('/api/share', async (req: Request, res) => {
   const timeline = req.body.timeline
   if (!timeline) {
     return res.status(400).json({
@@ -107,13 +113,26 @@ app.post('/api/share', async (req, res) => {
     }).end()
   }
 
+  const timestamp = Date.now()
+
   const path = `${req.auth.uid}/${req.body.name}`
   const file = admin.storage().bucket().file(path)
-  await file.save(req.body.timeline, { contentType: "text/plain" })
+  await file.save(req.body.timeline, {
+    contentType: "text/plain", metadata: {
+      lastEdited: timestamp
+    }
+  })
   return res.status(200).send()
 })
 
-app.get('/:user/:timeline?', async (req, res, next) => {
+app.get('/api/explore', async (req, res) => {
+  console.log(req)
+  const [files] = await admin.storage().bucket().getFiles()
+  files.forEach(file => console.log(file.name))
+  res.status(200).send("Hello")
+})
+
+app.get('/:user/:timeline?', async (req: Request, res, next) => {
   const user = await admin.firestore().collection(`users`).where('username', '==', req.params.user).get()
   if (!user || user.empty) {
     return res.redirect('/')
@@ -133,5 +152,6 @@ app.get('/:user/:timeline?', async (req, res, next) => {
   req.timelinePath = `${req.params.user}${req.params.timeline ? ('/' + req.params.timeline) : ''}`
   next()
 })
+
 
 module.exports = app
