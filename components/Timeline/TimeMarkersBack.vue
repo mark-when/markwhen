@@ -1,11 +1,16 @@
 <template>
-  <div class="timeMarkerContainer h-full">
-    <div class="flex flex-row h-full" :style="`margin-left: -${leftMargin}px`">
-      <time-marker-back
-        v-for="timeMarker in markers"
-        :key="timeMarker.ts"
-        :timeMarker="timeMarker"
-      />
+  <div class="fixed inset-0">
+    <div class="timeMarkerContainer h-full">
+      <div
+        class="flex flex-row h-full"
+        :style="`margin-left: -${leftMargin}px`"
+      >
+        <time-marker-back
+          v-for="timeMarker in markers"
+          :key="timeMarker.ts"
+          :timeMarker="timeMarker"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -17,7 +22,7 @@ import { viewportLeftMarginPixels } from "~/store/index";
 
 export default Vue.extend({
   components: { TimeMarkerBack },
-  props: ['markers'],
+  props: ["markers"],
   data() {
     return {
       leftMargin: viewportLeftMarginPixels,

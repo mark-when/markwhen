@@ -19,6 +19,7 @@
         items-center
         text-gray-400
         hover:text-gray-100
+        tagButton
       "
       @click="clearFilters"
       v-if="Object.keys(tags).length > 0"

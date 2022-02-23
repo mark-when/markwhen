@@ -6,12 +6,20 @@ interface State {
   selectedComponent: SelectedComponent
   visible: boolean
   position: Side
+  resizeYStarted: boolean
+  resizeStartY: number
+  heightDiff: number
+  sidebarHeight: number
 }
 
 export const state: () => State = () => ({
   selectedComponent: 'editor',
   visible: true,
-  position: 'left'
+  position: 'left',
+  resizeYStarted: false,
+  resizeStartY: 0,
+  heightDiff: 0,
+  sidebarHeight: 300
 })
 
 export const mutations: MutationTree<State> = {
@@ -30,5 +38,22 @@ export const mutations: MutationTree<State> = {
   },
   toggle(state: State) {
     state.visible = !state.visible
+  },
+  startResizeY(state: State, startY: number) {
+    state.resizeYStarted = true
+    state.heightDiff = 0
+    state.resizeStartY = startY
+  },
+  resizeY(state: State, height: number) {
+    state.heightDiff = state.resizeStartY - height
+  },
+  endResizeY(state: State) {
+    if (state.heightDiff === 0) {
+      state.visible = !state.visible
+    }
+    state.resizeYStarted = false
+  },
+  setHeight(state: State, sidebarHeight: number) {
+    state.sidebarHeight = sidebarHeight
   }
 }

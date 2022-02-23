@@ -11,6 +11,7 @@
       p-1
       text-gray-400
       hover:text-gray-100
+      tagButton
     "
     @click="filterTag"
   >

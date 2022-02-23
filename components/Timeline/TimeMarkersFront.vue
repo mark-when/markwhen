@@ -1,15 +1,17 @@
 <template>
-  <div class="timeMarkerContainer h-full pointer-events-none">
-    <div class="flex h-full" :style="`margin-left: -${leftMargin}px`">
-      <div
-        class="timeMarkerShader w-full h-12 fixed top-0"
-        :style="`margin-left: ${leftMargin}px`"
-      ></div>
-      <time-marker-front
-        v-for="timeMarker in markers"
-        :key="timeMarker.ts"
-        :timeMarker="timeMarker"
-      />
+  <div class="fixed inset-0 pointer-events-none">
+    <div class="timeMarkerContainer h-full ">
+      <div class="flex h-full" :style="`margin-left: -${leftMargin}px`">
+        <div
+          class="timeMarkerShader w-full h-12 fixed top-0"
+          :style="`margin-left: ${leftMargin}px`"
+        ></div>
+        <time-marker-front
+          v-for="timeMarker in markers"
+          :key="timeMarker.ts"
+          :timeMarker="timeMarker"
+        />
+      </div>
     </div>
   </div>
 </template>

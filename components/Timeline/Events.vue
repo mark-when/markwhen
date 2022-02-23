@@ -2,15 +2,16 @@
   <div
     id="events"
     class="flex flex-col relative"
-    :style="`min-width: ${distanceBetweenBaselineDates}px; margin-top: -100vh;`"
+    :style="`min-width: ${distanceBetweenBaselineDates}px;`"
   >
+    <!--  md:-mt-screen -mt-96 -->
     <div class="h-24"></div>
     <event-row
       v-for="event in $store.getters.filteredEvents"
       :key="event.eventString.substring(0, 30)"
       :event="event"
     ></event-row>
-    <div style="height: 80vh"></div>
+    <div style="height: 70vh"></div>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full bg-gray-900 h-full flex flex-col">
-    <div class="flex-grow">
+    <div class="flex-grow overflow-scroll">
       <textarea
         class="
           h-full

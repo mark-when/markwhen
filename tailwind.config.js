@@ -33,6 +33,9 @@ module.exports = {
         'full': '100%',
         'screen': "100vh"
       },
+      margin: {
+        '-screen': '-90vh'
+      }
     },
   },
   variants: {

@@ -36,7 +36,10 @@
         <sidebar-links />
       </div>
     </div>
-    <div class="relative order-1 md:hidden">
+    <div
+      class="order-1 md:hidden"
+      :style="`height: min(max(${tempHeight}px, 50px), 80vh);`"
+    >
       <keep-alive>
         <component :is="selectedComponentComponent" />
       </keep-alive>
@@ -86,7 +89,12 @@ export default Vue.extend({
         state.sidebar.selectedComponent as string,
       isLeft: (state: any) => state.sidebar.position === "left",
       hasSeenHowTo: (state: any) => state.hasSeenHowTo,
+      heightDiff: (state: any) => state.sidebar.heightDiff,
+      resizeYStarted: (state: any) => state.sidebar.resizeYStarted,
     }),
+    tempHeight(): number {
+      return this.height + this.heightDiff;
+    },
     selectedComponentComponent(): any {
       if (this.selectedComponent === "editor") {
         return TimelineEditor;
@@ -94,17 +102,28 @@ export default Vue.extend({
       return Profile;
     },
   },
+  watch: {
+    heightDiff(val, oldVal) {
+      if (val === 0 && !isNaN(oldVal)) {
+        this.height = this.height + oldVal;
+
+        // This is just used for positioning of the timeline on mobile
+        this.$store.commit('sidebar/setHeight', this.height)
+      }
+    },
+  },
   data() {
     return {
       width: 350,
-      resizeStarted: false,
+      height: 300,
+      resizeXStarted: false,
       resizeStartX: 0,
       tempWidth: 0,
     };
   },
   methods: {
     resizeMouseDown(e: MouseEvent) {
-      this.resizeStarted = true;
+      this.resizeXStarted = true;
       this.resizeStartX = e.pageX;
       document.addEventListener("mousemove", this.resizeMouseMove);
       document.addEventListener("mouseup", this.resizeMouseUp);
@@ -118,7 +137,7 @@ export default Vue.extend({
       );
     },
     resizeMouseUp(e: MouseEvent | TouchEvent) {
-      this.resizeStarted = false;
+      this.resizeXStarted = false;
       if (this.tempWidth) {
         this.width = Math.max(this.tempWidth, 50);
         this.tempWidth = 0;
@@ -127,7 +146,7 @@ export default Vue.extend({
       document.removeEventListener("mousemove", this.resizeMouseMove);
     },
     resizeMouseMove(e: MouseEvent) {
-      if (this.resizeStarted) {
+      if (this.resizeXStarted) {
         if (this.isLeft) {
           this.tempWidth = this.width - this.resizeStartX + e.pageX;
         } else {

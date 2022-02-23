@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col flex-grow min-w-24">
+  <div class="flex flex-col flex-grow min-w-24 overflow-scroll">
     <h3 class="border-b border-gray-500 text-gray-400">My cascades</h3>
     <local-timelines />
     <cloud-timelines />
