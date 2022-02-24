@@ -23,7 +23,16 @@
       ></textarea>
     </div>
     <div
-      class="flex flex-row text-gray-300 ml-2 flex-shrink-0 pb-2 md:pb-7 pt-2"
+      class="
+        flex flex-row
+        text-gray-300
+        ml-2
+        flex-shrink-0
+        pb-2
+        md:pb-7
+        pt-2
+        justify-center
+      "
     >
       <share-button
         @click="share"

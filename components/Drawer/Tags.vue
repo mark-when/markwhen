@@ -40,7 +40,7 @@
       ><span>Show all</span>
     </button>
     <tag v-for="tag in Object.keys(tags)" :key="tag" :tag="tag"></tag>
-    <div class="flex flex-row font-mono text-gray-400" v-if="debug">
+    <div class="flex flex-row font-mono text-gray-400" v-if="false">
       <div>
         {{ JSON.stringify(timeMarkerWeights) }}
       </div>

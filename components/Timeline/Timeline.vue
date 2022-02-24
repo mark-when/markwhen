@@ -11,6 +11,7 @@
     <events />
     <TimeMarkersFront :markers="markers" />
     <drawer-header :edittable="edittable" />
+    <resize-observer @notify="handleResize" />
   </div>
 </template>
 
@@ -26,13 +27,22 @@ import { MAX_SCALE, TimeMarker } from "~/store";
 import { throttle } from "throttle-debounce";
 import TimeMarkersBack from "./TimeMarkersBack.vue";
 import TimeMarkersFront from "./TimeMarkersFront.vue";
+// @ts-ignore
+import { ResizeObserver } from "vue-resize";
+import "vue-resize/dist/vue-resize.css";
 /*
  * If a user doesn't specify a color, use one from our colors array and use our color classes.
  * If a user specifies a color from the color array, use our color classes.
  */
 
 export default Vue.extend({
-  components: { Events, DrawerHeader, TimeMarkersBack, TimeMarkersFront },
+  components: {
+    Events,
+    DrawerHeader,
+    TimeMarkersBack,
+    TimeMarkersFront,
+    ResizeObserver,
+  },
   props: ["edittable"],
   data() {
     return {
@@ -80,11 +90,23 @@ export default Vue.extend({
       const scale = val / this.widthChangeStartYearWidth!;
       this.$el.scrollLeft = scale * startCenter - this.$el.clientWidth / 2!;
     },
+    sidebarSide(val) {
+      this.setViewportDateInterval();
+    },
+    sidebarVisible(val) {
+      this.setViewportDateInterval();
+    },
+    selectedComponent(val) {
+      this.setViewportDateInterval();
+    },
   },
   computed: {
     ...mapState({
       scale: (state: any) => state.settings.scale,
       startedWidthChange: (state: any) => state.settings.startedWidthChange,
+      sidebarSide: (state: any) => state.sidebar.position,
+      sidebarVisible: (state: any) => state.sidebar.visible,
+      selectedComponent: (state: any) => state.sidebar.selectedComponent,
     }),
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
@@ -148,13 +170,15 @@ export default Vue.extend({
     },
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
-      this.$store.commit(
-        "setViewportDateInterval",
-        this.$store.getters.setDateIntervalFromViewport(
-          this.$el.scrollLeft,
-          this.$el.clientWidth
-        )
+      const el = this.$el as HTMLElement;
+      const viewportInterval = this.$store.getters.setDateIntervalFromViewport(
+        el.scrollLeft - el.offsetLeft,
+        el.clientWidth + el.offsetLeft
       );
+      this.$store.commit("setViewportDateInterval", viewportInterval);
+    },
+    handleResize() {
+      this.setViewportDateInterval();
     },
     scroll() {
       this.setViewportDateInterval();
@@ -196,6 +220,7 @@ export default Vue.extend({
       const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
 
+      console.log("setting scroll left", newScrollLeft);
       this.$el.scrollLeft = newScrollLeft;
       this.$el.scrollTop = newScrollTop;
 

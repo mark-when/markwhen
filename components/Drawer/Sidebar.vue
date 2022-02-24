@@ -17,6 +17,7 @@
       'md:order-1': isLeft,
       'md:border-l': !isLeft,
       'md:border-r': isLeft,
+      sidebar: !selectedComponent,
     }"
     style="-webkit-transform: translate3d(0, 0, 0)"
   >
@@ -108,7 +109,7 @@ export default Vue.extend({
         this.height = this.height + oldVal;
 
         // This is just used for positioning of the timeline on mobile
-        this.$store.commit('sidebar/setHeight', this.height)
+        this.$store.commit("sidebar/setHeight", this.height);
       }
     },
   },
@@ -159,4 +160,7 @@ export default Vue.extend({
 </script>
 
 <style>
+.sidebar {
+  background-color: #384047;
+}
 </style>
