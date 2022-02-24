@@ -18,6 +18,7 @@ interface State {
   dirtyEditor: boolean,
   hasSeenHowTo: boolean,
   viewportDateInterval: DateInterval
+  viewport: Viewport
 }
 
 interface DateInterval {
@@ -134,7 +135,8 @@ export const state: () => State = () => ({
   viewportDateInterval: {
     from: DateTime.now().minus({ years: 10 }),
     to: DateTime.now().plus({ years: 10 })
-  }
+  },
+  viewport: { left: 0, width: 0 }
 })
 
 export type DisplayScale =
@@ -157,6 +159,11 @@ export type TimeMarkerWeights = [
   number, /* year */
   number, /* decade */
 ]
+
+interface Viewport {
+  left: number
+  width: number
+}
 
 const diffScale = "days"
 
@@ -249,6 +256,9 @@ export const mutations: MutationTree<State> = {
   setViewportDateInterval(state: State, interval: DateInterval) {
     state.viewportDateInterval = interval
   },
+  setViewport(state: State, viewport: Viewport) {
+    state.viewport = viewport
+  }
 }
 
 function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
@@ -376,14 +386,16 @@ export const getters: GetterTree<State, State> = {
   },
   timeMarkerWeights(state: State, getters: any): TimeMarkerWeights {
     const diff = getters.viewportDateInterval.to.diff(getters.viewportDateInterval.from).as("seconds")
+    const width = state.viewport.width
+    const denom = diff / (width / 2000)
     return [
-      clamp(roundToTwoDecimalPlaces(30 * SECOND / diff)),
-      clamp(roundToTwoDecimalPlaces(30 * MINUTE / diff)),
-      clamp(roundToTwoDecimalPlaces(15 * HOUR / diff)),
-      clamp(roundToTwoDecimalPlaces(20 * DAY / diff)),
-      clamp(roundToTwoDecimalPlaces(10 * MONTH / diff)),
-      clamp(roundToTwoDecimalPlaces(10 * YEAR / diff)),
-      clamp(roundToTwoDecimalPlaces(10 * DECADE / diff))
+      clamp(roundToTwoDecimalPlaces(30 * SECOND / denom)),
+      clamp(roundToTwoDecimalPlaces(30 * MINUTE / denom)),
+      clamp(roundToTwoDecimalPlaces(25 * HOUR / denom)),
+      clamp(roundToTwoDecimalPlaces(30 * DAY / denom)),
+      clamp(roundToTwoDecimalPlaces(25 * MONTH / denom)),
+      clamp(roundToTwoDecimalPlaces(25 * YEAR / denom)),
+      clamp(roundToTwoDecimalPlaces(10 * DECADE / denom))
     ]
   },
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
@@ -445,5 +457,10 @@ export const actions: ActionTree<State, State> = {
     if (context.req.timelinePath) {
       store.commit('setTimelinePath', context.req.timelinePath)
     }
+  },
+  setViewport({ commit, getters }, viewport) {
+    const viewportInterval = getters.setDateIntervalFromViewport(viewport.left, viewport.width)
+    commit('setViewport', viewport)
+    commit('setViewportDateInterval', viewportInterval)
   }
 }

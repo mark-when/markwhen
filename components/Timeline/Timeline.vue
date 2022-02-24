@@ -171,11 +171,10 @@ export default Vue.extend({
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       const el = this.$el as HTMLElement;
-      const viewportInterval = this.$store.getters.setDateIntervalFromViewport(
-        el.scrollLeft - el.offsetLeft,
-        el.clientWidth + el.offsetLeft
-      );
-      this.$store.commit("setViewportDateInterval", viewportInterval);
+      this.$store.dispatch('setViewport', {
+        left: el.scrollLeft - el.offsetLeft,
+        width: el.clientWidth + el.offsetLeft,
+      })
     },
     handleResize() {
       this.setViewportDateInterval();
@@ -220,7 +219,6 @@ export default Vue.extend({
       const newScrollTop =
         this.pinchStartScrollTop! + this.pinchStartCenterY! - wg.origin.y;
 
-      console.log("setting scroll left", newScrollLeft);
       this.$el.scrollLeft = newScrollLeft;
       this.$el.scrollTop = newScrollTop;
 
