@@ -200,6 +200,9 @@ export default Vue.extend({
       this.imageStatus = "loaded";
     },
     togglePhotos(e: MouseEvent) {
+      if (e.target instanceof HTMLAnchorElement) {
+        return
+      }
       e.preventDefault();
       this.showingMeta = !this.showingMeta;
       if (this.imageStatus === "not loaded" && this.hasImages) {
