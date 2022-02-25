@@ -29,7 +29,13 @@ function failUnauthorized(res: express.Response, message: string) {
   res.status(401).json(response).end()
 }
 
-app.use('/api', async (req: Request, res, next) => {
+const chooseUserName = '/api/chooseUserName'
+const share = '/api/share'
+const explore = '/api/explore'
+const cascade = '/api/cascade/:username/:cascade?'
+const requiresAuth = [chooseUserName, share]
+
+app.use(requiresAuth, async (req: Request, res, next) => {
   let token
   if (req.headers && req.headers.authorization) {
     const parts = req.headers.authorization.split(' ');
@@ -53,7 +59,7 @@ app.use('/api', async (req: Request, res, next) => {
 })
 
 const RESERVED_USERNAMES = ['api', 'assets', 'from']
-app.post('/api/chooseUserName', async (req: Request, res) => {
+app.post(chooseUserName, async (req: Request, res) => {
   const username = req.body.username
   if (!username) {
     return res.status(400).json({
@@ -92,7 +98,7 @@ app.post('/api/chooseUserName', async (req: Request, res) => {
   }
 })
 
-app.post('/api/share', async (req: Request, res) => {
+app.post(share, async (req: Request, res) => {
   const timeline = req.body.timeline
   if (!timeline) {
     return res.status(400).json({
@@ -125,11 +131,59 @@ app.post('/api/share', async (req: Request, res) => {
   return res.status(200).send()
 })
 
-app.get('/api/explore', async (req, res) => {
-  console.log(req)
-  const [files] = await admin.storage().bucket().getFiles()
-  files.forEach(file => console.log(file.name))
-  res.status(200).send("Hello")
+async function getAllUserIds(): Promise<string[]> {
+  const users = await admin.auth().listUsers()
+  return users.users.map(user => user.uid)
+}
+
+interface UserAndId {
+  userId: string
+  username: string
+}
+
+async function getAllUserNamesAndIds(): Promise<UserAndId[]> {
+  const users = (await getAllUserIds()).map(userId => admin.firestore().doc(`users/${userId}`))
+  const usernames = await admin.firestore().getAll(...users, { fieldMask: ['username'] })
+  return usernames.filter(userDoc => userDoc.exists && !!userDoc.data()!.username).map(userDoc => {
+    return {
+      username: userDoc.data()!.username,
+      userId: userDoc.id
+    }
+  })
+}
+
+app.get(explore, async (req, res) => {
+  const users = await getAllUserNamesAndIds()
+  const allFiles = await users.map(async user => {
+    const [files] =
+      await admin.storage().bucket().getFiles({ prefix: user.userId })
+    return files.map(f => {
+      let cascadePath
+      if (user.username === f.name.substring(user.userId.length + 1)) {
+        cascadePath = user.username
+      } else {
+        cascadePath = user.username + f.name.substring(user.userId.length)
+      }
+      return {
+        cascadePath, filePath: f.name
+      }
+    })
+  })
+
+  const files = await (await Promise.all(allFiles)).flatMap(f => f)
+  res.status(200).json({ cascades: files })
+})
+
+app.get(cascade, async (req, res) => {
+  const path = `${req.params.username}/${req.params.cascade ? req.params.cascade : req.params.username}`
+  const file = await admin.storage().bucket().file(path)
+  const [exists] = await file.exists()
+  if (!exists) {
+    return res.status(404).send()
+  }
+  res.contentType('text/html')
+  res.status(200)
+  file.createReadStream().pipe(res)
 })
 
 app.get('/:user/:timeline?', async (req: Request, res, next) => {

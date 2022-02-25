@@ -37,7 +37,7 @@
       </svg>
     </button>
     <button
-      class="p-2 hover:bg-gray-900"
+      class="p-2 hover:bg-gray-900 md:mb-3 mb-0 mr-3 md:mr-0"
       :class="selectedComponent === 'explore' ? 'bg-gray-900' : ''"
       @click="selectExplore"
       title="Explore"
@@ -54,12 +54,7 @@
         ></path>
       </svg>
     </button>
-    <button
-      class="p-2 hover:bg-gray-900"
-      :class="selectedComponent === 'howto' ? 'bg-gray-900' : ''"
-      @click="selectHowTo"
-      title="Help and How to"
-    >
+    <button class="p-2" @click="selectHowTo" title="Help and How to">
       <svg
         class="h-6 w-6 rounded-full"
         focusable="false"

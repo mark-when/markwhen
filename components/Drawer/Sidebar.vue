@@ -10,6 +10,8 @@
       border-gray-600
       z-10
       order-2
+      pb-4
+      md:pb-0
     "
     :class="{
       'bg-gray-800': selectedComponent,
@@ -76,7 +78,7 @@ import { mapState } from "vuex";
 import SidebarComponentSelector from "./SidebarComponentSelector.vue";
 import SidebarLinks from "./SidebarLinks.vue";
 import SidebarVisibility from "./SidebarVisibility.vue";
-import Explore from "./Explore.vue";
+import Explore from "./Explore/Explore.vue";
 
 export default Vue.extend({
   components: {

@@ -52,7 +52,10 @@ const auth = getAuth(firebaseApp)
 const rpc: Plugin = (context, inject) => {
   const { $axios, $config } = context
   const defaultHeaders = async () => {
-    const token = await auth.currentUser!.getIdToken()
+    const token = await auth.currentUser?.getIdToken()
+    if (!token) {
+      return {}
+    }
     const config = {
       headers: {
         Authorization: `Bearer ${token}`
