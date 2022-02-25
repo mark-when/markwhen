@@ -3,14 +3,12 @@ import * as express from "express"
 const app = express.default()
 app.use(express.json())
 
-if (!admin.app()) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    databaseURL: "https:/timelinecascade.firebaseio.com",
-    storageBucket: "timelinecascade.appspot.com",
-    projectId: "timelinecascade"
-  });
-}
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  databaseURL: "https:/timelinecascade.firebaseio.com",
+  storageBucket: "timelinecascade.appspot.com",
+  projectId: "timelinecascade"
+});
 
 interface Request extends express.Request {
   auth?: any
