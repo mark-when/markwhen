@@ -7,7 +7,7 @@ const DATE_REGEX = /\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?/
 
 const START_OR_END_TIME_REGEX = new RegExp(`(${ISO8601_REGEX.source})|(${NOW_REGEX.source})|(${DATE_REGEX.source})`)
 
-const EVENT_START_REGEX = new RegExp(`^\\s*((${START_OR_END_TIME_REGEX.source})(?:-(${START_OR_END_TIME_REGEX.source}))?):(.*)`)
+const EVENT_START_REGEX = new RegExp(`^\\s*((${START_OR_END_TIME_REGEX.source})(?:\\W*-\\W*(${START_OR_END_TIME_REGEX.source}))?):(.*)`)
 const COMMENT_REGEX = /^\s*\/\/.*/
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/

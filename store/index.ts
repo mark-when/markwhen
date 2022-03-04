@@ -313,24 +313,6 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
 }
 
 export const getters: GetterTree<State, State> = {
-  trimmedAndFilteredEntries(state: State): string[] {
-    if (!state.eventsString) {
-      return []
-    }
-    let eventStrings = state.eventsString.split("\n");
-
-    // Filter empty strings, comments, and malformatted lines
-    const filter = function (eventString: string): boolean {
-      if (!eventString) {
-        return false
-      }
-      if (eventString.match(/^\s*\/\/.*/)) {
-        return false
-      }
-      return true
-    }
-    return eventStrings.filter(filter).map((str: string) => str.trim());
-  },
   cascade(state: State, getters: any): Cascade {
     const cascade = parse(state.eventsString, state.sort)
     return cascade
