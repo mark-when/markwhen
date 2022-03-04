@@ -94,6 +94,7 @@
         @{{ $store.state.timelinePath }}
       </a>
       <display-settings></display-settings>
+      <sort></sort>
       <tags></tags>
     </div>
   </div>
@@ -103,11 +104,13 @@
 import Tags from "./Tags.vue";
 import DisplaySettings from "./DisplaySettings.vue";
 import Vue from "vue";
+import Sort from "./Sort.vue";
 
 export default Vue.extend({
   components: {
     Tags,
     DisplaySettings,
+    Sort,
   },
   props: ["value", "timelinePath", "edittable"],
   methods: {

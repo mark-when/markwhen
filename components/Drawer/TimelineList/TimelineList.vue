@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col flex-grow min-w-24 overflow-scroll">
-    <h3 class="border-b border-gray-500 text-gray-400">My cascades</h3>
+    <h3 class="text-xl font-bold ml-1 text-gray-500">My cascades</h3>
     <local-timelines />
     <cloud-timelines />
   </div>

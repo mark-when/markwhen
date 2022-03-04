@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex"
-export type SelectedComponent = "" | "editor" | "profile" | 'howto' | 'explore'
+export type SelectedComponent = "" | "editor" | "profile" | 'howto' | 'explore' | 'settings'
 export type Side = "left" | "right"
 
 interface State {

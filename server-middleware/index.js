@@ -10,17 +10,17 @@ admin.initializeApp({
   projectId: "timelinecascade"
 });
 
-interface Request extends express.Request {
-  auth?: any
-  timelineFile?: string
-  timelinePath?: string
-}
+// interface Request extends express.Request {
+//   auth?: any
+//   timelineFile?: string
+//   timelinePath?: string
+// }
 
-function failUnauthorized(res: express.Response, message: string) {
+function failUnauthorized(res, message) {
   let response =
     {
       error: 'Unauthorized.'
-    } as { error: string, message?: string }
+    } 
   if (message) {
     response.message = message
   }
@@ -33,7 +33,7 @@ const explore = '/api/explore'
 const cascade = '/api/cascade/:username/:cascade?'
 const requiresAuth = [chooseUserName, share]
 
-app.use(requiresAuth, async (req: Request, res, next) => {
+app.use(requiresAuth, async (req, res, next) => {
   let token
   if (req.headers && req.headers.authorization) {
     const parts = req.headers.authorization.split(' ');
@@ -57,7 +57,7 @@ app.use(requiresAuth, async (req: Request, res, next) => {
 })
 
 const RESERVED_USERNAMES = ['api', 'assets', 'from']
-app.post(chooseUserName, async (req: Request, res) => {
+app.post(chooseUserName, async (req, res) => {
   const username = req.body.username
   if (!username) {
     return res.status(400).json({
@@ -96,7 +96,7 @@ app.post(chooseUserName, async (req: Request, res) => {
   }
 })
 
-app.post(share, async (req: Request, res) => {
+app.post(share, async (req, res) => {
   const timeline = req.body.timeline
   if (!timeline) {
     return res.status(400).json({
@@ -129,22 +129,22 @@ app.post(share, async (req: Request, res) => {
   return res.status(200).send()
 })
 
-async function getAllUserIds(): Promise<string[]> {
+async function getAllUserIds() {
   const users = await admin.auth().listUsers()
   return users.users.map(user => user.uid)
 }
 
-interface UserAndId {
-  userId: string
-  username: string
-}
+// interface UserAndId {
+//   userId: string
+//   username: string
+// }
 
-async function getAllUserNamesAndIds(): Promise<UserAndId[]> {
+async function getAllUserNamesAndIds() {
   const users = (await getAllUserIds()).map(userId => admin.firestore().doc(`users/${userId}`))
   const usernames = await admin.firestore().getAll(...users, { fieldMask: ['username'] })
-  return usernames.filter(userDoc => userDoc.exists && !!userDoc.data()!.username).map(userDoc => {
+  return usernames.filter(userDoc => userDoc.exists && !!userDoc.data().username).map(userDoc => {
     return {
-      username: userDoc.data()!.username,
+      username: userDoc.data().username,
       userId: userDoc.id
     }
   })
@@ -184,7 +184,7 @@ app.get(cascade, async (req, res) => {
   file.createReadStream().pipe(res)
 })
 
-app.get('/:user/:timeline?', async (req: Request, res, next) => {
+app.get('/:user/:timeline?', async (req, res, next) => {
   const user = await admin.firestore().collection(`users`).where('username', '==', req.params.user).get()
   if (!user || user.empty) {
     return res.redirect('/')

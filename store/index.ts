@@ -1,9 +1,8 @@
 import { Context } from "@nuxt/types";
-import { parse } from "~/src/Parser";
+import { parse, Sort } from "~/src/Parser";
 import { Cascade, CascadeMetadata, Event, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
-
 interface State {
   list: string[],
   currentTimelineName: string,
@@ -19,6 +18,7 @@ interface State {
   hasSeenHowTo: boolean,
   viewportDateInterval: DateInterval
   viewport: Viewport
+  sort: Sort
 }
 
 interface DateInterval {
@@ -136,7 +136,8 @@ export const state: () => State = () => ({
     from: DateTime.now().minus({ years: 10 }),
     to: DateTime.now().plus({ years: 10 })
   },
-  viewport: { left: 0, width: 0 }
+  viewport: { left: 0, width: 0 },
+  sort: "none"
 })
 
 export type DisplayScale =
@@ -184,6 +185,9 @@ export const mutations: MutationTree<State> = {
   },
   setTimelinePath(state: State, path: string) {
     state.timelinePath = path
+  },
+  setSort(state: State, sort: Sort) {
+    state.sort = sort
   },
   setHasSeenHowTo(state: State, hasSeen: boolean) {
     state.hasSeenHowTo = hasSeen
@@ -328,7 +332,7 @@ export const getters: GetterTree<State, State> = {
     return eventStrings.filter(filter).map((str: string) => str.trim());
   },
   cascade(state: State, getters: any): Cascade {
-    const cascade = parse(state.eventsString)
+    const cascade = parse(state.eventsString, state.sort)
     return cascade
   },
   events(state: State, getters: any): Event[] {

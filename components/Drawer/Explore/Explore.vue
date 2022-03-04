@@ -1,5 +1,6 @@
 <template>
   <div class="bg-gray-900 h-full w-full overflow-scroll pb-5 text-gray-300 p-2">
+    <h3 class="text-xl font-bold ml-1 text-gray-500">Explore</h3>
     <div class="flex flex-row items-center justify-center" v-if="loading">
       <svg
         class="animate-spin h-3 w-3 mr-2"
@@ -22,7 +23,7 @@
         ></path></svg
       >Loading...
     </div>
-    <cascades v-else :cascades="cascades"/>
+    <cascades v-else :cascades="cascades" />
   </div>
 </template>
 
