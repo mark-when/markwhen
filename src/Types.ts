@@ -86,13 +86,9 @@ export interface BoundingYears {
 export class DateRange {
   fromDateTime: DateTime
   toDateTime: DateTime
-  from: YearMonthDay;
-  to?: YearMonthDay;
   originalString: string
 
   constructor(from: string, to: string, originalString: string, dateFormat: string) {
-    this.from = new YearMonthDay(from);
-    this.to = to ? new YearMonthDay(to) : undefined;
     this.originalString = originalString
 
     const { dateTime: fromDateTime, granularity } = DateRange.stringToDateTime(from, dateFormat)
@@ -102,37 +98,7 @@ export class DateRange {
     } else {
       this.toDateTime = DateRange.roundDateUp({ dateTime: this.fromDateTime, granularity })
     }
-  }
-
-  getNextYear(): Year {
-    if (this.to) {
-      return this.to.year + 1;
-    }
-    return this.from.year + 1;
-  }
-
-  startingDay(): YearMonthDay {
-    return {
-      year: this.from.year,
-      month: this.from.month ? this.from.month : 1,
-      day: this.from.day ? this.from.day : 1
-    }
-  }
-
-  endingDay(): YearMonthDay {
-    if (this.to) {
-      return {
-        year: this.to.year,
-        month: this.to.month ? this.to.month : 12,
-        day: this.to.day ? Math.min(this.to.day, 30) as Day : 30
-      }
-    } else {
-      return {
-        year: this.from.year,
-        month: this.from.month ? this.from.month : 12,
-        day: this.from.day ? Math.min(this.from.day, 30) as Day : 30
-      }
-    }
+    console.log(to)
   }
 
   static stringToDateTime(s: string, fullFormat: string): GranularDateTime {
@@ -244,14 +210,6 @@ export class Event {
     this.event = event;
   }
 
-  startingYear(): Year {
-    return this.range.from.year;
-  }
-
-  getNextYear(): Year {
-    return this.range.getNextYear();
-  }
-
   getInnerHtml(): string {
     return this.event.getInnerHtml()
   }
@@ -264,10 +222,12 @@ export class Event {
 export type Tags = { [tagName: string]: string }
 
 export interface Cascade {
-  events: Event[]
+  events: Events
   tags: Tags
   metadata: CascadeMetadata
 }
+
+export type Events = (Event | Event[])[]
 
 export interface CascadeMetadata {
   earliestTime: DateTime

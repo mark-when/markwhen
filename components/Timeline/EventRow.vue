@@ -141,10 +141,10 @@ export default Vue.extend({
       return !!this.supplemental.length;
     },
     eventRowStyle(): string {
-      return `margin-left: ${this.getLeftMarginForDate(
-        this.event,
-        this.event.range.from
-      )}px;`;
+      const leftMargin = this.distanceFromBaselineLeftmostDate(
+        this.event.range.fromDateTime
+      );
+      return `margin-left: ${leftMargin}px;`;
     },
     photoBarClass(): string {
       let c = "photoBar transition rounded-lg shadow ";
@@ -201,7 +201,7 @@ export default Vue.extend({
     },
     togglePhotos(e: MouseEvent) {
       if (e.target instanceof HTMLAnchorElement) {
-        return
+        return;
       }
       e.preventDefault();
       this.showingMeta = !this.showingMeta;
@@ -217,9 +217,6 @@ export default Vue.extend({
       const newWidth = Math.max(EVENT_HEIGHT_PX, distance);
       return newWidth;
     },
-    getLeftMarginForDate(event: Event, date: YearMonthDay): number {
-      return this.distanceFromBaselineLeftmostDate(event.range.fromDateTime);
-    },
   },
 });
 </script>
@@ -227,5 +224,9 @@ export default Vue.extend({
 <style>
 .photoBar {
   width: 10px;
+}
+.eventRow {
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 </style>

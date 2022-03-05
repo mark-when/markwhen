@@ -4,13 +4,18 @@
     class="flex flex-col relative"
     :style="`min-width: ${distanceBetweenBaselineDates}px;`"
   >
-    <!--  md:-mt-screen -mt-96 -->
     <div class="h-24"></div>
-    <event-row
-      v-for="event in $store.getters.filteredEvents"
-      :key="event.eventString.substring(0, 30)"
-      :event="event"
-    ></event-row>
+    <template v-for="event in filteredEvents">
+      <event-group
+        :key="event[0].eventString.substring(0, 30)"
+        v-if="Array.isArray(event)"
+        :events="event" />
+      <event-row
+        v-else
+        :key="event.eventString.substring(0, 30)"
+        :event="event"
+      ></event-row
+    ></template>
     <div style="height: 70vh"></div>
   </div>
 </template>
@@ -20,11 +25,12 @@ import EventRow from "./EventRow.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import { mapGetters } from "vuex";
+import EventGroup from "./EventGroup.vue";
 
 export default Vue.extend({
-  components: { EventRow, DrawerHeader },
+  components: { EventRow, DrawerHeader, EventGroup },
   computed: {
-    ...mapGetters(["distanceBetweenBaselineDates"]),
+    ...mapGetters(["distanceBetweenBaselineDates", "filteredEvents"]),
   },
 });
 </script>
@@ -46,10 +52,6 @@ export default Vue.extend({
 .eventRow-leave-to {
   opacity: 0;
   transform: translateX(-30px);
-}
-
-.eventRow {
-  margin-top: 5px;
 }
 
 .eventRow:hover .eventBar {
