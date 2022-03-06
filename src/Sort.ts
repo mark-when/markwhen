@@ -39,30 +39,40 @@ export default function sortEvents(events: (Event | EventSubGroup)[], sort: Sort
     return sortUpDateTime(event1.range.fromDateTime, event2.range.fromDateTime)
   }
 
+  // We need this because sort won't be called if there's only one element in the array
+  if (events.length === 1 && Array.isArray(events[0])) {
+    sortGroup(events[0], sort)
+    addRangeToEventGroup(events[0])
+  }
+
   events.sort((eventOrEvents1, eventOrEvents2) => {
+    const now = DateTime.now()
     if (eventOrEvents1 instanceof Event) {
       if (eventOrEvents2 instanceof Event) {
         return sortingDown ? sortDown(eventOrEvents1, eventOrEvents2) : sortUp(eventOrEvents1, eventOrEvents2)
       } else {
         if (!eventOrEvents2.range) {
-          sortAndGetRange(eventOrEvents2, sort)
+          sortGroup(eventOrEvents2, sort)
+          addRangeToEventGroup(eventOrEvents2)
         }
-        return sortingDown ? sortDownDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min)
+        return sortingDown ? sortDownDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range?.min ?? now) : sortUpDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range?.min ?? now)
       }
     }
 
     // eventOrEvents1 is array of sub events
     if (!eventOrEvents1.range) {
-      sortAndGetRange(eventOrEvents1, sort)
+      sortGroup(eventOrEvents1, sort)
+      addRangeToEventGroup(eventOrEvents1)
     }
     if (eventOrEvents2 instanceof Event) {
-      return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime)
+      return sortingDown ? sortDownDateTime(eventOrEvents1.range?.min ?? now, eventOrEvents2.range.fromDateTime) : sortUpDateTime(eventOrEvents1.range?.min ?? now, eventOrEvents2.range.fromDateTime)
     }
 
     if (!eventOrEvents2.range) {
-      sortAndGetRange(eventOrEvents2, sort)
+      sortGroup(eventOrEvents2, sort)
+      addRangeToEventGroup(eventOrEvents2)
     }
-    return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min)
+    return sortingDown ? sortDownDateTime(eventOrEvents1.range?.min ?? now, eventOrEvents2.range?.min ?? now) : sortUpDateTime(eventOrEvents1.range?.min ?? now, eventOrEvents2.range?.min ?? now)
   })
 }
 
@@ -79,83 +89,12 @@ function addRangeToEventGroup(events: EventSubGroup) {
   events.range = { min, max, latest }
 }
 
-function sortAndGetRange(events: EventSubGroup, sort: Sort) {
-
-  let min: DateTime, max: DateTime, latest: DateTime
-
+function sortGroup(events: EventSubGroup, sort: Sort) {
   const sortDown = function (event1: Event, event2: Event) {
-    if (!min) {
-      min = event1.range.fromDateTime
-    }
-    if (!max) {
-      max = event1.range.fromDateTime
-    }
-    if (!latest) {
-      latest = event1.range.toDateTime
-    }
-    min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
-    max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
-    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
-
     return +event1.range.fromDateTime - +event2.range.fromDateTime
   }
   const sortUp = function (event1: Event, event2: Event) {
-    if (!min) {
-      min = event1.range.fromDateTime
-    }
-    if (!max) {
-      max = event1.range.fromDateTime
-    }
-    if (!latest) {
-      latest = event1.range.toDateTime
-    }
-    min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
-    max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
-    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
-
     return +event2.range.fromDateTime - +event1.range.fromDateTime
   }
   events.sort(sort === "down" ? sortDown : sortUp)
-  events.range = { min: min!, max: max!, latest: latest! }
-}
-
-function dateTimeMin(a: DateTime, b: DateTime, c: DateTime): DateTime {
-  if (a < b && a < c) {
-    return a
-  }
-  if (b < a && b < c) {
-    return b
-  }
-  if (a == b) {
-    return a < c ? a : c
-  }
-  if (b == c) {
-    return b < a ? b : a
-  }
-  if (a == c) {
-    return a < b ? a : b
-  }
-  return c
-}
-
-function dateTimeMax(a: DateTime, b: DateTime, c: DateTime): DateTime {
-  if (a > b && a > c) {
-    return a
-  }
-  if (b > a && b > c) {
-    return b
-  }
-  if (c > a && c > b) {
-    return c
-  }
-  if (a == b) {
-    return a > c ? a : c
-  }
-  if (b == c) {
-    return b > a ? b : a
-  }
-  if (a == c) {
-    return a > b ? a : b
-  }
-  return c
 }

@@ -81,11 +81,6 @@ export default Vue.extend({
       hovering: false,
     };
   },
-  watch: {
-    hovering(val) {
-      console.log("hovering", val);
-    },
-  },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate", "distanceBetweenDates"]),
     collapsedGroupStyle(): string {
@@ -139,13 +134,13 @@ export default Vue.extend({
     },
     left(): number {
       if (!this.eventGroup || !this.eventGroup.range) {
-        return 10
+        return 10;
       }
       return this.distanceFromBaselineLeftmostDate(this.eventGroup.range.min);
     },
     fullWidth(): number {
       if (!this.eventGroup || !this.eventGroup.range) {
-        return 100
+        return 100;
       }
       return this.distanceBetweenDates(
         this.eventGroup.range.min,
