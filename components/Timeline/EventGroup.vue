@@ -13,10 +13,8 @@
         transition
         py-1
       "
-      :class="{ 'bg-opacity-10': !hovering, 'bg-opacity-40': hovering }"
-      :style="`left: ${left - 10}px; width: ${
-        this.fullWidth + 16
-      }px; z-index: -1`"
+      :class="expandedGroupClass"
+      :style="expandedGroupStyle"
     ></div>
     <button
       class="flex flex-row items-center mt-1"
@@ -49,19 +47,20 @@
   </div>
   <div
     v-else
-    :style="groupStyle"
+    :style="collapsedGroupStyle"
+    :class="collapsedGroupClass"
     class="
-      bg-gray-800 bg-opacity-10
-      hover:bg-opacity-40
       border border-gray-800
+      bg-gray-800
       rounded-lg
       eventTitle
+      transition
+      bg-opacity-10
+      hover:bg-opacity-30
     "
   >
     <button class="w-full" @click="expand">
-      <span v-if="eventGroup.title">{{
-        eventGroup.title
-      }}</span>
+      <span v-if="eventGroup.title">{{ eventGroup.title }}</span>
       ({{ eventGroup.length }})
     </button>
   </div>
@@ -71,6 +70,7 @@
 import Vue from "vue";
 import EventRow from "./EventRow.vue";
 import { mapGetters } from "vuex";
+import { COLORS } from "~/src/Parser";
 
 export default Vue.extend({
   components: { EventRow },
@@ -82,24 +82,71 @@ export default Vue.extend({
     };
   },
   watch: {
-    eventGroup(val, oldVal) {
-      if (!Array.isArray(val)) {
-        console.log("Not an array", val);
-      }
+    hovering(val) {
+      console.log("hovering", val);
     },
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate", "distanceBetweenDates"]),
-    groupStyle(): string {
+    collapsedGroupStyle(): string {
+      const leftMargin = this.left;
+      let style = `margin-left: ${leftMargin - 10}px; width: max(64px, ${
+        this.fullWidth + 16
+      }px); `;
+      return style;
+    },
+    collapsedGroupClass(): string {
+      const tags = this.eventGroup.tags;
+      let c = ``;
+      if (tags && tags.length) {
+        const tag = tags[0];
+        if (this.$store.getters.tags[tag]) {
+          if (COLORS.includes(this.$store.getters.tags[tag])) {
+            c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-800 `;
+          }
+        } else {
+          c += `bg-gray-800`;
+        }
+      } else {
+        c += "bg-gray-800";
+      }
+      return c;
+    },
+    expandedGroupStyle(): string {
       const leftMargin = this.left;
       return `margin-left: ${leftMargin - 10}px; width: max(64px, ${
         this.fullWidth + 16
-      }px)`;
+      }px); z-index: -1;`;
+    },
+    expandedGroupClass(): string {
+      const tags = this.eventGroup.tags;
+
+      let c = `${this.hovering ? "bg-opacity-30" : "bg-opacity-10"} `;
+
+      if (tags && tags.length) {
+        const tag = tags[0];
+        if (this.$store.getters.tags[tag]) {
+          if (COLORS.includes(this.$store.getters.tags[tag])) {
+            c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-800 `;
+          }
+        } else {
+          c += `bg-gray-800`;
+        }
+      } else {
+        c += "bg-gray-800";
+      }
+      return c;
     },
     left(): number {
+      if (!this.eventGroup || !this.eventGroup.range) {
+        return 10
+      }
       return this.distanceFromBaselineLeftmostDate(this.eventGroup.range.min);
     },
     fullWidth(): number {
+      if (!this.eventGroup || !this.eventGroup.range) {
+        return 100
+      }
       return this.distanceBetweenDates(
         this.eventGroup.range.min,
         this.eventGroup.range.latest

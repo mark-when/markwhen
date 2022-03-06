@@ -6,10 +6,14 @@
   >
     <div class="h-24"></div>
     <template v-for="event in filteredEvents">
-      <event-group
-        :key="event[0].eventString.substring(0, 30)"
-        v-if="Array.isArray(event)"
-        :eventGroup="event" />
+      <template v-if="Array.isArray(event)">
+        <event-group
+          :key="
+            event.length ? event[0].eventString.substring(0, 30) : 'newGroup'
+          "
+          :eventGroup="event"
+        />
+      </template>
       <event-row
         v-else
         :key="event.eventString.substring(0, 30)"
