@@ -187,7 +187,7 @@ export default Vue.extend({
       }`;
     },
     photoBarStyle(): string {
-      return `width: 10px; ${this.barColor}; top: calc(0.5rem + 1px)`;
+      return `width: 10px; ${this.barColor}; top: calc(0.5rem + 3px)`;
     },
   },
   methods: {

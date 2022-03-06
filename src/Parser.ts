@@ -1,4 +1,5 @@
 import { DateTime } from "luxon"
+import sortEvents, { Sort, EventSubGroup } from "./Sort"
 import { Cascade, DateRange, Event, EventDescription, Tags } from "./Types"
 
 const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/
@@ -12,17 +13,14 @@ const COMMENT_REGEX = /^\s*\/\/.*/
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/
 const TAG_REGEX = /(?:^| )#(\w*)/g
+const GROUP_START_REGEX = /^(\s*)startGroup/
+const GROUP_END_REGEX = /^endGroup/
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 export const sorts = ["none", "down", "up"]
-export type Sort = "none" | "down" | "up"
 
 const AMERICAN_DATE_FORMAT = 'M/d/y'
 const EUROPEAN_DATE_FORMAT = 'd/M/y'
-
-interface SortedEventArray extends Array<Event> {
-  range?: { min: DateTime, max: DateTime, latest: DateTime }
-}
 
 export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
@@ -39,14 +37,14 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   }
 
   const lines = eventsString.split('\n')
-  const events = [] as (Event | SortedEventArray)[]
+  const events = [] as (Event | EventSubGroup)[]
   const tags = {} as Tags
   let paletteIndex = 0
   let dateFormat = AMERICAN_DATE_FORMAT
   let earliest: DateTime | null = null, latest: DateTime | null = null
 
-  // For events that are indented and grouped
-  let eventSubgroup = []
+  // For events that are indented and/or grouped
+  let eventSubgroup: EventSubGroup | undefined = undefined
 
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
@@ -71,13 +69,38 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         }
       }
     }
+
+    const groupStart = line.match(GROUP_START_REGEX)
+    if (groupStart) {
+      // We're starting a new group here. If there was a previous group, end it and
+      // push it.
+      if (eventSubgroup) {
+        events.push(eventSubgroup)
+      }
+      eventSubgroup = parseGroupFromStartTag(line)
+      continue
+    }
+
+    if (eventSubgroup && line.match(GROUP_END_REGEX)) {
+      // We are ending our subgroup
+      events.push(eventSubgroup)
+      eventSubgroup = undefined
+      continue
+    }
+
     const eventStart = line.match(EVENT_START_REGEX)
     if (eventStart) {
       let end = i
       let nextLine
       do {
         nextLine = lines[++end]
-      } while (typeof nextLine === 'string' && !nextLine.match(EVENT_START_REGEX))
+      } while (
+        typeof nextLine === 'string'
+        && !nextLine.match(EVENT_START_REGEX)
+        && !nextLine.match(GROUP_START_REGEX)
+        && !(eventSubgroup && nextLine.match(GROUP_END_REGEX))
+      )
+
       const eventGroup = lines.slice(i, end).filter(l => l && !l.match(COMMENT_REGEX))
 
       // Initial date range and first line description
@@ -94,16 +117,40 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       const dateRange = new DateRange(eventStartDate, eventEndDate, datePart, dateFormat)
       const eventDescription = new EventDescription(eventGroup)
       const event = new Event(firstLine, dateRange, eventDescription)
+
       if (event) {
         if (isIndented) {
-          eventSubgroup.push(event)
-        } else {
-          if (eventSubgroup.length) {
-            events.push(eventSubgroup)
-            eventSubgroup = []
+          if (eventSubgroup) {
+            eventSubgroup.push(event)
+          } else {
+            eventSubgroup = [event]
+            eventSubgroup!.method = 'indentation'
           }
-          events.push(event)
+        } else {
+          // We're not indented but there was a subgroup ongoing
+          // If we were explicit about our group, we should add
+          // to it until we see `endGroup`. Otherwise, 
+          // if we were going by indentation, we can finish off the last 
+          // group.
+          if (eventSubgroup) {
+            if (eventSubgroup.method) {
+              if (eventSubgroup.method === 'indentation') {
+                // Finish it off.
+                events.push(eventSubgroup)
+                eventSubgroup = undefined
+
+                // And add the event we're currently on
+                events.push(event)
+              } else {
+                // Since we were explicit, we add until we see the end tag.
+                eventSubgroup.push(event)
+              }
+            }
+          } else {
+            events.push(event)
+          }
         }
+
         if (!earliest || dateRange.fromDateTime < earliest) {
           earliest = dateRange.fromDateTime
         }
@@ -114,7 +161,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     }
   }
 
-  if (eventSubgroup.length) {
+  if (eventSubgroup) {
     events.push(eventSubgroup)
   }
 
@@ -134,152 +181,24 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   }
 }
 
-function sortEvents(events: (Event | SortedEventArray)[], sort: Sort) {
-  if (sort === 'none') {
-    return events.map(eventOrEventGroup => {
-      if (eventOrEventGroup instanceof Event) {
-        return eventOrEventGroup
-      }
-      addRangeToEventGroup(eventOrEventGroup)
-      return eventOrEventGroup
+function parseGroupFromStartTag(s: string): EventSubGroup {
+  const group: EventSubGroup = []
+  group.tags = []
+
+  s = s
+    .replace(GROUP_START_REGEX, (match, startToken) => {
+      // Start expanded if this start tag is not indented
+      group.startExpanded = !startToken.length
+      return ''
     })
-  }
-
-  const sortingDown = sort === 'down'
-
-  const sortDownDateTime = function (dateTime1: DateTime, dateTime2: DateTime) {
-    return +dateTime1 - +dateTime2
-  }
-
-  const sortUpDateTime = function (dateTime1: DateTime, dateTime2: DateTime) {
-    return +dateTime2 - +dateTime1
-  }
-
-  const sortDown = function (event1: Event, event2: Event) {
-    return sortDownDateTime(event1.range.fromDateTime, event2.range.fromDateTime)
-  }
-
-  const sortUp = function (event1: Event, event2: Event) {
-    return sortUpDateTime(event1.range.fromDateTime, event2.range.fromDateTime)
-  }
-
-  events.sort((eventOrEvents1, eventOrEvents2) => {
-    if (eventOrEvents1 instanceof Event) {
-      if (eventOrEvents2 instanceof Event) {
-        return sortingDown ? sortDown(eventOrEvents1, eventOrEvents2) : sortUp(eventOrEvents1, eventOrEvents2)
-      } else {
-        if (!eventOrEvents2.range) {
-          sortAndGetRange(eventOrEvents2, sort)
-        }
-        return sortingDown ? sortDownDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min)
+    .replace(TAG_REGEX, (match, tag) => {
+      if (!group.tags!.includes(tag)) {
+        group.tags!.push(tag)
       }
-    }
+      return ''
+    })
 
-    // eventOrEvents1 is array of sub events
-    if (!eventOrEvents1.range) {
-      sortAndGetRange(eventOrEvents1, sort)
-    }
-    if (eventOrEvents2 instanceof Event) {
-      return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime)
-    }
-
-    if (!eventOrEvents2.range) {
-      sortAndGetRange(eventOrEvents2, sort)
-    }
-    return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min)
-  })
-}
-
-function addRangeToEventGroup(events: SortedEventArray) {
-  if (!events || !events.length) {
-    return
-  }
-  let min: DateTime = events[0].range.fromDateTime, max: DateTime = events[0].range.fromDateTime, latest = events[0].range.toDateTime
-  for (const e of events) {
-    min = e.range.fromDateTime < min ? e.range.fromDateTime : min
-    max = e.range.fromDateTime > max ? e.range.fromDateTime : max
-    latest = e.range.toDateTime > latest ? e.range.toDateTime : latest
-  }
-  events.range = { min, max, latest }
-}
-
-function sortAndGetRange(events: SortedEventArray, sort: Sort) {
-
-  let min: DateTime, max: DateTime, latest: DateTime
-
-  const sortDown = function (event1: Event, event2: Event) {
-    if (!min) {
-      min = event1.range.fromDateTime
-    }
-    if (!max) {
-      max = event1.range.fromDateTime
-    }
-    if (!latest) {
-      latest = event1.range.toDateTime
-    }
-    min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
-    max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
-    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
-
-    return +event1.range.fromDateTime - +event2.range.fromDateTime
-  }
-  const sortUp = function (event1: Event, event2: Event) {
-    if (!min) {
-      min = event1.range.fromDateTime
-    }
-    if (!max) {
-      max = event1.range.fromDateTime
-    }
-    if (!latest) {
-      latest = event1.range.toDateTime
-    }
-    min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
-    max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
-    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
-
-    return +event2.range.fromDateTime - +event1.range.fromDateTime
-  }
-  events.sort(sort === "down" ? sortDown : sortUp)
-  events.range = { min: min!, max: max!, latest: latest! }
-}
-
-function dateTimeMin(a: DateTime, b: DateTime, c: DateTime): DateTime {
-  if (a < b && a < c) {
-    return a
-  }
-  if (b < a && b < c) {
-    return b
-  }
-  if (a == b) {
-    return a < c ? a : c
-  }
-  if (b == c) {
-    return b < a ? b : a
-  }
-  if (a == c) {
-    return a < b ? a : b
-  }
-  return c
-}
-
-function dateTimeMax(a: DateTime, b: DateTime, c: DateTime): DateTime {
-  if (a > b && a > c) {
-    return a
-  }
-  if (b > a && b > c) {
-    return b
-  }
-  if (c > a && c > b) {
-    return c
-  }
-  if (a == b) {
-    return a > c ? a : c
-  }
-  if (b == c) {
-    return b > a ? b : a
-  }
-  if (a == c) {
-    return a > b ? a : b
-  }
-  return c
+  group.title = s.trim()
+  group.method = 'explicit'
+  return group
 }

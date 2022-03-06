@@ -7,13 +7,13 @@
         flex flex-row
         items-center
         text-gray-400
-        bg-gray-800 bg-opacity-30
+        bg-gray-800
         border border-gray-800
         rounded-lg
         transition
         py-1
       "
-      :class="{ 'bg-gray-800': !hovering, 'bg-gray-900': hovering }"
+      :class="{ 'bg-opacity-10': !hovering, 'bg-opacity-40': hovering }"
       :style="`left: ${left - 10}px; width: ${
         this.fullWidth + 16
       }px; z-index: -1`"
@@ -26,7 +26,7 @@
       @click="collapse"
     >
       <div class="flex flex-row flex-grow items-center justify-center">
-        <p class="eventTitle"></p>
+        <p class="eventTitle" v-if="eventGroup.title">{{ eventGroup.title }}</p>
       </div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -51,15 +51,19 @@
     v-else
     :style="groupStyle"
     class="
-      text-gray-300
-      bg-gray-800 bg-opacity-30
+      bg-gray-800 bg-opacity-10
+      hover:bg-opacity-40
       border border-gray-800
       rounded-lg
-      text-sm
       eventTitle
     "
   >
-    <button class="w-full" @click="expand">({{ eventGroup.length }})</button>
+    <button class="w-full" @click="expand">
+      <span v-if="eventGroup.title">{{
+        eventGroup.title
+      }}</span>
+      ({{ eventGroup.length }})
+    </button>
   </div>
 </template>
 
@@ -73,9 +77,16 @@ export default Vue.extend({
   props: ["eventGroup"],
   data() {
     return {
-      expanded: false,
+      expanded: !!this.eventGroup.startExpanded,
       hovering: false,
     };
+  },
+  watch: {
+    eventGroup(val, oldVal) {
+      if (!Array.isArray(val)) {
+        console.log("Not an array", val);
+      }
+    },
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate", "distanceBetweenDates"]),

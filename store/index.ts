@@ -1,5 +1,6 @@
 import { Context } from "@nuxt/types";
-import { parse, Sort } from "~/src/Parser";
+import { parse } from "~/src/Parser";
+import sortEvents, { Sort } from "~/src/Sort"
 import { Cascade, CascadeMetadata, Event, Events, Tags } from "../src/Types"
 import { MutationTree, GetterTree, ActionTree } from "vuex"
 import { DateTime } from "luxon";
@@ -328,9 +329,11 @@ export const getters: GetterTree<State, State> = {
 
     const filtered = []
     for (const eventOrEvents of events) {
-      if (eventOrEvents instanceof Event && eventOrEvents.event.tags.some(tag =>
-        state.filter.includes(tag))) {
-        filtered.push(eventOrEvents)
+      if (eventOrEvents instanceof Event) {
+        if (eventOrEvents.event.tags.some(tag =>
+          state.filter.includes(tag))) {
+          filtered.push(eventOrEvents)
+        }
       } else {
         const filteredSubEvents = (eventOrEvents as Event[]).filter(event => event.event.tags.some(tag =>
           state.filter.includes(tag)))
@@ -339,6 +342,7 @@ export const getters: GetterTree<State, State> = {
         }
       }
     }
+    sortEvents(filtered, state.sort)
     return filtered
   },
   tags(state: State, getters: any): Tags {
