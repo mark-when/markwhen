@@ -98,7 +98,6 @@ export class DateRange {
     } else {
       this.toDateTime = DateRange.roundDateUp({ dateTime: this.fromDateTime, granularity })
     }
-    console.log(to)
   }
 
   static stringToDateTime(s: string, fullFormat: string): GranularDateTime {

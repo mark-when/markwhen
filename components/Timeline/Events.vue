@@ -9,7 +9,7 @@
       <event-group
         :key="event[0].eventString.substring(0, 30)"
         v-if="Array.isArray(event)"
-        :events="event" />
+        :eventGroup="event" />
       <event-row
         v-else
         :key="event.eventString.substring(0, 30)"

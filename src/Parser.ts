@@ -20,6 +20,10 @@ export type Sort = "none" | "down" | "up"
 const AMERICAN_DATE_FORMAT = 'M/d/y'
 const EUROPEAN_DATE_FORMAT = 'd/M/y'
 
+interface SortedEventArray extends Array<Event> {
+  range?: { min: DateTime, max: DateTime, latest: DateTime }
+}
+
 export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
   if (!eventsString) {
@@ -35,7 +39,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   }
 
   const lines = eventsString.split('\n')
-  const events = [] as (Event | Event[])[]
+  const events = [] as (Event | SortedEventArray)[]
   const tags = {} as Tags
   let paletteIndex = 0
   let dateFormat = AMERICAN_DATE_FORMAT
@@ -120,9 +124,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   if (!latest) {
     latest = DateTime.now().plus({ years: 5 })
   }
-  if (sort !== "none") {
-    sortEvents(events, sort)
-  }
+  sortEvents(events, sort)
   return {
     events, tags, metadata: {
       earliestTime: earliest,
@@ -132,9 +134,15 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   }
 }
 
-function sortEvents(events: (Event | Event[])[], sort: Sort) {
+function sortEvents(events: (Event | SortedEventArray)[], sort: Sort) {
   if (sort === 'none') {
-    return events
+    return events.map(eventOrEventGroup => {
+      if (eventOrEventGroup instanceof Event) {
+        return eventOrEventGroup
+      }
+      addRangeToEventGroup(eventOrEventGroup)
+      return eventOrEventGroup
+    })
   }
 
   const sortingDown = sort === 'down'
@@ -160,26 +168,44 @@ function sortEvents(events: (Event | Event[])[], sort: Sort) {
       if (eventOrEvents2 instanceof Event) {
         return sortingDown ? sortDown(eventOrEvents1, eventOrEvents2) : sortUp(eventOrEvents1, eventOrEvents2)
       } else {
-        const range = sortAndGetRange(eventOrEvents2, sort)
-        return sortingDown ? sortDownDateTime(eventOrEvents1.range.fromDateTime, range[0]) : sortUpDateTime(eventOrEvents1.range.fromDateTime, range[0])
+        if (!eventOrEvents2.range) {
+          sortAndGetRange(eventOrEvents2, sort)
+        }
+        return sortingDown ? sortDownDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range.fromDateTime, eventOrEvents2.range!.min)
       }
     }
 
     // eventOrEvents1 is array of sub events
-
-    const events1Range = sortAndGetRange(eventOrEvents1, sort)
+    if (!eventOrEvents1.range) {
+      sortAndGetRange(eventOrEvents1, sort)
+    }
     if (eventOrEvents2 instanceof Event) {
-      return sortingDown ? sortDownDateTime(events1Range[0], eventOrEvents2.range.fromDateTime) : sortUpDateTime(events1Range[0], eventOrEvents2.range.fromDateTime)
+      return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range.fromDateTime)
     }
 
-    const events2Range = sortAndGetRange(eventOrEvents2, sort)
-    return sortingDown ? sortDownDateTime(events1Range[0], events2Range[0]) : sortUpDateTime(events1Range[0], events2Range[0])
+    if (!eventOrEvents2.range) {
+      sortAndGetRange(eventOrEvents2, sort)
+    }
+    return sortingDown ? sortDownDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min) : sortUpDateTime(eventOrEvents1.range!.min, eventOrEvents2.range!.min)
   })
 }
 
-function sortAndGetRange(events: Event[], sort: Sort): [DateTime, DateTime] {
+function addRangeToEventGroup(events: SortedEventArray) {
+  if (!events || !events.length) {
+    return
+  }
+  let min: DateTime = events[0].range.fromDateTime, max: DateTime = events[0].range.fromDateTime, latest = events[0].range.toDateTime
+  for (const e of events) {
+    min = e.range.fromDateTime < min ? e.range.fromDateTime : min
+    max = e.range.fromDateTime > max ? e.range.fromDateTime : max
+    latest = e.range.toDateTime > latest ? e.range.toDateTime : latest
+  }
+  events.range = { min, max, latest }
+}
 
-  let min: DateTime, max: DateTime
+function sortAndGetRange(events: SortedEventArray, sort: Sort) {
+
+  let min: DateTime, max: DateTime, latest: DateTime
 
   const sortDown = function (event1: Event, event2: Event) {
     if (!min) {
@@ -188,8 +214,12 @@ function sortAndGetRange(events: Event[], sort: Sort): [DateTime, DateTime] {
     if (!max) {
       max = event1.range.fromDateTime
     }
+    if (!latest) {
+      latest = event1.range.toDateTime
+    }
     min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
     max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
+    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
 
     return +event1.range.fromDateTime - +event2.range.fromDateTime
   }
@@ -200,14 +230,17 @@ function sortAndGetRange(events: Event[], sort: Sort): [DateTime, DateTime] {
     if (!max) {
       max = event1.range.fromDateTime
     }
+    if (!latest) {
+      latest = event1.range.toDateTime
+    }
     min = dateTimeMin(event1.range.fromDateTime, event2.range.fromDateTime, min)
     max = dateTimeMax(event1.range.fromDateTime, event2.range.fromDateTime, max)
+    latest = dateTimeMax(event1.range.toDateTime, event2.range.toDateTime, latest)
 
     return +event2.range.fromDateTime - +event1.range.fromDateTime
   }
   events.sort(sort === "down" ? sortDown : sortUp)
-
-  return [min!, max!]
+  events.range = { min: min!, max: max!, latest: latest! }
 }
 
 function dateTimeMin(a: DateTime, b: DateTime, c: DateTime): DateTime {
