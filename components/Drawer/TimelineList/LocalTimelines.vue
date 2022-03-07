@@ -21,6 +21,7 @@ export default Vue.extend({
   methods: {
     selected(item: string) {
       this.$store.commit("setCurrentTimeline", item);
+      this.$store.commit("sidebar/setSelectedComponent", "editor");
     },
     deleteItem(item: string) {
       if (confirm(`Delete ${item}?`)) {

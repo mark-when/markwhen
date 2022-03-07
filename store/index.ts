@@ -117,6 +117,7 @@ const exampleTimeline = `// Comments start with two slashes: \`//\`
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
 06/05/2021-06/12/2021: Ohio and James's Party
 08/11/2021-08/17/2021: Cincinnati https://photos.app.goo.gl/h5CfrZamP5Tw6yDn7`
+
 const eventsString = currentTimelineName ? localStorage.getItem(currentTimelineName) : exampleTimeline
 
 export const state: () => State = () => ({
@@ -214,7 +215,12 @@ export const mutations: MutationTree<State> = {
     const concatenatedList = window && window.localStorage && window.localStorage.getItem("timelines")
     state.list = concatenatedList ? concatenatedList.split(',') : []
     state.currentTimelineName = state.list.length > 0 ? state.list[0] : ''
-    state.eventsString = (state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline) || undefined
+    const draft = localStorage.getItem('__draft')
+    if (draft) {
+      state.eventsString = draft
+    } else {
+      state.eventsString = (state.currentTimelineName ? localStorage.getItem(state.currentTimelineName) : exampleTimeline) || undefined
+    }
   },
   setCurrentTimeline(state: State, timelineName: string) {
     state.eventsString = localStorage.getItem(timelineName) ?? ""
@@ -243,9 +249,7 @@ export const mutations: MutationTree<State> = {
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
-  },
-  setDirtyEditor(state: State, dirty: boolean) {
-    state.dirtyEditor = dirty
+    localStorage.setItem('__draft', str)
   },
   clearFilters(state: State) {
     state.filter = []
