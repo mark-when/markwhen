@@ -8,13 +8,18 @@ const DATE_REGEX = /\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?/
 
 const START_OR_END_TIME_REGEX = new RegExp(`(${ISO8601_REGEX.source})|(${NOW_REGEX.source})|(${DATE_REGEX.source})`)
 
-const EVENT_START_REGEX = new RegExp(`^(\\s*)((${START_OR_END_TIME_REGEX.source})(?:\\s*-\\s*(${START_OR_END_TIME_REGEX.source}))?):(.*)`)
+const DATE_RANGE_REGEX = new RegExp(`((${START_OR_END_TIME_REGEX.source})(?:\\s*-\\s*(${START_OR_END_TIME_REGEX.source}))?):`)
+const EVENT_START_REGEX = new RegExp(`(\\s*)${DATE_RANGE_REGEX.source}(.*)`)
 const COMMENT_REGEX = /^\s*\/\/.*/
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/
 const TAG_REGEX = /(?:^| )#(\w*)/g
-const GROUP_START_REGEX = /^(\s*)startGroup/
+const GROUP_START_REGEX = /^(\s*)group/
 const GROUP_END_REGEX = /^endGroup/
+
+// I apologize, this is just GROUP_START_REGEX combined with DATE_RANGE_REGEX. 
+// It wasn't working well when I tried to do new RegExp(...)
+// const GROUP_START_WITH_RANGE_REGEX = /^(\s*)group(\s)*((((\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z)|(now)|(\d{1,5}(\d{1,5}(\/\d{1,5})?)?))(?:\s*-\s*((\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z)|(now)|(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?)))?):)?(.*)/
 
 export const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
 export const sorts = ["none", "down", "up"]
@@ -77,7 +82,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       if (eventSubgroup) {
         events.push(eventSubgroup)
       }
-      eventSubgroup = parseGroupFromStartTag(line)
+      eventSubgroup = parseGroupFromStartTag(line, groupStart)
       continue
     }
 
@@ -107,7 +112,6 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       const firstLine = eventGroup[0]
 
       // What the regex matched as the date range part
-      const isIndented = !!eventStart[1]
       const datePart = eventStart[2]
       const eventStartDate = eventStart[3] || eventStart[6]
       const eventEndDate = eventStart[9] || eventStart[12]
@@ -119,36 +123,10 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       const event = new Event(firstLine, dateRange, eventDescription)
 
       if (event) {
-        if (isIndented) {
-          if (eventSubgroup) {
-            eventSubgroup.push(event)
-          } else {
-            eventSubgroup = [event]
-            eventSubgroup!.method = 'indentation'
-          }
+        if (eventSubgroup) {
+          eventSubgroup.push(event)
         } else {
-          // We're not indented but there was a subgroup ongoing
-          // If we were explicit about our group, we should add
-          // to it until we see `endGroup`. Otherwise, 
-          // if we were going by indentation, we can finish off the last 
-          // group.
-          if (eventSubgroup) {
-            if (eventSubgroup.method) {
-              if (eventSubgroup.method === 'indentation') {
-                // Finish it off.
-                events.push(eventSubgroup)
-                eventSubgroup = undefined
-
-                // And add the event we're currently on
-                events.push(event)
-              } else {
-                // Since we were explicit, we add until we see the end tag.
-                eventSubgroup.push(event)
-              }
-            }
-          } else {
-            events.push(event)
-          }
+          events.push(event)
         }
 
         if (!earliest || dateRange.fromDateTime < earliest) {
@@ -181,7 +159,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   }
 }
 
-function parseGroupFromStartTag(s: string): EventSubGroup {
+function parseGroupFromStartTag(s: string, regexMatch: RegExpMatchArray): EventSubGroup {
   const group: EventSubGroup = []
   group.tags = []
 
@@ -199,6 +177,5 @@ function parseGroupFromStartTag(s: string): EventSubGroup {
     })
 
   group.title = s.trim()
-  group.method = 'explicit'
   return group
 }

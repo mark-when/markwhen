@@ -5,8 +5,11 @@ export type Sort = "none" | "down" | "up"
 export interface EventSubGroup extends Array<Event> {
   tags?: string[]
   title?: string
-  range?: { min: DateTime, max: DateTime, latest: DateTime }
-  method?: "explicit" | "indentation"
+  range?: {
+    min: DateTime,
+    max: DateTime,
+    latest: DateTime
+  }
   startExpanded?: boolean
 }
 
