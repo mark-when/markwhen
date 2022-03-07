@@ -24,6 +24,7 @@ Use it [here](https://cascade.page).
         - [Locations](#locations)
         - [Photos](#photos)
         - [References](#references)
+    - [Groups](#groups)
   - [Header Quick Reference](#header-quick-reference)
   - [Event Quick Reference](#event-quick-reference)
   - [Saving and sharing](#saving-and-sharing)
@@ -178,6 +179,52 @@ Link to other cascades with the `@` syntax:
 ```
 1919: Treaty of Versailles @wwi
 ```
+
+### Groups
+Events can be grouped. To indicate a group, write `group` at the beginning of a line. All events up to the start of the next group, the end of the cascade, or the keyword `endGroup` (whichever of these three comes first) are in the group.
+
+For example,
+```
+group The 90s // The title for this group is "The 90s"
+
+1991: Desert Storm
+1994: Friends premiered
+05/14/1998: Series finale of Seinfeld
+
+// Since we're defining a new group here, 
+// the preceding group ends and is comprised of the 
+// previous three events.
+group The 2000s 
+
+03/2005: Premiere of The Office (US)
+
+// Explicitly end the group
+endGroup
+
+// This event is not part of a group
+2020: Pandemic
+
+...
+
+```
+
+If you want an event group to start out collapsed, indent the `group` line definition.
+
+```
+2001: John is born
+
+// The space here before `group`
+// means the group will appear collapsed at first
+  group Less important events #StillCoolThough
+
+2003: Someone else is born
+...
+
+endGroup
+```
+
+<br><br>
+
 
 ## Header Quick Reference
 | Item                                                  | Syntax                 | Example               |
