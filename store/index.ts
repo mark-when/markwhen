@@ -249,7 +249,9 @@ export const mutations: MutationTree<State> = {
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str
-    localStorage.setItem('__draft', str)
+    if (process.browser) {
+      localStorage.setItem('__draft', str)
+    }
   },
   clearFilters(state: State) {
     state.filter = []
@@ -343,9 +345,12 @@ export const getters: GetterTree<State, State> = {
         if (group.tags?.some(tag => state.filter.includes(tag))) {
           filtered.push(group)
         } else {
-          const filteredSubEvents = group.filter(event => event.event.tags.some(tag =>
+          const filteredSubEvents: EventSubGroup = group.filter(event => event.event.tags.some(tag =>
             state.filter.includes(tag)))
           if (filteredSubEvents.length) {
+            filteredSubEvents.range = group.range
+            filteredSubEvents.tags = group.tags
+            filteredSubEvents.title = group.title
             filtered.push(filteredSubEvents)
           }
         }

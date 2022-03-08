@@ -1,68 +1,69 @@
 <template>
-  <div v-if="expanded" class="relative">
+  <div>
+    <div v-if="expanded" class="relative -mt-1">
+      <div
+        class="
+          absolute
+          h-full
+          flex flex-row
+          items-center
+          text-gray-400
+          border border-gray-800
+          rounded-lg
+          transition
+        "
+        :class="expandedGroupClass"
+        :style="expandedGroupStyle"
+      ></div>
+      <button
+        class="flex flex-row items-center mt-1"
+        :style="`margin-left: ${left}px; width: ${this.fullWidth}px`"
+        @mouseover="hovering = true"
+        @mouseleave="hovering = false"
+        @click="collapse"
+      >
+        <div class="flex flex-row flex-grow items-center justify-center">
+          <span class="eventTitle pt-px" v-if="eventGroup.title">{{
+            eventGroup.title
+          }}</span>
+        </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 ml-auto"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+      <event-row
+        v-for="event in eventGroup"
+        :key="event.eventString.substring(0, 30)"
+        :event="event"
+      ></event-row>
+    </div>
     <div
+      v-show="!expanded"
+      :style="collapsedGroupStyle"
+      :class="collapsedGroupClass"
       class="
-        absolute
-        h-full
-        flex flex-row
-        items-center
-        text-gray-400
-        bg-gray-800
         border border-gray-800
         rounded-lg
+        eventTitle
         transition
-        py-1
+        bg-opacity-10
+        hover:bg-opacity-30
       "
-      :class="expandedGroupClass"
-      :style="expandedGroupStyle"
-    ></div>
-    <button
-      class="flex flex-row items-center mt-1"
-      :style="`margin-left: ${left}px; width: ${this.fullWidth}px`"
-      @mouseover="hovering = true"
-      @mouseleave="hovering = false"
-      @click="collapse"
     >
-      <div class="flex flex-row flex-grow items-center justify-center">
-        <p class="eventTitle" v-if="eventGroup.title">{{ eventGroup.title }}</p>
-      </div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4 ml-auto"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
-    <event-row
-      v-for="event in eventGroup"
-      :key="event.eventString.substring(0, 30)"
-      :event="event"
-    ></event-row>
-  </div>
-  <div
-    v-else
-    :style="collapsedGroupStyle"
-    :class="collapsedGroupClass"
-    class="
-      border border-gray-800
-      bg-gray-800
-      rounded-lg
-      eventTitle
-      transition
-      bg-opacity-10
-      hover:bg-opacity-30
-    "
-  >
-    <button class="w-full" @click="expand">
-      <span v-if="eventGroup.title">{{ eventGroup.title }}</span>
-      ({{ eventGroup.length }})
-    </button>
+      <button class="w-full" @click="expand">
+        <span v-if="eventGroup.title">{{ eventGroup.title }}</span>
+        ({{ eventGroup.length }})
+      </button>
+    </div>
   </div>
 </template>
 
@@ -85,7 +86,7 @@ export default Vue.extend({
     ...mapGetters(["distanceFromBaselineLeftmostDate", "distanceBetweenDates"]),
     collapsedGroupStyle(): string {
       const leftMargin = this.left;
-      let style = `margin-left: ${leftMargin - 10}px; width: max(64px, ${
+      let style = `margin-left: ${leftMargin - 8}px; width: max(64px, ${
         this.fullWidth + 16
       }px); `;
       return style;
@@ -103,13 +104,13 @@ export default Vue.extend({
           c += `bg-gray-800`;
         }
       } else {
-        c += "bg-gray-800";
+        c += "bg-gray-800 ";
       }
       return c;
     },
     expandedGroupStyle(): string {
       const leftMargin = this.left;
-      return `margin-left: ${leftMargin - 10}px; width: max(64px, ${
+      return `margin-left: ${leftMargin - 8}px; width: max(64px, ${
         this.fullWidth + 16
       }px); z-index: -1;`;
     },
