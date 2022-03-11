@@ -19,7 +19,7 @@
       </svg>
     </button>
     <button
-      class="p-2 hover:bg-gray-900"
+      class="p-2 hover:bg-gray-900 md:mb-3 mb-0 mr-3 md:mr-0"
       :class="selectedComponent === 'profile' ? 'bg-gray-900' : ''"
       @click="selectProfile"
       title="My Cascades"
@@ -36,7 +36,7 @@
         ></path>
       </svg>
     </button>
-    <button
+    <!-- <button
       class="p-2 hover:bg-gray-900 md:mb-3 mb-0 mr-3 md:mr-0"
       :class="selectedComponent === 'explore' ? 'bg-gray-900' : ''"
       @click="selectExplore"
@@ -53,7 +53,7 @@
           d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5 7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"
         ></path>
       </svg>
-    </button>
+    </button> -->
     <button class="p-2" @click="selectHowTo" title="Help and How to">
       <svg
         class="h-6 w-6 rounded-full"
