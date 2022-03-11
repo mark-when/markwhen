@@ -171,10 +171,10 @@ export default Vue.extend({
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       const el = this.$el as HTMLElement;
-      this.$store.dispatch('setViewport', {
+      this.$store.dispatch("setViewport", {
         left: el.scrollLeft - el.offsetLeft,
         width: el.clientWidth + el.offsetLeft,
-      })
+      });
     },
     handleResize() {
       this.setViewportDateInterval();
@@ -259,10 +259,8 @@ export default Vue.extend({
         scale * (this.pinchStartScrollLeft! + this.pinchStartCenterX!) -
         (e.center.x! - offsetLeft);
 
-      // window.requestAnimationFrame(() => {
       this.$el.scrollLeft = newScrollLeft;
       this.$el.scrollTop = newScrollTop;
-      // });
 
       if (scale !== 1) {
         this.setScale(this.startingZoom! * e.scale);

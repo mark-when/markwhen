@@ -42,6 +42,6 @@ export default Vue.extend({
 }
 .timeMarkerShader {
   background: linear-gradient(to bottom, #384047, 65%, #38404700);
-  z-index: -1;
+  z-index: -1
 }
 </style>
