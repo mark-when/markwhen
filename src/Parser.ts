@@ -1,6 +1,13 @@
 import { DateTime } from "luxon";
 import sortEvents, { Sort, EventSubGroup } from "./Sort";
-import { Cascade, DateRange, Event, EventDescription, Tags } from "./Types";
+import {
+  Cascade,
+  DateRange,
+  Event,
+  EventDescription,
+  RelativeDate,
+  Tags,
+} from "./Types";
 
 // Amounts
 const MILLISECOND_AMOUNT_REGEX = /(milliseconds|ms)/i;
@@ -11,34 +18,34 @@ const DAY_AMOUNT_REGEX = /(days|day|d)/i;
 const WEEK_AMOUNT_REGEX = /(weeks|week|w)/i;
 const MONTH_AMOUNT_REGEX = /(months|month)/i;
 const YEAR_AMOUNT_REGEX = /(years|year|y)/i;
-const DECADE_AMOUNT_REGEX = /(decades|decade)/i;
-const AMOUNT_REGEX = new RegExp(
-  `(\\d+\\W*)(${MILLISECOND_AMOUNT_REGEX.source}|${SECOND_AMOUNT_REGEX.source}|${MINUTE_AMOUNT_REGEX.source}|${HOUR_AMOUNT_REGEX.source}|${DAY_AMOUNT_REGEX.source}|${WEEK_AMOUNT_REGEX.source}|${MONTH_AMOUNT_REGEX.source}|${YEAR_AMOUNT_REGEX.source}|${DECADE_AMOUNT_REGEX.source})(?:\\s*,\\s*|\\s*)`
+export const AMOUNT_REGEX = new RegExp(
+  `(\\d+\\W*)(${MILLISECOND_AMOUNT_REGEX.source}|${SECOND_AMOUNT_REGEX.source}|${MINUTE_AMOUNT_REGEX.source}|${HOUR_AMOUNT_REGEX.source}|${DAY_AMOUNT_REGEX.source}|${WEEK_AMOUNT_REGEX.source}|${MONTH_AMOUNT_REGEX.source}|${YEAR_AMOUNT_REGEX.source})(?:\\s*,\\s*|\\s*)`,
+  "g"
 );
+console.log(AMOUNT_REGEX.source);
 
 const EVENT_ID_REGEX = /!\w+/;
 
 // So this regex is kind of wrong - we're using the global flag here to make multiple matches for the
-// whole regex, even though we just want any repeated amounts (e.g., 3 days, 4 hours, 6 seconds). 
+// whole regex, even though we just want any repeated amounts (e.g., 3 days, 4 hours, 6 seconds).
 // This works because the entire front part (`after !eventId plus`) is optional
 const RELATIVE_TIME_REGEX = new RegExp(
-  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*${AMOUNT_REGEX.source}`,
-  "g"
+  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*(${AMOUNT_REGEX.source})+`
 );
-console.log(RELATIVE_TIME_REGEX.source);
 
 const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/;
 const NOW_REGEX = /now/;
 const DATE_REGEX = /\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?/;
 
 const START_OR_END_TIME_REGEX = new RegExp(
-  `(${ISO8601_REGEX.source})|(${NOW_REGEX.source})|(${DATE_REGEX.source})`
+  `(${ISO8601_REGEX.source})|(${NOW_REGEX.source})|(${DATE_REGEX.source})|${RELATIVE_TIME_REGEX.source}`
 );
 
 const DATE_RANGE_REGEX = new RegExp(
   `((${START_OR_END_TIME_REGEX.source})(?:\\s*-\\s*(${START_OR_END_TIME_REGEX.source}))?):`
 );
 const EVENT_START_REGEX = new RegExp(`(\\s*)${DATE_RANGE_REGEX.source}(.*)`);
+console.log(EVENT_START_REGEX);
 
 const COMMENT_REGEX = /^\s*\/\/.*/;
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/;
@@ -131,8 +138,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       continue;
     }
 
-    const eventStart = line.match(EVENT_START_REGEX);
-    if (eventStart) {
+    const eventStartLineRegexMatch = line.match(EVENT_START_REGEX);
+    if (eventStartLineRegexMatch) {
       let end = i;
       let nextLine;
       do {
@@ -152,15 +159,24 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       const firstLine = eventGroup[0];
 
       // What the regex matched as the date range part
-      const datePart = eventStart[2];
-      const eventStartDate = eventStart[3] || eventStart[6];
-      const eventEndDate = eventStart[9] || eventStart[12];
+      const datePart = eventStartLineRegexMatch[2];
+      const eventStartDate = eventStartLineRegexMatch[3];
+      const eventEndDate = eventStartLineRegexMatch[23];
+
+      const relativeFromDate = eventStartDate[9];
+      const relativeToDate = eventEndDate?.[31]
+      if (relativeFromDate) {
+        const fromDate = RelativeDate.from(eventStartDate);
+      }
+      if (relativeToDate) {
+        const toDate = RelativeDate.from(eventEndDate)
+      }
 
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0]
         .substring(eventGroup[0].indexOf(datePart) + datePart.length + 1)
         .trim();
-      const dateRange = new DateRange(
+      const dateRange = DateRange.fromRawStrings(
         eventStartDate,
         eventEndDate,
         datePart,
