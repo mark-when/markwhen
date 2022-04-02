@@ -3,6 +3,7 @@ import sortEvents, { Sort, EventSubGroup } from "./Sort";
 import {
   Cascade,
   DateRange,
+  DateTimeGranularity,
   Event,
   EventDescription,
   RelativeDate,
@@ -22,7 +23,6 @@ export const AMOUNT_REGEX = new RegExp(
   `(\\d+\\W*)(${MILLISECOND_AMOUNT_REGEX.source}|${SECOND_AMOUNT_REGEX.source}|${MINUTE_AMOUNT_REGEX.source}|${HOUR_AMOUNT_REGEX.source}|${DAY_AMOUNT_REGEX.source}|${WEEK_AMOUNT_REGEX.source}|${MONTH_AMOUNT_REGEX.source}|${YEAR_AMOUNT_REGEX.source})(?:\\s*,\\s*|\\s*)`,
   "g"
 );
-console.log(AMOUNT_REGEX.source);
 
 const EVENT_ID_REGEX = /!\w+/;
 
@@ -93,7 +93,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   let earliest: DateTime | null = null,
     latest: DateTime | null = null;
 
-  // For events that are indented and/or grouped
+  // For events that are grouped
   let eventSubgroup: EventSubGroup | undefined = undefined;
 
   for (let i = 0; i < lines.length; i++) {
@@ -161,27 +161,46 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       // What the regex matched as the date range part
       const datePart = eventStartLineRegexMatch[2];
       const eventStartDate = eventStartLineRegexMatch[3];
-      const eventEndDate = eventStartLineRegexMatch[23];
+      const eventEndDate = eventStartLineRegexMatch[22];
 
-      const relativeFromDate = eventStartDate[9];
-      const relativeToDate = eventEndDate?.[31]
+      const relativeFromDate = eventStartLineRegexMatch[11];
+      const relativeToDate = eventStartLineRegexMatch[30];
+
+      let fromDateTime: DateTime;
+      let granularity: DateTimeGranularity;
       if (relativeFromDate) {
-        const fromDate = RelativeDate.from(eventStartDate);
+        fromDateTime = RelativeDate.from(eventStartDate);
+        granularity = "instant";
+      } else {
+        const fromString = DateRange.stringToDateTime(
+          eventStartDate,
+          dateFormat
+        );
+        fromDateTime = fromString.dateTime;
+        granularity = fromString.granularity;
       }
+
+      let endDateTime: DateTime;
       if (relativeToDate) {
-        const toDate = RelativeDate.from(eventEndDate)
+        endDateTime = RelativeDate.from(eventEndDate);
+      } else if (eventEndDate) {
+        endDateTime = DateRange.roundDateUp(
+          DateRange.stringToDateTime(eventEndDate, dateFormat)
+        );
+      } else {
+        endDateTime = DateRange.roundDateUp({
+          dateTime: fromDateTime,
+          granularity,
+        });
       }
+
+      const dateRange = new DateRange(fromDateTime, endDateTime, datePart);
 
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0]
         .substring(eventGroup[0].indexOf(datePart) + datePart.length + 1)
         .trim();
-      const dateRange = DateRange.fromRawStrings(
-        eventStartDate,
-        eventEndDate,
-        datePart,
-        dateFormat
-      );
+
       const eventDescription = new EventDescription(eventGroup);
       const event = new Event(firstLine, dateRange, eventDescription);
 
