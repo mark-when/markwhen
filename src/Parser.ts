@@ -168,14 +168,13 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         eventStartLineRegexMatch[32] || eventStartLineRegexMatch[29];
 
       let fromDateTime: DateTime;
+      let endDateTime: DateTime | undefined;
       let granularity: DateTimeGranularity;
       if (relativeFromDate) {
         const relativeToEventId = eventStartLineRegexMatch[11];
-        console.log(relativeToEventId)
         let relativeTo =
           relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
         if (!relativeTo && events.length) {
-          debugger
           // We do not have an event to refer to by id, try to get the previous event
           const previous = events[events.length - 1];
           if (previous instanceof Event) {
@@ -183,11 +182,21 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
           } else {
             relativeTo = previous[previous.length - 1].range.toDateTime;
           }
-        } else if (!relativeTo && eventSubgroup?.length) {
-          relativeTo = eventSubgroup[eventSubgroup.length - 1].range.toDateTime
+        } else if (!relativeTo && eventSubgroup && eventSubgroup.length) {
+          relativeTo = eventSubgroup[eventSubgroup.length - 1].range.toDateTime;
         }
         relativeTo = relativeTo ? relativeTo : DateTime.now();
-        fromDateTime = RelativeDate.from(eventStartDate, relativeTo);
+
+        if (!relativeToDate && !eventEndDate) {
+          // We don't have an end date set. Instead of using the relative
+          // from date to determine the start time, we're going to use
+          // the end time of the previous event as the start and make the
+          // duration the provided relative time.
+          fromDateTime = relativeTo;
+          endDateTime = RelativeDate.from(eventStartDate, relativeTo);
+        } else {
+          fromDateTime = RelativeDate.from(eventStartDate, relativeTo);
+        }
         granularity = "instant";
       } else {
         const fromString = DateRange.stringToDateTime(
@@ -198,25 +207,26 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         granularity = fromString.granularity;
       }
 
-      let endDateTime: DateTime;
-      if (relativeToDate) {
-        const relativeToEventId = eventStartLineRegexMatch[31];
-        let relativeTo =
-          relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
-        if (!relativeTo) {
-          // We do not have an event to refer to by id, use the start of this event
-          relativeTo = fromDateTime;
+      if (!endDateTime) {
+        if (relativeToDate) {
+          const relativeToEventId = eventStartLineRegexMatch[31];
+          let relativeTo =
+            relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
+          if (!relativeTo) {
+            // We do not have an event to refer to by id, use the start of this event
+            relativeTo = fromDateTime;
+          }
+          endDateTime = RelativeDate.from(eventEndDate, relativeTo);
+        } else if (eventEndDate) {
+          endDateTime = DateRange.roundDateUp(
+            DateRange.stringToDateTime(eventEndDate, dateFormat)
+          );
+        } else {
+          endDateTime = DateRange.roundDateUp({
+            dateTime: fromDateTime,
+            granularity,
+          });
         }
-        endDateTime = RelativeDate.from(eventEndDate, relativeTo);
-      } else if (eventEndDate) {
-        endDateTime = DateRange.roundDateUp(
-          DateRange.stringToDateTime(eventEndDate, dateFormat)
-        );
-      } else {
-        endDateTime = DateRange.roundDateUp({
-          dateTime: fromDateTime,
-          granularity,
-        });
       }
 
       const dateRange = new DateRange(fromDateTime, endDateTime, datePart);
