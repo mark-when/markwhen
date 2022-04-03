@@ -18,6 +18,7 @@ Use it [here](https://cascade.page).
     - [Events](#events)
       - [Date Ranges](#date-ranges)
         - [Dates](#dates)
+        - [Relative Dates](#relative-dates)
       - [Event Description](#event-description)
         - [Tags](#tags)
         - [Links](#links)
@@ -25,6 +26,7 @@ Use it [here](https://cascade.page).
         - [Photos](#photos)
         - [References](#references)
     - [Groups](#groups)
+    - [Sorting](#sorting)
   - [Header Quick Reference](#header-quick-reference)
   - [Event Quick Reference](#event-quick-reference)
   - [Saving and sharing](#saving-and-sharing)
@@ -82,8 +84,11 @@ An event is a [Date Range](#date-ranges) followed by a colon followed by an [eve
 
 ```
 12/2012: End of the world
+
 1961: Year after 1960
 Later, 1962 would happen
+
+1 year: 1962, just as predicted
 
 2020-02-22T12:13:14Z-now: How long the pandemic has been going on?
 12/7/1941: Pearl Harbor attacked
@@ -91,13 +96,15 @@ Launched US into WWII
 
 2022-02-22T16:27:08.369Z: More specific thing
 2021-01-02T06:27:00Z-2022: ongoing project work until the end of 2022
+
+
 ```
 
 <br>
 <br>
 
 #### Date Ranges
-A date range is a period from one date to another. Every event has an associated date range, whether it has an explicitly written end date or not. A date range is typically `Date[-Date]`; that is, one date optionally followed by a dash and another date (no spaces).
+A date range is a period from one date to another. Every event has an associated date range, whether it has an explicitly written end date or not. A date range is typically `Date[-Date]`; that is, one date optionally followed by a dash and another date.
 
 If an end date is not specified, the range is as long as its granularity.
 
@@ -121,6 +128,91 @@ starts January 1, 2001, and lasts through December 31, 2001.
 
 ##### Dates
 A date can be expressed in a few forms. Human readable dates are supported, like `1665`, `03/2222`, or `09/11/2001`, as well as IO8601 dates, like `2031-11-19T01:35:10Z`. Human readable date formatting defaults to the American Month/Day/Year but can be changed to European formatting via the [header](#date-formatting).
+
+<br><br>
+
+##### Relative Dates
+If you have events that are based off of, or relative to, other events, you can describe their relationship to get the range you want.
+
+For example, say you are working on a project tracker. You could outline the phases of your project by using absolute dates, like the following:
+```
+// To indicate we are using European date formatting
+dateFormat: d/M/y
+
+// 2 weeks
+01/01/2023 - 14/01/2023: Phase 1 #Exploratory
+
+// Another 2 weeks
+15/01/2023 - 31/01/2023: Phase 2 #Implementation
+
+// 1 month
+02/2023: Phase 3 #Implementation 
+
+// 3 days, after a one week buffer
+07/03/2023 - 10/03/2023: Phase 4 - kickoff! #Launch
+```
+![](images/nonrelative_dates.png)
+
+However, as soon as something changes (say something slips or an estimate was wrong), you would have to go through all events and change their dates manually. This would be especially troublesome if the change is early on.
+
+With relative dates, we can express the same timeline like so:
+```
+// 2 weeks
+01/01/2023 - 2 weeks: Phase 1 #Exploratory
+
+// Another 2 weeks
+2 weeks: Phase 2 #Implementation
+
+// 1 month
+1 month: Phase 3 #Implementation 
+
+// One week after phase 3 ends, a 3 days kickoff event
+1 week - 3 days: Phase 4 - kickoff! #Launch
+```
+![](images/relative_dates.png)
+
+Relative dates base themselves off the previous date, and this goes all the way back to our first date, `01/01/2023`.
+
+This works well enough for serial dates that are each dependent on the last, but what if we have multiple events that are all dependent on the same event? We can do that using event ids:
+```
+// Event ids are represented by an exclamation point followed
+// by the id - like !Phase1
+01/01/2023 - 2 weeks: Phase 1 #Exploratory !Phase1
+
+// Another 2 weeks
+after !Phase1 2 weeks: Phase 2, in parallel with Phase 3 #Implementation
+
+// 1 month
+after !Phase1 1 month: Phase 3, in parallel with Phase 2 #Implementation 
+
+// 3 days, after a one week buffer
+1 week - 3 days: Phase 4 - kickoff! #Launch
+```
+
+The word `after` is optional, we could say `!Phase1 2 weeks: Phase 2, in parallel with Phase 3 #Implementation` to have the same effect. 
+
+Relative dates will first attempt to refer to the event that was specified by a provided event id. For `!Phase1 2 weeks: Phase 2`, the event with the id `Phase1` is looked for, is checked for when it ends, and is used as the reference upon which `2 weeks` is based.
+
+If we can't find the event id, or no event id is given, the relative date is instead based upon the last date in the cascade - "last" here meaning most recently written, as the cascade is parsed from top to bottom. So if we have a cascade like this:
+```
+2020: Pandemic
+2021 - 2023: More pandemic
+1 year: Less pandemic?
+```
+
+`1 year` is based off the last date seen, which would be `2023`, or, more specifically, the end of `2023`.
+
+This also means that we can base our end date off of our start date:
+```
+12/25/2022: Christmas
+5 days - 3 days: New Years' stuff
+```
+
+Here, `5 days` is five days after the previously seen date (`12/25/2022`), which would make it `12/30/2022`, while `3 days` is three days after the previous date, which is our start date of `12/30/2022`.
+
+Two relative dates together, like `x days - y weeks: ...`, can therefore essentially be read as `x days after the previous event and lasts for y weeks`.
+
+The only exception to this is the shorthand singular relative date, like `x years:...`, which means `immediately after the last event and lasts for x years`.
 
 <br><br>
 
@@ -154,7 +246,7 @@ A list of all tags appears at the bottom of the screen to allow for filtering by
 Links are similar to markdown links: link dislpay text in brackets followed by the url in parentheses:
 
 ```
-2018-2021: [Google](www.google.com)
+2018 - 3 years: [Google](www.google.com)
 ```
 <br><br>
 
@@ -181,6 +273,7 @@ Link to other cascades with the `@` syntax:
 ```
 
 ### Groups
+![](images/groups.gif)
 Events can be grouped. To indicate a group, write `group` at the beginning of a line. All events up to the start of the next group, the end of the cascade, or the keyword `endGroup` (whichever of these three comes first) are in the group.
 
 For example,
@@ -224,6 +317,9 @@ endGroup
 ```
 
 <br><br>
+
+### Sorting
+![](images/sorting.gif)
 
 
 ## Header Quick Reference
