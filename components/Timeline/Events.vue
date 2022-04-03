@@ -58,14 +58,6 @@ export default Vue.extend({
   transform: translateX(-30px);
 }
 
-.eventRow:hover .eventBar {
-  @apply opacity-90 shadow-lg;
-}
-
-.eventRow:hover .photoBar {
-  @apply opacity-90 shadow-lg;
-}
-
 .eventBar {
   border-radius: 5px;
   height: 10px;

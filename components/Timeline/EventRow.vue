@@ -26,7 +26,7 @@
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
       >
-        <div :class="eventBarClass" :style="eventBarStyle"></div>
+        <event-bar :event="event" />
         <p class="eventDate">{{ event.getDateHtml() }}</p>
         <svg
           v-if="hasImages && imageStatus !== 'loading'"
@@ -91,15 +91,25 @@
 </template>
 
 <script lang="ts">
-import { DateRange, Event, YearMonthDay } from "../../src/Types";
-const COLORS = ["green", "blue", "red", "yellow", "indigo", "purple", "pink"];
-const EVENT_HEIGHT_PX = 10;
+import { DateRange } from "../../src/Types";
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
 import { mapGetters } from "vuex";
+import EventBar from "./EventBar.vue";
+
+export const COLORS = [
+  "green",
+  "blue",
+  "red",
+  "yellow",
+  "indigo",
+  "purple",
+  "pink",
+];
+export const EVENT_HEIGHT_PX = 10;
 
 export default Vue.extend({
-  components: { EventMeta },
+  components: { EventMeta, EventBar },
   props: ["event"],
   data() {
     return {
@@ -158,18 +168,6 @@ export default Vue.extend({
       }
       return c;
     },
-    eventBarClass(): string {
-      let c = "eventBar transition opacity-50 rounded-lg shadow ";
-      const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        if (COLORS.includes(this.$store.getters.tags[tag])) {
-          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
-        }
-      } else {
-        c += `bg-gray-300 `;
-      }
-      return c;
-    },
     barColor(): string {
       let style = "";
       const tag = this.event.event.tags[0];
@@ -180,11 +178,6 @@ export default Vue.extend({
         style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;
-    },
-    eventBarStyle(): string {
-      return `width: ${this.getWidthForRange(this.event.range)}px; ${
-        this.barColor
-      }`;
     },
     photoBarStyle(): string {
       return `width: 10px; ${this.barColor}; top: calc(0.5rem + 3px)`;
@@ -228,5 +221,17 @@ export default Vue.extend({
 .eventRow {
   padding-top: 2px;
   padding-bottom: 2px;
+}
+
+/* .eventRow:hover .eventBar {
+  @apply opacity-80 shadow-lg;
+} */
+
+.eventRow:hover .photoBar {
+  @apply opacity-80 shadow-lg;
+}
+
+.eventRow:hover .percentBar {
+  @apply opacity-100
 }
 </style>
