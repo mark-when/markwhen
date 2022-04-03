@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { AMOUNT_REGEX } from "./Parser";
+import { AMOUNT_REGEX, EVENT_ID_REGEX } from "./Parser";
 
 export type Year = number;
 export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -199,6 +199,7 @@ export class EventDescription {
   supplemental: string[];
   googlePhotosLink?: string;
   locations: string[] = [];
+  id?: string
 
   constructor(lines: string[]) {
     for (let i = 0; i < lines.length; i++) {
@@ -219,6 +220,10 @@ export class EventDescription {
         }
         return "";
       });
+      line = line.replace(EVENT_ID_REGEX, (match, id) => {
+        this.id = id
+        return ''
+      })
       lines[i] = line;
     }
     this.eventDescription = lines[0];
@@ -280,10 +285,11 @@ export class Event {
 }
 
 export type Tags = { [tagName: string]: string };
-
+export type IdedEvents = { [id: string]: Event }
 export interface Cascade {
   events: Events;
   tags: Tags;
+  ids: IdedEvents
   metadata: CascadeMetadata;
 }
 

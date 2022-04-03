@@ -6,6 +6,7 @@ import {
   DateTimeGranularity,
   Event,
   EventDescription,
+  IdedEvents,
   RelativeDate,
   Tags,
 } from "./Types";
@@ -24,13 +25,13 @@ export const AMOUNT_REGEX = new RegExp(
   "g"
 );
 
-const EVENT_ID_REGEX = /!\w+/;
+export const EVENT_ID_REGEX = /(?:^|\s)(!\w+)/;
 
 // So this regex is kind of wrong - we're using the global flag here to make multiple matches for the
 // whole regex, even though we just want any repeated amounts (e.g., 3 days, 4 hours, 6 seconds).
 // This works because the entire front part (`after !eventId plus`) is optional
 const RELATIVE_TIME_REGEX = new RegExp(
-  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*(${AMOUNT_REGEX.source})+`
+  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*(${AMOUNT_REGEX.source})*`
 );
 
 const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/;
@@ -45,18 +46,13 @@ const DATE_RANGE_REGEX = new RegExp(
   `((${START_OR_END_TIME_REGEX.source})(?:\\s*-\\s*(${START_OR_END_TIME_REGEX.source}))?):`
 );
 const EVENT_START_REGEX = new RegExp(`(\\s*)${DATE_RANGE_REGEX.source}(.*)`);
-console.log(EVENT_START_REGEX);
 
 const COMMENT_REGEX = /^\s*\/\/.*/;
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/;
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
-const TAG_REGEX = /(?:^| )#(\w*)/g;
+const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)group/;
 const GROUP_END_REGEX = /^endGroup/;
-
-// I apologize, this is just GROUP_START_REGEX combined with DATE_RANGE_REGEX.
-// It wasn't working well when I tried to do new RegExp(...)
-// const GROUP_START_WITH_RANGE_REGEX = /^(\s*)group(\s)*((((\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z)|(now)|(\d{1,5}(\d{1,5}(\/\d{1,5})?)?))(?:\s*-\s*((\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z)|(now)|(\d{1,5}(\/\d{1,5}(\/\d{1,5})?)?)))?):)?(.*)/
 
 export const COLORS = [
   "green",
@@ -77,6 +73,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     return {
       events: [],
       tags: {},
+      ids: {},
       metadata: {
         earliestTime: DateTime.now().minus({ years: 5 }),
         latestTime: DateTime.now().plus({ years: 5 }),
@@ -88,6 +85,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   const lines = eventsString.split("\n");
   const events = [] as (Event | EventSubGroup)[];
   const tags = {} as Tags;
+  const ids = {} as IdedEvents;
+
   let paletteIndex = 0;
   let dateFormat = AMERICAN_DATE_FORMAT;
   let earliest: DateTime | null = null,
@@ -161,15 +160,34 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       // What the regex matched as the date range part
       const datePart = eventStartLineRegexMatch[2];
       const eventStartDate = eventStartLineRegexMatch[3];
-      const eventEndDate = eventStartLineRegexMatch[22];
+      const eventEndDate = eventStartLineRegexMatch[23];
 
-      const relativeFromDate = eventStartLineRegexMatch[11];
-      const relativeToDate = eventStartLineRegexMatch[30];
+      const relativeFromDate =
+        eventStartLineRegexMatch[12] || eventStartLineRegexMatch[9];
+      const relativeToDate =
+        eventStartLineRegexMatch[32] || eventStartLineRegexMatch[29];
 
       let fromDateTime: DateTime;
       let granularity: DateTimeGranularity;
       if (relativeFromDate) {
-        fromDateTime = RelativeDate.from(eventStartDate);
+        const relativeToEventId = eventStartLineRegexMatch[11];
+        console.log(relativeToEventId)
+        let relativeTo =
+          relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
+        if (!relativeTo && events.length) {
+          debugger
+          // We do not have an event to refer to by id, try to get the previous event
+          const previous = events[events.length - 1];
+          if (previous instanceof Event) {
+            relativeTo = previous.range.toDateTime;
+          } else {
+            relativeTo = previous[previous.length - 1].range.toDateTime;
+          }
+        } else if (!relativeTo && eventSubgroup?.length) {
+          relativeTo = eventSubgroup[eventSubgroup.length - 1].range.toDateTime
+        }
+        relativeTo = relativeTo ? relativeTo : DateTime.now();
+        fromDateTime = RelativeDate.from(eventStartDate, relativeTo);
         granularity = "instant";
       } else {
         const fromString = DateRange.stringToDateTime(
@@ -182,7 +200,14 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
       let endDateTime: DateTime;
       if (relativeToDate) {
-        endDateTime = RelativeDate.from(eventEndDate);
+        const relativeToEventId = eventStartLineRegexMatch[31];
+        let relativeTo =
+          relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
+        if (!relativeTo) {
+          // We do not have an event to refer to by id, use the start of this event
+          relativeTo = fromDateTime;
+        }
+        endDateTime = RelativeDate.from(eventEndDate, relativeTo);
       } else if (eventEndDate) {
         endDateTime = DateRange.roundDateUp(
           DateRange.stringToDateTime(eventEndDate, dateFormat)
@@ -211,6 +236,10 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
           events.push(event);
         }
 
+        if (event.event.id && !ids[event.event.id]) {
+          ids[event.event.id] = event;
+        }
+
         if (!earliest || dateRange.fromDateTime < earliest) {
           earliest = dateRange.fromDateTime;
         }
@@ -235,6 +264,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   return {
     events,
     tags,
+    ids,
     metadata: {
       earliestTime: earliest,
       latestTime: latest,
