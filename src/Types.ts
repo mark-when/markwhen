@@ -192,6 +192,7 @@ export const LOCATION_REGEX = /\[([^\]]+)\]\((location|map)\)/g;
 export const GOOGLE_PHOTOS_REGEX = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g;
 export const AT_REGEX = /@([\w\d\/]+)/g;
 export const TAG_REGEX = /(?: |^)#(\w+)/g;
+const PERCENT_REGEX = /(?:\s|^)(\d{1,3})%(?:\s|$)/;
 
 export class EventDescription {
   eventDescription: string;
@@ -199,7 +200,8 @@ export class EventDescription {
   supplemental: string[];
   googlePhotosLink?: string;
   locations: string[] = [];
-  id?: string
+  id?: string;
+  percent?: number;
 
   constructor(lines: string[]) {
     for (let i = 0; i < lines.length; i++) {
@@ -221,9 +223,18 @@ export class EventDescription {
         return "";
       });
       line = line.replace(EVENT_ID_REGEX, (match, id) => {
-        this.id = id
-        return ''
-      })
+        if (!this.id) {
+          this.id = id;
+          return "";
+        }
+        return id;
+      });
+      if (!this.percent) {
+        const percent = line.match(PERCENT_REGEX);
+        if (percent) {
+          this.percent = parseInt(percent[0]);
+        }
+      }
       lines[i] = line;
     }
     this.eventDescription = lines[0];
@@ -285,11 +296,11 @@ export class Event {
 }
 
 export type Tags = { [tagName: string]: string };
-export type IdedEvents = { [id: string]: Event }
+export type IdedEvents = { [id: string]: Event };
 export interface Cascade {
   events: Events;
   tags: Tags;
-  ids: IdedEvents
+  ids: IdedEvents;
   metadata: CascadeMetadata;
 }
 

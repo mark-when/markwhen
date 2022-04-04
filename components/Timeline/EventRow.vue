@@ -1,5 +1,10 @@
 <template>
-  <div class="eventRow relative" :style="eventRowStyle">
+  <div
+    class="eventRow relative"
+    :style="eventRowStyle"
+    @mouseenter="hovering = true"
+    @mouseleave="hovering = false"
+  >
     <div
       v-if="showingMeta"
       :class="photoBarClass"
@@ -26,7 +31,7 @@
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
       >
-        <event-bar :event="event" />
+        <event-bar :event="event" :hovering="hovering" />
         <p class="eventDate">{{ event.getDateHtml() }}</p>
         <svg
           v-if="hasImages && imageStatus !== 'loading'"
@@ -91,7 +96,7 @@
 </template>
 
 <script lang="ts">
-import { DateRange } from "../../src/Types";
+import { DateRange, Event } from "../../src/Types";
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
 import { mapGetters } from "vuex";
@@ -116,6 +121,7 @@ export default Vue.extend({
       imageStatus: "not loaded",
       images: [],
       showingMeta: false,
+      hovering: false,
     };
   },
   computed: {
@@ -165,6 +171,9 @@ export default Vue.extend({
         }
       } else {
         c += `bg-gray-300 `;
+      }
+      if (this.hovering) {
+        c += `opacity-80 shadow-lg `;
       }
       return c;
     },
@@ -227,11 +236,11 @@ export default Vue.extend({
   @apply opacity-80 shadow-lg;
 } */
 
-.eventRow:hover .photoBar {
+/* .eventRow:hover .photoBar {
   @apply opacity-80 shadow-lg;
 }
 
 .eventRow:hover .percentBar {
   @apply opacity-100
-}
+} */
 </style>

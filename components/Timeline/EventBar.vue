@@ -3,6 +3,7 @@
   <div class="relative">
     <div :class="eventBarClass" :style="eventBarStyle"></div>
     <div
+      v-if="hasPercent"
       class="
         absolute
         left-0
@@ -12,26 +13,20 @@
         rounded-full
         percentBar
         transition
-        opacity-50
       "
       :class="percentBarColorClass"
-      :style="`min-width: 10px; max-width: 100%; ${percentBarColorStyle}; width: calc(50% + 5px);`"
+      :style="`min-width: 10px; max-width: 100%; ${percentBarColorStyle}; width: ${percent}%;`"
     ></div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { DateRange } from "~/src/Types";
+import { DateRange, Event } from "~/src/Types";
 import { COLORS, EVENT_HEIGHT_PX } from "./EventRow.vue";
 
 export default Vue.extend({
-  props: ["event"],
-  data() {
-    return {
-      percent: 50,
-    }
-  },
+  props: ["event", "hovering"],
   methods: {
     getWidthForRange(range: DateRange): number {
       const distance = this.$store.getters.distanceBetweenDates(
@@ -43,6 +38,12 @@ export default Vue.extend({
     },
   },
   computed: {
+    hasPercent(): boolean {
+      return typeof this.percent === "number";
+    },
+    percent(): number | undefined {
+      return (this.event as Event).event.percent;
+    },
     percentBarColorClass(): string {
       let c = "";
       const tag = this.event.event.tags[0];
@@ -52,6 +53,11 @@ export default Vue.extend({
         }
       } else {
         c += `bg-gray-400 `;
+      }
+      if (this.hovering) {
+        c += "opacity-90 ";
+      } else {
+        c += "opacity-60 ";
       }
       return c;
     },
@@ -67,7 +73,7 @@ export default Vue.extend({
       return style;
     },
     eventBarClass(): string {
-      let c = "eventBar transition opacity-30 rounded-lg shadow ";
+      let c = "eventBar transition rounded-lg shadow ";
       const tag = this.event.event.tags[0];
       if (this.$store.getters.tags[tag]) {
         if (COLORS.includes(this.$store.getters.tags[tag])) {
@@ -75,6 +81,14 @@ export default Vue.extend({
         }
       } else {
         c += `bg-gray-200 `;
+      }
+      if (this.hasPercent) {
+        c += "opacity-30 ";
+      } else {
+        c += "opacity-50 ";
+      }
+      if (this.hovering && !this.hasPercent) {
+        c += `opacity-80 shadow-lg `;
       }
       return c;
     },
