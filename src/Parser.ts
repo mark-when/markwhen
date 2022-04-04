@@ -31,7 +31,7 @@ export const EVENT_ID_REGEX = /(?:^|\s)(!\w+)/;
 // whole regex, even though we just want any repeated amounts (e.g., 3 days, 4 hours, 6 seconds).
 // This works because the entire front part (`after !eventId plus`) is optional
 const RELATIVE_TIME_REGEX = new RegExp(
-  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*(${AMOUNT_REGEX.source})*`
+  `((before|after)?\\s*${EVENT_ID_REGEX.source}\\s*)?(?:plus|\\+)?\\s*(${AMOUNT_REGEX.source})+`
 );
 
 const ISO8601_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2,}(?:\.\d*)?Z/;
