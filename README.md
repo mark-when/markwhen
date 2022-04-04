@@ -27,6 +27,7 @@ Use it [here](https://cascade.page).
         - [Locations](#locations)
         - [Photos](#photos)
         - [References](#references)
+        - [Percent](#percent)
     - [Groups](#groups)
     - [Sorting](#sorting)
   - [Header Quick Reference](#header-quick-reference)
@@ -303,6 +304,14 @@ Link to other cascades with the `@` syntax:
 ```
 1919: Treaty of Versailles @wwi
 ```
+
+<br><br>
+
+##### Percent
+
+Indicate that an event is some percent complete by including `0`-`100%` in your event, and the event bar will be partially filled in to show the completion percentage.
+
+![](images/percents.png)
 
 <br><br>
 
