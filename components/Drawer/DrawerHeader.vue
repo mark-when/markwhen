@@ -14,6 +14,8 @@
     @mousedown="mousedown"
   >
     <button
+      role="button"
+      title="Toggle sidebar"
       class="
         md:mr-2
         dark:text-gray-400 dark:hover:text-gray-300

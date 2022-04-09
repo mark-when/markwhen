@@ -1,6 +1,8 @@
 <template>
   <div class="md:flex flex-col md:mb-auto items-center justify-center hidden">
     <button
+      role="button"
+      title="Close/collapse sidebar"
       @click="close"
       class="
         hover:bg-gray-300 hover:text-gray-800
@@ -24,6 +26,8 @@
       </svg>
     </button>
     <button
+      role="button"
+      title="Switch sidebar side"
       class="
         hover:bg-gray-300 hover:text-gray-800
         transition
@@ -47,6 +51,8 @@
       </svg>
     </button>
     <button
+      role="button"
+      title="Toggle dark mode"
       class="
         hover:bg-gray-300 hover:text-gray-800
         transition

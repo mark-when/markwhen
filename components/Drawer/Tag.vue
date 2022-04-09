@@ -1,5 +1,7 @@
 <template>
   <button
+    role="button"
+    :title="isThisTagInFilter ? `Filtering by ${tag}` : `Filter by ${tag}`"
     class="
       flex flex-row
       items-center
@@ -11,14 +13,16 @@
       hover:bg-slate-300
       transition
       dark:bg-gray-800
-      dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-600
+      dark:text-gray-400
+      dark:hover:text-gray-100
+      dark:hover:bg-gray-600
       tagButton
     "
     @click="filterTag"
   >
     <div class="h-4 w-4 rounded" :class="buttonClass" :style="buttonStyle">
       <svg
-        v-if="filter.includes(tag)"
+        v-if="isThisTagInFilter"
         xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4 text-gray-100"
         fill="none"
@@ -45,6 +49,9 @@ import { COLORS } from "~/store/index";
 export default Vue.extend({
   props: ["tag"],
   computed: {
+    isThisTagInFilter(): boolean {
+      return this.filter.includes(this.tag);
+    },
     ...mapGetters(["tags"]),
     ...mapState(["filter"]),
     buttonClass(): string {

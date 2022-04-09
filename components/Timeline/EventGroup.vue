@@ -7,7 +7,7 @@
           h-full
           flex flex-row
           items-center
-          dark:text-gray-400 dark:border dark:border-gray-800
+          dark:text-gray-400
           rounded-lg
           transition
         "
@@ -175,7 +175,7 @@ export default Vue.extend({
       return c;
     },
     expandedGroupClass(): string {
-      return `${this.hovering ? "bg-opacity-30" : "bg-opacity-10"} ${
+      return `${this.hovering ? "bg-opacity-30" : "bg-opacity-20"} ${
         this.bgColorClass
       }`;
     },
