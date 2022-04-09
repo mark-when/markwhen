@@ -175,9 +175,11 @@ export default Vue.extend({
       return c;
     },
     expandedGroupClass(): string {
-      return `${this.hovering ? "bg-opacity-30" : "bg-opacity-20"} ${
-        this.bgColorClass
-      }`;
+      return `${
+        this.hovering
+          ? "dark:bg-opacity-30 bg-opacity-20"
+          : "dark:bg-opacity-20 bg-opacity-10"
+      } ${this.bgColorClass}`;
     },
     left(): number {
       if (!this.eventGroup || !this.eventGroup.range) {
