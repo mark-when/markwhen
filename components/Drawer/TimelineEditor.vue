@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full bg-gray-900 h-full flex flex-col">
+  <div class="w-full dark:bg-gray-900 bg-slate-300 h-full flex flex-col">
     <div class="flex-grow overflow-scroll">
       <h3 class="text-xl font-bold ml-1 text-gray-500 p-2">Edit</h3>
       <textarea
@@ -9,8 +9,10 @@
           font-mono
           text-sm
           w-full
-          text-gray-400
-          bg-gray-900
+          dark:text-gray-400
+          text-black
+          dark:bg-gray-900
+          bg-slate-300
           outline-none
           shadow-inner-2xl
           resize-none

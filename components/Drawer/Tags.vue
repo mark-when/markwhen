@@ -11,14 +11,17 @@
       class="
         mr-2
         rounded
-        bg-gray-800
-        hover:bg-gray-700
+        bg-slate-100
+        hover:bg-slate-300
+        transition
+        dark:bg-gray-800
+        dark:text-gray-400
+        dark:hover:text-gray-100
+        dark:hover:bg-gray-600
         md:px-2 md:py-0
         p-1
         flex flex-row flex-shrink-0
         items-center
-        text-gray-400
-        hover:text-gray-100
         tagButton
       "
       @click="clearFilters"

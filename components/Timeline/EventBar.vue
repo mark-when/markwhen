@@ -3,7 +3,6 @@
   <div class="relative">
     <div :class="eventBarClass" :style="eventBarStyle"></div>
     <div
-      v-if="hasPercent"
       class="
         absolute
         left-0
@@ -38,11 +37,8 @@ export default Vue.extend({
     },
   },
   computed: {
-    hasPercent(): boolean {
-      return typeof this.percent === "number";
-    },
     percent(): number | undefined {
-      return (this.event as Event).event.percent;
+      return (this.event as Event).event.percent || 100;
     },
     percentBarColorClass(): string {
       let c = "";
@@ -52,10 +48,10 @@ export default Vue.extend({
           c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-500 `;
         }
       } else {
-        c += `bg-gray-400 `;
+        c += `dark:bg-gray-400 bg-slate-700`;
       }
       if (this.hovering) {
-        c += "opacity-90 ";
+        c += "opacity-100 shadow-lg ";
       } else {
         c += "opacity-60 ";
       }
@@ -80,16 +76,10 @@ export default Vue.extend({
           c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
         }
       } else {
-        c += `bg-gray-200 `;
+        c += `dark:bg-slate-400 bg-slate-700 `;
       }
-      if (this.hasPercent) {
-        c += "opacity-30 ";
-      } else {
-        c += "opacity-50 ";
-      }
-      if (this.hovering && !this.hasPercent) {
-        c += `opacity-80 shadow-lg `;
-      }
+      c += "opacity-30 ";
+
       return c;
     },
     barWidth(): number {

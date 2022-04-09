@@ -2,7 +2,8 @@
   <div
     class="
       flex flex-col
-      bg-gray-900
+      dark:bg-gray-900
+      bg-slate-300
       h-full
       pb-2
       md:pb-6

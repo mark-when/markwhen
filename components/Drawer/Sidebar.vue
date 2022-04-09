@@ -9,9 +9,10 @@
       md:flex-row
       border-gray-600
       z-10
-      order-2
       pb-4
       md:pb-0
+      bg-baseGray
+      order-2
     "
     :class="{
       'bg-gray-800': selectedComponent,
@@ -31,7 +32,7 @@
         md:justify-end md:mb-4
         order-2
       "
-      :class="{ 'md:order-2': !isLeft, 'md:order-1': !isLeft }"
+      :class="{ 'md:order-1': isLeft, 'md:order-2': !isLeft }"
     >
       <sidebar-visibility />
       <div class="flex flex-row md:flex-col items-center">
@@ -167,7 +168,4 @@ export default Vue.extend({
 </script>
 
 <style>
-.sidebar {
-  background-color: #384047;
-}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex flex-row mb-1 p-1 items-center"
-    :class="{ 'bg-gray-800': hovering || forking }"
+    :class="{ 'dark:bg-gray-800': hovering || forking }"
     v-on:mouseenter="mouseenter"
     v-on:mouseleave="mouseleave"
   >
@@ -22,13 +22,13 @@
           justify-center
           ml-2
           text-sm
-          bg-gray-800
+          bg-slate-100
           px-1
           rounded
           transition
-          hover:bg-gray-900
-          disabled:bg-gray-800
-          text-gray-400
+          dark:hover:bg-gray-900 dark:disabled:bg-gray-800 dark:text-gray-400
+          text-slate-900
+          hover:bg-slate-100
         "
       >
         <svg

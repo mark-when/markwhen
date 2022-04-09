@@ -1,8 +1,16 @@
 <template>
   <div class="flex flex-row md:flex-col items-center">
     <button
-      class="p-2 hover:bg-gray-900"
-      :class="selectedComponent === 'editor' ? 'bg-gray-900' : ''"
+      class="
+        p-2
+        dark:hover:bg-gray-900 dark:hover:text-slate-100
+        hover:bg-slate-300 hover:text-slate-800
+      "
+      :class="
+        selectedComponent === 'editor'
+          ? 'dark:bg-gray-900 bg-slate-300'
+          : 'text-slate-100'
+      "
       @click="selectEdit"
       title="Cascade Editor"
     >
@@ -19,8 +27,20 @@
       </svg>
     </button>
     <button
-      class="p-2 hover:bg-gray-900 md:mb-3 mb-0 mr-3 md:mr-0"
-      :class="selectedComponent === 'profile' ? 'bg-gray-900' : ''"
+      class="
+        p-2
+        dark:hover:bg-gray-900 dark:hover:text-slate-100
+        hover:bg-slate-300 hover:text-slate-800
+        md:mb-3
+        mb-0
+        mr-3
+        md:mr-0
+      "
+      :class="
+        selectedComponent === 'profile'
+          ? 'dark:bg-gray-900 bg-slate-300'
+          : 'text-slate-100'
+      "
       @click="selectProfile"
       title="My Cascades"
     >
@@ -38,8 +58,20 @@
     </button>
     <button
       v-if="debug"
-      class="p-2 hover:bg-gray-900 md:mb-3 mb-0 mr-3 md:mr-0"
-      :class="selectedComponent === 'explore' ? 'bg-gray-900' : ''"
+      class="
+        p-2
+        dark:hover:bg-gray-900 dark:hover:text-slate-100
+        hover:bg-slate-300 hover:text-slate-800
+        md:mb-3
+        mb-0
+        mr-3
+        md:mr-0
+      "
+      :class="
+        selectedComponent === 'explore'
+          ? 'dark:bg-gray-900 bg-slate-300'
+          : 'text-slate-100'
+      "
       @click="selectExplore"
       title="Explore"
     >
@@ -55,7 +87,11 @@
         ></path>
       </svg>
     </button>
-    <button class="p-2" @click="selectHowTo" title="Help and How to">
+    <button
+      class="p-2 text-slate-100"
+      @click="selectHowTo"
+      title="Help and How to"
+    >
       <svg
         class="h-6 w-6 rounded-full"
         focusable="false"

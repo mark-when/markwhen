@@ -1,6 +1,15 @@
 <template>
   <div class="flex-shrink-0" :style="columnStyle">
-    <h6 class="timeMarkerTitle text-sm whitespace-nowrap" :style="textStyle">
+    <h6
+      class="
+        timeMarkerTitle
+        text-sm
+        whitespace-nowrap
+        dark:text-white
+        text-black
+      "
+      :style="textStyle"
+    >
       {{ text }}
     </h6>
   </div>
@@ -50,7 +59,7 @@ export default Vue.extend({
     },
     textStyle(): string {
       const alpha = clamp((this.borderAlpha - 0.3) * 5);
-      return `color: rgba(255, 255, 255, ${alpha})`;
+      return `opacity: ${alpha}`;
     },
     currentDateResolution(): number {
       const weights = this.timeMarkerWeights;
@@ -72,9 +81,8 @@ export default Vue.extend({
 
 <style>
 .timeMarkerTitle {
-  font-weight: 300;
   margin: 0px 0px 0px -1px;
   padding: 8px;
-  z-index: 5
+  z-index: 5;
 }
 </style>

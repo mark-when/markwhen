@@ -5,14 +5,14 @@
       flex flex-row
       align-baseline
       mb-1
-      hover:bg-gray-800
       rounded
       px-2
       py-1
       transition
       duration-100
-      text-gray-300
-      hover:text-gray-100
+      text-slate-900
+      dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800
+      hover:bg-slate-100
     "
     @click="$emit('selected', item)"
   >

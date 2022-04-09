@@ -16,11 +16,11 @@
     <button
       class="
         md:mr-2
-        text-gray-400
-        hover:text-gray-300
+        dark:text-gray-400 dark:hover:text-gray-300
+        hover:bg-slate-100
         rounded
         md:rounded-full
-        hover:bg-gray-800
+        dark:hover:bg-gray-800
         backdrop-filter backdrop-blur
         transition
         flex flex-col
@@ -64,7 +64,11 @@
         <path d="m7 10 5 5 5-5H7z"></path>
       </svg>
     </button>
-    <a href="/" class="rounded-full hover:bg-gray-900" v-else>
+    <a
+      href="/"
+      class="rounded-full dark:hover:bg-gray-900 hover:bg-gray-100"
+      v-else
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5 m-1"

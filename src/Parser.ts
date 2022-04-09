@@ -10,6 +10,8 @@ import {
   RelativeDate,
   Tags,
 } from "./Types";
+import * as chronoNode from 'chrono-node';
+
 
 // Amounts
 const MILLISECOND_AMOUNT_REGEX = /(milliseconds|ms)/i;
@@ -24,6 +26,14 @@ export const AMOUNT_REGEX = new RegExp(
   `(\\d+\\W*)(${MILLISECOND_AMOUNT_REGEX.source}|${SECOND_AMOUNT_REGEX.source}|${MINUTE_AMOUNT_REGEX.source}|${HOUR_AMOUNT_REGEX.source}|${DAY_AMOUNT_REGEX.source}|${WEEK_AMOUNT_REGEX.source}|${MONTH_AMOUNT_REGEX.source}|${YEAR_AMOUNT_REGEX.source})(?:\\s*,\\s*|\\s*)`,
   "g"
 );
+
+const chrono = chronoNode.casual.clone()
+// chrono.parsers.push({
+//   pattern: () => { return AMOUNT_REGEX },
+//   extract: (context, match) => {
+
+//   }
+// })
 
 export const EVENT_ID_REGEX = /(?:^|\s)(!\w+)/;
 

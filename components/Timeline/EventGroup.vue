@@ -7,8 +7,7 @@
           h-full
           flex flex-row
           items-center
-          text-gray-400
-          border border-gray-800
+          dark:text-gray-400 dark:border dark:border-gray-800
           rounded-lg
           transition
         "
@@ -43,7 +42,8 @@
             px-1
             rounded-lg
             mt-px
-            bg-opacity-60
+            dark:bg-opacity-60
+            bg-opacity-20
           "
           :class="buttonClass"
           :style="`left: calc(50% - ${buttonWidth / 2}px)`"
@@ -76,7 +76,7 @@
       :class="collapsedGroupClass"
       class="
         border border-gray-800
-        rounded-lg
+        rounded-full
         eventTitle
         transition
         bg-opacity-10

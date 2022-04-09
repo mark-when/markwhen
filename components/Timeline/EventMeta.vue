@@ -2,7 +2,7 @@
   <div class="flex flex-col items-start">
     <div class="flex flex-row" v-if="supplemental.length">
       <div
-        class="bg-gray-900 rounded px-2 py-1 -mx-2 mt-1 shadow-lg flex-shrink-0"
+        class="dark:bg-gray-900 bg-slate-100 rounded px-2 py-1 -mx-2 mt-1 shadow-lg flex-shrink-0"
         style="max-width: min(90vw, 600px)"
       >
         <div class="ml-5">
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div
-      class="bg-gray-900 rounded p-2 -mx-2 inline-flex mt-1 relative shadow-lg"
+      class="dark:bg-gray-900 bg-slate-100 rounded p-2 -mx-2 inline-flex mt-1 relative shadow-lg"
       style="max-width: 100vw"
       v-if="hasLocations || hasImages"
     >

@@ -1,5 +1,16 @@
 <template>
-  <div class="bg-gray-900 h-full w-full overflow-scroll pb-5 text-gray-300 p-2">
+  <div
+    class="
+      dark:bg-gray-900
+      bg-slate-200
+      h-full
+      w-full
+      overflow-scroll
+      pb-5
+      dark:text-gray-300
+      p-2
+    "
+  >
     <h3 class="text-xl font-bold ml-1 text-gray-500">Explore</h3>
     <div class="flex flex-row items-center justify-center" v-if="loading">
       <svg

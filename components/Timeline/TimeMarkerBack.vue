@@ -1,6 +1,8 @@
 <template>
-  <div class="h-full flex-shrink-0" :style="columnStyle">
-  </div>
+  <div
+    class="h-full flex-shrink-0 dark:border-l border-l border-dashed border-gray-400 dark:border-slate-500"
+    :style="columnStyle"
+  ></div>
 </template>
 
 <script lang="ts">
@@ -41,7 +43,7 @@ export default Vue.extend({
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
     },
     columnStyle(): string {
-      return `border-left: 1px dashed rgba(128, 128, 128, ${this.borderAlpha}); width: ${this.timeMarker.size}px`;
+      return `opacity: ${this.borderAlpha}; width: ${this.timeMarker.size}px`;
     },
   },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="md:mb-2 flex-row md:flex-col flex items-center">
+  <div class="md:mb-2 flex-row md:flex-col flex items-center text-slate-100">
     <a href="https://github.com/kochrt/cascade.page" class="p-2" target="_blank"
       ><svg
         height="32"

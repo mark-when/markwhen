@@ -25,8 +25,8 @@
           transition
         "
         :class="{
-          'hover:bg-gray-800 hover:shadow-lg': hasMeta,
-          'bg-gray-900 shadow-lg': showingMeta,
+          'dark:hover:bg-gray-800 hover:bg-slate-100 hover:shadow-lg': hasMeta,
+          'dark:bg-gray-900 bg-slate-100 shadow-lg': showingMeta,
           'cursor-pointer': hasMeta,
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
@@ -232,6 +232,13 @@ export default Vue.extend({
   padding-bottom: 2px;
 }
 
+.eventDate {
+  color: #93979a;
+  font-family: system-ui;
+  font-size: 80%;
+  margin: 0px 0px 0px 8px;
+  white-space: nowrap;
+}
 /* .eventRow:hover .eventBar {
   @apply opacity-80 shadow-lg;
 } */

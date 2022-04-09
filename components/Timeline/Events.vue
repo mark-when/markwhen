@@ -69,16 +69,4 @@ export default Vue.extend({
   font-size: 80%;
   white-space: nowrap;
 }
-
-.eventDate {
-  color: #93979a;
-  font-family: system-ui;
-  font-size: 80%;
-  margin: 0px 0px 0px 8px;
-  white-space: nowrap;
-}
-
-.eventTitle a {
-  color: white;
-}
 </style>

@@ -10,10 +10,10 @@
       py-1
       transition transition-all
       duration-100
-      text-gray-300
-      hover:text-gray-100
-      hover:bg-gray-800
+      text-slate-900
+      dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800
       group
+      hover:bg-slate-100
     "
     @click="selected"
   >

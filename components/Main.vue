@@ -1,10 +1,20 @@
 <template>
-  <div id="app">
-    <div class="flex flex-col md:flex-row h-full">
+  <div id="app" :class="darkMode">
+    <div
+      class="
+        flex flex-col
+        md:flex-row
+        h-full
+        dark:bg-baseGray
+        bg-slate-200
+        dark:text-white
+        text-gray-900
+      "
+    >
       <template v-if="edittable">
         <sidebar v-show="$store.state.sidebar.visible"
       /></template>
-      <timeline :edittable="edittable"/>
+      <timeline :edittable="edittable" />
     </div>
   </div>
 </template>
@@ -18,16 +28,22 @@ import {
   signInWithEmailLink,
 } from "firebase/auth";
 import Sidebar from "./Drawer/Sidebar.vue";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
   props: ["edittable"],
   components: { Timeline, Sidebar },
+  computed: mapGetters({ darkMode: "sidebar/darkMode" }),
   mounted() {
     this.signInIfNecessary();
+    this.checkDarkMode();
     this.$store.commit("getLocalTimelines");
-    this.$store.commit("checkHasSeenHowTo")
+    this.$store.commit("checkHasSeenHowTo");
   },
   methods: {
+    checkDarkMode() {
+      this.$store.commit("sidebar/checkDarkMode");
+    },
     async signInIfNecessary() {
       const auth = getAuth();
       if (!isSignInWithEmailLink(auth, window.location.href)) {
@@ -59,8 +75,6 @@ export default Vue.extend({
 
 <style>
 body {
-  background-color: #384047;
-  color: white;
   margin: 0;
 }
 #app {
