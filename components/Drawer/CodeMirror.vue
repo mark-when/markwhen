@@ -1,5 +1,5 @@
 <template>
-  <div id="codeMirror"></div>
+  <div id="codeMirror" class="text-base"></div>
 </template>
 
 <script lang="ts">
@@ -22,9 +22,9 @@ let startState = EditorState.create({
         do {
           console.log(x.name, "at", x.from, "to", x.to);
         } while (x.next());
-        console.log(" ")
+        console.log(" ");
       }
-      topLevelNodes(cursor)
+      topLevelNodes(cursor);
       if (v.docChanged) {
         // Document changed
       }

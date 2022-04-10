@@ -2,6 +2,9 @@
   <div class="w-full dark:bg-gray-900 bg-slate-300 h-full flex flex-col">
     <div class="flex-grow overflow-scroll">
       <h3 class="text-xl font-bold ml-1 text-gray-500 p-2">Edit</h3>
+      <client-only>
+        <code-mirror />
+      </client-only>
       <textarea
         class="
           h-full
@@ -24,9 +27,6 @@
         :value="$store.state.eventsString"
         @input="updateEventsString"
       ></textarea>
-      <client-only>
-        <code-mirror />
-      </client-only>
     </div>
     <div
       class="
