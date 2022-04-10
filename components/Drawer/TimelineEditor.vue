@@ -1,11 +1,11 @@
 <template>
   <div class="w-full dark:bg-gray-900 bg-slate-300 h-full flex flex-col">
+    <h3 class="text-xl font-bold ml-1 text-gray-500 p-2">Edit</h3>
     <div class="flex-grow overflow-scroll">
-      <h3 class="text-xl font-bold ml-1 text-gray-500 p-2">Edit</h3>
       <client-only>
         <code-mirror />
       </client-only>
-      <textarea
+      <!-- <textarea
         class="
           h-full
           p-2
@@ -26,7 +26,7 @@
         name="eventsField"
         :value="$store.state.eventsString"
         @input="updateEventsString"
-      ></textarea>
+      ></textarea> -->
     </div>
     <div
       class="
@@ -90,12 +90,6 @@ export default Vue.extend({
   methods: {
     doc(path: string) {
       return doc(getFirestore(getApp()), path);
-    },
-    updateEventsString(e: InputEvent) {
-      this.$store.commit(
-        "setEventsString",
-        (e?.target as HTMLInputElement).value
-      );
     },
     async share() {
       const name = prompt(

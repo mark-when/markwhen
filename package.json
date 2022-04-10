@@ -12,6 +12,7 @@
   "dependencies": {
     "@codemirror/commands": "^0.19.6",
     "@codemirror/highlight": "^0.19.7",
+    "@codemirror/history": "^0.19.2",
     "@codemirror/state": "^0.19.6",
     "@codemirror/view": "^0.19.39",
     "@lezer/lr": "^0.15.5",
