@@ -87,9 +87,7 @@ export default Vue.extend({
   @apply h-full;
 }
 
-.cm-cursor {
-  color: red !important;
-  background-color: red !important;
-  border: 1px solid red !important;
+.dark .cm-content {
+  @apply caret-slate-300
 }
 </style>
