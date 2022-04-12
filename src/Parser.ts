@@ -10,8 +10,7 @@ import {
   RelativeDate,
   Tags,
 } from "./Types";
-import * as chronoNode from 'chrono-node';
-
+// import * as chronoNode from 'chrono-node';
 
 // Amounts
 const MILLISECOND_AMOUNT_REGEX = /(milliseconds|ms)/i;
@@ -27,7 +26,7 @@ export const AMOUNT_REGEX = new RegExp(
   "g"
 );
 
-const chrono = chronoNode.casual.clone()
+// const chrono = chronoNode.casual.clone()
 // chrono.parsers.push({
 //   pattern: () => { return AMOUNT_REGEX },
 //   extract: (context, match) => {
@@ -36,7 +35,6 @@ const chrono = chronoNode.casual.clone()
 // })
 
 export const EVENT_ID_REGEX = /(?:^|\s)(!\w+)/;
-
 // So this regex is kind of wrong - we're using the global flag here to make multiple matches for the
 // whole regex, even though we just want any repeated amounts (e.g., 3 days, 4 hours, 6 seconds).
 // This works because the entire front part (`after !eventId plus`) is optional
@@ -61,7 +59,7 @@ const COMMENT_REGEX = /^\s*\/\/.*/;
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/;
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
 const TAG_REGEX = /(?:^|\s)#(\w*)/g;
-const GROUP_START_REGEX = /^(\s*)group/;
+const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
 const GROUP_END_REGEX = /^endGroup/;
 
 export const COLORS = [
@@ -105,6 +103,12 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   // For events that are grouped
   let eventSubgroup: EventSubGroup | undefined = undefined;
 
+  let lengthAtIndex: number[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    lengthAtIndex.push(
+      1 + lines[i].length + lengthAtIndex[lengthAtIndex.length - 1] || 0
+    );
+  }
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
     const line = lines[i];
@@ -247,7 +251,10 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         .trim();
 
       const eventDescription = new EventDescription(eventGroup);
-      const event = new Event(firstLine, dateRange, eventDescription);
+      const event = new Event(firstLine, dateRange, eventDescription, {
+        from: 0,
+        to: 0,
+      });
 
       if (event) {
         if (eventSubgroup) {
@@ -299,11 +306,13 @@ function parseGroupFromStartTag(
 ): EventSubGroup {
   const group: EventSubGroup = [];
   group.tags = [];
+  group.style = "group";
 
   s = s
-    .replace(GROUP_START_REGEX, (match, startToken) => {
+    .replace(GROUP_START_REGEX, (match, startToken, groupOrSection) => {
       // Start expanded if this start tag is not indented
       group.startExpanded = !startToken.length;
+      group.style = groupOrSection as "group" | "section";
       return "";
     })
     .replace(TAG_REGEX, (match, tag) => {

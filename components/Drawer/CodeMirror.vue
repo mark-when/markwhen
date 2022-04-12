@@ -8,6 +8,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { EditorState } from "@codemirror/state";
+import {
+  defaultHighlightStyle,
+  classHighlightStyle,
+} from "@codemirror/highlight";
 // import { syntaxTree } from "@codemirror/language";
 import { history, historyKeymap } from "@codemirror/history";
 import { EditorView, keymap, ViewUpdate } from "@codemirror/view";
@@ -22,6 +26,7 @@ let startState = (startingText: string, onUpdate: (cascade: string) => void) =>
       keymap.of([...defaultKeymap, ...historyKeymap]),
       cascade(),
       history(),
+      classHighlightStyle,
       EditorView.lineWrapping,
       EditorView.updateListener.of((v: ViewUpdate) => {
         // const tree = syntaxTree(v.state);
@@ -36,6 +41,9 @@ let startState = (startingText: string, onUpdate: (cascade: string) => void) =>
         if (v.docChanged) {
           onUpdate(v.state.sliceDoc());
         }
+        // if (v.selectionSet) {
+        //   console.log(v.state.selection.ranges)
+        // }
       }),
     ],
   });
@@ -88,6 +96,14 @@ export default Vue.extend({
 }
 
 .dark .cm-content {
-  @apply caret-slate-300
+  @apply caret-slate-300;
+}
+
+.dark .cmt-keyword {
+  @apply text-red-300;
+}
+
+.cmt-keyword {
+  @apply text-red-700;
 }
 </style>

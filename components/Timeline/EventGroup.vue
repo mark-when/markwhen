@@ -8,7 +8,6 @@
           flex flex-row
           items-center
           dark:text-gray-400
-          rounded-lg
           transition
         "
         :class="expandedGroupClass"
@@ -27,7 +26,11 @@
         :event="event"
       ></event-row>
       <div
-        :style="`margin-left: ${left}px; width: ${this.fullWidth}px; order: -9999;`"
+        :style="
+          isGroupStyleTight
+            ? `margin-left: ${left}px; width: ${this.fullWidth}px; order: -9999;`
+            : `order: -9999`
+        "
         class="sticky top-10 cursor-pointer"
         @click="collapse"
         @mouseover="hovering = true"
@@ -40,13 +43,16 @@
             items-center
             sticky
             px-1
-            rounded-lg
             mt-px
             dark:bg-opacity-60
             bg-opacity-20
           "
           :class="buttonClass"
-          :style="`left: calc(50% - ${buttonWidth / 2}px)`"
+          :style="
+            isGroupStyleTight
+              ? `left: calc(50% - ${buttonWidth / 2}px)`
+              : 'left: 1rem'
+          "
           @mouseover="hovering = true"
           @mouseleave="hovering = false"
           @click="collapse"
@@ -137,7 +143,14 @@ export default Vue.extend({
       }
       return 0;
     },
-    ...mapGetters(["distanceFromBaselineLeftmostDate", "distanceBetweenDates"]),
+    isGroupStyleTight(): boolean {
+      return this.eventGroup.style === "group";
+    },
+    ...mapGetters([
+      "distanceFromBaselineLeftmostDate",
+      "distanceBetweenDates",
+      "metadata",
+    ]),
     collapsedGroupStyle(): string {
       const leftMargin = this.left;
       let style = `margin-left: ${leftMargin - 8}px; width: max(64px, ${
@@ -149,13 +162,18 @@ export default Vue.extend({
       return this.bgColorClass;
     },
     expandedGroupStyle(): string {
-      const leftMargin = this.left;
-      return `margin-left: ${leftMargin - 8}px; width: max(64px, ${
-        this.fullWidth + 16
-      }px);`;
+      if (this.isGroupStyleTight) {
+        const leftMargin = this.left;
+        return `margin-left: ${leftMargin - 8}px; width: max(64px, ${
+          this.fullWidth + 16
+        }px);`;
+      }
+      return "";
     },
     buttonClass(): string {
-      return this.bgColorClass;
+      return `${this.bgColorClass} ${
+        this.isGroupStyleTight ? "rounded-lg" : ""
+      }`;
     },
     bgColorClass(): string {
       const tags = this.eventGroup.tags;
@@ -179,7 +197,9 @@ export default Vue.extend({
         this.hovering
           ? "dark:bg-opacity-30 bg-opacity-20"
           : "dark:bg-opacity-20 bg-opacity-10"
-      } ${this.bgColorClass}`;
+      } ${this.bgColorClass} ${
+        this.isGroupStyleTight ? "rounded-lg" : "ml-0 w-full"
+      }`;
     },
     left(): number {
       if (!this.eventGroup || !this.eventGroup.range) {

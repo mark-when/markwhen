@@ -11,6 +11,7 @@ export interface EventSubGroup extends Array<Event> {
     latest: DateTime
   }
   startExpanded?: boolean
+  style?: "group" | "section"
 }
 
 export default function sortEvents(events: (Event | EventSubGroup)[], sort: Sort) {

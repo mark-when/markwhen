@@ -279,11 +279,13 @@ export class Event {
   eventString: string;
   range: DateRange;
   event: EventDescription;
+  position: { from: number, to: number }
 
-  constructor(eventString: string, range: DateRange, event: EventDescription) {
+  constructor(eventString: string, range: DateRange, event: EventDescription, position: { from: number, to: number }) {
     this.eventString = eventString;
     this.range = range;
     this.event = event;
+    this.position = position
   }
 
   getInnerHtml(): string {
@@ -311,3 +313,5 @@ export interface CascadeMetadata {
   latestTime: DateTime;
   dateFormat: string;
 }
+
+export type GroupStyle = "section" | "tight"
