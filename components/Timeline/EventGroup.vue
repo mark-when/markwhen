@@ -77,11 +77,12 @@
       </div>
     </div>
     <div
-      v-show="!expanded"
+      v-if="!expanded && isGroupStyleTight"
       :style="collapsedGroupStyle"
       :class="collapsedGroupClass"
       class="
-        border border-gray-800
+        border border-gray-400
+        dark:border-gray-600
         rounded-full
         eventTitle
         transition
@@ -93,6 +94,26 @@
         <span v-if="eventGroup.title" v-html="titleHtml"></span>
         ({{ eventGroup.length }})
       </button>
+    </div>
+    <div
+      v-if="!expanded && !isGroupStyleTight"
+      class="
+        dark:border-gray-600
+        eventTitle
+        transition
+        bg-opacity-30
+        hover:bg-opacity-40
+        cursor-pointer
+      "
+      :class="collapsedGroupClass"
+      @click="expand"
+    >
+      <div class="flex">
+        <div class="sticky left-4 px-1 mt-px">
+          <span class="" v-if="eventGroup.title" v-html="titleHtml"></span>
+          ({{ eventGroup.length }})
+        </div>
+      </div>
     </div>
   </div>
 </template>
