@@ -55,12 +55,12 @@ const DATE_RANGE_REGEX = new RegExp(
 );
 const EVENT_START_REGEX = new RegExp(`(\\s*)${DATE_RANGE_REGEX.source}(.*)`);
 
-const COMMENT_REGEX = /^\s*\/\/.*/;
+export const COMMENT_REGEX = /^\s*\/\/.*/;
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/;
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
 const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
-const GROUP_END_REGEX = /^endGroup/;
+const GROUP_END_REGEX = /^end(?:Group|Section)/;
 
 export const COLORS = [
   "green",
@@ -82,6 +82,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       events: [],
       tags: {},
       ids: {},
+      ranges: [],
       metadata: {
         earliestTime: DateTime.now().minus({ years: 5 }),
         latestTime: DateTime.now().plus({ years: 5 }),
@@ -105,14 +106,23 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
   let lengthAtIndex: number[] = [];
   for (let i = 0; i < lines.length; i++) {
+    if (i === 0) {
+      lengthAtIndex.push(0);
+    }
     lengthAtIndex.push(
       1 + lines[i].length + lengthAtIndex[lengthAtIndex.length - 1] || 0
     );
   }
+  const ranges: { type: string; from: number; to: number }[] = [];
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
     const line = lines[i];
     if (line.match(COMMENT_REGEX)) {
+      ranges.push({
+        type: "comment",
+        from: lengthAtIndex[i],
+        to: lengthAtIndex[i] + line.length,
+      });
       continue;
     }
     const tagColorMatch = line.match(TAG_COLOR_REGEX);
@@ -140,6 +150,11 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       if (eventSubgroup) {
         events.push(eventSubgroup);
       }
+      ranges.push({
+        from: lengthAtIndex[i],
+        to: lengthAtIndex[i] + line.length,
+        type: "section"
+      })
       eventSubgroup = parseGroupFromStartTag(line, groupStart);
       continue;
     }
@@ -148,6 +163,11 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       // We are ending our subgroup
       events.push(eventSubgroup);
       eventSubgroup = undefined;
+      ranges.push({
+        from: lengthAtIndex[i],
+        to: lengthAtIndex[i] + line.length,
+        type: "section"
+      })
       continue;
     }
 
@@ -164,9 +184,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         !(eventSubgroup && nextLine.match(GROUP_END_REGEX))
       );
 
-      const eventGroup = lines
-        .slice(i, end)
-        .filter((l) => l && !l.match(COMMENT_REGEX));
+      const eventGroup = lines.slice(i, end);
 
       // Initial date range and first line description
       const firstLine = eventGroup[0];
@@ -245,16 +263,20 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
       const dateRange = new DateRange(fromDateTime, endDateTime, datePart);
 
+      const indexOfDateRange = eventGroup[0].indexOf(datePart);
+      const dateRangeInText = {
+        type: "dateRange",
+        from: lengthAtIndex[i] + indexOfDateRange,
+        to: lengthAtIndex[i] + indexOfDateRange + datePart.length + 1,
+      };
+      ranges.push(dateRangeInText);
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0]
-        .substring(eventGroup[0].indexOf(datePart) + datePart.length + 1)
+        .substring(indexOfDateRange + datePart.length + 1)
         .trim();
 
       const eventDescription = new EventDescription(eventGroup);
-      const event = new Event(firstLine, dateRange, eventDescription, {
-        from: 0,
-        to: 0,
-      });
+      const event = new Event(firstLine, dateRange, eventDescription);
 
       if (event) {
         if (eventSubgroup) {
@@ -292,6 +314,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     events,
     tags,
     ids,
+    ranges,
     metadata: {
       earliestTime: earliest,
       latestTime: latest,

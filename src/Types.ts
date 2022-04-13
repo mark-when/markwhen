@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { AMOUNT_REGEX, EVENT_ID_REGEX } from "./Parser";
+import { AMOUNT_REGEX, COMMENT_REGEX, EVENT_ID_REGEX } from "./Parser";
 
 export type Year = number;
 export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -238,7 +238,9 @@ export class EventDescription {
       lines[i] = line;
     }
     this.eventDescription = lines[0];
-    this.supplemental = lines.slice(1).filter((l) => !!l.trim());
+    this.supplemental = lines
+      .slice(1)
+      .filter((l) => !l.match(COMMENT_REGEX) && !!l.trim());
   }
 
   getInnerHtml() {
@@ -275,17 +277,16 @@ export class EventDescription {
   }
 }
 
+export type Range = { from: number; to: number; type: string };
 export class Event {
   eventString: string;
   range: DateRange;
   event: EventDescription;
-  position: { from: number, to: number }
 
-  constructor(eventString: string, range: DateRange, event: EventDescription, position: { from: number, to: number }) {
+  constructor(eventString: string, range: DateRange, event: EventDescription) {
     this.eventString = eventString;
     this.range = range;
     this.event = event;
-    this.position = position
   }
 
   getInnerHtml(): string {
@@ -300,6 +301,7 @@ export class Event {
 export type Tags = { [tagName: string]: string };
 export type IdedEvents = { [id: string]: Event };
 export interface Cascade {
+  ranges: Range[];
   events: Events;
   tags: Tags;
   ids: IdedEvents;
@@ -314,4 +316,4 @@ export interface CascadeMetadata {
   dateFormat: string;
 }
 
-export type GroupStyle = "section" | "tight"
+export type GroupStyle = "section" | "tight";

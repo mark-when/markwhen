@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@codemirror/commands": "^0.19.6",
+    "@codemirror/fold": "^0.19.3",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/history": "^0.19.2",
     "@codemirror/state": "^0.19.6",
