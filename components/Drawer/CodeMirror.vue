@@ -7,9 +7,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { EditorState, Extension } from "@codemirror/state";
+import { EditorState, Extension, StateField } from "@codemirror/state";
 import { classHighlightStyle } from "@codemirror/highlight";
-// import { syntaxTree } from "@codemirror/language";
 import { history, historyKeymap } from "@codemirror/history";
 import { codeFolding, foldGutter } from "@codemirror/fold";
 import { foldService } from "@codemirror/language";
@@ -17,12 +16,12 @@ import {
   Decoration,
   EditorView,
   keymap,
+  PluginValue,
   ViewPlugin,
-  ViewUpdate,
 } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { mapState, mapGetters } from "vuex";
-import { Range as CascadeRange } from "~/src/Types";
+import { Cascade, Range as CascadeRange } from "~/src/Types";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -38,50 +37,21 @@ const downCaret = () => {
   return div;
 };
 
-let startState = (
-  startingText: string,
-  onUpdate: (v: ViewUpdate, cascade: string) => void,
-  extensions: Extension[] = []
-) =>
+let startState = (startingText: string, extensions: Extension[] = []) =>
   EditorState.create({
     doc: startingText,
     extensions: [
-      ...extensions,  
       codeFolding(),
       foldGutter({
         markerDOM: (open: boolean) => {
           return !open ? rightCaret() : downCaret();
         },
       }),
-      // foldService.of((state, lineStart, lineEnd) => {
-      //   console.log(lineStart, lineEnd);
-      //   if (lineStart === 0) {
-      //     return { from: 0, to: 70 };
-      //   }
-      //   return null;
-      // }),
       keymap.of([...defaultKeymap, ...historyKeymap]),
-      // cascade(),
       history(),
       classHighlightStyle,
       EditorView.lineWrapping,
-      EditorView.updateListener.of((v: ViewUpdate) => {
-        // const tree = syntaxTree(v.state);
-        // const cursor = tree.cursor();
-        // function topLevelNodes(x) {
-        //   do {
-        //     console.log(x.name, "at", x.from, "to", x.to);
-        //   } while (x.next());
-        //   console.log(" ");
-        // }
-        // topLevelNodes(cursor);
-        if (v.docChanged) {
-          onUpdate(v, v.state.sliceDoc());
-        }
-        // if (v.selectionSet) {
-        //   console.log(v.state.selection.ranges)
-        // }
-      }),
+      ...extensions,
     ],
   });
 
@@ -91,46 +61,22 @@ const sectionMark = Decoration.mark({ class: "cm-section" });
 
 export default Vue.extend({
   props: ["startingText"],
-  computed: { ...mapState(["eventsString"]), ...mapGetters(["ranges"]) },
+  computed: {
+    ...mapState(["eventsString"]),
+    ...mapGetters(["ranges", "cascade"]),
+  },
   data() {
     return {
       editorView: null as EditorView | null,
     };
   },
   mounted() {
-    const vm = this;
-    const CascadeSyntaxPlugin = ViewPlugin.define(
-      (view) => {
-        return { view };
-      },
-      {
-        decorations(c) {
-          // We're doing this here, instead of a view update listener, because it seems like one was
-          // getting called before another and the syntax highlighting would be
-          // one step behind. So we commit the events string here
-          // and then immediately use the computed ranges for syntax highlighting.
-          vm.$store.commit(
-            "setEventsString",
-            (c.view as EditorView).state.sliceDoc()
-          );
-          return Decoration.set(
-            ((vm.ranges as CascadeRange[]) || []).map((r) => {
-              if (r.type === "dateRange") {
-                return dateRangeMark.range(r.from, r.to);
-              }
-              if (r.type === "section") {
-                return sectionMark.range(r.from, r.to)
-              }
-              return commentMark.range(r.from, r.to);
-            })
-          );
-        },
-      }
-    );
     this.editorView = new EditorView({
-      state: startState(this.$store.state.eventsString, this.update, [
-        CascadeSyntaxPlugin,
-      ]),
+      state: startState(
+        this.$store.state.eventsString,
+        // this.update,
+        this.codeMirrorExtensions()
+      ),
       parent: this.$el,
     });
     this.setEditorText = (newText) => {
@@ -146,18 +92,67 @@ export default Vue.extend({
     };
   },
   watch: {
-    eventsString(val, oldVal) {
-      if (val === this.editorView?.state.sliceDoc()) {
-        return;
-      }
-      this.setEditorText(val);
-    },
+    // eventsString(val, oldVal) {
+    //   if (val === this.editorView?.state.sliceDoc()) {
+    //     return;
+    //   }
+    //   this.setEditorText(val);
+    // },
   },
   methods: {
-    update(viewUpdate: ViewUpdate, events: string) {
-      // this.$store.commit("setEventsString", events);
+    cascadeExtension(): Extension {
+      const vm = this;
+      const cascadeField = StateField.define<Cascade>({
+        create() {
+          return vm.cascade as Cascade;
+        },
+        update(cascade, transaction) {
+          if (transaction.docChanged) {
+            vm.$store.commit("setEventsString", transaction.state.sliceDoc());
+            return vm.cascade;
+          }
+          return cascade;
+        },
+      });
+      return cascadeField.extension;
     },
     setEditorText(text: string) {},
+    codeMirrorExtensions(): Extension[] {
+      const vm = this;
+      interface S extends PluginValue {
+        state: EditorState;
+      }
+      const CascadeSyntaxPlugin = ViewPlugin.define<S>(
+        (view) => {
+          return { state: view.state };
+        },
+        {
+          decorations({ state }) {
+            return Decoration.set(
+              ((vm.ranges as CascadeRange[]) || []).map((r) => {
+                if (r.type === "dateRange") {
+                  return dateRangeMark.range(r.from, r.to);
+                }
+                if (r.type === "section") {
+                  return sectionMark.range(r.from, r.to);
+                }
+                return commentMark.range(r.from, r.to);
+              })
+            );
+          },
+        }
+      );
+      const foldingService = foldService.of((state, lineStart, lineEnd) => {
+        if (vm.cascade.foldables[lineStart]) {
+          return {
+            from: lineStart,
+            to: vm.cascade.foldables[lineStart].endIndex,
+          };
+        }
+        return null;
+      });
+      return [foldingService, CascadeSyntaxPlugin, this.cascadeExtension()];
+    },
   },
 });
 </script>
@@ -209,10 +204,18 @@ export default Vue.extend({
 }
 
 .dark .cm-section {
-  @apply text-blue-400
+  @apply text-purple-400;
 }
 
 .cm-section {
-  @apply text-blue-700
+  @apply text-purple-800;
+}
+
+.dark .cm-foldPlaceholder {
+  @apply bg-slate-700 border border-slate-700 text-slate-100 !important;
+}
+
+.cm-foldPlaceholder {
+  @apply bg-slate-400 border border-slate-400 text-slate-100 !important;
 }
 </style>

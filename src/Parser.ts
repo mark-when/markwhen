@@ -9,6 +9,7 @@ import {
   IdedEvents,
   RelativeDate,
   Tags,
+  Range,
 } from "./Types";
 // import * as chronoNode from 'chrono-node';
 
@@ -104,6 +105,16 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   // For events that are grouped
   let eventSubgroup: EventSubGroup | undefined = undefined;
 
+  // For folding
+  const foldables = {} as {
+    [startIndexOrCurrentFoldable: number | string]: {
+      endIndex: number;
+      type: string;
+      startIndex?: number;
+      lines: number;
+    };
+  };
+
   let lengthAtIndex: number[] = [];
   for (let i = 0; i < lines.length; i++) {
     if (i === 0) {
@@ -113,17 +124,46 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       1 + lines[i].length + lengthAtIndex[lengthAtIndex.length - 1] || 0
     );
   }
-  const ranges: { type: string; from: number; to: number }[] = [];
+  const ranges: Range[] = [];
   for (let i = 0; i < lines.length; i++) {
     // Remove comments
     const line = lines[i];
+    const currentFoldableComment = foldables["comment"];
     if (line.match(COMMENT_REGEX)) {
+      const from = lengthAtIndex[i];
+      const to = from + line.length;
       ranges.push({
         type: "comment",
-        from: lengthAtIndex[i],
-        to: lengthAtIndex[i] + line.length,
+        from,
+        to,
       });
+
+      if (currentFoldableComment) {
+        currentFoldableComment.endIndex = to;
+        currentFoldableComment.lines++;
+      } else {
+        foldables["comment"] = {
+          startIndex: from,
+          endIndex: to,
+          type: "comment",
+          lines: 1,
+        };
+      }
       continue;
+    } else {
+      if (currentFoldableComment) {
+        if (currentFoldableComment.lines > 1) {
+          // We had had a foldable comment section that we can close off, since this line
+          // is not a comment.
+          foldables[currentFoldableComment.startIndex!] = {
+            type: "comment",
+            startIndex: currentFoldableComment.startIndex!,
+            endIndex: currentFoldableComment.endIndex,
+            lines: currentFoldableComment.lines,
+          };
+        }
+        delete foldables["comment"];
+      }
     }
     const tagColorMatch = line.match(TAG_COLOR_REGEX);
     if (tagColorMatch) {
@@ -153,8 +193,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       ranges.push({
         from: lengthAtIndex[i],
         to: lengthAtIndex[i] + line.length,
-        type: "section"
-      })
+        type: "section",
+      });
       eventSubgroup = parseGroupFromStartTag(line, groupStart);
       continue;
     }
@@ -166,8 +206,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       ranges.push({
         from: lengthAtIndex[i],
         to: lengthAtIndex[i] + line.length,
-        type: "section"
-      })
+        type: "section",
+      });
       continue;
     }
 
@@ -310,11 +350,13 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     latest = DateTime.now().plus({ years: 5 });
   }
   sortEvents(events, sort);
+  console.log(foldables);
   return {
     events,
     tags,
     ids,
     ranges,
+    foldables,
     metadata: {
       earliestTime: earliest,
       latestTime: latest,

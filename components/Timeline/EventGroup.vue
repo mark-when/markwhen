@@ -206,10 +206,10 @@ export default Vue.extend({
             c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-800`;
           }
         } else {
-          c += `bg-gray-800`;
+          c += `bg-gray-400 dark:bg-gray-800`;
         }
       } else {
-        c += "bg-gray-800";
+        c += "bg-gray-400 dark:bg-gray-800";
       }
       return c;
     },
