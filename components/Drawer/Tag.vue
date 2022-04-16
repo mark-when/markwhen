@@ -20,7 +20,7 @@
     "
     @click="filterTag"
   >
-    <div class="h-4 w-4 rounded" :class="buttonClass" :style="buttonStyle">
+    <div class="h-4 w-4 rounded" :style="buttonStyle">
       <svg
         v-if="isThisTagInFilter"
         xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,6 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters, mapState } from "vuex";
-import { COLORS } from "~/store/index";
 
 export default Vue.extend({
   props: ["tag"],
@@ -54,19 +53,9 @@ export default Vue.extend({
     },
     ...mapGetters(["tags"]),
     ...mapState(["filter"]),
-    buttonClass(): string {
-      const tagColor = this.tags[this.tag];
-      if (COLORS.includes(tagColor)) {
-        return `bg-${tagColor}-300`;
-      }
-      return "";
-    },
     buttonStyle(): string {
       const tagColor = this.tags[this.tag];
-      if (!COLORS.includes(tagColor)) {
-        return `background-color: ${tagColor}`;
-      }
-      return "";
+      return `background-color: ${tagColor}`;
     },
   },
   methods: {

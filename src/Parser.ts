@@ -64,18 +64,26 @@ const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
 const GROUP_END_REGEX = /^end(?:Group|Section)/;
 
 export const COLORS = [
-  "green",
-  "blue",
-  "red",
-  "yellow",
-  "indigo",
-  "purple",
-  "pink",
+  "#16a34c",
+  "#0284c7",
+  "#d43238",
+  "#f2ca2d",
+  "#5049e5",
+  "#9139ea",
+  "#d62d7b",
 ];
 export const sorts = ["none", "down", "up"];
 
 const AMERICAN_DATE_FORMAT = "M/d/y";
 const EUROPEAN_DATE_FORMAT = "d/M/y";
+
+export interface Foldable {
+  endIndex: number;
+  type: "comment" | "section";
+  startLine: number;
+  startIndex?: number;
+  foldStartIndex?: number;
+}
 
 export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   if (!eventsString) {
@@ -83,6 +91,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       events: [],
       tags: {},
       ids: {},
+      foldables: {},
       ranges: [],
       metadata: {
         earliestTime: DateTime.now().minus({ years: 5 }),
@@ -106,14 +115,9 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   let eventSubgroup: EventSubGroup | undefined = undefined;
 
   // For folding
-  const foldables = {} as {
-    [startIndexOrCurrentFoldable: number | string]: {
-      endIndex: number;
-      type: string;
-      startIndex?: number;
-      lines: number;
-    };
-  };
+  const foldables: {
+    [F in number | string]: Foldable;
+  } = {}
 
   let lengthAtIndex: number[] = [];
   for (let i = 0; i < lines.length; i++) {
@@ -129,6 +133,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     // Remove comments
     const line = lines[i];
     const currentFoldableComment = foldables["comment"];
+    const currentFoldableSection = foldables["section"];
     if (line.match(COMMENT_REGEX)) {
       const from = lengthAtIndex[i];
       const to = from + line.length;
@@ -140,26 +145,24 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
 
       if (currentFoldableComment) {
         currentFoldableComment.endIndex = to;
-        currentFoldableComment.lines++;
       } else {
+        const indexOfSlashes = line.indexOf("//");
         foldables["comment"] = {
           startIndex: from,
+          startLine: i,
           endIndex: to,
           type: "comment",
-          lines: 1,
+          foldStartIndex: from + (indexOfSlashes > -1 ? indexOfSlashes + 2 : 0),
         };
       }
       continue;
     } else {
       if (currentFoldableComment) {
-        if (currentFoldableComment.lines > 1) {
+        if (currentFoldableComment.startLine < i - 1) {
           // We had had a foldable comment section that we can close off, since this line
           // is not a comment.
           foldables[currentFoldableComment.startIndex!] = {
-            type: "comment",
-            startIndex: currentFoldableComment.startIndex!,
-            endIndex: currentFoldableComment.endIndex,
-            lines: currentFoldableComment.lines,
+            ...currentFoldableComment,
           };
         }
         delete foldables["comment"];
@@ -168,6 +171,13 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     const tagColorMatch = line.match(TAG_COLOR_REGEX);
     if (tagColorMatch) {
       tags[tagColorMatch[1]] = tagColorMatch[2];
+      const indexOfTag = line.indexOf(tagColorMatch[1]);
+      const from = lengthAtIndex[i] + indexOfTag - 1;
+      ranges.push({
+        type: "tag",
+        from,
+        to: from + tagColorMatch[1].length + 1,
+      });
       continue;
     }
     if (line.match(DATE_FORMAT_REGEX)) {
@@ -180,6 +190,12 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         if (!tags[m[1]]) {
           tags[m[1]] = COLORS[paletteIndex++ % COLORS.length];
         }
+        const from = lengthAtIndex[i] + line.indexOf("#" + m[1]);
+        ranges.push({
+          type: "tag",
+          from,
+          to: from + m[1].length + 1,
+        });
       }
     }
 
@@ -190,12 +206,37 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       if (eventSubgroup) {
         events.push(eventSubgroup);
       }
+
+      // Tie up previous foldable
+      if (currentFoldableSection) {
+        if (currentFoldableSection.startLine < i - 1) {
+          foldables[currentFoldableSection.startIndex!] = {
+            type: "section",
+            startIndex: currentFoldableSection.startIndex!,
+            endIndex: lengthAtIndex[i] - 1,
+            startLine: currentFoldableSection.startLine,
+            foldStartIndex: currentFoldableSection.foldStartIndex,
+          };
+        }
+        delete foldables["section"];
+      }
+
       ranges.push({
         from: lengthAtIndex[i],
-        to: lengthAtIndex[i] + line.length,
+        to: lengthAtIndex[i] + groupStart[0].length,
         type: "section",
       });
       eventSubgroup = parseGroupFromStartTag(line, groupStart);
+
+      // Make new foldable
+      foldables["section"] = {
+        type: "section",
+        startLine: i,
+        startIndex: lengthAtIndex[i],
+        endIndex: lengthAtIndex[i] + line.length,
+        foldStartIndex: lengthAtIndex[i] + line.length,
+      };
+
       continue;
     }
 
@@ -208,6 +249,21 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         to: lengthAtIndex[i] + line.length,
         type: "section",
       });
+
+      // Tie up foldable
+      if (currentFoldableSection) {
+        if (currentFoldableSection.startLine < i - 1) {
+          foldables[currentFoldableSection.startIndex!] = {
+            type: "section",
+            startIndex: currentFoldableSection.startIndex,
+            endIndex: lengthAtIndex[i] + line.length,
+            startLine: currentFoldableSection.startLine,
+            foldStartIndex: currentFoldableSection.foldStartIndex,
+          };
+        }
+        delete foldables["section"];
+      }
+
       continue;
     }
 
@@ -350,7 +406,6 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     latest = DateTime.now().plus({ years: 5 });
   }
   sortEvents(events, sort);
-  console.log(foldables);
   return {
     events,
     tags,

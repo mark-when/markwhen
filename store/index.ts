@@ -41,15 +41,6 @@ export interface TimeMarker {
   left: number;
 }
 
-export const COLORS = [
-  "green",
-  "blue",
-  "red",
-  "yellow",
-  "indigo",
-  "purple",
-  "pink",
-];
 export const MIN_SCALE = 0.1;
 export const MAX_SCALE = 3000;
 const initialScale = 0.3;

@@ -122,7 +122,6 @@
 import Vue from "vue";
 import EventRow from "./EventRow.vue";
 import { mapGetters } from "vuex";
-import { COLORS } from "~/src/Parser";
 import { EventDescription } from "~/src/Types";
 
 export default Vue.extend({
@@ -201,11 +200,7 @@ export default Vue.extend({
       let c = "";
       if (tags && tags.length) {
         const tag = tags[0];
-        if (this.$store.getters.tags[tag]) {
-          if (COLORS.includes(this.$store.getters.tags[tag])) {
-            c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-800`;
-          }
-        } else {
+        if (!this.$store.getters.tags[tag]) {
           c += `bg-gray-400 dark:bg-gray-800`;
         }
       } else {

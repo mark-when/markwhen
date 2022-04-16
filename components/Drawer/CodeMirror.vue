@@ -22,6 +22,7 @@ import {
 import { defaultKeymap } from "@codemirror/commands";
 import { mapState, mapGetters } from "vuex";
 import { Cascade, Range as CascadeRange } from "~/src/Types";
+import { Foldable } from "~/src/Parser";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -58,6 +59,7 @@ let startState = (startingText: string, extensions: Extension[] = []) =>
 const dateRangeMark = Decoration.mark({ class: "cm-daterange" });
 const commentMark = Decoration.mark({ class: "cm-comment" });
 const sectionMark = Decoration.mark({ class: "cm-section" });
+const tagMark = Decoration.mark({ class: "cm-tag" });
 
 export default Vue.extend({
   props: ["startingText"],
@@ -129,25 +131,40 @@ export default Vue.extend({
         {
           decorations({ state }) {
             return Decoration.set(
-              ((vm.ranges as CascadeRange[]) || []).map((r) => {
-                if (r.type === "dateRange") {
-                  return dateRangeMark.range(r.from, r.to);
-                }
-                if (r.type === "section") {
-                  return sectionMark.range(r.from, r.to);
-                }
-                return commentMark.range(r.from, r.to);
-              })
+              ((vm.ranges as CascadeRange[]) || [])
+                .map((r) => {
+                  if (r.type === "dateRange") {
+                    return dateRangeMark.range(r.from, r.to);
+                  }
+                  if (r.type === "section") {
+                    return sectionMark.range(r.from, r.to);
+                  }
+                  if (r.type === "tag") {
+                    return tagMark.range(r.from, r.to);
+                  }
+                  return commentMark.range(r.from, r.to);
+                })
+                .sort((a, b) => a.from - b.from)
             );
           },
         }
       );
       const foldingService = foldService.of((state, lineStart, lineEnd) => {
-        if (vm.cascade.foldables[lineStart]) {
-          return {
-            from: lineStart,
-            to: vm.cascade.foldables[lineStart].endIndex,
-          };
+        const foldableAtIndex = vm.cascade.foldables[lineStart] as Foldable;
+        if (foldableAtIndex) {
+          if (foldableAtIndex.type === "comment") {
+            return {
+              from:
+                foldableAtIndex.foldStartIndex || foldableAtIndex.startIndex!,
+              to: foldableAtIndex.endIndex,
+            };
+          } else if (foldableAtIndex.type === "section") {
+            return {
+              from:
+                foldableAtIndex.foldStartIndex || foldableAtIndex.startIndex!,
+              to: foldableAtIndex.endIndex,
+            };
+          }
         }
         return null;
       });
@@ -217,5 +234,13 @@ export default Vue.extend({
 
 .cm-foldPlaceholder {
   @apply bg-slate-400 border border-slate-400 text-slate-100 !important;
+}
+
+.dark .cm-tag {
+  @apply text-blue-400
+}
+
+.cm-tag {
+  @apply text-blue-700
 }
 </style>

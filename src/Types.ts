@@ -302,6 +302,7 @@ export type Tags = { [tagName: string]: string };
 export type IdedEvents = { [id: string]: Event };
 export interface Cascade {
   ranges: Range[];
+  foldables: {}
   events: Events;
   tags: Tags;
   ids: IdedEvents;

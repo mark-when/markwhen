@@ -96,21 +96,12 @@
 </template>
 
 <script lang="ts">
-import { DateRange, Event } from "../../src/Types";
+import { DateRange } from "../../src/Types";
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
 import { mapGetters } from "vuex";
 import EventBar from "./EventBar.vue";
 
-export const COLORS = [
-  "green",
-  "blue",
-  "red",
-  "yellow",
-  "indigo",
-  "purple",
-  "pink",
-];
 export const EVENT_HEIGHT_PX = 10;
 
 export default Vue.extend({
@@ -165,11 +156,7 @@ export default Vue.extend({
     photoBarClass(): string {
       let c = "photoBar transition rounded-lg shadow ";
       const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        if (COLORS.includes(this.$store.getters.tags[tag])) {
-          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
-        }
-      } else {
+      if (!this.$store.getters.tags[tag]) {
         c += `bg-gray-300 `;
       }
       if (this.hovering) {
@@ -180,10 +167,7 @@ export default Vue.extend({
     barColor(): string {
       let style = "";
       const tag = this.event.event.tags[0];
-      if (
-        this.$store.getters.tags[tag] &&
-        !COLORS.includes(this.$store.getters.tags[tag])
-      ) {
+      if (this.$store.getters.tags[tag]) {
         style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;

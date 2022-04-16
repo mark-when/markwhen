@@ -22,7 +22,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { DateRange, Event } from "~/src/Types";
-import { COLORS, EVENT_HEIGHT_PX } from "./EventRow.vue";
+import { EVENT_HEIGHT_PX } from "./EventRow.vue";
 
 export default Vue.extend({
   props: ["event", "hovering"],
@@ -43,11 +43,7 @@ export default Vue.extend({
     percentBarColorClass(): string {
       let c = "";
       const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        if (COLORS.includes(this.$store.getters.tags[tag])) {
-          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-500 `;
-        }
-      } else {
+      if (!this.$store.getters.tags[tag]) {
         c += `dark:bg-gray-400 bg-slate-700`;
       }
       if (this.hovering) {
@@ -60,10 +56,7 @@ export default Vue.extend({
     percentBarColorStyle(): string {
       let style = "";
       const tag = this.event.event.tags[0];
-      if (
-        this.$store.getters.tags[tag] &&
-        !COLORS.includes(this.$store.getters.tags[tag])
-      ) {
+      if (this.$store.getters.tags[tag]) {
         style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;
@@ -71,11 +64,7 @@ export default Vue.extend({
     eventBarClass(): string {
       let c = "eventBar transition rounded-lg shadow ";
       const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        if (COLORS.includes(this.$store.getters.tags[tag])) {
-          c += `bg-${this.$store.getters.tags[tag].toLowerCase()}-300 `;
-        }
-      } else {
+      if (!this.$store.getters.tags[tag]) {
         c += `dark:bg-slate-400 bg-slate-700 `;
       }
       c += "opacity-30 ";
@@ -88,10 +77,7 @@ export default Vue.extend({
     barColorStyle(): string {
       let style = "";
       const tag = this.event.event.tags[0];
-      if (
-        this.$store.getters.tags[tag] &&
-        !COLORS.includes(this.$store.getters.tags[tag])
-      ) {
+      if (this.$store.getters.tags[tag]) {
         style += ` background-color: ${this.$store.getters.tags[tag]}`;
       }
       return style;
