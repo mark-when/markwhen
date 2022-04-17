@@ -396,6 +396,8 @@ export const getters: GetterTree<State, State> = {
             filteredSubEvents.range = group.range;
             filteredSubEvents.tags = group.tags;
             filteredSubEvents.title = group.title;
+            filteredSubEvents.startExpanded = group.startExpanded;
+            filteredSubEvents.style = group.style;
             filtered.push(filteredSubEvents);
           }
         }

@@ -105,6 +105,54 @@ export default Vue.extend({
   },
   methods: {
     setEditorText(text: string) {},
+    setColorForTag(tag: string, color: string) {
+      const vm = this;
+      const ranges = vm.ranges as CascadeRange[];
+
+      if (!vm.editorView) {
+        return;
+      }
+
+      const alreadyDefinedRanges = ranges.filter(
+        (r) => r.type === "tagDefinition"
+      );
+
+      // Find if we have already defined this tag color
+      const alreadyDefined = alreadyDefinedRanges.find(
+        (r) => r.content.tag === tag
+      );
+      if (alreadyDefined) {
+        // We can just replace this range with our new value
+        const transaction = vm.editorView.state.update({
+          changes: {
+            from: alreadyDefined.from,
+            to: alreadyDefined.to,
+            insert: `#${tag}: ${color}`,
+          },
+        });
+        vm.editorView.update([transaction]);
+      } else if (!alreadyDefinedRanges.length) {
+        // We have no other range definitions, just
+        // put it at the top
+        const transaction = vm.editorView.state.update({
+          changes: {
+            from: 0,
+            insert: `#${tag}: ${color}\n`,
+          },
+        });
+        vm.editorView.update([transaction]);
+      } else {
+        const last = alreadyDefinedRanges[alreadyDefinedRanges.length - 1]
+        const endIndexOfPreviousRange = last.to
+        const transaction = vm.editorView.state.update({
+          changes: {
+            from: endIndexOfPreviousRange,
+            insert: `\n#${tag}: ${color}`,
+          },
+        });
+        vm.editorView.update([transaction]);
+      }
+    },
     colorPickerExtension(): Extension {
       const vm = this;
       const colorPickerPlugin = ViewPlugin.define(
@@ -128,14 +176,22 @@ export default Vue.extend({
             return Decoration.set(ranges);
           },
           eventHandlers: {
-            input: (e: Event, view) => {
+            change: (e: Event, view) => {
               let target = e.target as HTMLInputElement;
               if (
                 target.parentElement!.classList.contains(
                   "cm-colorPickerWrapper"
                 )
               ) {
+                const tagIndex = view.posAtDOM(target);
+                const associatedTagRange = (vm.ranges as CascadeRange[]).find(
+                  (r) => r.type === "tag" && r.from === tagIndex
+                );
+                if (!associatedTagRange) {
+                  return false;
+                }
                 const newColor = target.value;
+                vm.setColorForTag(associatedTagRange.content.tag, newColor);
               }
               return false;
             },

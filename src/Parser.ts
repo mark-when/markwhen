@@ -184,6 +184,12 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         to: from + tagName.length + 1,
         content: { tag: tagName, color: tags[tagName] },
       });
+      ranges.push({
+        type: "tagDefinition",
+        from,
+        to: from + line.indexOf(colorDef) + colorDef.length,
+        content: { tag: tagName, color: tags[tagName] }
+      })
       continue;
     }
     if (line.match(DATE_FORMAT_REGEX)) {
