@@ -1,4 +1,6 @@
+import e from "express";
 import { DateTime } from "luxon";
+import { COLORS, hexToRgb, HUMAN_COLORS } from "./ColorUtils";
 import sortEvents, { Sort, EventSubGroup } from "./Sort";
 import {
   Cascade,
@@ -63,33 +65,6 @@ const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
 const GROUP_END_REGEX = /^end(?:Group|Section)/;
 
-// RGB, so we can use rgba(... ) with a different alpha where we need it
-export const COLORS = [
-  "22, 163, 76",
-  "2, 132, 199",
-  "212, 50, 56",
-  "242, 202, 45",
-  "80, 73, 229",
-  "145, 57, 234",
-  "214, 45, 123",
-  "234, 88, 11",
-  "168, 162, 157",
-  "255, 255, 255",
-  "0, 0, 0",
-];
-export const HUMAN_COLORS = [
-  "green",
-  "blue",
-  "red",
-  "yellow",
-  "indigo",
-  "purple",
-  "pink",
-  "orange",
-  "gray",
-  "white",
-  "black",
-];
 export const sorts = ["none", "down", "up"];
 
 const AMERICAN_DATE_FORMAT = "M/d/y";
@@ -188,17 +163,26 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     }
     const tagColorMatch = line.match(TAG_COLOR_REGEX);
     if (tagColorMatch) {
+      const tagName = tagColorMatch[1];
       const colorDef = tagColorMatch[2];
       const humanColorIndex = HUMAN_COLORS.indexOf(colorDef);
-      tags[tagColorMatch[1]] =
-        humanColorIndex >= 0 ? COLORS[humanColorIndex] : colorDef;
-      const indexOfTag = line.indexOf(tagColorMatch[1]);
+      if (humanColorIndex === -1) {
+        const rgb = hexToRgb(colorDef);
+        if (rgb) {
+          tags[tagName] = rgb;
+        } else {
+          tags[tagName] = COLORS[paletteIndex++ % COLORS.length];
+        }
+      } else {
+        tags[tagName] = COLORS[humanColorIndex];
+      }
+      const indexOfTag = line.indexOf(tagName);
       const from = lengthAtIndex[i] + indexOfTag - 1;
       ranges.push({
         type: "tag",
         from,
-        to: from + tagColorMatch[1].length + 1,
-        content: { tag: tagColorMatch[1], color: tags[tagColorMatch[1]] },
+        to: from + tagName.length + 1,
+        content: { tag: tagName, color: tags[tagName] },
       });
       continue;
     }

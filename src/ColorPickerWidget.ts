@@ -1,25 +1,25 @@
 import { EditorView, WidgetType } from "@codemirror/view";
 
 export class ColorPickerWidget extends WidgetType {
-  constructor(readonly color: string) {
+  constructor(readonly color: string, readonly tag: string) {
     super();
   }
 
   eq(colorPicker: ColorPickerWidget): boolean {
-    return colorPicker.color === this.color;
+    return colorPicker.color === this.color && colorPicker.tag === this.tag;
   }
 
   toDOM(_: EditorView): HTMLElement {
     const wrap = document.createElement("span");
     wrap.setAttribute("aria-hidden", "true");
     wrap.className = "cm-colorPickerWrapper";
-    const box = wrap.appendChild(document.createElement("button"));
-    box.className = "cm-colorPicker";
-    box.style.backgroundColor = `rgba(${this.color}, 0.9)`;
-    box.style.display = "inline-block";
-    box.style.marginRight = "2px";
-    box.style.height = "0.6rem";
-    box.style.width = "0.6rem";
+    const colorInput = wrap.appendChild(document.createElement("input"));
+    colorInput.className = "cm-colorPicker";
+    colorInput.type = "color";
+    colorInput.value = this.color
+    // colorInput.style.marginRight = "2px";
+    // colorInput.style.height = "0.6rem";
+    // colorInput.style.width = "0.6rem";
     return wrap;
   }
 

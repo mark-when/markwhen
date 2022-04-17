@@ -18,6 +18,7 @@ import { mapState, mapGetters } from "vuex";
 import { Cascade, Range as CascadeRange } from "~/src/Types";
 import { Foldable } from "~/src/Parser";
 import { ColorPickerWidget } from "~/src/ColorPickerWidget";
+import { rgbStringToHex } from "~/src/ColorUtils";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -115,8 +116,9 @@ export default Vue.extend({
             const ranges = (vm.ranges as CascadeRange[])
               .filter((range) => range.type === "tag")
               .map((r) => {
+                const asHex = rgbStringToHex(r.content.color);
                 const widget = Decoration.widget({
-                  widget: new ColorPickerWidget(r.content.color),
+                  widget: new ColorPickerWidget(asHex, r.content.tag),
                   side: 0,
                   block: false,
                 });
@@ -126,14 +128,16 @@ export default Vue.extend({
             return Decoration.set(ranges);
           },
           eventHandlers: {
-            mousedown: (e, view) => {
-              let target = e.target as HTMLElement;
+            input: (e: Event, view) => {
+              let target = e.target as HTMLInputElement;
               if (
                 target.parentElement!.classList.contains(
                   "cm-colorPickerWrapper"
                 )
-              )
-                return false;
+              ) {
+                const newColor = target.value;
+              }
+              return false;
             },
           },
         }
@@ -292,5 +296,32 @@ export default Vue.extend({
 
 .cm-colorPicker {
   @apply rounded-sm cursor-pointer;
+}
+
+.cm-colorPickerWrapper {
+  display: inline-flex;
+  margin-right: 0.2ch;
+  height: 0.6em;
+  width: 0.6em;
+}
+.cm-colorPickerWrapper input[type="color"] {
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border: none;
+}
+
+.cm-colorPickerWrapper input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.cm-colorPickerWrapper input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 0.125rem;
+}
+.cm-colorPickerWrapper input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: 0.125rem;
 }
 </style>

@@ -2,15 +2,9 @@
   <div
     :style="collapsedGroupStyle"
     :class="collapsedGroupClass"
-    class="
-      border border-gray-400
-      dark:border-gray-600
-      rounded-full
-      eventTitle
-      transition
-      bg-opacity-10
-      hover:bg-opacity-30
-    "
+    class="rounded-full eventTitle transition bg-opacity-10 hover:bg-opacity-30"
+    @mouseover="hovering = true"
+    @mouseleave="hovering = false"
   >
     <button class="w-full" @click="$emit('expand')">
       <span v-if="eventGroup.title" v-html="titleHtml"></span>
@@ -26,8 +20,21 @@ import { mapGetters } from "vuex";
 
 export default Vue.extend({
   props: ["eventGroup", "left"],
+  data() {
+    return {
+      hovering: false,
+    };
+  },
   computed: {
     ...mapGetters(["distanceBetweenDates"]),
+    rgb(): string {
+      const tags = this.eventGroup.tags;
+      if (tags && tags.length) {
+        const tag = tags[0];
+        return this.$store.getters.tags[tag] || "";
+      }
+      return "";
+    },
     collapsedGroupStyle(): string {
       const leftMargin = this.left;
       let style = `margin-left: ${leftMargin - 8}px; width: max(64px, ${
@@ -36,14 +43,11 @@ export default Vue.extend({
       return style;
     },
     bgColorStyle(): string {
-      const tags = this.eventGroup.tags;
-      if (tags && tags.length) {
-        const tag = tags[0];
-        if (this.$store.getters.tags[tag]) {
-          return `background-color: rgba(${this.$store.getters.tags[tag]}, 0.4`;
-        }
-      }
-      return "";
+      return this.rgb
+        ? `background-color: rgba(${this.rgb}, ${
+            this.hovering ? "0.2" : "0.1"
+          })`
+        : "";
     },
     bgColorClass(): string {
       if (!this.bgColorStyle) {

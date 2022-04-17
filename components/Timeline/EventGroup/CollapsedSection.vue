@@ -9,7 +9,10 @@
       cursor-pointer
     "
     :class="collapsedGroupClass"
+    :style="bgColorStyle"
     @click="$emit('expand')"
+    @mouseover="hovering = true"
+    @mouseleave="hovering = false"
   >
     <div class="flex">
       <div class="sticky left-4 px-1 mt-px">
@@ -26,16 +29,26 @@ import { EventDescription } from "~/src/Types";
 
 export default Vue.extend({
   props: ["eventGroup"],
+  data() {
+    return {
+      hovering: false,
+    };
+  },
   computed: {
-    bgColorStyle(): string {
+    rgb(): string {
       const tags = this.eventGroup.tags;
       if (tags && tags.length) {
         const tag = tags[0];
-        if (this.$store.getters.tags[tag]) {
-          return `background-color: rgba(${this.$store.getters.tags[tag]}, 0.4`;
-        }
+        return this.$store.getters.tags[tag] || "";
       }
       return "";
+    },
+    bgColorStyle(): string {
+      return this.rgb
+        ? `background-color: rgba(${this.rgb}, ${
+            this.hovering ? "0.2" : "0.1"
+          })`
+        : "";
     },
     bgColorClass(): string {
       if (!this.bgColorStyle) {

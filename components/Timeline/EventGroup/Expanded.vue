@@ -47,11 +47,7 @@
           bg-opacity-20
         "
         :class="buttonClass"
-        :style="
-          isGroupStyleTight
-            ? `left: calc(50% - ${buttonWidth / 2}px)`
-            : 'left: 1rem'
-        "
+        :style="buttonStyle"
         @mouseover="$emit('hovering', true)"
         @mouseleave="$emit('hovering', false)"
         @click="$emit('collapse')"
@@ -93,6 +89,14 @@ export default Vue.extend({
         this.isGroupStyleTight ? "rounded-lg" : ""
       }`;
     },
+    buttonStyle(): string {
+      const background = this.rgb
+        ? `background-color: rgba(${this.rgb}, 0.15); `
+        : "";
+      return this.isGroupStyleTight
+        ? `left: calc(50% - ${this.buttonWidth / 2}px); ${background}`
+        : `left: 1rem; ${background}`;
+    },
     buttonWidth(): number {
       // This whole thing is slightly messed up.
       // We want the button title to be centered in the viewport, however we can't
@@ -119,15 +123,20 @@ export default Vue.extend({
       }
       return "";
     },
-    bgColorStyle(): string {
+    rgb(): string {
       const tags = this.eventGroup.tags;
       if (tags && tags.length) {
         const tag = tags[0];
-        if (this.$store.getters.tags[tag]) {
-          return `background-color: rgba(${this.$store.getters.tags[tag]}, 0.4)`;
-        }
+        return this.$store.getters.tags[tag] || "";
       }
       return "";
+    },
+    bgColorStyle(): string {
+      return this.rgb
+        ? `background-color: rgba(${this.rgb}, ${
+            this.hovering ? "0.09" : "0.05"
+          })`
+        : "";
     },
     expandedGroupStyle(): string {
       if (this.isGroupStyleTight) {

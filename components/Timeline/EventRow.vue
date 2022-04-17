@@ -168,7 +168,7 @@ export default Vue.extend({
       let style = "";
       const tag = this.event.event.tags[0];
       if (this.$store.getters.tags[tag]) {
-        style += ` background-color: rgba(${this.$store.getters.tags[tag]}, 0.4)`;
+        style += ` background-color: rgba(${this.$store.getters.tags[tag]}, 0.6)`;
       }
       return style;
     },
