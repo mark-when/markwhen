@@ -12,17 +12,12 @@ import { classHighlightStyle } from "@codemirror/highlight";
 import { history, historyKeymap } from "@codemirror/history";
 import { codeFolding, foldGutter } from "@codemirror/fold";
 import { foldService } from "@codemirror/language";
-import {
-  Decoration,
-  EditorView,
-  keymap,
-  PluginValue,
-  ViewPlugin,
-} from "@codemirror/view";
+import { Decoration, EditorView, keymap, ViewPlugin } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { mapState, mapGetters } from "vuex";
 import { Cascade, Range as CascadeRange } from "~/src/Types";
 import { Foldable } from "~/src/Parser";
+import { ColorPickerWidget } from "~/src/ColorPickerWidget";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -72,6 +67,19 @@ export default Vue.extend({
       editorView: null as EditorView | null,
     };
   },
+  watch: {
+    eventsString(val, oldVal) {
+      if (val !== this.editorView?.state.sliceDoc()) {
+        this.editorView!.state.update({
+          changes: {
+            from: 0,
+            to: this.editorView!.state.doc.length,
+            insert: val,
+          },
+        });
+      }
+    },
+  },
   mounted() {
     this.editorView = new EditorView({
       state: startState(
@@ -93,15 +101,44 @@ export default Vue.extend({
       );
     };
   },
-  watch: {
-    // eventsString(val, oldVal) {
-    //   if (val === this.editorView?.state.sliceDoc()) {
-    //     return;
-    //   }
-    //   this.setEditorText(val);
-    // },
-  },
   methods: {
+    setEditorText(text: string) {},
+    colorPickerExtension(): Extension {
+      const vm = this;
+      const colorPickerPlugin = ViewPlugin.define(
+        (view) => {
+          return {};
+        },
+        {
+          decorations() {
+            const ranges = (vm.ranges as CascadeRange[])
+              .filter((range) => range.type === "tag")
+              .map((r) => {
+                const widget = Decoration.widget({
+                  widget: new ColorPickerWidget(r.content.color),
+                  side: 0,
+                  block: false,
+                });
+                return widget.range(r.from);
+              })
+              .sort((a, b) => a.from - b.from);
+            return Decoration.set(ranges);
+          },
+          eventHandlers: {
+            mousedown: (e, view) => {
+              let target = e.target as HTMLElement;
+              if (
+                target.parentElement!.classList.contains(
+                  "cm-colorPickerWrapper"
+                )
+              )
+                return false;
+            },
+          },
+        }
+      );
+      return colorPickerPlugin;
+    },
     cascadeExtension(): Extension {
       const vm = this;
       const cascadeField = StateField.define<Cascade>({
@@ -118,18 +155,14 @@ export default Vue.extend({
       });
       return cascadeField.extension;
     },
-    setEditorText(text: string) {},
-    codeMirrorExtensions(): Extension[] {
+    syntaxExtension(): Extension {
       const vm = this;
-      interface S extends PluginValue {
-        state: EditorState;
-      }
-      const CascadeSyntaxPlugin = ViewPlugin.define<S>(
+      const CascadeSyntaxPlugin = ViewPlugin.define(
         (view) => {
-          return { state: view.state };
+          return {};
         },
         {
-          decorations({ state }) {
+          decorations() {
             return Decoration.set(
               ((vm.ranges as CascadeRange[]) || [])
                 .map((r) => {
@@ -149,6 +182,10 @@ export default Vue.extend({
           },
         }
       );
+      return CascadeSyntaxPlugin;
+    },
+    foldingServiceExtension(): Extension {
+      const vm = this;
       const foldingService = foldService.of((state, lineStart, lineEnd) => {
         const foldableAtIndex = vm.cascade.foldables[lineStart] as Foldable;
         if (foldableAtIndex) {
@@ -168,7 +205,15 @@ export default Vue.extend({
         }
         return null;
       });
-      return [foldingService, CascadeSyntaxPlugin, this.cascadeExtension()];
+      return foldingService;
+    },
+    codeMirrorExtensions(): Extension[] {
+      return [
+        this.foldingServiceExtension(),
+        this.syntaxExtension(),
+        this.colorPickerExtension(),
+        this.cascadeExtension(),
+      ];
     },
   },
 });
@@ -237,10 +282,14 @@ export default Vue.extend({
 }
 
 .dark .cm-tag {
-  @apply text-blue-400
+  @apply text-blue-300;
 }
 
 .cm-tag {
-  @apply text-blue-700
+  @apply text-blue-800;
+}
+
+.cm-colorPicker {
+  @apply rounded-sm cursor-pointer;
 }
 </style>

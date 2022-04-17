@@ -63,14 +63,32 @@ const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
 const GROUP_END_REGEX = /^end(?:Group|Section)/;
 
+// RGB, so we can use rgba(... ) with a different alpha where we need it
 export const COLORS = [
-  "#16a34c",
-  "#0284c7",
-  "#d43238",
-  "#f2ca2d",
-  "#5049e5",
-  "#9139ea",
-  "#d62d7b",
+  "22, 163, 76",
+  "2, 132, 199",
+  "212, 50, 56",
+  "242, 202, 45",
+  "80, 73, 229",
+  "145, 57, 234",
+  "214, 45, 123",
+  "234, 88, 11",
+  "168, 162, 157",
+  "255, 255, 255",
+  "0, 0, 0",
+];
+export const HUMAN_COLORS = [
+  "green",
+  "blue",
+  "red",
+  "yellow",
+  "indigo",
+  "purple",
+  "pink",
+  "orange",
+  "gray",
+  "white",
+  "black",
 ];
 export const sorts = ["none", "down", "up"];
 
@@ -117,7 +135,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   // For folding
   const foldables: {
     [F in number | string]: Foldable;
-  } = {}
+  } = {};
 
   let lengthAtIndex: number[] = [];
   for (let i = 0; i < lines.length; i++) {
@@ -170,13 +188,17 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     }
     const tagColorMatch = line.match(TAG_COLOR_REGEX);
     if (tagColorMatch) {
-      tags[tagColorMatch[1]] = tagColorMatch[2];
+      const colorDef = tagColorMatch[2];
+      const humanColorIndex = HUMAN_COLORS.indexOf(colorDef);
+      tags[tagColorMatch[1]] =
+        humanColorIndex >= 0 ? COLORS[humanColorIndex] : colorDef;
       const indexOfTag = line.indexOf(tagColorMatch[1]);
       const from = lengthAtIndex[i] + indexOfTag - 1;
       ranges.push({
         type: "tag",
         from,
         to: from + tagColorMatch[1].length + 1,
+        content: { tag: tagColorMatch[1], color: tags[tagColorMatch[1]] },
       });
       continue;
     }
@@ -195,6 +217,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
           type: "tag",
           from,
           to: from + m[1].length + 1,
+          content: { tag: m[1], color: tags[m[1]] },
         });
       }
     }

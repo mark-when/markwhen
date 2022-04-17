@@ -277,7 +277,12 @@ export class EventDescription {
   }
 }
 
-export type Range = { from: number; to: number; type: string };
+export type Range = {
+  from: number;
+  to: number;
+  type: string;
+  content?: any;
+};
 export class Event {
   eventString: string;
   range: DateRange;
@@ -302,7 +307,7 @@ export type Tags = { [tagName: string]: string };
 export type IdedEvents = { [id: string]: Event };
 export interface Cascade {
   ranges: Range[];
-  foldables: {}
+  foldables: {};
   events: Events;
   tags: Tags;
   ids: IdedEvents;

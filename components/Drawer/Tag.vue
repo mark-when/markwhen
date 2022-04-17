@@ -55,7 +55,7 @@ export default Vue.extend({
     ...mapState(["filter"]),
     buttonStyle(): string {
       const tagColor = this.tags[this.tag];
-      return `background-color: ${tagColor}`;
+      return `background-color: rgba(${tagColor}, 1)`;
     },
   },
   methods: {

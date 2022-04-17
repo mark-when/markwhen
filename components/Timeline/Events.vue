@@ -29,7 +29,7 @@ import EventRow from "./EventRow.vue";
 import Vue from "vue";
 import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import { mapGetters } from "vuex";
-import EventGroup from "./EventGroup.vue";
+import EventGroup from "./EventGroup/EventGroup.vue";
 
 export default Vue.extend({
   components: { EventRow, DrawerHeader, EventGroup },

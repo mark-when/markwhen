@@ -3,16 +3,7 @@
   <div class="relative">
     <div :class="eventBarClass" :style="eventBarStyle"></div>
     <div
-      class="
-        absolute
-        left-0
-        top-0
-        bottom-0
-        bg-black
-        rounded-full
-        percentBar
-        transition
-      "
+      class="absolute left-0 top-0 bottom-0 rounded-full percentBar transition"
       :class="percentBarColorClass"
       :style="`min-width: 10px; max-width: 100%; ${percentBarColorStyle}; width: ${percent}%;`"
     ></div>
@@ -37,14 +28,19 @@ export default Vue.extend({
     },
   },
   computed: {
+    tagColor(): string | undefined {
+      if (this.event.event.tags[0]) {
+        return this.$store.getters.tags[this.event.event.tags[0]];
+      }
+      return undefined;
+    },
     percent(): number | undefined {
       return (this.event as Event).event.percent || 100;
     },
     percentBarColorClass(): string {
       let c = "";
-      const tag = this.event.event.tags[0];
-      if (!this.$store.getters.tags[tag]) {
-        c += `dark:bg-gray-400 bg-slate-700`;
+      if (!this.tagColor) {
+        c += `dark:bg-gray-400 bg-slate-700 `;
       }
       if (this.hovering) {
         c += "opacity-100 shadow-lg ";
@@ -55,20 +51,17 @@ export default Vue.extend({
     },
     percentBarColorStyle(): string {
       let style = "";
-      const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        style += ` background-color: ${this.$store.getters.tags[tag]}`;
+      if (this.tagColor) {
+        console.log(this.tagColor)
+        // style += ` background-color: rgba(${this.tagColor}, 0.6)`;
       }
       return style;
     },
     eventBarClass(): string {
       let c = "eventBar transition rounded-lg shadow ";
-      const tag = this.event.event.tags[0];
-      if (!this.$store.getters.tags[tag]) {
-        c += `dark:bg-slate-400 bg-slate-700 `;
+      if (!this.tagColor) {
+        c += `dark:bg-slate-400 bg-slate-700 opacity-30 `;
       }
-      c += "opacity-30 ";
-
       return c;
     },
     barWidth(): number {
@@ -76,9 +69,8 @@ export default Vue.extend({
     },
     barColorStyle(): string {
       let style = "";
-      const tag = this.event.event.tags[0];
-      if (this.$store.getters.tags[tag]) {
-        style += ` background-color: ${this.$store.getters.tags[tag]}`;
+      if (this.tagColor) {
+        style += ` background-color: rgba(${this.tagColor}, 0.6)`;
       }
       return style;
     },
