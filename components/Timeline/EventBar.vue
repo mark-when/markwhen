@@ -52,8 +52,7 @@ export default Vue.extend({
     percentBarColorStyle(): string {
       let style = "";
       if (this.tagColor) {
-        console.log(this.tagColor)
-        // style += ` background-color: rgba(${this.tagColor}, 0.6)`;
+        style += ` background-color: rgba(${this.tagColor}, 0.6)`;
       }
       return style;
     },

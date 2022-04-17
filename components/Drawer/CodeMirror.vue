@@ -70,13 +70,14 @@ export default Vue.extend({
   watch: {
     eventsString(val, oldVal) {
       if (val !== this.editorView?.state.sliceDoc()) {
-        this.editorView!.state.update({
+        const transaction = this.editorView!.state.update({
           changes: {
             from: 0,
             to: this.editorView!.state.doc.length,
             insert: val,
           },
         });
+        this.editorView?.dispatch(transaction);
       }
     },
   },

@@ -5,28 +5,6 @@
       <client-only>
         <code-mirror />
       </client-only>
-      <!-- <textarea
-        class="
-          h-full
-          p-2
-          font-mono
-          text-sm
-          w-full
-          dark:text-gray-400
-          text-black
-          dark:bg-gray-900
-          bg-slate-300
-          outline-none
-          shadow-inner-2xl
-          resize-none
-          md:pb-80 md:pt-32
-          pt-20
-          pb-32
-        "
-        name="eventsField"
-        :value="$store.state.eventsString"
-        @input="updateEventsString"
-      ></textarea> -->
     </div>
     <div
       class="
