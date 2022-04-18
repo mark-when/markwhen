@@ -13,46 +13,43 @@ Use it [here](https://cascade.page).
 
 - [Cascade.page](#cascadepage)
     - [Table of contents](#table-of-contents)
-  - [Cascade](#cascade)
-    - [Header](#header)
-      - [Tags and colors](#tags-and-colors)
-      - [Date formatting](#date-formatting)
-    - [Events](#events)
-      - [Date Ranges](#date-ranges)
-        - [Dates](#dates)
-        - [Relative Dates](#relative-dates)
-      - [Event Description](#event-description)
-        - [Tags](#tags)
-        - [Links](#links)
-        - [Locations](#locations)
-        - [Photos](#photos)
-        - [References](#references)
-        - [Percent](#percent)
-    - [Groups](#groups)
-    - [Sorting](#sorting)
-  - [Header Quick Reference](#header-quick-reference)
-  - [Event Quick Reference](#event-quick-reference)
-  - [Saving and sharing](#saving-and-sharing)
-  - [Public by default](#public-by-default)
+- [Cascade](#cascade)
+  - [Header](#header)
+    - [Tags and colors](#tags-and-colors)
+    - [Date formatting](#date-formatting)
+  - [Events](#events)
+    - [Date Ranges](#date-ranges)
+      - [Dates](#dates)
+      - [Relative Dates](#relative-dates)
+    - [Event Description](#event-description)
+      - [Tags](#tags)
+      - [Links](#links)
+      - [Locations](#locations)
+      - [Photos](#photos)
+      - [References](#references)
+      - [Percent](#percent)
+  - [Groups and Sections](#groups-and-sections)
+  - [Sorting](#sorting)
+- [Header Quick Reference](#header-quick-reference)
+- [Event Quick Reference](#event-quick-reference)
+- [Saving and sharing](#saving-and-sharing)
+- [Public by default](#public-by-default)
 
 <br>
-<br>
 
-## Cascade
+# Cascade
 
 A Cascade is composed of an optional [header](#header) and one or more [events](#events).
 <br>
-<br>
 
-### Header
+## Header
 
 The header of a cascade indicates things about the cascade like visual preferences and metadata. It is the first part of a cascade; that is, **anything before the first event is considered the header**.
 
 Right now there are only two things you can include in the header: [tag colors](#tags-and-colors) and [date formatting](#date-formatting). Anything else in the header area (that is, everything else before the first event that is not date formatting or tag colors) will be ignored.
 <br>
-<br>
 
-#### Tags and colors
+### Tags and colors
 
 You can indicate the color you want certain tagged events to appear like so:
 
@@ -72,9 +69,8 @@ So, if you have an event like the following
 
 it will be colored as blue in the cascade.
 <br>
-<br>
 
-#### Date formatting
+### Date formatting
 
 Non-ISO8601 dates default to American formatting (Month/Day/Year). This can be changed to European formatting by adding the following line in the header area (before any event):
 
@@ -85,9 +81,8 @@ dateFormat: d/M/y
 This is a hardcoded line, any other format attempt will not work.
 
 <br>
-<br>
 
-### Events
+## Events
 
 An event is a [Date Range](#date-ranges) followed by a colon followed by an [event description](#event-description):
 
@@ -110,9 +105,8 @@ Launched US into WWII
 ```
 
 <br>
-<br>
 
-#### Date Ranges
+### Date Ranges
 
 A date range is a period from one date to another. Every event has an associated date range, whether it has an explicitly written end date or not. A date range is typically `Date[-Date]`; that is, one date optionally followed by a dash and another date.
 
@@ -136,13 +130,13 @@ starts January 1, 2001, and lasts through December 31, 2001.
 
 <br><br>
 
-##### Dates
+#### Dates
 
 A date can be expressed in a few forms. Human readable dates are supported, like `1665`, `03/2222`, or `09/11/2001`, as well as IO8601 dates, like `2031-11-19T01:35:10Z`. Human readable date formatting defaults to the American Month/Day/Year but can be changed to European formatting via the [header](#date-formatting).
 
-<br><br>
+<br>
 
-##### Relative Dates
+#### Relative Dates
 
 If you have events that are based off of, or relative to, other events, you can describe their relationship to get the range you want.
 
@@ -233,9 +227,9 @@ Two relative dates together, like `x days - y weeks: ...`, can therefore essenti
 
 The only exception to this is the shorthand singular relative date, like `x years:...`, which means `immediately after the last event and lasts for x years`.
 
-<br><br>
+<br>
 
-#### Event Description
+### Event Description
 
 An event description is everything after the date range of the event, **up to the next event**. Event descriptions can span multiple lines. For `12/2012: End of the world`, the event description is just `End of the world`. For the following event:
 
@@ -253,9 +247,9 @@ Later, 1962 would happen
 
 Everything not on the first line (where the date range is specified) up to the next event will be put in an overflow box that can be expanded by clicking on the event. Such an overflow is indicated in the timeline with an ellipsis (...). Event descriptions can include [tags](#tags), [links](#links), [locations](locations), [photos](#photos), and [references](#references).
 
-<br><br>
+<br>
 
-##### Tags
+#### Tags
 
 Events can be tagged to visually indicate they belong to some category. Simply add your tag text in any part of an event's description to tag it:
 
@@ -266,9 +260,8 @@ Events can be tagged to visually indicate they belong to some category. Simply a
 A list of all tags appears at the bottom of the screen to allow for filtering by tags.
 
 <br>
-<br>
 
-##### Links
+#### Links
 
 Links are similar to markdown links: link dislpay text in brackets followed by the url in parentheses:
 
@@ -276,9 +269,9 @@ Links are similar to markdown links: link dislpay text in brackets followed by t
 2018 - 3 years: [Google](www.google.com)
 ```
 
-<br><br>
+<br>
 
-##### Locations
+#### Locations
 
 Events can have zero or more locations associated with them, indicated with the following syntax: `[name of location](map|location)`
 
@@ -289,15 +282,15 @@ Events can have zero or more locations associated with them, indicated with the 
 [Seattle](map)
 ```
 
-<br><br>
+<br>
 
-##### Photos
+#### Photos
 
 An event may include a shareable, public google photos link that will be displayed once the event is clicked on. Only one photos link per event is supported.
 
-<br><br>
+<br>
 
-##### References
+#### References
 
 Link to other cascades with the `@` syntax:
 
@@ -305,17 +298,17 @@ Link to other cascades with the `@` syntax:
 1919: Treaty of Versailles @wwi
 ```
 
-<br><br>
+<br>
 
-##### Percent
+#### Percent
 
 Indicate that an event is some percent complete by including `0`-`100%` in your event, and the event bar will be partially filled in to show the completion percentage.
 
 ![](images/percents.png)
 
-<br><br>
+<br>
 
-### Groups
+## Groups and Sections
 
 ![](images/groups.gif)
 Events can be grouped. To indicate a group, write `group` at the beginning of a line. All events up to the start of the next group, the end of the cascade, or the keyword `endGroup` (whichever of these three comes first) are in the group.
@@ -361,25 +354,27 @@ If you want an event group to start out collapsed, indent the `group` line defin
 endGroup
 ```
 
-<br><br>
+Sections behave similarly though extend to the width of the entire cascade and are activated by the `section` and `endSection` keywords:
+![](images/sections.gif)
+<br>
 
-### Sorting
+## Sorting
 
 ![](images/sorting.gif)
 Cascades can be sorted one of three ways: how they were originally written (default), ascending, or descending. Event groups will be sorted internally and then they themselves sorted based on their collective earliest and latest dates.
 
-<br><br>
+<br>
 
-## Header Quick Reference
+# Header Quick Reference
 
 | Item                                                  | Syntax                 | Example               |
 | ----------------------------------------------------- | ---------------------- | --------------------- |
 | Coloring tags                                         | `#[tag name]: <color>` | `#Movies: aquamarine` |
 | Date format. Change the formatting to European style. | `dateFormat: d/M/y`    | `dateFormat: d/M/y`   |
 
-<br><br>
+<br>
 
-## Event Quick Reference
+# Event Quick Reference
 
 | Item                                                                                                | Syntax                                                                        | Example                                                                                                                     |
 | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -399,9 +394,9 @@ Cascades can be sorted one of three ways: how they were originally written (defa
 | Comment                                                                                             | `//[text]`                                                                    | `// this is a comment`                                                                                                      |
 
 <br>
-<br>
 
-## Saving and sharing
+
+# Saving and sharing
 
 To save a cascade to your computer, click the `Save...` button while on the Editor tab of the sidebar. It will be saved locally, and you can come back and edit or view it later, as long as it's on the same device.
 
@@ -416,6 +411,6 @@ All in all, the steps are:
 3. Choose a username - all your shared cascades will be available from `https://cascade.page/[your username]/...`
 4. Share your cascade
 
-## Public by default
+# Public by default
 
 Any cascade you share is public by default - anyone could view it. Any cascade you save locally only on your computer is, of course, only accessible on that device.
