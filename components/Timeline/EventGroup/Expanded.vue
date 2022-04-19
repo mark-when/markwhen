@@ -91,7 +91,7 @@ export default Vue.extend({
     },
     buttonStyle(): string {
       const background = this.rgb
-        ? `background-color: rgba(${this.rgb}, 0.15); `
+        ? `background-color: rgba(${this.rgb}, 0.25); `
         : "";
       return this.isGroupStyleTight
         ? `left: calc(50% - ${this.buttonWidth / 2}px); ${background}`
