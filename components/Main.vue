@@ -35,10 +35,10 @@ export default Vue.extend({
   components: { Timeline, Sidebar },
   computed: mapGetters({ darkMode: "sidebar/darkMode" }),
   mounted() {
-    this.signInIfNecessary();
     this.checkDarkMode();
     this.$store.commit("getLocalTimelines");
     this.$store.commit("checkHasSeenHowTo");
+    this.signInIfNecessary();
   },
   methods: {
     checkDarkMode() {

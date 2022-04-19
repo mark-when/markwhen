@@ -146,7 +146,7 @@ endGroup
 
 const eventsString = currentTimelineName
   ? localStorage.getItem(currentTimelineName)
-  : exampleTimeline;
+  : "";
 
 export const state: () => State = () => ({
   list: list,

@@ -14,16 +14,16 @@ export default Vue.extend({
     const emoji = ["🌐", "🎟", "🧊", "🏷", "🧩", "🧭"][
       Math.floor(Math.random() * 5)
     ];
-    let timelineName = ''
-    let url = ''
+    let timelineName = "";
+    let url = "";
     if (process.server) {
-      timelineName = this.$ssrContext.req.timelinePath
-      url = this.$ssrContext.url
+      timelineName = this.$ssrContext.req.timelinePath;
+      url = this.$ssrContext.url;
     } else {
-      timelineName = this.$store.state.timelineName
-      url = this.$route.path
+      timelineName = this.$store.state.timelineName;
+      url = this.$route.path;
     }
-    url = `https://cascade.page${url}`
+    url = `https://cascade.page${url}`;
     const innerText = `Cascade: ${emoji}${timelineName}`;
     return {
       title: `@${this.$store.state.timelinePath} - Cascade`,
@@ -32,13 +32,27 @@ export default Vue.extend({
           property: "og:image",
           content: `https://api.sw.ink/v0/swink?key=${swinkApiKey}&dotStyle=${dotStyle}&font=${font}&innerText=${innerText}&url=${url}`,
         },
-        { 
-          name: 'viewport',
-          content: 'width=device-width, user-scalable=no'
-        }
+        {
+          name: "viewport",
+          content: "width=device-width, user-scalable=no",
+        },
       ],
     };
   },
   components: { Main },
+  middleware(context) {
+    const theme = context.app.$cookies.get("theme");
+    if (theme) {
+      context.store.commit("sidebar/setDarkMode", theme);
+    }
+    const sidebarSide = context.app.$cookies.get("sbs");
+    if (sidebarSide) {
+      context.store.commit("sidebar/setPosition", sidebarSide);
+    }
+    const width = context.app.$cookies.get("sbw");
+    if (width) {
+      context.store.commit("sidebar/setWidth", parseInt(width));
+    }
+  },
 });
 </script>

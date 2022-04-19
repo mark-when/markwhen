@@ -18,6 +18,7 @@ interface State {
   heightDiff: number;
   sidebarHeight: number;
   darkMode: DarkMode;
+  width: number;
 }
 
 export const state: () => State = () => ({
@@ -29,11 +30,15 @@ export const state: () => State = () => ({
   heightDiff: 0,
   sidebarHeight: 300,
   darkMode: "system",
+  width: 350,
 });
 
 export const mutations: MutationTree<State> = {
+  setWidth(state: State, width: number) {
+    state.width = width;
+  },
   checkDarkMode(state: State) {
-    if (!window) {
+    if (typeof window === "undefined" || !window) {
       return;
     }
     if (localStorage.theme === "dark") {
@@ -56,6 +61,9 @@ export const mutations: MutationTree<State> = {
       state.darkMode = "system";
     }
   },
+  setDarkMode(state: State, darkMode: DarkMode) {
+    state.darkMode = darkMode;
+  },
   setSelectedComponent(state: State, component: SelectedComponent) {
     if (state.selectedComponent === component) {
       state.selectedComponent = "";
@@ -65,9 +73,15 @@ export const mutations: MutationTree<State> = {
   },
   setPosition(state: State, side: Side) {
     state.position = side;
+    if (typeof localStorage !== "undefined") {
+      localStorage.sidebarSide = side;
+    }
   },
   togglePosition(state: State) {
     state.position = state.position === "left" ? "right" : "left";
+    if (typeof localStorage !== "undefined") {
+      localStorage.sidebarSide = state.position;
+    }
   },
   toggle(state: State) {
     state.visible = !state.visible;

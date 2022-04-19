@@ -97,6 +97,7 @@ export default Vue.extend({
       hasSeenHowTo: (state: any) => state.hasSeenHowTo,
       heightDiff: (state: any) => state.sidebar.heightDiff,
       resizeYStarted: (state: any) => state.sidebar.resizeYStarted,
+      width: (state: any) => state.sidebar.width,
     }),
     tempHeight(): number {
       return this.height + this.heightDiff;
@@ -123,7 +124,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      width: 350,
       height: 300,
       resizeXStarted: false,
       resizeStartX: 0,
@@ -148,7 +148,8 @@ export default Vue.extend({
     resizeMouseUp(e: MouseEvent | TouchEvent) {
       this.resizeXStarted = false;
       if (this.tempWidth) {
-        this.width = Math.max(this.tempWidth, 50);
+        this.$store.commit("sidebar/setWidth", Math.max(this.tempWidth, 50));
+        this.$cookies.set("sbw", this.$store.state.sidebar.width);
         this.tempWidth = 0;
       }
       document.removeEventListener("mouseup", this.resizeMouseUp);

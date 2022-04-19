@@ -120,9 +120,11 @@ export default Vue.extend({
     },
     switchSides() {
       this.$store.commit("sidebar/togglePosition");
+      this.$cookies.set('sbs', this.$store.state.sidebar.position)
     },
     toggleDarkMode() {
       this.$store.commit("sidebar/toggleDarkMode");
+      this.$cookies.set("theme", this.$store.getters["sidebar/darkMode"]);
     },
   },
 });
