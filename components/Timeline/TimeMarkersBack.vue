@@ -5,10 +5,21 @@
         class="flex flex-row h-full"
         :style="`margin-left: -${leftMargin}px`"
       >
+        <!-- <template v-for="i in 100">
+          <time-marker-back
+            :key="i - 1"
+            v-if="markers[i - 1]"
+            :opacity="alpha(markers[i - 1].dateTime)"
+            :width="markers[i - 1].size"
+          />
+          <time-marker-back :key="i - 1" v-else />
+        </template> -->
         <time-marker-back
           v-for="timeMarker in markers"
           :key="timeMarker.ts"
-          :timeMarker="timeMarker"
+          :opacity="alpha(timeMarker.dateTime)"
+          :width="timeMarker.size"
+          :borderColor="borderColorForDateTime(timeMarker.dateTime)"
         />
       </div>
     </div>
@@ -19,6 +30,8 @@
 import Vue from "vue";
 import TimeMarkerBack from "./TimeMarkerBack.vue";
 import { viewportLeftMarginPixels } from "~/store/index";
+import { DateTime } from "luxon";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
   components: { TimeMarkerBack },
@@ -27,6 +40,41 @@ export default Vue.extend({
     return {
       leftMargin: viewportLeftMarginPixels,
     };
+  },
+  computed: {
+    ...mapGetters(["timeMarkerWeights", "sidebar/darkMode"]),
+  },
+  methods: {
+    borderColorForDateTime(dateTime: DateTime): string {
+      const isDark = this["sidebar/darkMode"] === 'dark';
+      const a = (this.alpha(dateTime) - 0.3) * 2;
+      return isDark ? `rgba(111, 111, 111, ${a})` : `rgba(161, 161, 161, ${a})`;
+    },
+    scaleForDate(dateTime: DateTime): number {
+      if (dateTime.second === 0) {
+        if (dateTime.minute === 0) {
+          if (dateTime.hour === 0) {
+            if (dateTime.day === 1) {
+              if (dateTime.month === 1) {
+                if (dateTime.year % 10 === 0) {
+                  return 6;
+                }
+                return 5;
+              }
+              return 4;
+            }
+            return 3;
+          }
+          return 2;
+        }
+        return 1;
+      }
+      return 0;
+    },
+    alpha(dateTime: DateTime) {
+      const a = this.timeMarkerWeights[this.scaleForDate(dateTime)];
+      return a;
+    },
   },
 });
 </script>

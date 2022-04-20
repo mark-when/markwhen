@@ -43,6 +43,7 @@ export default Vue.extend({
   methods: {
     checkDarkMode() {
       this.$store.commit("sidebar/checkDarkMode");
+      this.$cookies.set("theme", this.$store.getters["sidebar/darkMode"]);
     },
     async signInIfNecessary() {
       const auth = getAuth();
