@@ -13,7 +13,8 @@
         <time-marker-front
           v-for="timeMarker in markers"
           :key="timeMarker.ts"
-          :timeMarker="timeMarker"
+          :dateTime="timeMarker.dateTime"
+          :size="timeMarker.size"
         />
       </div>
     </div>

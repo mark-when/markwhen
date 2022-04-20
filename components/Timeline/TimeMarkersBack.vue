@@ -5,15 +5,6 @@
         class="flex flex-row h-full"
         :style="`margin-left: -${leftMargin}px`"
       >
-        <!-- <template v-for="i in 100">
-          <time-marker-back
-            :key="i - 1"
-            v-if="markers[i - 1]"
-            :opacity="alpha(markers[i - 1].dateTime)"
-            :width="markers[i - 1].size"
-          />
-          <time-marker-back :key="i - 1" v-else />
-        </template> -->
         <time-marker-back
           v-for="timeMarker in markers"
           :key="timeMarker.ts"

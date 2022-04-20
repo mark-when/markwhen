@@ -23,14 +23,11 @@ import { clamp, timeMarkerWeightMinimum } from "~/store";
 import { granularities } from "~/src/DateTimeDisplay";
 
 export default Vue.extend({
-  props: ["timeMarker"],
+  props: ["dateTime", "size"],
   computed: {
-    dateTime(): DateTime {
-      return this.timeMarker.dateTime;
-    },
     ...mapGetters(["timeMarkerWeights"]),
     scaleForThisDate(): number {
-      const dateTime = this.timeMarker.dateTime as DateTime;
+      const dateTime = this.dateTime as DateTime;
       if (dateTime.second === 0) {
         if (dateTime.minute === 0) {
           if (dateTime.hour === 0) {
@@ -55,7 +52,7 @@ export default Vue.extend({
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];
     },
     columnStyle(): string {
-      return `width: ${this.timeMarker.size}px`;
+      return `width: ${this.size}px`;
     },
     textStyle(): string {
       const alpha = clamp((this.borderAlpha - 0.3) * 5);
