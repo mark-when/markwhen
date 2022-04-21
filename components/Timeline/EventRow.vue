@@ -2,9 +2,38 @@
   <div
     class="eventRow relative"
     :style="eventRowStyle"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
   >
+    <div
+      v-if="$store.state.edittable && hovering"
+      class="
+        handle
+        absolute
+        left-0
+        top-0
+        bottom-0
+        flex
+        items-center
+        justify-center
+        dark:text-gray-300
+        pr-8
+        cursor-crosshair
+      "
+      @mousedown.prevent.stop="move"
+    >
+      <svg
+        class="w-4 h-4"
+        focusable="false"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+        ></path>
+      </svg>
+    </div>
     <div
       v-if="showingMeta"
       :class="photoBarClass"
@@ -31,7 +60,13 @@
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
       >
-        <event-bar :event="event" :hovering="hovering" />
+        <event-bar
+          :event="event"
+          :hovering="hovering"
+          :width="width"
+          @startResizeLeft="startResizeLeft"
+          @startResizeRight="startResizeRight"
+        />
         <p class="eventDate">{{ event.getDateHtml() }}</p>
         <svg
           v-if="hasImages && imageStatus !== 'loading'"
@@ -112,11 +147,17 @@ export default Vue.extend({
       imageStatus: "not loaded",
       images: [],
       showingMeta: false,
-      hovering: false,
+      hover: false,
+      mouseStart: undefined as number | undefined,
+      tempWidth: undefined as number | undefined,
+      startWidth: undefined as number | undefined,
     };
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate"]),
+    hovering(): boolean {
+      return this.hover || !!this.tempWidth;
+    },
     locations(): string[] {
       return this.event.event.locations.map(
         (location: string) =>
@@ -175,8 +216,49 @@ export default Vue.extend({
     photoBarStyle(): string {
       return `width: 10px; ${this.barColor}; top: calc(0.5rem + 3px)`;
     },
+    width(): number {
+      return this.tempWidth || this.getWidthForRange(this.event.range);
+    },
   },
   methods: {
+    startResizeLeft(e: MouseEvent) {
+      const vm = this;
+      vm.mouseStart = e.clientX;
+      const listener = (e: MouseEvent) => {
+        e.preventDefault();
+        const left = this.distanceFromBaselineLeftmostDate(
+          this.event.range.fromDateTime
+        );
+        console.log(e.clientX, left);
+      };
+      const moveListener = document.addEventListener("mousemove", listener);
+      document.addEventListener("mouseup", (ev) => {
+        vm.mouseStart = undefined;
+        document.removeEventListener("mousemove", listener);
+      });
+    },
+    startResizeRight(e: MouseEvent) {
+      const vm = this;
+      vm.mouseStart = e.clientX;
+      vm.startWidth = vm.width;
+      vm.tempWidth = vm.width;
+      const listener = (e: MouseEvent) => {
+        e.preventDefault();
+        const difference = e.clientX - vm.mouseStart!;
+        console.log(difference);
+        vm.tempWidth! = vm.startWidth! + difference;
+      };
+      const moveListener = document.addEventListener("mousemove", listener);
+      document.addEventListener("mouseup", (ev) => {
+        vm.mouseStart = undefined;
+        vm.startWidth = undefined;
+        vm.tempWidth = undefined;
+        document.removeEventListener("mousemove", listener);
+      });
+    },
+    move() {
+      console.log("move");
+    },
     async loadImages() {
       this.imageStatus = "loading";
       const imagesResponse = await fetch(
@@ -222,6 +304,10 @@ export default Vue.extend({
   font-size: 80%;
   margin: 0px 0px 0px 8px;
   white-space: nowrap;
+}
+
+.handle {
+  transform: translateX(-24px);
 }
 /* .eventRow:hover .eventBar {
   @apply opacity-80 shadow-lg;

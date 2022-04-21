@@ -10,7 +10,7 @@
     <TimeMarkersBack :markers="markers" />
     <events />
     <TimeMarkersFront :markers="markers" />
-    <drawer-header :edittable="edittable" />
+    <drawer-header/>
     <resize-observer @notify="handleResize" />
   </div>
 </template>
@@ -43,7 +43,6 @@ export default Vue.extend({
     TimeMarkersFront,
     ResizeObserver,
   },
-  props: ["edittable"],
   data() {
     return {
       mc: null as any,

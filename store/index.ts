@@ -27,6 +27,7 @@ interface State {
   viewportDateInterval: DateInterval;
   viewport: Viewport;
   sort: Sort;
+  edittable: boolean
 }
 
 interface DateInterval {
@@ -168,6 +169,7 @@ export const state: () => State = () => ({
   },
   viewport: { left: 0, width: 0 },
   sort: "none",
+  edittable: true
 });
 
 export type DisplayScale =
@@ -215,6 +217,9 @@ const YEAR = 12 * MONTH;
 const DECADE = 10 * YEAR;
 
 export const mutations: MutationTree<State> = {
+  setEdittable(state: State, edittable: boolean) {
+    state.edittable = edittable
+  },
   setStartedWidthChange(state: State, changing: boolean) {
     state.settings.startedWidthChange = changing;
   },
@@ -479,7 +484,7 @@ export const getters: GetterTree<State, State> = {
       clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),
       clamp(roundToTwoDecimalPlaces((30 * MINUTE) / denom)),
       clamp(roundToTwoDecimalPlaces((25 * HOUR) / denom)),
-      clamp(roundToTwoDecimalPlaces((30 * DAY) / denom)),
+      clamp(roundToTwoDecimalPlaces((40 * DAY) / denom)),
       clamp(roundToTwoDecimalPlaces((25 * MONTH) / denom)),
       clamp(roundToTwoDecimalPlaces((25 * YEAR) / denom)),
       clamp(roundToTwoDecimalPlaces((10 * DECADE) / denom)),

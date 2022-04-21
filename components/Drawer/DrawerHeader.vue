@@ -32,7 +32,7 @@
       "
       @touchstart="touchStart"
       @click="toggleSidebar"
-      v-if="edittable"
+      v-if="$store.state.edittable"
     >
       <svg
         v-if="$store.state.sidebar.visible"
@@ -118,7 +118,7 @@ export default Vue.extend({
     DisplaySettings,
     Sort,
   },
-  props: ["value", "timelinePath", "edittable"],
+  props: ["value", "timelinePath"],
   methods: {
     toggleSidebar() {
       this.$store.commit("sidebar/toggle");

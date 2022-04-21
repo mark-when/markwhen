@@ -56,7 +56,7 @@ export default Vue.extend({
     },
     textStyle(): string {
       const alpha = clamp((this.borderAlpha - 0.3) * 5);
-      return `opacity: ${alpha}`;
+      return `opacity: ${alpha};`;
     },
     currentDateResolution(): number {
       const weights = this.timeMarkerWeights;

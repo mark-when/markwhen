@@ -41,6 +41,7 @@ export default Vue.extend({
   },
   components: { Main },
   middleware(context) {
+    context.store.commit("setEdittable", false);
     const theme = context.app.$cookies.get("theme");
     if (theme) {
       context.store.commit("sidebar/setDarkMode", theme);

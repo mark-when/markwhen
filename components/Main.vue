@@ -11,10 +11,10 @@
         text-gray-900
       "
     >
-      <template v-if="edittable">
+      <template v-if="$store.state.edittable">
         <sidebar v-show="$store.state.sidebar.visible"
       /></template>
-      <timeline :edittable="edittable" />
+      <timeline />
     </div>
   </div>
 </template>
@@ -31,7 +31,6 @@ import Sidebar from "./Drawer/Sidebar.vue";
 import { mapGetters } from "vuex";
 
 export default Vue.extend({
-  props: ["edittable"],
   components: { Timeline, Sidebar },
   computed: mapGetters({ darkMode: "sidebar/darkMode" }),
   mounted() {

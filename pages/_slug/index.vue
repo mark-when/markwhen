@@ -1,5 +1,5 @@
 <template>
-  <Main :edittable="false" />
+  <Main />
 </template>
 
 <script lang="ts">
@@ -41,7 +41,8 @@ export default Vue.extend({
   },
   components: { Main },
   middleware(context) {
-   const theme = context.app.$cookies.get("theme");
+    context.store.commit('setEdittable', false)
+    const theme = context.app.$cookies.get("theme");
     if (theme) {
       context.store.commit("sidebar/setDarkMode", theme);
     }
