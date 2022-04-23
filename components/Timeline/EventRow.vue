@@ -1,42 +1,20 @@
 <template>
   <div
-    class="eventRow relative"
+    class="eventRow relative flex"
     :style="eventRowStyle"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
-    <div
-      v-if="$store.state.edittable && hovering"
-      class="
-        handle
-        absolute
-        left-0
-        top-0
-        bottom-0
-        flex
-        items-center
-        justify-center
-        text-gray-500
-        dark:text-gray-400
-        pr-8
-        cursor-crosshair
-        touch-none
-      "
-      @touchstart="move"
-      @mousedown.prevent.stop="move"
-    >
-      <svg
-        class="w-4 h-4"
-        focusable="false"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path
-          d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-        ></path>
-      </svg>
-    </div>
+    <template v-if="$store.state.edittable">
+      <move-widgets
+        v-show="hovering"
+        @move="move"
+        @moveUp="moveUp"
+        @moveDown="moveDown"
+        @mouseenter="hover = true"
+        @mouseleave="hover = false"
+      />
+    </template>
     <div
       v-if="showingMeta"
       :class="photoBarClass"
@@ -141,11 +119,12 @@ import { mapGetters } from "vuex";
 import EventBar from "./EventBar.vue";
 import { DateTime } from "luxon";
 import { roundDateTime } from "~/store";
+import MoveWidgets from "./MoveWidgets.vue";
 
 export const EVENT_HEIGHT_PX = 10;
 
 export default Vue.extend({
-  components: { EventMeta, EventBar },
+  components: { EventMeta, EventBar, MoveWidgets },
   props: ["event"],
   data() {
     return {
@@ -243,6 +222,12 @@ export default Vue.extend({
     },
   },
   methods: {
+    moveUp() {
+      console.log("move up");
+    },
+    moveDown() {
+      console.log("move down");
+    },
     startResizeLeft(e: MouseEvent | TouchEvent) {
       const vm = this;
       const moveListener = (e: MouseEvent | TouchEvent) => {
@@ -253,7 +238,6 @@ export default Vue.extend({
           x = e.clientX;
           e.preventDefault();
         }
-        console.log("moving", x);
         const date = this.$store.getters.dateFromOffsetLeft(x) as DateTime;
         const rounded = roundDateTime(
           date,
@@ -335,7 +319,6 @@ export default Vue.extend({
       const diff = vm.tempTo.diff(vm.tempFrom).as("days");
 
       const moveListener = (e: MouseEvent | TouchEvent) => {
-        console.log("touch start");
         let x;
         if (e instanceof TouchEvent) {
           x = e.touches[0].clientX;
@@ -354,7 +337,6 @@ export default Vue.extend({
       };
 
       const moveEnd = (e: MouseEvent | TouchEvent) => {
-        console.log("touch end");
         if (e instanceof TouchEvent) {
         } else {
           e.preventDefault();
@@ -428,9 +410,6 @@ export default Vue.extend({
   white-space: nowrap;
 }
 
-.handle {
-  transform: translateX(-24px);
-}
 /* .eventRow:hover .eventBar {
   @apply opacity-80 shadow-lg;
 } */

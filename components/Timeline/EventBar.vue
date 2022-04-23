@@ -90,11 +90,9 @@ export default Vue.extend({
   props: ["event", "hovering", "width"],
   methods: {
     startResizeLeft(e: MouseEvent) {
-      console.log("startResizeLeft");
       this.$emit("startResizeLeft", e);
     },
     startResizeRight(e: MouseEvent) {
-      console.log("startResizeRight");
       this.$emit("startResizeRight", e);
     },
   },
