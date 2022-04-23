@@ -20,7 +20,9 @@
         dark:text-gray-300
         text-gray-500
         cursor-ew-resize
+        touch-none
       "
+      @touchstart="startResizeLeft"
       @mousedown.prevent.stop="startResizeLeft"
     >
       <div
@@ -58,7 +60,9 @@
         dark:text-gray-300
         text-black
         cursor-ew-resize
+        touch-none
       "
+      @touchstart="startResizeRight"
       @mousedown.prevent.stop="startResizeRight"
     >
       <div
@@ -86,9 +90,11 @@ export default Vue.extend({
   props: ["event", "hovering", "width"],
   methods: {
     startResizeLeft(e: MouseEvent) {
+      console.log("startResizeLeft");
       this.$emit("startResizeLeft", e);
     },
     startResizeRight(e: MouseEvent) {
+      console.log("startResizeRight");
       this.$emit("startResizeRight", e);
     },
   },
@@ -144,7 +150,6 @@ export default Vue.extend({
 </script>
 
 <style>
-
 .eventBar {
   border-radius: 5px;
   height: 10px;

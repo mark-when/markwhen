@@ -20,7 +20,9 @@
         dark:text-gray-400
         pr-8
         cursor-crosshair
+        touch-none
       "
+      @touchstart="move"
       @mousedown.prevent.stop="move"
     >
       <svg
@@ -241,21 +243,29 @@ export default Vue.extend({
     },
   },
   methods: {
-    startResizeLeft(e: MouseEvent) {
+    startResizeLeft(e: MouseEvent | TouchEvent) {
       const vm = this;
-      const moveListener = (e: MouseEvent) => {
-        e.preventDefault();
-        const date = this.$store.getters.dateFromOffsetLeft(
-          e.clientX
-        ) as DateTime;
+      const moveListener = (e: MouseEvent | TouchEvent) => {
+        let x;
+        if (e instanceof TouchEvent) {
+          x = e.touches[0].clientX;
+        } else {
+          x = e.clientX;
+          e.preventDefault();
+        }
+        console.log("moving", x);
+        const date = this.$store.getters.dateFromOffsetLeft(x) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval
         );
         vm.tempFrom = rounded;
       };
-      const upListener = (ev: MouseEvent) => {
-        ev.preventDefault();
+      const upListener = (ev: MouseEvent | TouchEvent) => {
+        if (ev instanceof TouchEvent) {
+        } else {
+          ev.preventDefault();
+        }
         vm.$store.dispatch("updateEventDateRange", {
           event: vm.event,
           from: vm.tempFrom,
@@ -264,10 +274,14 @@ export default Vue.extend({
         vm.tempFrom = undefined;
         document.removeEventListener("mousemove", moveListener);
         document.removeEventListener("mouseup", upListener);
+        document.removeEventListener("touchmove", moveListener);
+        document.removeEventListener("touchend", upListener);
         vm.$store.commit("clearGlobalClass");
       };
       document.addEventListener("mousemove", moveListener);
       document.addEventListener("mouseup", upListener);
+      document.addEventListener("touchmove", moveListener);
+      document.addEventListener("touchend", upListener);
       vm.$store.commit(
         "setGlobalClass",
         "pointer-events-none cursor-ew-resize"
@@ -276,18 +290,22 @@ export default Vue.extend({
     startResizeRight(e: MouseEvent) {
       const vm = this;
       vm.tempTo = (vm.event as Event).range.toDateTime;
-      const moveListener = (e: MouseEvent) => {
-        e.preventDefault();
-        const date = this.$store.getters.dateFromOffsetLeft(
-          e.clientX
-        ) as DateTime;
+      const moveListener = (e: MouseEvent | TouchEvent) => {
+        let x;
+        if (e instanceof TouchEvent) {
+          x = e.touches[0].clientX;
+        } else {
+          x = e.clientX;
+          e.preventDefault();
+        }
+        const date = this.$store.getters.dateFromOffsetLeft(x) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval
         );
         vm.tempTo = rounded;
       };
-      const upListener = (ev: MouseEvent) => {
+      const upListener = (ev: MouseEvent | TouchEvent) => {
         ev.preventDefault();
         vm.$store.dispatch("updateEventDateRange", {
           event: vm.event,
@@ -297,10 +315,14 @@ export default Vue.extend({
         vm.tempTo = undefined;
         document.removeEventListener("mousemove", moveListener);
         document.removeEventListener("mouseup", upListener);
+        document.removeEventListener("touchmove", moveListener);
+        document.removeEventListener("touchend", upListener);
         vm.$store.commit("clearGlobalClass");
       };
       document.addEventListener("mousemove", moveListener);
       document.addEventListener("mouseup", upListener);
+      document.addEventListener("touchmove", moveListener);
+      document.addEventListener("touchend", upListener);
       vm.$store.commit(
         "setGlobalClass",
         "pointer-events-none cursor-ew-resize"
@@ -311,11 +333,18 @@ export default Vue.extend({
       vm.tempFrom = (vm.event as Event).range.fromDateTime;
       vm.tempTo = (vm.event as Event).range.toDateTime;
       const diff = vm.tempTo.diff(vm.tempFrom).as("days");
-      const moveListener = (e: MouseEvent) => {
-        e.preventDefault();
-        const date = this.$store.getters.dateFromOffsetLeft(
-          e.clientX + 18
-        ) as DateTime;
+
+      const moveListener = (e: MouseEvent | TouchEvent) => {
+        console.log("touch start");
+        let x;
+        if (e instanceof TouchEvent) {
+          x = e.touches[0].clientX;
+        } else {
+          e.preventDefault();
+          x = e.clientX;
+        }
+        // + 18 because of where the handle is
+        const date = this.$store.getters.dateFromOffsetLeft(x + 18) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval
@@ -323,9 +352,13 @@ export default Vue.extend({
         vm.tempFrom = rounded;
         vm.tempTo = rounded.plus({ days: diff });
       };
-      document.addEventListener("mousemove", moveListener);
-      document.addEventListener("mouseup", (ev) => {
-        ev.preventDefault();
+
+      const moveEnd = (e: MouseEvent | TouchEvent) => {
+        console.log("touch end");
+        if (e instanceof TouchEvent) {
+        } else {
+          e.preventDefault();
+        }
         vm.$store.dispatch("updateEventDateRange", {
           event: vm.event,
           from: vm.tempFrom,
@@ -333,9 +366,16 @@ export default Vue.extend({
         });
         vm.tempTo = undefined;
         vm.tempFrom = undefined;
+        document.removeEventListener("touchmove", moveListener);
         document.removeEventListener("mousemove", moveListener);
+        document.removeEventListener("mouseup", moveEnd);
+        document.removeEventListener("touchend", moveEnd);
         vm.$store.commit("clearGlobalClass");
-      });
+      };
+      document.addEventListener("mousemove", moveListener);
+      document.addEventListener("touchmove", moveListener);
+      document.addEventListener("mouseup", moveEnd);
+      document.addEventListener("touchend", moveEnd);
       vm.$store.commit(
         "setGlobalClass",
         "pointer-events-none cursor-ew-resize"
