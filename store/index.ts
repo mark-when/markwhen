@@ -17,21 +17,6 @@ import {
 } from "../src/Types";
 import { MutationTree, GetterTree, ActionTree } from "vuex";
 import { DateTime } from "luxon";
-import * as luxon from "luxon";
-// @ts-ignore
-import * as lxt from "../node_modules/luxon/src/impl/conversions.js";
-
-// Remove when the https://github.com/moment/luxon/issues/601 or similiar will be fixed.
-// if (process.client) {
-//   Object.defineProperty(luxon.DateTime.prototype, "weekData", {
-//     enumerable: false,
-//     get(this: luxon.DateTime) {
-//       console.log("getting weekday")
-//       return lxt.gregorianToWeek(this);
-//     },
-//     set() {},
-//   });
-// }
 
 interface State {
   list: string[];

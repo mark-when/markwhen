@@ -19,7 +19,7 @@
       v-if="sort === 'none'"
     >
       <button
-        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm"
+        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm p-px"
         @click="$emit('moveUp')"
       >
         <svg
@@ -36,7 +36,7 @@
         </svg>
       </button>
       <button
-        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm"
+        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm p-px"
         @click="$emit('moveDown')"
       >
         <svg
