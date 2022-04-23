@@ -11,6 +11,7 @@
           :opacity="alpha(timeMarker.dateTime)"
           :width="timeMarker.size"
           :borderColor="borderColorForDateTime(timeMarker.dateTime)"
+          :backgroundColor="backgroundColorForDateTime(timeMarker.dateTime)"
         />
       </div>
     </div>
@@ -20,9 +21,25 @@
 <script lang="ts">
 import Vue from "vue";
 import TimeMarkerBack from "./TimeMarkerBack.vue";
-import { viewportLeftMarginPixels } from "~/store/index";
+import { dateScale, viewportLeftMarginPixels } from "~/store/index";
 import { DateTime } from "luxon";
 import { mapGetters } from "vuex";
+// @ts-ignore
+import * as LRU from "lru-cache";
+// @ts-ignore
+import * as lxt from "~/node_modules/luxon/src/impl/conversions.js";
+
+const weekdayCache = new LRU({ max: 300 });
+function getWeekday(dateTime: DateTime): number {
+  const key = `${dateTime.year}-${dateTime.month}-${dateTime.day}`;
+  const cached = weekdayCache.get(key);
+  if (cached) {
+    return cached;
+  }
+  const weekday = lxt.gregorianToWeek(dateTime);
+  weekdayCache.set(key, weekday.weekday);
+  return weekday;
+}
 
 export default Vue.extend({
   components: { TimeMarkerBack },
@@ -37,34 +54,28 @@ export default Vue.extend({
   },
   methods: {
     borderColorForDateTime(dateTime: DateTime): string {
-      const isDark = this["sidebar/darkMode"] === 'dark';
+      const isDark = this["sidebar/darkMode"] === "dark";
       const a = (this.alpha(dateTime) - 0.3) * 2;
-      return isDark ? `rgba(111, 111, 111, ${a})` : `rgba(161, 161, 161, ${a})`;
+      return isDark ? `rgba(100, 100, 100, ${a})` : `rgba(200, 200, 200, ${a})`;
     },
     scaleForDate(dateTime: DateTime): number {
-      if (dateTime.second === 0) {
-        if (dateTime.minute === 0) {
-          if (dateTime.hour === 0) {
-            if (dateTime.day === 1) {
-              if (dateTime.month === 1) {
-                if (dateTime.year % 10 === 0) {
-                  return 6;
-                }
-                return 5;
-              }
-              return 4;
-            }
-            return 3;
-          }
-          return 2;
-        }
-        return 1;
-      }
-      return 0;
+      return dateScale(dateTime);
     },
     alpha(dateTime: DateTime) {
       const a = this.timeMarkerWeights[this.scaleForDate(dateTime)];
       return a;
+    },
+    backgroundColorForDateTime(dateTime: DateTime) {
+      if (this.timeMarkerWeights[2]) {
+        const weekday = getWeekday(dateTime);
+        const isDark = this["sidebar/darkMode"] === "dark";
+        const a = this.timeMarkerWeights[3] * 0.1;
+        if (weekday === 6 || weekday === 7) {
+          return isDark
+            ? `rgba(30, 30, 30, ${a})`
+            : `rgba(170, 170, 170, ${a})`;
+        }
+      }
     },
   },
 });

@@ -6,10 +6,13 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  props: ["opacity", "width", "borderColor"],
+  props: ["opacity", "width", "borderColor", "backgroundColor"],
   computed: {
     columnStyle(): string {
-      return `width: ${this.width}px; border-left: 1px dashed ${this.borderColor};`;
+      let bg = `background-color: ${
+        this.backgroundColor ? this.backgroundColor : "unset"
+      }`;
+      return `width: ${this.width}px; border-left: 1px dashed ${this.borderColor}; ${bg}`;
     },
   },
 });

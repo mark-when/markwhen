@@ -11,8 +11,8 @@
       class="
         mr-2
         rounded
-        bg-slate-100
-        hover:bg-slate-300
+        bg-slate-50
+        hover:bg-slate-200
         transition
         dark:bg-gray-800
         dark:text-gray-400

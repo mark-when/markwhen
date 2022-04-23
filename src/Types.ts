@@ -114,43 +114,27 @@ export class RelativeDate {
   }
 }
 
-export class DateRange {
+export interface DateRange {
   fromDateTime: DateTime;
   toDateTime: DateTime;
-  originalString: string;
+}
+
+export class DateRangePart implements DateRange {
+  fromDateTime: DateTime;
+  toDateTime: DateTime;
+  originalString?: string;
+  dateRangeInText: Range;
 
   constructor(
     fromDateTime: DateTime,
     toDateTime: DateTime,
-    originalString: string
+    originalString: string,
+    dateRangeInText: Range
   ) {
     this.fromDateTime = fromDateTime;
     this.toDateTime = toDateTime;
     this.originalString = originalString;
-  }
-
-  static fromRawStrings(
-    from: string,
-    to: string,
-    originalString: string,
-    dateFormat: string
-  ): DateRange {
-    const { dateTime: fromDateTime, granularity } = DateRange.stringToDateTime(
-      from,
-      dateFormat
-    );
-    if (to) {
-      const toDateTime = DateRange.roundDateUp(
-        DateRange.stringToDateTime(to, dateFormat)
-      );
-      return new DateRange(fromDateTime, toDateTime, originalString);
-    } else {
-      const toDateTime = DateRange.roundDateUp({
-        dateTime: fromDateTime,
-        granularity,
-      });
-      return new DateRange(fromDateTime, toDateTime, originalString);
-    }
+    this.dateRangeInText = dateRangeInText;
   }
 
   static stringToDateTime(s: string, fullFormat: string): GranularDateTime {
@@ -285,10 +269,10 @@ export type Range = {
 };
 export class Event {
   eventString: string;
-  range: DateRange;
+  range: DateRangePart;
   event: EventDescription;
 
-  constructor(eventString: string, range: DateRange, event: EventDescription) {
+  constructor(eventString: string, range: DateRangePart, event: EventDescription) {
     this.eventString = eventString;
     this.range = range;
     this.event = event;
@@ -299,7 +283,7 @@ export class Event {
   }
 
   getDateHtml(): string {
-    return this.range.originalString;
+    return this.range.originalString || "";
   }
 }
 

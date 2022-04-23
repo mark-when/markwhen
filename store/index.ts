@@ -4,6 +4,7 @@ import sortEvents, { EventSubGroup, Sort } from "~/src/Sort";
 import {
   Cascade,
   CascadeMetadata,
+  DateRange,
   Event,
   Events,
   Range,
@@ -11,6 +12,22 @@ import {
 } from "../src/Types";
 import { MutationTree, GetterTree, ActionTree } from "vuex";
 import { DateTime } from "luxon";
+import * as luxon from "luxon";
+// @ts-ignore
+import * as lxt from "../node_modules/luxon/src/impl/conversions.js";
+
+// Remove when the https://github.com/moment/luxon/issues/601 or similiar will be fixed.
+// if (process.client) {
+//   Object.defineProperty(luxon.DateTime.prototype, "weekData", {
+//     enumerable: false,
+//     get(this: luxon.DateTime) {
+//       console.log("getting weekday")
+//       return lxt.gregorianToWeek(this);
+//     },
+//     set() {},
+//   });
+// }
+
 interface State {
   list: string[];
   currentTimelineName: string;
@@ -27,7 +44,8 @@ interface State {
   viewportDateInterval: DateInterval;
   viewport: Viewport;
   sort: Sort;
-  edittable: boolean
+  edittable: boolean;
+  globalClass: string;
 }
 
 interface DateInterval {
@@ -169,7 +187,8 @@ export const state: () => State = () => ({
   },
   viewport: { left: 0, width: 0 },
   sort: "none",
-  edittable: true
+  edittable: true,
+  globalClass: "",
 });
 
 export type DisplayScale =
@@ -218,7 +237,13 @@ const DECADE = 10 * YEAR;
 
 export const mutations: MutationTree<State> = {
   setEdittable(state: State, edittable: boolean) {
-    state.edittable = edittable
+    state.edittable = edittable;
+  },
+  setGlobalClass(state: State, globalClass: string) {
+    state.globalClass = globalClass;
+  },
+  clearGlobalClass(state: State) {
+    state.globalClass = "";
   },
   setStartedWidthChange(state: State, changing: boolean) {
     state.settings.startedWidthChange = changing;
@@ -316,6 +341,14 @@ export const mutations: MutationTree<State> = {
     state.viewport = viewport;
   },
 };
+
+export function roundDateTime(dateTime: DateTime, toScale: DisplayScale) {
+  const up = ceilDateTime(dateTime, toScale);
+  const down = floorDateTime(dateTime, toScale);
+  const upDiff = dateTime.diff(up);
+  const downDiff = dateTime.diff(down);
+  return Math.abs(+upDiff) < Math.abs(+downDiff) ? up : down;
+}
 
 function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
   let increment;
@@ -417,6 +450,16 @@ export const getters: GetterTree<State, State> = {
   metadata(state: State, getters: any): CascadeMetadata {
     return getters.cascade.metadata;
   },
+  dateFromOffsetLeft(state: State, getters: any) {
+    return (offset: number) => {
+      const leftDate = getters.baselineLeftmostDate.plus({
+        [diffScale]: state.viewport.left / state.settings.scale,
+      });
+      return leftDate.plus({
+        days: offset / state.settings.scale,
+      });
+    };
+  },
   distanceBetweenDates(state: State, getters: any) {
     return (a: DateTime, b: DateTime) =>
       b.diff(a).as(diffScale) * state.settings.scale;
@@ -490,6 +533,18 @@ export const getters: GetterTree<State, State> = {
       clamp(roundToTwoDecimalPlaces((10 * DECADE) / denom)),
     ];
   },
+  nextMostGranularScaleOfViewportDateInterval(
+    state: State,
+    getters: any
+  ): DisplayScale {
+    const weights = getters.timeMarkerWeights;
+    for (let i = 0; i < weights.length; i++) {
+      if (weights[i] > 0.05) {
+        return scales[i];
+      }
+    }
+    return "decade";
+  },
   scaleOfViewportDateInterval(state: State, getters: any): DisplayScale {
     const weights = getters.timeMarkerWeights;
     for (let i = 0; i < weights.length; i++) {
@@ -551,6 +606,101 @@ export const getters: GetterTree<State, State> = {
   },
 };
 
+export function dateScale(dateTime: DateTime) {
+  if (dateTime.second === 0) {
+    if (dateTime.minute === 0) {
+      if (dateTime.hour === 0) {
+        if (dateTime.day === 1) {
+          if (dateTime.month === 1) {
+            if (dateTime.year % 10 === 0) {
+              return 6;
+            }
+            return 5;
+          }
+          return 4;
+        }
+        return 3;
+      }
+      return 2;
+    }
+    return 1;
+  }
+  return 0;
+}
+
+function dateRangeToString(range: DateRange, scale: DisplayScale) {
+  const fromAsString = dateTimeToString(range.fromDateTime, scale, true);
+  const toAsString = dateTimeToString(range.toDateTime, scale, false);
+  if (fromAsString === toAsString) {
+    return `${fromAsString}`;
+  }
+  return `${fromAsString} - ${toAsString}`;
+}
+
+function isDayStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
+  if (!["day", "hour"].includes(scale)) {
+    return false;
+  }
+}
+
+function isMonthStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
+  if (!["decade", "year", "month"].includes(scale)) {
+    return false;
+  }
+  return [28, 29, 30, 31, 1, 2].includes(dateTime.day);
+}
+
+function isYearStartOrEnd(dateTime: DateTime, scale: DisplayScale): boolean {
+  if (!["decade", "year", "month"].includes(scale)) {
+    return false;
+  }
+  if (dateTime.month === 12 && (dateTime.day === 31 || dateTime.day === 30)) {
+    return true;
+  }
+  if (dateTime.month === 1 && (dateTime.day === 1 || dateTime.day === 2)) {
+    return true;
+  }
+  return false;
+}
+
+function dateTimeToString(
+  dateTime: DateTime,
+  scale: DisplayScale,
+  isStartDate: boolean
+): string {
+  if (isYearStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const fromYear = dateTime.plus({ days: 2 }).year;
+      return `${fromYear}`;
+    } else {
+      const toYear = dateTime.minus({ days: 2 }).year;
+      return `${toYear}`;
+    }
+  }
+  if (isMonthStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const adjustedForward = dateTime.plus({ days: 2 });
+      return `${
+        adjustedForward.month < 10
+          ? "0" + adjustedForward.month
+          : adjustedForward.month
+      }/${adjustedForward.year}`;
+    } else {
+      const adjustedBack = dateTime.minus({ days: 2 });
+      return `${
+        adjustedBack.month < 10 ? "0" + adjustedBack.month : adjustedBack.month
+      }/${adjustedBack.year}`;
+    }
+  }
+  if (isDayStartOrEnd(dateTime, scale)) {
+  }
+  return dateTime.toUTC().toISO({ includeOffset: false }) + "Z";
+}
+
+function asIso(dateTime: DateTime): string {
+  return dateTime.toUTC().toISO({ includeOffset: false }) + "Z";
+}
+
 function m(m: TimeMarker): string {
   return `${m.dateTime.toLocaleString()}, ${m.size}px`;
 }
@@ -571,5 +721,22 @@ export const actions: ActionTree<State, State> = {
     );
     commit("setViewport", viewport);
     commit("setViewportDateInterval", viewportInterval);
+  },
+  updateEventDateRange({ commit, state, getters }, params) {
+    const { event, from, to } = params as {
+      event: Event;
+      from: DateTime;
+      to: DateTime;
+    };
+    const range: DateRange = { fromDateTime: from, toDateTime: to };
+    const inTextFrom = event.range.dateRangeInText.from;
+    const inTextTo = event.range.dateRangeInText.to;
+    const pre = state.eventsString?.slice(0, inTextFrom);
+    const post = state.eventsString?.slice(inTextTo);
+    const scale = getters.scaleOfViewportDateInterval;
+    commit(
+      "setEventsString",
+      pre + `${dateRangeToString(range, scale)}:` + post
+    );
   },
 };

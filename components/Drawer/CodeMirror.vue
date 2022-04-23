@@ -142,8 +142,8 @@ export default Vue.extend({
         });
         vm.editorView.update([transaction]);
       } else {
-        const last = alreadyDefinedRanges[alreadyDefinedRanges.length - 1]
-        const endIndexOfPreviousRange = last.to
+        const last = alreadyDefinedRanges[alreadyDefinedRanges.length - 1];
+        const endIndexOfPreviousRange = last.to;
         const transaction = vm.editorView.state.update({
           changes: {
             from: endIndexOfPreviousRange,
@@ -303,7 +303,7 @@ export default Vue.extend({
 }
 
 .dark .cm-daterange {
-  @apply text-red-600;
+  @apply text-red-400;
 }
 
 .cm-comment {
@@ -315,7 +315,7 @@ export default Vue.extend({
 }
 
 .cm-gutter {
-  @apply bg-slate-300;
+  @apply bg-slate-200;
 }
 
 .dark .cm-gutter {

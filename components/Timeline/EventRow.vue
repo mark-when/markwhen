@@ -16,7 +16,8 @@
         flex
         items-center
         justify-center
-        dark:text-gray-300
+        text-gray-500
+        dark:text-gray-400
         pr-8
         cursor-crosshair
       "
@@ -54,8 +55,8 @@
           transition
         "
         :class="{
-          'dark:hover:bg-gray-800 hover:bg-slate-100 hover:shadow-lg': hasMeta,
-          'dark:bg-gray-900 bg-slate-100 shadow-lg': showingMeta,
+          'dark:hover:bg-gray-800 hover:bg-white hover:shadow-lg': hasMeta,
+          'dark:bg-gray-900 bg-white shadow-lg': showingMeta,
           'cursor-pointer': hasMeta,
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
@@ -131,11 +132,13 @@
 </template>
 
 <script lang="ts">
-import { DateRange } from "../../src/Types";
+import { DateRange, Event } from "../../src/Types";
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
 import { mapGetters } from "vuex";
 import EventBar from "./EventBar.vue";
+import { DateTime } from "luxon";
+import { roundDateTime } from "~/store";
 
 export const EVENT_HEIGHT_PX = 10;
 
@@ -148,15 +151,14 @@ export default Vue.extend({
       images: [],
       showingMeta: false,
       hover: false,
-      mouseStart: undefined as number | undefined,
-      tempWidth: undefined as number | undefined,
-      startWidth: undefined as number | undefined,
+      tempTo: undefined as DateTime | undefined,
+      tempFrom: undefined as DateTime | undefined,
     };
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate"]),
     hovering(): boolean {
-      return this.hover || !!this.tempWidth;
+      return this.hover || !!this.tempTo || !!this.tempFrom;
     },
     locations(): string[] {
       return this.event.event.locations.map(
@@ -190,7 +192,7 @@ export default Vue.extend({
     },
     eventRowStyle(): string {
       const leftMargin = this.distanceFromBaselineLeftmostDate(
-        this.event.range.fromDateTime
+        this.tempFrom ? this.tempFrom : this.event.range.fromDateTime
       );
       return `margin-left: ${leftMargin}px;`;
     },
@@ -217,47 +219,127 @@ export default Vue.extend({
       return `width: 10px; ${this.barColor}; top: calc(0.5rem + 3px)`;
     },
     width(): number {
-      return this.tempWidth || this.getWidthForRange(this.event.range);
+      if (this.tempTo && this.tempFrom) {
+        return this.getWidthForRange({
+          fromDateTime: this.tempFrom,
+          toDateTime: this.tempTo,
+        });
+      }
+      if (this.tempTo) {
+        return this.getWidthForRange({
+          fromDateTime: this.event.range.fromDateTime,
+          toDateTime: this.tempTo,
+        });
+      }
+      if (this.tempFrom) {
+        return this.getWidthForRange({
+          fromDateTime: this.tempFrom,
+          toDateTime: this.event.range.toDateTime,
+        });
+      }
+      return this.getWidthForRange(this.event.range);
     },
   },
   methods: {
     startResizeLeft(e: MouseEvent) {
       const vm = this;
-      vm.mouseStart = e.clientX;
-      const listener = (e: MouseEvent) => {
+      const moveListener = (e: MouseEvent) => {
         e.preventDefault();
-        const left = this.distanceFromBaselineLeftmostDate(
-          this.event.range.fromDateTime
+        const date = this.$store.getters.dateFromOffsetLeft(
+          e.clientX
+        ) as DateTime;
+        const rounded = roundDateTime(
+          date,
+          this.$store.getters.nextMostGranularScaleOfViewportDateInterval
         );
-        console.log(e.clientX, left);
+        vm.tempFrom = rounded;
       };
-      const moveListener = document.addEventListener("mousemove", listener);
-      document.addEventListener("mouseup", (ev) => {
-        vm.mouseStart = undefined;
-        document.removeEventListener("mousemove", listener);
-      });
+      const upListener = (ev: MouseEvent) => {
+        ev.preventDefault();
+        vm.$store.dispatch("updateEventDateRange", {
+          event: vm.event,
+          from: vm.tempFrom,
+          to: (vm.event as Event).range.toDateTime,
+        });
+        vm.tempFrom = undefined;
+        document.removeEventListener("mousemove", moveListener);
+        document.removeEventListener("mouseup", upListener);
+        vm.$store.commit("clearGlobalClass");
+      };
+      document.addEventListener("mousemove", moveListener);
+      document.addEventListener("mouseup", upListener);
+      vm.$store.commit(
+        "setGlobalClass",
+        "pointer-events-none cursor-ew-resize"
+      );
     },
     startResizeRight(e: MouseEvent) {
       const vm = this;
-      vm.mouseStart = e.clientX;
-      vm.startWidth = vm.width;
-      vm.tempWidth = vm.width;
-      const listener = (e: MouseEvent) => {
+      vm.tempTo = (vm.event as Event).range.toDateTime;
+      const moveListener = (e: MouseEvent) => {
         e.preventDefault();
-        const difference = e.clientX - vm.mouseStart!;
-        console.log(difference);
-        vm.tempWidth! = vm.startWidth! + difference;
+        const date = this.$store.getters.dateFromOffsetLeft(
+          e.clientX
+        ) as DateTime;
+        const rounded = roundDateTime(
+          date,
+          this.$store.getters.nextMostGranularScaleOfViewportDateInterval
+        );
+        vm.tempTo = rounded;
       };
-      const moveListener = document.addEventListener("mousemove", listener);
-      document.addEventListener("mouseup", (ev) => {
-        vm.mouseStart = undefined;
-        vm.startWidth = undefined;
-        vm.tempWidth = undefined;
-        document.removeEventListener("mousemove", listener);
-      });
+      const upListener = (ev: MouseEvent) => {
+        ev.preventDefault();
+        vm.$store.dispatch("updateEventDateRange", {
+          event: vm.event,
+          to: vm.tempTo,
+          from: (vm.event as Event).range.fromDateTime,
+        });
+        vm.tempTo = undefined;
+        document.removeEventListener("mousemove", moveListener);
+        document.removeEventListener("mouseup", upListener);
+        vm.$store.commit("clearGlobalClass");
+      };
+      document.addEventListener("mousemove", moveListener);
+      document.addEventListener("mouseup", upListener);
+      vm.$store.commit(
+        "setGlobalClass",
+        "pointer-events-none cursor-ew-resize"
+      );
     },
     move() {
-      console.log("move");
+      const vm = this;
+      vm.tempFrom = (vm.event as Event).range.fromDateTime;
+      vm.tempTo = (vm.event as Event).range.toDateTime;
+      const diff = vm.tempTo.diff(vm.tempFrom).as("days");
+      const moveListener = (e: MouseEvent) => {
+        e.preventDefault();
+        const date = this.$store.getters.dateFromOffsetLeft(
+          e.clientX + 18
+        ) as DateTime;
+        const rounded = roundDateTime(
+          date,
+          this.$store.getters.nextMostGranularScaleOfViewportDateInterval
+        );
+        vm.tempFrom = rounded;
+        vm.tempTo = rounded.plus({ days: diff });
+      };
+      document.addEventListener("mousemove", moveListener);
+      document.addEventListener("mouseup", (ev) => {
+        ev.preventDefault();
+        vm.$store.dispatch("updateEventDateRange", {
+          event: vm.event,
+          from: vm.tempFrom,
+          to: vm.tempTo,
+        });
+        vm.tempTo = undefined;
+        vm.tempFrom = undefined;
+        document.removeEventListener("mousemove", moveListener);
+        vm.$store.commit("clearGlobalClass");
+      });
+      vm.$store.commit(
+        "setGlobalClass",
+        "pointer-events-none cursor-ew-resize"
+      );
     },
     async loadImages() {
       this.imageStatus = "loading";

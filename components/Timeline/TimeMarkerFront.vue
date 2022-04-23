@@ -19,7 +19,7 @@
 import { DateTime } from "luxon";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { clamp, timeMarkerWeightMinimum } from "~/store";
+import { clamp, dateScale, timeMarkerWeightMinimum } from "~/store";
 import { granularities } from "~/src/DateTimeDisplay";
 
 export default Vue.extend({
@@ -28,25 +28,7 @@ export default Vue.extend({
     ...mapGetters(["timeMarkerWeights"]),
     scaleForThisDate(): number {
       const dateTime = this.dateTime as DateTime;
-      if (dateTime.second === 0) {
-        if (dateTime.minute === 0) {
-          if (dateTime.hour === 0) {
-            if (dateTime.day === 1) {
-              if (dateTime.month === 1) {
-                if (dateTime.year % 10 === 0) {
-                  return 6;
-                }
-                return 5;
-              }
-              return 4;
-            }
-            return 3;
-          }
-          return 2;
-        }
-        return 1;
-      }
-      return 0;
+      return dateScale(dateTime)
     },
     borderAlpha(): number {
       return 0.8 * this.timeMarkerWeights[this.scaleForThisDate];

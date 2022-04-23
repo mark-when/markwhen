@@ -7,7 +7,7 @@
           :style="`margin-left: ${leftMargin}px; background: linear-gradient(${
             darkMode === 'dark'
               ? 'to bottom, #384047, 65%, #38404700'
-              : 'to bottom, rgb(226 232 240), 65%, #ffffff00'
+              : 'to bottom, rgb(241 245 249), 65%, #ffffff00'
           })`"
         ></div>
         <time-marker-front

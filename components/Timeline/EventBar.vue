@@ -18,11 +18,24 @@
         items-center
         justify-center
         dark:text-gray-300
+        text-gray-500
         cursor-ew-resize
       "
       @mousedown.prevent.stop="startResizeLeft"
     >
-      <svg
+      <div
+        class="
+          w-2
+          h-2
+          rounded
+          border border-white
+          dark:border-gray-400
+          bg-gray-600
+          dark:bg-gray-900
+          absolute
+        "
+      ></div>
+      <!-- <svg
         class="w-2 h-2 absolute"
         focusable="false"
         aria-hidden="true"
@@ -30,7 +43,7 @@
         fill="currentColor"
       >
         <circle cx="12" cy="12" r="8"></circle>
-      </svg>
+      </svg> -->
     </div>
     <div
       v-if="$store.state.edittable && hovering"
@@ -43,27 +56,30 @@
         items-center
         justify-center
         dark:text-gray-300
+        text-black
         cursor-ew-resize
       "
       @mousedown.prevent.stop="startResizeRight"
     >
-      <svg
-        class="w-2 h-2 absolute"
-        focusable="false"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <circle cx="12" cy="12" r="8"></circle>
-      </svg>
+      <div
+        class="
+          w-2
+          h-2
+          rounded
+          border border-white
+          dark:border-gray-400
+          bg-gray-600
+          dark:bg-gray-900
+          absolute
+        "
+      ></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { DateRange, Event } from "~/src/Types";
-import { EVENT_HEIGHT_PX } from "./EventRow.vue";
+import { Event } from "~/src/Types";
 import { mapGetters } from "vuex";
 
 export default Vue.extend({
@@ -128,4 +144,10 @@ export default Vue.extend({
 </script>
 
 <style>
+
+.eventBar {
+  border-radius: 5px;
+  height: 10px;
+  flex-shrink: 0;
+}
 </style>

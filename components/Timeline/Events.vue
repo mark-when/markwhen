@@ -9,14 +9,14 @@
       <template v-if="Array.isArray(event)">
         <event-group
           :key="
-            event.length ? event[0].eventString.substring(0, 30) : 'newGroup'
+            event.length ? event[0].eventString.substring(0, 50) : 'newGroup'
           "
           :eventGroup="event"
         />
       </template>
       <event-row
         v-else
-        :key="event.eventString.substring(0, 30)"
+        :key="event.eventString.substring(0, 50)"
         :event="event"
       ></event-row
     ></template>
@@ -56,12 +56,6 @@ export default Vue.extend({
 .eventRow-leave-to {
   opacity: 0;
   transform: translateX(-30px);
-}
-
-.eventBar {
-  border-radius: 5px;
-  height: 10px;
-  flex-shrink: 0;
 }
 
 .eventTitle {

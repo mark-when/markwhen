@@ -1,12 +1,12 @@
 <template>
-  <div id="app" :class="darkMode">
+  <div id="app" :class="appClass">
     <div
       class="
         flex flex-col
         md:flex-row
         h-full
         dark:bg-baseGray
-        bg-slate-200
+        bg-slate-100
         dark:text-white
         text-gray-900
       "
@@ -32,7 +32,12 @@ import { mapGetters } from "vuex";
 
 export default Vue.extend({
   components: { Timeline, Sidebar },
-  computed: mapGetters({ darkMode: "sidebar/darkMode" }),
+  computed: {
+    ...mapGetters({ darkMode: "sidebar/darkMode" }),
+    appClass(): string {
+      return this.darkMode + " " + this.$store.state.globalClass;
+    },
+  },
   mounted() {
     this.checkDarkMode();
     this.$store.commit("getLocalTimelines");
@@ -81,5 +86,9 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#app.cursor-ew-resize {
+  cursor: ew-resize !important;
 }
 </style>

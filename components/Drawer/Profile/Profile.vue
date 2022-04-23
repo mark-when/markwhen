@@ -3,7 +3,7 @@
     class="
       flex flex-col
       dark:bg-gray-900
-      bg-slate-300
+      bg-slate-200
       h-full
       pb-2
       md:pb-6

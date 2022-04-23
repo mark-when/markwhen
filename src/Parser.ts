@@ -12,6 +12,7 @@ import {
   RelativeDate,
   Tags,
   Range,
+  DateRangePart,
 } from "./Types";
 // import * as chronoNode from 'chrono-node';
 
@@ -188,8 +189,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         type: "tagDefinition",
         from,
         to: from + line.indexOf(colorDef) + colorDef.length,
-        content: { tag: tagName, color: tags[tagName] }
-      })
+        content: { tag: tagName, color: tags[tagName] },
+      });
       continue;
     }
     if (line.match(DATE_FORMAT_REGEX)) {
@@ -340,7 +341,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         }
         granularity = "instant";
       } else {
-        const fromString = DateRange.stringToDateTime(
+        const fromString = DateRangePart.stringToDateTime(
           eventStartDate,
           dateFormat
         );
@@ -359,18 +360,16 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
           }
           endDateTime = RelativeDate.from(eventEndDate, relativeTo);
         } else if (eventEndDate) {
-          endDateTime = DateRange.roundDateUp(
-            DateRange.stringToDateTime(eventEndDate, dateFormat)
+          endDateTime = DateRangePart.roundDateUp(
+            DateRangePart.stringToDateTime(eventEndDate, dateFormat)
           );
         } else {
-          endDateTime = DateRange.roundDateUp({
+          endDateTime = DateRangePart.roundDateUp({
             dateTime: fromDateTime,
             granularity,
           });
         }
       }
-
-      const dateRange = new DateRange(fromDateTime, endDateTime, datePart);
 
       const indexOfDateRange = eventGroup[0].indexOf(datePart);
       const dateRangeInText = {
@@ -379,6 +378,14 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         to: lengthAtIndex[i] + indexOfDateRange + datePart.length + 1,
       };
       ranges.push(dateRangeInText);
+
+      const dateRange = new DateRangePart(
+        fromDateTime,
+        endDateTime,
+        datePart,
+        dateRangeInText
+      );
+
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0]
         .substring(indexOfDateRange + datePart.length + 1)
