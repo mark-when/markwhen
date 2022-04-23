@@ -1,5 +1,10 @@
 import { Context } from "@nuxt/types";
-import { parse } from "~/src/Parser";
+import {
+  parse,
+  AMERICAN_DATE_FORMAT,
+  EUROPEAN_DATE_FORMAT,
+  DateFormat,
+} from "~/src/Parser";
 import sortEvents, { EventSubGroup, Sort } from "~/src/Sort";
 import {
   Cascade,
@@ -180,7 +185,6 @@ export const state: () => State = () => ({
   username: "",
   dirtyEditor: false,
   hasSeenHowTo: true,
-  dateFormatFull: "M/d/y",
   viewportDateInterval: {
     from: DateTime.now().minus({ years: 10 }),
     to: DateTime.now().plus({ years: 10 }),
@@ -628,9 +632,23 @@ export function dateScale(dateTime: DateTime) {
   return 0;
 }
 
-function dateRangeToString(range: DateRange, scale: DisplayScale) {
-  const fromAsString = dateTimeToString(range.fromDateTime, scale, true);
-  const toAsString = dateTimeToString(range.toDateTime, scale, false);
+function dateRangeToString(
+  range: DateRange,
+  scale: DisplayScale,
+  dateFormat: DateFormat
+) {
+  const fromAsString = dateTimeToString(
+    range.fromDateTime,
+    scale,
+    true,
+    dateFormat
+  );
+  const toAsString = dateTimeToString(
+    range.toDateTime,
+    scale,
+    false,
+    dateFormat
+  );
   if (fromAsString === toAsString) {
     return `${fromAsString}`;
   }
@@ -638,9 +656,10 @@ function dateRangeToString(range: DateRange, scale: DisplayScale) {
 }
 
 function isDayStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
-  if (!["day", "hour"].includes(scale)) {
+  if (["month", "day"].includes(scale)) {
     return false;
   }
+  return [23, 0, 1].includes(dateTime.hour);
 }
 
 function isMonthStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
@@ -666,7 +685,8 @@ function isYearStartOrEnd(dateTime: DateTime, scale: DisplayScale): boolean {
 function dateTimeToString(
   dateTime: DateTime,
   scale: DisplayScale,
-  isStartDate: boolean
+  isStartDate: boolean,
+  dateFormat: typeof AMERICAN_DATE_FORMAT | typeof EUROPEAN_DATE_FORMAT
 ): string {
   if (isYearStartOrEnd(dateTime, scale)) {
     if (isStartDate) {
@@ -693,8 +713,27 @@ function dateTimeToString(
     }
   }
   if (isDayStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const adjustedForward = dateTime.plus({ hours: 2 });
+      return dayFormat(adjustedForward, dateFormat);
+    } else {
+      const adjustedBack = dateTime.minus({ hours: 2 });
+      return dayFormat(adjustedBack, dateFormat);
+    }
   }
-  return dateTime.toUTC().toISO({ includeOffset: false }) + "Z";
+  return asIso(dateTime);
+}
+
+function dayFormat(dateTime: DateTime, dateFormat: DateFormat): string {
+  const day = dateTime.day;
+  const month = dateTime.month;
+  const year = dateTime.year;
+  if (dateFormat === AMERICAN_DATE_FORMAT) {
+    return `${month}/${day}/${year}`;
+  } else if (dateFormat === EUROPEAN_DATE_FORMAT) {
+    return `${day}/${month}/${year}`;
+  }
+  return "unexpected date format";
 }
 
 function asIso(dateTime: DateTime): string {
@@ -736,7 +775,9 @@ export const actions: ActionTree<State, State> = {
     const scale = getters.scaleOfViewportDateInterval;
     commit(
       "setEventsString",
-      pre + `${dateRangeToString(range, scale)}:` + post
+      pre +
+        `${dateRangeToString(range, scale, getters.metadata.dateFormat)}:` +
+        post
     );
   },
 };

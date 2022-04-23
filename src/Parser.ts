@@ -68,8 +68,11 @@ const GROUP_END_REGEX = /^end(?:Group|Section)/;
 
 export const sorts = ["none", "down", "up"];
 
-const AMERICAN_DATE_FORMAT = "M/d/y";
-const EUROPEAN_DATE_FORMAT = "d/M/y";
+export type DateFormat =
+  | typeof AMERICAN_DATE_FORMAT
+  | typeof EUROPEAN_DATE_FORMAT;
+export const AMERICAN_DATE_FORMAT = "M/d/y";
+export const EUROPEAN_DATE_FORMAT = "d/M/y";
 
 export interface Foldable {
   endIndex: number;
