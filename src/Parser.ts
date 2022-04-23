@@ -4,7 +4,6 @@ import { COLORS, hexToRgb, HUMAN_COLORS } from "./ColorUtils";
 import sortEvents, { Sort, EventSubGroup } from "./Sort";
 import {
   Cascade,
-  DateRange,
   DateTimeGranularity,
   Event,
   EventDescription,

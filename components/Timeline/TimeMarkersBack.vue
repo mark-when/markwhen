@@ -28,7 +28,7 @@ import { mapGetters } from "vuex";
 import * as LRU from "lru-cache";
 // @ts-ignore
 import * as lxt from "~/node_modules/luxon/src/impl/conversions.js";
-
+// @ts-ignore
 const weekdayCache = new LRU({ max: 300 });
 function getWeekday(dateTime: DateTime): number {
   const key = `${dateTime.year}-${dateTime.month}-${dateTime.day}`;

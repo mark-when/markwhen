@@ -656,7 +656,7 @@ function dateRangeToString(
 }
 
 function isDayStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
-  if (["month", "day"].includes(scale)) {
+  if (!["month", "day"].includes(scale)) {
     return false;
   }
   return [23, 0, 1].includes(dateTime.hour);

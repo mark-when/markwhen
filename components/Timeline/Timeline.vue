@@ -3,6 +3,7 @@
     id="timeline"
     class="relative h-full overflow-auto w-full order-1"
     :class="{ 'md:order-1': isRight, 'md:order-2': !isRight }"
+    @touchstart="touchStart"
     @mousedown.prevent="panStart"
     @scroll="scroll"
     :style="eventsStyle"
@@ -10,7 +11,7 @@
     <TimeMarkersBack :markers="markers" />
     <events />
     <TimeMarkersFront :markers="markers" />
-    <drawer-header/>
+    <drawer-header />
     <resize-observer @notify="handleResize" />
   </div>
 </template>
@@ -68,7 +69,7 @@ export default Vue.extend({
     );
   },
   mounted() {
-    this.setupHammer();
+    this.touchScreenListener();
     this.setupZoomer();
     this.setViewportDateInterval();
   },
@@ -116,6 +117,16 @@ export default Vue.extend({
     },
   },
   methods: {
+    touchScreenListener() {
+      const vm = this;
+      const touchListener = (e: TouchEvent) => {
+        if (!vm.mc) {
+          vm.setupHammer();
+          vm.$el.removeEventListener("touchstart", touchListener as EventListener);
+        }
+      };
+      this.$el.addEventListener("touchstart", touchListener as EventListener);
+    },
     setNewMarkers(newMarkers: TimeMarker[]) {
       if (!newMarkers) {
         this.markers = [];
@@ -275,7 +286,7 @@ export default Vue.extend({
       this.pinchStartCenterX = null;
       this.pinchStartCenterY = null;
     },
-    touchStart(e: any) {
+    touchStart(e: Event) {
       const event = e as TouchEvent;
       if (event.touches.length >= 2) {
         this.mc.get("pinch").set({ enable: true });
