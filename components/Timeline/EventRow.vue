@@ -1,6 +1,6 @@
 <template>
   <div
-    class="eventRow relative flex"
+    class="eventRow relative"
     :style="eventRowStyle"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
