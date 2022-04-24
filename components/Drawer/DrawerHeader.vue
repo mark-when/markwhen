@@ -10,10 +10,19 @@
       z-20
     "
   >
-    <div class="" v-if="metadata.title">
-      <h3 class="text-2xl font-bold text-gray-400 pl-1 timelineTitle">
+    <div class="" v-if="metadata.title || metadata.description">
+      <h3
+        v-if="metadata.title"
+        class="text-2xl font-bold text-gray-400 pl-1 timelineTitle"
+      >
         {{ metadata.title }}
       </h3>
+      <h4
+        v-if="metadata.description"
+        class="text-lg font-medium text-gray-400 pl-1 timelineTitle"
+      >
+        {{ metadata.description }}
+      </h4>
     </div>
     <div class="flex flex-row items-center" @mousedown="mousedown">
       <button
