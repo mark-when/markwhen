@@ -317,17 +317,18 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       if (relativeFromDate) {
         const relativeToEventId = eventStartLineRegexMatch[11];
         let relativeTo =
-          relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
+          relativeToEventId && ids[relativeToEventId]?.ranges.date.toDateTime;
         if (!relativeTo && events.length) {
           // We do not have an event to refer to by id, try to get the previous event
           const previous = events[events.length - 1];
           if (previous instanceof Event) {
-            relativeTo = previous.range.toDateTime;
+            relativeTo = previous.ranges.date.toDateTime;
           } else {
-            relativeTo = previous[previous.length - 1].range.toDateTime;
+            relativeTo = previous[previous.length - 1].ranges.date.toDateTime;
           }
         } else if (!relativeTo && eventSubgroup && eventSubgroup.length) {
-          relativeTo = eventSubgroup[eventSubgroup.length - 1].range.toDateTime;
+          relativeTo =
+            eventSubgroup[eventSubgroup.length - 1].ranges.date.toDateTime;
         }
         relativeTo = relativeTo ? relativeTo : DateTime.now();
 
@@ -355,7 +356,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         if (relativeToDate) {
           const relativeToEventId = eventStartLineRegexMatch[31];
           let relativeTo =
-            relativeToEventId && ids[relativeToEventId]?.range.toDateTime;
+            relativeToEventId && ids[relativeToEventId]?.ranges.date.toDateTime;
           if (!relativeTo) {
             // We do not have an event to refer to by id, use the start of this event
             relativeTo = fromDateTime;
@@ -388,13 +389,24 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         dateRangeInText
       );
 
+      const eventRange: Range = {
+        from: dateRangeInText.from,
+        to: lengthAtIndex[end],
+        type: "event",
+      };
+
+      const eventRanges = {
+        date: dateRange,
+        event: eventRange,
+      };
+
       // Remove the date part from the first line
       eventGroup[0] = eventGroup[0]
         .substring(indexOfDateRange + datePart.length + 1)
         .trim();
 
       const eventDescription = new EventDescription(eventGroup);
-      const event = new Event(firstLine, dateRange, eventDescription);
+      const event = new Event(firstLine, eventRanges, eventDescription);
 
       if (event) {
         if (eventSubgroup) {

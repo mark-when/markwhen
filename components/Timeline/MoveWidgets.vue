@@ -16,10 +16,16 @@
   >
     <div
       class="flex flex-row mr-1 items-center justify-center"
-      v-if="sort === 'none'"
+      v-if="sort === 'none' && (!filter || !filter.length)"
     >
       <button
-        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm p-px"
+        class="
+          transition
+          hover:bg-slate-200
+          dark:hover:bg-slate-800
+          rounded-sm
+          p-px
+        "
         @click="$emit('moveUp')"
       >
         <svg
@@ -36,7 +42,13 @@
         </svg>
       </button>
       <button
-        class="transition hover:bg-slate-200 dark:hover:bg-slate-800 rounded-sm p-px"
+        class="
+          transition
+          hover:bg-slate-200
+          dark:hover:bg-slate-800
+          rounded-sm
+          p-px
+        "
         @click="$emit('moveDown')"
       >
         <svg
@@ -86,10 +98,13 @@ import { mapState } from "vuex";
 
 export default Vue.extend({
   computed: {
-    ...mapState(["sort"]),
+    ...mapState(["sort", "filter"]),
     style(): string {
-      return this.sort === "none" ? "left: -4rem" : "left: -1.8rem;";
+      return this.showMoveButtons ? "left: -4rem" : "left: -1.8rem;";
     },
+    showMoveButtons(): boolean {
+      return this.sort === 'none' && (!this.filter || !this.filter.length)
+    }
   },
   methods: {
     move(e: MouseEvent | TouchEvent) {

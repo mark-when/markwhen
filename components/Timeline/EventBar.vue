@@ -7,77 +7,16 @@
       :class="percentBarColorClass"
       :style="`min-width: 10px; max-width: 100%; ${percentBarColorStyle}; width: ${percent}%;`"
     ></div>
-    <div
+    <drag-handle
       v-if="$store.state.edittable && hovering"
-      class="
-        absolute
-        top-0
-        left-0
-        bottom-0
-        flex
-        items-center
-        justify-center
-        dark:text-gray-300
-        text-gray-500
-        cursor-ew-resize
-        touch-none
-      "
-      @touchstart="startResizeLeft"
-      @mousedown.prevent.stop="startResizeLeft"
-    >
-      <div
-        class="
-          w-2
-          h-2
-          rounded
-          border border-white
-          dark:border-gray-400
-          bg-gray-600
-          dark:bg-gray-900
-          absolute
-        "
-      ></div>
-      <!-- <svg
-        class="w-2 h-2 absolute"
-        focusable="false"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <circle cx="12" cy="12" r="8"></circle>
-      </svg> -->
-    </div>
-    <div
+      @startResize="startResizeLeft"
+      :isLeft="true"
+    />
+    <drag-handle
       v-if="$store.state.edittable && hovering"
-      class="
-        absolute
-        top-0
-        bottom-0
-        right-0
-        flex
-        items-center
-        justify-center
-        dark:text-gray-300
-        text-black
-        cursor-ew-resize
-        touch-none
-      "
-      @touchstart="startResizeRight"
-      @mousedown.prevent.stop="startResizeRight"
-    >
-      <div
-        class="
-          w-2
-          h-2
-          rounded
-          border border-white
-          dark:border-gray-400
-          bg-gray-600
-          dark:bg-gray-900
-          absolute
-        "
-      ></div>
-    </div>
+      @startResize="startResizeRight"
+      :isLeft="false"
+    />
   </div>
 </template>
 
@@ -85,8 +24,10 @@
 import Vue from "vue";
 import { Event } from "~/src/Types";
 import { mapGetters } from "vuex";
+import DragHandle from "./DragHandle.vue";
 
 export default Vue.extend({
+  components: { DragHandle },
   props: ["event", "hovering", "width"],
   methods: {
     startResizeLeft(e: MouseEvent) {

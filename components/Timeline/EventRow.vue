@@ -125,7 +125,9 @@ export const EVENT_HEIGHT_PX = 10;
 
 export default Vue.extend({
   components: { EventMeta, EventBar, MoveWidgets },
-  props: ["event"],
+  props: {
+    event: Event,
+  },
   data() {
     return {
       imageStatus: "not loaded",
@@ -173,7 +175,7 @@ export default Vue.extend({
     },
     eventRowStyle(): string {
       const leftMargin = this.distanceFromBaselineLeftmostDate(
-        this.tempFrom ? this.tempFrom : this.event.range.fromDateTime
+        this.tempFrom ? this.tempFrom : this.event.ranges.date.fromDateTime
       );
       return `margin-left: ${leftMargin}px;`;
     },
@@ -208,25 +210,31 @@ export default Vue.extend({
       }
       if (this.tempTo) {
         return this.getWidthForRange({
-          fromDateTime: this.event.range.fromDateTime,
+          fromDateTime: this.event.ranges.date.fromDateTime,
           toDateTime: this.tempTo,
         });
       }
       if (this.tempFrom) {
         return this.getWidthForRange({
           fromDateTime: this.tempFrom,
-          toDateTime: this.event.range.toDateTime,
+          toDateTime: this.event.ranges.date.toDateTime,
         });
       }
-      return this.getWidthForRange(this.event.range);
+      return this.getWidthForRange(this.event.ranges.date);
     },
   },
   methods: {
     moveUp() {
-      console.log("move up");
+      this.$store.dispatch("moveEventUpOrDown", {
+        up: true,
+        event: this.event,
+      });
     },
     moveDown() {
-      console.log("move down");
+      this.$store.dispatch("moveEventUpOrDown", {
+        up: false,
+        event: this.event,
+      });
     },
     startResizeLeft(e: MouseEvent | TouchEvent) {
       const vm = this;
@@ -253,7 +261,7 @@ export default Vue.extend({
         vm.$store.dispatch("updateEventDateRange", {
           event: vm.event,
           from: vm.tempFrom,
-          to: (vm.event as Event).range.toDateTime,
+          to: (vm.event as Event).ranges.date.toDateTime,
         });
         vm.tempFrom = undefined;
         document.removeEventListener("mousemove", moveListener);
@@ -273,7 +281,7 @@ export default Vue.extend({
     },
     startResizeRight(e: MouseEvent) {
       const vm = this;
-      vm.tempTo = (vm.event as Event).range.toDateTime;
+      vm.tempTo = (vm.event as Event).ranges.date.toDateTime;
       const moveListener = (e: MouseEvent | TouchEvent) => {
         let x;
         if (e instanceof TouchEvent) {
@@ -294,7 +302,7 @@ export default Vue.extend({
         vm.$store.dispatch("updateEventDateRange", {
           event: vm.event,
           to: vm.tempTo,
-          from: (vm.event as Event).range.fromDateTime,
+          from: (vm.event as Event).ranges.date.fromDateTime,
         });
         vm.tempTo = undefined;
         document.removeEventListener("mousemove", moveListener);
@@ -314,8 +322,8 @@ export default Vue.extend({
     },
     move() {
       const vm = this;
-      vm.tempFrom = (vm.event as Event).range.fromDateTime;
-      vm.tempTo = (vm.event as Event).range.toDateTime;
+      vm.tempFrom = (vm.event as Event).ranges.date.fromDateTime;
+      vm.tempTo = (vm.event as Event).ranges.date.toDateTime;
       const diff = vm.tempTo.diff(vm.tempFrom).as("days");
 
       const moveListener = (e: MouseEvent | TouchEvent) => {

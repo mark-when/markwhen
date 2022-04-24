@@ -267,14 +267,21 @@ export type Range = {
   type: string;
   content?: any;
 };
+
+export type EventRanges = { event: Range; date: DateRangePart };
+
 export class Event {
   eventString: string;
-  range: DateRangePart;
+  ranges: EventRanges;
   event: EventDescription;
 
-  constructor(eventString: string, range: DateRangePart, event: EventDescription) {
+  constructor(
+    eventString: string,
+    ranges: EventRanges,
+    event: EventDescription
+  ) {
     this.eventString = eventString;
-    this.range = range;
+    this.ranges = ranges;
     this.event = event;
   }
 
@@ -283,7 +290,7 @@ export class Event {
   }
 
   getDateHtml(): string {
-    return this.range.originalString || "";
+    return this.ranges.date.originalString || "";
   }
 }
 

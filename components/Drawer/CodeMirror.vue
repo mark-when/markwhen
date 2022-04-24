@@ -19,6 +19,7 @@ import { Cascade, Range as CascadeRange } from "~/src/Types";
 import { Foldable } from "~/src/Parser";
 import { ColorPickerWidget } from "~/src/ColorPickerWidget";
 import { rgbStringToHex } from "~/src/ColorUtils";
+import { ACTION_SET_EVENTS_STRING } from "~/store";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -208,7 +209,7 @@ export default Vue.extend({
         },
         update(cascade, transaction) {
           if (transaction.docChanged) {
-            vm.$store.commit("setEventsString", transaction.state.sliceDoc());
+            vm.$store.commit(ACTION_SET_EVENTS_STRING, transaction.state.sliceDoc());
             return vm.cascade;
           }
           return cascade;

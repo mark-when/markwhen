@@ -224,6 +224,8 @@ const MONTH = 30 * DAY;
 const YEAR = 12 * MONTH;
 const DECADE = 10 * YEAR;
 
+export const ACTION_SET_EVENTS_STRING = "setEventsString";
+
 export const mutations: MutationTree<State> = {
   setEdittable(state: State, edittable: boolean) {
     state.edittable = edittable;
@@ -515,9 +517,9 @@ export const getters: GetterTree<State, State> = {
     return [
       clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),
       clamp(roundToTwoDecimalPlaces((30 * MINUTE) / denom)),
-      clamp(roundToTwoDecimalPlaces((25 * HOUR) / denom)),
+      clamp(roundToTwoDecimalPlaces((30 * HOUR) / denom)),
       clamp(roundToTwoDecimalPlaces((40 * DAY) / denom)),
-      clamp(roundToTwoDecimalPlaces((25 * MONTH) / denom)),
+      clamp(roundToTwoDecimalPlaces((30 * MONTH) / denom)),
       clamp(roundToTwoDecimalPlaces((25 * YEAR) / denom)),
       clamp(roundToTwoDecimalPlaces((10 * DECADE) / denom)),
     ];
@@ -729,10 +731,40 @@ function m(m: TimeMarker): string {
   return `${m.dateTime.toLocaleString()}, ${m.size}px`;
 }
 
+function getPreviousEvent(event: Event, events: Event[]) {
+  for (let i = 0; i < events.length; i++) {
+    const current = events[i];
+    if (
+      current.ranges.date.dateRangeInText === event.ranges.date.dateRangeInText
+    ) {
+      if (i > 0) {
+        return events[i - 1];
+      }
+      return null;
+    }
+  }
+  return null;
+}
+
+function getNextEvent(event: Event, events: Event[]) {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const current = events[i];
+    if (
+      current.ranges.date.dateRangeInText === event.ranges.date.dateRangeInText
+    ) {
+      if (i < events.length - 1) {
+        return events[i + 1];
+      }
+      return null;
+    }
+  }
+  return null;
+}
+
 export const actions: ActionTree<State, State> = {
   nuxtServerInit(store: any, context: Context) {
     if (context.req.timelineFile) {
-      store.commit("setEventsString", context.req.timelineFile);
+      store.commit(ACTION_SET_EVENTS_STRING, context.req.timelineFile);
     }
     if (context.req.timelinePath) {
       store.commit("setTimelinePath", context.req.timelinePath);
@@ -746,6 +778,40 @@ export const actions: ActionTree<State, State> = {
     commit("setViewport", viewport);
     commit("setViewportDateInterval", viewportInterval);
   },
+  moveEventUpOrDown(
+    { state, commit, getters },
+    { up, event }: { up: boolean; event: Event }
+  ) {
+    const events = (getters.events as Events).flat();
+    const es = state.eventsString;
+    const swap = up
+      ? getPreviousEvent(event, events)
+      : getNextEvent(event, events);
+    if (!swap || !es) {
+      return;
+    }
+
+    const first = up ? swap : event;
+    const second = up ? event : swap;
+
+    const firstFullEventString = es.substring(
+      first.ranges.event.from,
+      first.ranges.event.to
+    );
+    const secondFullEventString = es.substring(
+      second.ranges.event.from,
+      second.ranges.event.to
+    );
+
+    const newString =
+      es.substring(0, first.ranges.event.from) +
+      secondFullEventString +
+      es.substring(first.ranges.event.to, second.ranges.event.from) +
+      firstFullEventString +
+      es.substring(second.ranges.event.to, es.length);
+
+    commit(ACTION_SET_EVENTS_STRING, newString);
+  },
   updateEventDateRange({ commit, state, getters }, params) {
     const { event, from, to } = params as {
       event: Event;
@@ -753,13 +819,13 @@ export const actions: ActionTree<State, State> = {
       to: DateTime;
     };
     const range: DateRange = { fromDateTime: from, toDateTime: to };
-    const inTextFrom = event.range.dateRangeInText.from;
-    const inTextTo = event.range.dateRangeInText.to;
+    const inTextFrom = event.ranges.date.dateRangeInText.from;
+    const inTextTo = event.ranges.date.dateRangeInText.to;
     const pre = state.eventsString?.slice(0, inTextFrom);
     const post = state.eventsString?.slice(inTextTo);
     const scale = getters.scaleOfViewportDateInterval;
     commit(
-      "setEventsString",
+      ACTION_SET_EVENTS_STRING,
       pre +
         `${dateRangeToString(range, scale, getters.metadata.dateFormat)}:` +
         post
