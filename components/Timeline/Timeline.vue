@@ -122,7 +122,10 @@ export default Vue.extend({
       const touchListener = (e: TouchEvent) => {
         if (!vm.mc) {
           vm.setupHammer();
-          vm.$el.removeEventListener("touchstart", touchListener as EventListener);
+          vm.$el.removeEventListener(
+            "touchstart",
+            touchListener as EventListener
+          );
         }
       };
       this.$el.addEventListener("touchstart", touchListener as EventListener);

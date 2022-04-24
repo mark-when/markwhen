@@ -60,10 +60,12 @@ const EVENT_START_REGEX = new RegExp(`(\\s*)${DATE_RANGE_REGEX.source}(.*)`);
 
 export const COMMENT_REGEX = /^\s*\/\/.*/;
 const TAG_COLOR_REGEX = /^\s*#(\w*):\s*(\S+)/;
+const TITLE_REGEX = /^\s*(title:)\s*(.+)\s*$/i;
+const DESCRIPTION_REGEX = /^\s*(description:)\s*(.+)\s*$/i;
 const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
 const TAG_REGEX = /(?:^|\s)#(\w*)/g;
-const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/;
-const GROUP_END_REGEX = /^end(?:Group|Section)/;
+const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/i;
+const GROUP_END_REGEX = /^end(?:Group|Section)/i;
 
 export const sorts = ["none", "down", "up"];
 
@@ -101,6 +103,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   const events = [] as (Event | EventSubGroup)[];
   const tags = {} as Tags;
   const ids = {} as IdedEvents;
+  let title = undefined as string | undefined;
+  let description = undefined as string | undefined;
 
   let paletteIndex = 0;
   let dateFormat = AMERICAN_DATE_FORMAT;
@@ -197,6 +201,28 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     }
     if (line.match(DATE_FORMAT_REGEX)) {
       dateFormat = EUROPEAN_DATE_FORMAT;
+      continue;
+    }
+    const titleMatch = line.match(TITLE_REGEX);
+    if (titleMatch) {
+      title = titleMatch[2];
+      const titleTagIndex = line.indexOf(titleMatch[1]);
+      ranges.push({
+        type: "title",
+        from: lengthAtIndex[i] + titleTagIndex,
+        to: lengthAtIndex[i] + titleTagIndex + titleMatch[1].length,
+      });
+      continue;
+    }
+    const descriptionMatch = line.match(DESCRIPTION_REGEX);
+    if (descriptionMatch) {
+      description = descriptionMatch[2];
+      const descriptionTagIndex = line.indexOf(descriptionMatch[1]);
+      ranges.push({
+        type: "description",
+        from: lengthAtIndex[i] + descriptionTagIndex,
+        to: lengthAtIndex[i] + descriptionTagIndex + descriptionMatch[1].length,
+      });
       continue;
     }
     const matches = line.matchAll(TAG_REGEX);
@@ -450,6 +476,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       earliestTime: earliest,
       latestTime: latest,
       dateFormat,
+      ...(title ? { title } : {}),
+      ...(description ? { description } : {}),
     },
   };
 }

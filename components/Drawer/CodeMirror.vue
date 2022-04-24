@@ -237,6 +237,9 @@ export default Vue.extend({
                   if (r.type === "tag") {
                     return tagMark.range(r.from, r.to);
                   }
+                  if (['title', 'description'].includes(r.type)) {
+                    return dateRangeMark.range(r.from, r.to)
+                  }
                   return commentMark.range(r.from, r.to);
                 })
                 .sort((a, b) => a.from - b.from)

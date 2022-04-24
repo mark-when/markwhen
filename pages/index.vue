@@ -5,22 +5,28 @@
 <script lang="ts">
 import Vue from "vue";
 import Main from "~/components/Main.vue";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import { NuxtCookies } from "cookie-universal-nuxt";
 
 export default Vue.extend({
   head() {
+    const meta = [
+      {
+        name: "viewport",
+        content: "width=device-width, user-scalable=no",
+      },
+    ];
+    if (this.metadata.description) {
+      meta.push({
+        name: "description",
+        content: this.metadata.description,
+      });
+    }
     return {
-      meta: [
-        // {
-        //   name: "viewport",
-        //   content: "width=device-width, user-scalable=no",
-        // },
-        // {
-        //   property: "og:image",
-        //   content: `https://api.sw.ink/v0/swink?key=${swinkApiKey}&dotStyle=${dotStyle}&font=${font}&innerText=${innerText}&url=https://cascade.page/`,
-        // },
-      ],
+      title: this.metadata.title
+        ? `${this.metadata.title} - Cascade.page`
+        : `Cascade.page`,
+      meta,
     };
   },
   middleware(context) {
@@ -38,17 +44,6 @@ export default Vue.extend({
     }
   },
   components: { Main },
-  computed: mapState(["dirtyEditor"]),
-  watch: {
-    dirtyEditor(val) {
-      if (val && !process.env.DEV) {
-        window.onbeforeunload = function (e: any) {
-          return "Exit this page? Unsaved changes will be lost.";
-        };
-      } else {
-        window.onbeforeunload = null;
-      }
-    },
-  },
+  computed: mapGetters(["metadata"]),
 });
 </script>

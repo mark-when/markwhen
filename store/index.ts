@@ -29,7 +29,6 @@ interface State {
   eventsString: string | undefined;
   timelinePath: string | null;
   username: string | null;
-  dirtyEditor: boolean;
   hasSeenHowTo: boolean;
   viewportDateInterval: DateInterval;
   viewport: Viewport;
@@ -168,7 +167,6 @@ export const state: () => State = () => ({
   eventsString: eventsString || undefined,
   timelinePath: "",
   username: "",
-  dirtyEditor: false,
   hasSeenHowTo: true,
   viewportDateInterval: {
     from: DateTime.now().minus({ years: 10 }),

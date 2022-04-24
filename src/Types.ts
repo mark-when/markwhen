@@ -311,6 +311,8 @@ export interface CascadeMetadata {
   earliestTime: DateTime;
   latestTime: DateTime;
   dateFormat: string;
+  title?: string
+  description?: string
 }
 
 export type GroupStyle = "section" | "tight";
