@@ -6,6 +6,19 @@
 import Vue from "vue";
 import Main from "~/components/Main.vue";
 import { mapGetters } from "vuex";
+import { Duration } from "luxon";
+import { Event } from "~/src/Types";
+
+function getMaxDurationOfEventsInCascasde(events: Event[]) {
+  let maxDuration: Duration;
+  events.forEach((e) => {
+    const duration = e.ranges.date.toDateTime.diff(e.ranges.date.fromDateTime);
+    if (!maxDuration || duration > maxDuration) {
+      maxDuration = duration;
+    }
+  });
+  return maxDuration!.toMillis();
+}
 
 export default Vue.extend({
   computed: mapGetters(["metadata"]),
@@ -43,6 +56,13 @@ export default Vue.extend({
     const width = context.app.$cookies.get("sbw");
     if (width) {
       context.store.commit("sidebar/setWidth", parseInt(width));
+    }
+    if (process.server) {
+      const max = getMaxDurationOfEventsInCascasde(
+        context.store.getters.events.flat()
+      );
+      const scale = Math.min(1 / (max / 50000000000), 1.8);
+      context.store.commit("setScale", scale);
     }
   },
 });

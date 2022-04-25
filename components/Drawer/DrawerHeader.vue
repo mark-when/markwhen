@@ -104,13 +104,29 @@
         "
         style="width: fit-content"
       >
-        <a
-          :href="'/' + $store.state.timelinePath"
-          class="mr-4 flex items-center text-gray-300"
+        <div
           v-if="$store.state.timelinePath"
+          class="mr-4"
+          style="max-width: 12rem"
         >
-          @{{ $store.state.timelinePath }}
-        </a>
+          <a
+            :href="'/' + $store.state.timelinePath"
+            class="
+              flex
+              items-center
+              dark:text-gray-300
+              text-gray-600
+              underline
+              whitespace-nowrap
+              text-ellipsis
+              max-w-12
+            "
+            style="max-width: fit-content;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;"
+          >
+            @{{ $store.state.timelinePath }}
+          </a>
+        </div>
+
         <display-settings></display-settings>
         <sort></sort>
         <tags></tags>

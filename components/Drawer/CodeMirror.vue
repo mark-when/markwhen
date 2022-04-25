@@ -238,7 +238,7 @@ export default Vue.extend({
                     return tagMark.range(r.from, r.to);
                   }
                   if (['title', 'description'].includes(r.type)) {
-                    return dateRangeMark.range(r.from, r.to)
+                    return sectionMark.range(r.from, r.to)
                   }
                   return commentMark.range(r.from, r.to);
                 })
