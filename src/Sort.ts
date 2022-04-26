@@ -113,6 +113,7 @@ export default function sortEvents(
           eventOrEvents2.range?.min ?? now
         );
   });
+  return events
 }
 
 function addRangeToEventGroup(events: EventSubGroup) {

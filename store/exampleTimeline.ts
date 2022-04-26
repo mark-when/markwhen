@@ -1,7 +1,7 @@
 
 export const exampleTimeline = `
 title: My timeline
-description: Start editting to make it your own 🫡
+description: Start editing to make it your own 🫡
 
 // Comments start with two slashes: \`//\`
 // Tags start with a pound sign: \`#\`

@@ -1,5 +1,10 @@
 import { DateTime } from "luxon";
-import { AMOUNT_REGEX, COMMENT_REGEX, EVENT_ID_REGEX } from "./Parser";
+import {
+  AMERICAN_DATE_FORMAT,
+  AMOUNT_REGEX,
+  COMMENT_REGEX,
+  EVENT_ID_REGEX,
+} from "./Parser";
 
 export type Year = number;
 export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -305,14 +310,41 @@ export interface Cascade {
   metadata: CascadeMetadata;
 }
 
+export function emptyCascade(): Cascade {
+  return {
+    events: [],
+    ranges: [],
+    foldables: [],
+    tags: {},
+    ids: {},
+    metadata: {
+      earliestTime: DateTime.now().minus({ years: 5 }),
+      latestTime: DateTime.now().plus({ years: 5 }),
+      dateFormat: AMERICAN_DATE_FORMAT,
+      startLineIndex: 0,
+      endLineIndex: 0,
+      startStringIndex: 0,
+      endStringIndex: 0,
+    },
+  };
+}
+
+export interface Cascades {
+  cascades: Cascade[];
+}
+
 export type Events = (Event | Event[])[];
 
 export interface CascadeMetadata {
   earliestTime: DateTime;
   latestTime: DateTime;
   dateFormat: string;
-  title?: string
-  description?: string
+  startLineIndex: number;
+  startStringIndex: number;
+  endLineIndex: number;
+  endStringIndex: number;
+  title?: string;
+  description?: string;
 }
 
 export type GroupStyle = "section" | "tight";

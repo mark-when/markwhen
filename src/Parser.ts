@@ -12,6 +12,8 @@ import {
   Tags,
   Range,
   DateRangePart,
+  Cascades,
+  emptyCascade,
 } from "./Types";
 // import * as chronoNode from 'chrono-node';
 
@@ -66,6 +68,8 @@ const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
 const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/i;
 const GROUP_END_REGEX = /^end(?:Group|Section)/i;
+const PAGE_BREAK = "_-_-_break_-_-_";
+const PAGE_BREAK_REGEX = /^_-_-_break_-_-_$/;
 
 export const sorts = ["none", "down", "up"];
 
@@ -83,23 +87,37 @@ export interface Foldable {
   foldStartIndex?: number;
 }
 
-export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
+export function parse(eventsString?: string): Cascades {
   if (!eventsString) {
-    return {
-      events: [],
-      tags: {},
-      ids: {},
-      foldables: {},
-      ranges: [],
-      metadata: {
-        earliestTime: DateTime.now().minus({ years: 5 }),
-        latestTime: DateTime.now().plus({ years: 5 }),
-        dateFormat: AMERICAN_DATE_FORMAT,
-      },
-    };
+    return { cascades: [emptyCascade()] };
   }
 
   const lines = eventsString.split("\n");
+  let lengthAtIndex: number[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (i === 0) {
+      lengthAtIndex.push(0);
+    }
+    lengthAtIndex.push(
+      1 + lines[i].length + lengthAtIndex[lengthAtIndex.length - 1] || 0
+    );
+  }
+  const cascades = [];
+  let index = 0;
+  do {
+    const cascade = parseCascade(lines, lengthAtIndex, index);
+    index = cascade.metadata.endLineIndex + 1;
+    cascades.push(cascade);
+  } while (index < lines.length);
+
+  return { cascades };
+}
+
+export function parseCascade(
+  lines: string[],
+  lengthAtIndex: number[],
+  startLineIndex: number = 0,
+): Cascade {
   const events = [] as (Event | EventSubGroup)[];
   const tags = {} as Tags;
   const ids = {} as IdedEvents;
@@ -119,17 +137,8 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
     [F in number | string]: Foldable;
   } = {};
 
-  let lengthAtIndex: number[] = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (i === 0) {
-      lengthAtIndex.push(0);
-    }
-    lengthAtIndex.push(
-      1 + lines[i].length + lengthAtIndex[lengthAtIndex.length - 1] || 0
-    );
-  }
   const ranges: Range[] = [];
-  for (let i = 0; i < lines.length; i++) {
+  for (let i = startLineIndex; i < lines.length; i++) {
     // Remove comments
     const line = lines[i];
     const currentFoldableComment = foldables["comment"];
@@ -309,6 +318,37 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       continue;
     }
 
+    if (line.match(PAGE_BREAK_REGEX)) {
+      if (eventSubgroup) {
+        events.push(eventSubgroup);
+      }
+
+      if (!earliest) {
+        earliest = DateTime.now().minus({ years: 5 });
+      }
+      if (!latest) {
+        latest = DateTime.now().plus({ years: 5 });
+      }
+      return {
+        events,
+        tags,
+        ids,
+        ranges,
+        foldables,
+        metadata: {
+          earliestTime: earliest,
+          latestTime: latest,
+          dateFormat,
+          startLineIndex,
+          startStringIndex: lengthAtIndex[startLineIndex],
+          endLineIndex: i,
+          endStringIndex: lengthAtIndex[i],
+          ...(title ? { title } : {}),
+          ...(description ? { description } : {}),
+        },
+      };
+    }
+
     const eventStartLineRegexMatch = line.match(EVENT_START_REGEX);
     if (eventStartLineRegexMatch) {
       let end = i;
@@ -319,6 +359,7 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
         typeof nextLine === "string" &&
         !nextLine.match(EVENT_START_REGEX) &&
         !nextLine.match(GROUP_START_REGEX) &&
+        !nextLine.match(PAGE_BREAK_REGEX) &&
         !(eventSubgroup && nextLine.match(GROUP_END_REGEX))
       );
 
@@ -465,7 +506,6 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
   if (!latest) {
     latest = DateTime.now().plus({ years: 5 });
   }
-  sortEvents(events, sort);
   return {
     events,
     tags,
@@ -476,6 +516,10 @@ export function parse(eventsString?: string, sort: Sort = "none"): Cascade {
       earliestTime: earliest,
       latestTime: latest,
       dateFormat,
+      startStringIndex: lengthAtIndex[startLineIndex],
+      startLineIndex: startLineIndex,
+      endStringIndex: lengthAtIndex[lines.length - 1],
+      endLineIndex: lines.length - 1,
       ...(title ? { title } : {}),
       ...(description ? { description } : {}),
     },

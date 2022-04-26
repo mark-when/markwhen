@@ -36,6 +36,7 @@ interface State {
   sort: Sort;
   edittable: boolean;
   globalClass: string;
+  cascadeIndex: number;
 }
 
 interface DateInterval {
@@ -84,6 +85,7 @@ export const state: () => State = () => ({
   sort: "none",
   edittable: true,
   globalClass: "",
+  cascadeIndex: 0,
 });
 
 export type DisplayScale =
@@ -296,14 +298,16 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
 
 export const getters: GetterTree<State, State> = {
   cascade(state: State, getters: any): Cascade {
-    const cascade = parse(state.eventsString, state.sort);
-    return cascade;
+    const cascades = parse(state.eventsString);
+    console.log(cascades);
+    return cascades.cascades[state.cascadeIndex];
   },
   ranges(state: State, getters: any): Range[] {
     return getters.cascade.ranges;
   },
   events(state: State, getters: any): Events {
-    return getters.cascade.events;
+    const sorted = sortEvents([...getters.cascade.events], state.sort);
+    return sorted;
   },
   filteredEvents(state: State, getters: any): Events {
     const events = getters.events as Events;
