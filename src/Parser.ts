@@ -116,7 +116,7 @@ export function parse(eventsString?: string): Cascades {
 export function parseCascade(
   lines: string[],
   lengthAtIndex: number[],
-  startLineIndex: number = 0,
+  startLineIndex: number = 0
 ): Cascade {
   const events = [] as (Event | EventSubGroup)[];
   const tags = {} as Tags;
@@ -518,7 +518,10 @@ export function parseCascade(
       dateFormat,
       startStringIndex: lengthAtIndex[startLineIndex],
       startLineIndex: startLineIndex,
-      endStringIndex: lengthAtIndex[lines.length - 1],
+
+      // As this is the last cascade, return the length of the whole string
+      endStringIndex:
+        lengthAtIndex[lines.length - 1] + lines[lines.length - 1].length,
       endLineIndex: lines.length - 1,
       ...(title ? { title } : {}),
       ...(description ? { description } : {}),

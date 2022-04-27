@@ -15,11 +15,10 @@ import { foldService } from "@codemirror/language";
 import { Decoration, EditorView, keymap, ViewPlugin } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { mapState, mapGetters } from "vuex";
-import { Cascade, Range as CascadeRange } from "~/src/Types";
+import { Cascade, Range as CascadeRange, Range } from "~/src/Types";
 import { Foldable } from "~/src/Parser";
 import { ColorPickerWidget } from "~/src/ColorPickerWidget";
 import { rgbStringToHex } from "~/src/ColorUtils";
-import { ACTION_SET_EVENTS_STRING } from "~/store";
 
 const rightCaret = () => {
   let div = document.createElement("div");
@@ -61,8 +60,21 @@ const tagMark = Decoration.mark({ class: "cm-tag" });
 export default Vue.extend({
   props: ["startingText"],
   computed: {
-    ...mapState(["eventsString"]),
+    ...mapGetters(["cascadeString"]),
     ...mapGetters(["ranges", "cascade"]),
+    rangeOffset(): number {
+      return (this.cascade as Cascade).metadata.startStringIndex;
+    },
+    adjustedRanges(): Range[] {
+      return (this.ranges as Range[]).map(({ from, to, type, content }) => {
+        return {
+          type,
+          content,
+          from: from - this.rangeOffset,
+          to: to - this.rangeOffset,
+        };
+      });
+    },
   },
   data() {
     return {
@@ -70,7 +82,8 @@ export default Vue.extend({
     };
   },
   watch: {
-    eventsString(val, oldVal) {
+    cascadeString(val, oldVal) {
+      console.log("Setting new cascade string", val);
       if (val !== this.editorView?.state.sliceDoc()) {
         const transaction = this.editorView!.state.update({
           changes: {
@@ -86,29 +99,17 @@ export default Vue.extend({
   mounted() {
     this.editorView = new EditorView({
       state: startState(
-        this.$store.state.eventsString,
+        this.$store.getters.cascadeString,
         // this.update,
         this.codeMirrorExtensions()
       ),
       parent: this.$el,
     });
-    this.setEditorText = (newText) => {
-      this.editorView!.dispatch(
-        this.editorView!.state.update({
-          changes: {
-            from: 0,
-            to: this.editorView!.state.doc.length,
-            insert: newText,
-          },
-        })
-      );
-    };
   },
   methods: {
-    setEditorText(text: string) {},
     setColorForTag(tag: string, color: string) {
       const vm = this;
-      const ranges = vm.ranges as CascadeRange[];
+      const ranges = vm.adjustedRanges as CascadeRange[];
 
       if (!vm.editorView) {
         return;
@@ -162,7 +163,7 @@ export default Vue.extend({
         },
         {
           decorations() {
-            const ranges = (vm.ranges as CascadeRange[])
+            const ranges = (vm.adjustedRanges as CascadeRange[])
               .filter((range) => range.type === "tag")
               .map((r) => {
                 const asHex = rgbStringToHex(r.content.color);
@@ -185,7 +186,7 @@ export default Vue.extend({
                 )
               ) {
                 const tagIndex = view.posAtDOM(target);
-                const associatedTagRange = (vm.ranges as CascadeRange[]).find(
+                const associatedTagRange = (vm.adjustedRanges as CascadeRange[]).find(
                   (r) => r.type === "tag" && r.from === tagIndex
                 );
                 if (!associatedTagRange) {
@@ -209,7 +210,10 @@ export default Vue.extend({
         },
         update(cascade, transaction) {
           if (transaction.docChanged) {
-            vm.$store.commit(ACTION_SET_EVENTS_STRING, transaction.state.sliceDoc());
+            vm.$store.dispatch(
+              "setCascadeString",
+              transaction.state.sliceDoc()
+            );
             return vm.cascade;
           }
           return cascade;
@@ -226,7 +230,7 @@ export default Vue.extend({
         {
           decorations() {
             return Decoration.set(
-              ((vm.ranges as CascadeRange[]) || [])
+              ((vm.adjustedRanges as CascadeRange[]) || [])
                 .map((r) => {
                   if (r.type === "dateRange") {
                     return dateRangeMark.range(r.from, r.to);
@@ -237,8 +241,8 @@ export default Vue.extend({
                   if (r.type === "tag") {
                     return tagMark.range(r.from, r.to);
                   }
-                  if (['title', 'description'].includes(r.type)) {
-                    return sectionMark.range(r.from, r.to)
+                  if (["title", "description"].includes(r.type)) {
+                    return sectionMark.range(r.from, r.to);
                   }
                   return commentMark.range(r.from, r.to);
                 })

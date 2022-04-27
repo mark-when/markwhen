@@ -308,6 +308,15 @@ export const getters: GetterTree<State, State> = {
   cascade(state: State, getters: any): Cascade {
     return getters.cascades.cascades[state.cascadeIndex];
   },
+  cascadeString(state: State, getters: any): string {
+    const cascade = getters.cascade as Cascade;
+    return (
+      state.eventsString?.slice(
+        cascade.metadata.startStringIndex,
+        cascade.metadata.endStringIndex
+      ) || ""
+    );
+  },
   ranges(state: State, getters: any): Range[] {
     return getters.cascade.ranges;
   },
@@ -756,5 +765,18 @@ export const actions: ActionTree<State, State> = {
         .concat(`title: Page ${currentLength + 1}`)
     );
     commit("setCascadeIndex", currentLength);
+  },
+  setCascadeString({ commit, state, getters }, cascadeString: string) {
+    const currentCascade = getters.cascade as Cascade;
+    const currentEventsString = state.eventsString || "";
+    const pre = currentEventsString.substring(
+      0,
+      currentCascade.metadata.startStringIndex
+    );
+    const post = currentEventsString.substring(
+      currentCascade.metadata.endStringIndex
+    );
+    const newEventsString = pre + cascadeString + post;
+    commit(ACTION_SET_EVENTS_STRING, newEventsString);
   },
 };
