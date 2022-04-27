@@ -4,11 +4,13 @@ import {
   AMERICAN_DATE_FORMAT,
   EUROPEAN_DATE_FORMAT,
   DateFormat,
+  PAGE_BREAK,
 } from "~/src/Parser";
 import sortEvents, { EventSubGroup, Sort } from "~/src/Sort";
 import {
   Cascade,
   CascadeMetadata,
+  Cascades,
   DateRange,
   Event,
   Events,
@@ -34,7 +36,7 @@ interface State {
   viewportDateInterval: DateInterval;
   viewport: Viewport;
   sort: Sort;
-  edittable: boolean;
+  editable: boolean;
   globalClass: string;
   cascadeIndex: number;
 }
@@ -83,7 +85,7 @@ export const state: () => State = () => ({
   },
   viewport: { left: 0, width: 0 },
   sort: "none",
-  edittable: true,
+  editable: true,
   globalClass: "",
   cascadeIndex: 0,
 });
@@ -135,8 +137,11 @@ const DECADE = 10 * YEAR;
 export const ACTION_SET_EVENTS_STRING = "setEventsString";
 
 export const mutations: MutationTree<State> = {
-  setEdittable(state: State, edittable: boolean) {
-    state.edittable = edittable;
+  setCascadeIndex(state: State, index: number) {
+    state.cascadeIndex = index;
+  },
+  seteditable(state: State, editable: boolean) {
+    state.editable = editable;
   },
   setGlobalClass(state: State, globalClass: string) {
     state.globalClass = globalClass;
@@ -297,10 +302,11 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
 }
 
 export const getters: GetterTree<State, State> = {
+  cascades(state: State, getters: any): Cascades {
+    return parse(state.eventsString);
+  },
   cascade(state: State, getters: any): Cascade {
-    const cascades = parse(state.eventsString);
-    console.log(cascades);
-    return cascades.cascades[state.cascadeIndex];
+    return getters.cascades.cascades[state.cascadeIndex];
   },
   ranges(state: State, getters: any): Range[] {
     return getters.cascade.ranges;
@@ -740,5 +746,15 @@ export const actions: ActionTree<State, State> = {
         `${dateRangeToString(range, scale, getters.metadata.dateFormat)}:` +
         post
     );
+  },
+  addNewPage({ commit, state, getters }) {
+    const currentLength = getters.cascades.cascades.length;
+    commit(
+      ACTION_SET_EVENTS_STRING,
+      state.eventsString
+        ?.concat(PAGE_BREAK)
+        .concat(`title: Page ${currentLength + 1}`)
+    );
+    commit("setCascadeIndex", currentLength);
   },
 };

@@ -8,12 +8,12 @@
       :style="`min-width: 10px; max-width: 100%; ${percentBarColorStyle}; width: ${percent}%;`"
     ></div>
     <drag-handle
-      v-if="$store.state.edittable && hovering"
+      v-if="$store.state.editable && hovering"
       @startResize="startResizeLeft"
       :isLeft="true"
     />
     <drag-handle
-      v-if="$store.state.edittable && hovering"
+      v-if="$store.state.editable && hovering"
       @startResize="startResizeRight"
       :isLeft="false"
     />

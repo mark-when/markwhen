@@ -5,7 +5,7 @@
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
-    <template v-if="$store.state.edittable">
+    <template v-if="$store.state.editable">
       <move-widgets
         v-show="hovering"
         @move="move"

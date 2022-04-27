@@ -10,19 +10,13 @@
       z-20
     "
   >
-    <div class="" v-if="metadata.title || metadata.description">
-      <h3
-        v-if="metadata.title"
-        class="text-2xl font-bold text-gray-400 pl-1 timelineTitle"
-      >
-        {{ metadata.title }}
-      </h3>
-      <h4
-        v-if="metadata.description"
-        class="text-lg font-medium text-gray-400 pl-1 timelineTitle"
-      >
+    <div class="" v-if="metadata.description">
+      <h4 class="text-lg font-medium text-gray-400 pl-1 timelineTitle">
         {{ metadata.description }}
       </h4>
+    </div>
+    <div class="ml-1 py-1">
+      <cascade-buttons :shadowed="true" />
     </div>
     <div class="flex flex-row items-center" @mousedown="mousedown">
       <button
@@ -44,7 +38,7 @@
         "
         @touchstart="touchStart"
         @click="toggleSidebar"
-        v-if="$store.state.edittable"
+        v-if="$store.state.editable"
       >
         <svg
           v-if="$store.state.sidebar.visible"
@@ -121,7 +115,12 @@
               text-ellipsis
               max-w-12
             "
-            style="max-width: fit-content;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;"
+            style="
+              max-width: fit-content;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            "
           >
             @{{ $store.state.timelinePath }}
           </a>
@@ -141,12 +140,14 @@ import DisplaySettings from "./DisplaySettings.vue";
 import Vue from "vue";
 import Sort from "./Sort.vue";
 import { mapGetters } from "vuex";
+import CascadeButtons from "./CascadeButtons.vue";
 
 export default Vue.extend({
   components: {
     Tags,
     DisplaySettings,
     Sort,
+    CascadeButtons,
   },
   computed: {
     ...mapGetters(["metadata"]),

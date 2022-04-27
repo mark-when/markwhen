@@ -68,7 +68,7 @@ const DATE_FORMAT_REGEX = /dateFormat:\s*d\/M\/y/;
 const TAG_REGEX = /(?:^|\s)#(\w*)/g;
 const GROUP_START_REGEX = /^(\s*)(group|section)(?:\s|$)/i;
 const GROUP_END_REGEX = /^end(?:Group|Section)/i;
-const PAGE_BREAK = "_-_-_break_-_-_";
+export const PAGE_BREAK = "\n_-_-_break_-_-_\n";
 const PAGE_BREAK_REGEX = /^_-_-_break_-_-_$/;
 
 export const sorts = ["none", "down", "up"];
@@ -214,7 +214,7 @@ export function parseCascade(
     }
     const titleMatch = line.match(TITLE_REGEX);
     if (titleMatch) {
-      title = titleMatch[2];
+      title = titleMatch[2].trim();
       const titleTagIndex = line.indexOf(titleMatch[1]);
       ranges.push({
         type: "title",

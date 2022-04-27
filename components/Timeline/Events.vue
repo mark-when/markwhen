@@ -20,7 +20,7 @@
         :event="event"
       ></event-row
     ></template>
-    <div style="height: 70vh"></div>
+    <div style="height: 90vh"></div>
   </div>
 </template>
 

@@ -1,6 +1,9 @@
 <template>
   <div class="w-full dark:bg-gray-900 bg-slate-200 h-full flex flex-col">
     <h3 class="text-xl font-bold ml-1 text-gray-500 p-2">Edit</h3>
+    <div class="flex-shrink-0 ml-3">
+      <cascade-buttons :shadowed="false" />
+    </div>
     <div class="flex-grow overflow-scroll">
       <client-only>
         <code-mirror />
@@ -36,9 +39,10 @@ import { onSnapshot, doc, getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import Vue from "vue";
 import CodeMirror from "./CodeMirror.vue";
+import CascadeButtons from "./CascadeButtons.vue";
 
 export default Vue.extend({
-  components: { SaveLocallyButton, ShareButton, CodeMirror },
+  components: { SaveLocallyButton, ShareButton, CodeMirror, CascadeButtons },
   data() {
     return {
       userId: "" as string | undefined,
