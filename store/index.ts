@@ -809,4 +809,27 @@ export const actions: ActionTree<State, State> = {
     const newEventsString = pre + cascadeString + post;
     commit(ACTION_SET_EVENTS_STRING, newEventsString);
   },
+  deletePage({ commit, state, getters }, index: number) {
+    if (getters.cascades.cascades.length === 1) {
+      commit(ACTION_SET_EVENTS_STRING, "");
+    }
+
+    // If we're deleting the first page, we delete the
+    // break after if, otherwise we delete the break before it
+    const cascade = getters.cascades.cascades[index] as Cascade;
+    const currentEventsString = state.eventsString || "";
+
+    let startIndex = cascade.metadata.startStringIndex;
+    let endIndex = cascade.metadata.endStringIndex;
+    if (index === 0) {
+      endIndex += PAGE_BREAK.length;
+    } else {
+      startIndex -= PAGE_BREAK.length;
+    }
+    commit(
+      ACTION_SET_EVENTS_STRING,
+      currentEventsString.substring(0, startIndex) +
+        currentEventsString.substring(endIndex)
+    );
+  },
 };

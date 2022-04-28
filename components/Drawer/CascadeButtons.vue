@@ -1,40 +1,14 @@
 <template>
   <div
-    class="flex flex-row overflow-x-scroll pages pb-1"
+    class="flex flex-row overflow-x-scroll pages pb-1 pt-2"
     style="--webkit-overflow-scrolling: touch"
   >
-    <button
-      class="
-        h-6
-        rounded-full
-        border-2
-        mr-2
-        flex
-        items-center
-        justify-center
-        transition
-        flex-shrink-0
-      "
-      @mouseover="hovering = index"
-      @mouseleave="hovering = -1"
-      @click="$store.commit('setCascadeIndex', index)"
-      :class="`${
-        index === $store.state.cascadeIndex
-          ? 'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500'
-          : 'border-white bg-white hover:bg-blue-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-600'
-      } ${cascade && cascade.metadata && cascade.metadata.title ? '' : 'w-6'} ${
-        shadowed ? 'shadow' : ''
-      }`"
+    <cascade-button
       v-for="(cascade, index) in $store.getters.cascades.cascades"
       :key="index"
-    >
-      <h3
-        v-if="cascade && cascade.metadata && cascade.metadata.title"
-        class="px-3 font-bold text-gray-500 dark:text-gray-300"
-      >
-        {{ cascade.metadata.title }}
-      </h3>
-    </button>
+      :index="index"
+      :cascade="cascade"
+    />
     <button
       v-if="$store.state.editable"
       class="
@@ -79,21 +53,11 @@
 
 <script lang="ts">
 import Vue from "vue";
+import CascadeButton from "./CascadeButton.vue";
 
 export default Vue.extend({
+  components: { CascadeButton },
   props: ["shadowed"],
-  data() {
-    return {
-      hovering: -1,
-      showDelete: -1,
-    };
-  },
-  watch: {
-    hovering(val) {
-      const vm = this;
-      setTimeout(() => {}, 1000);
-    },
-  },
   methods: {
     addNewPage() {
       this.$store.dispatch("addNewPage");
