@@ -94,10 +94,12 @@ export default Vue.extend({
       deep: true,
     },
     cascadeIndex(val) {
+      const vm = this;
       this.markers = [...this.markers];
       Vue.nextTick(() => {
-        this.$el.scrollLeft = (this.settings as Settings).viewport.left;
-        this.$el.scrollTop = (this.settings as Settings).viewport.top;
+        vm.$el.scrollLeft = (this.settings as Settings).viewport.left;
+        vm.$el.scrollTop = (this.settings as Settings).viewport.top;
+        vm.setViewportDateInterval();
       });
     },
     sidebarSide(val) {
@@ -194,7 +196,6 @@ export default Vue.extend({
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       const el = this.$el as HTMLElement;
-      console.log("scrollTop", el.scrollTop);
       this.$store.dispatch("setViewport", {
         left: el.scrollLeft - el.offsetLeft,
         width: el.clientWidth + el.offsetLeft,

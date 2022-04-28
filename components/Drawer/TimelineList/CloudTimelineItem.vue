@@ -8,6 +8,7 @@
       rounded
       px-2
       py-1
+      ml-1
       transition transition-all
       duration-100
       text-slate-900

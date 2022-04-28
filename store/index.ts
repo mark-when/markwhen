@@ -243,7 +243,6 @@ export const mutations: MutationTree<State> = {
     }
   },
   setScale(state: State, width: number) {
-    console.log("setting scale to", width, state.cascadeIndex);
     const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, width));
     state.settings[state.cascadeIndex].scale = scale;
   },
