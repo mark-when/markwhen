@@ -1,7 +1,7 @@
 <template>
   <button @click="click" class="mx-2 pr-2" :title="buttonTitle">
     <svg
-      v-if="sortIndex === 0"
+      v-if="sort === 'none'"
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
       viewBox="1 3 17 14"
@@ -12,7 +12,7 @@
       />
     </svg>
     <svg
-      v-if="sortIndex === 1"
+      v-if="sort === 'down'"
       class="h-5 w-5"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="1 3 17 14"
@@ -23,7 +23,7 @@
       />
     </svg>
     <svg
-      v-if="sortIndex === 2"
+      v-if="sort === 'up'"
       class="h-5 w-5"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="1 3 17 14"
@@ -38,27 +38,28 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { sorts } from "~/src/Parser";
+import { mapGetters } from "vuex";
+import { Sort } from "~/src/Sort";
 
 export default Vue.extend({
-  data() {
-    return {
-      sortIndex: 0,
-    };
-  },
   methods: {
     click() {
-      this.sortIndex = (this.sortIndex + 1) % sorts.length;
-      this.$store.commit("setSort", sorts[this.sortIndex]);
+      this.$store.commit("toggleSort");
     },
   },
   computed: {
+    ...mapGetters(["settings"]),
+    sort(): Sort {
+      return this.settings.sort;
+    },
     buttonTitle(): string {
-      return [
-        "Not sorted",
-        "Sort chronologically",
-        "Sort reverse chronologically",
-      ][this.sortIndex];
+      if (this.sort === "none") {
+        return "Not sorted";
+      }
+      if (this.sort === "down") {
+        return "Sort reverse chronologically";
+      }
+      return "Sort chronologically";
     },
   },
 });

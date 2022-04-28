@@ -51,8 +51,10 @@ export default Vue.extend({
     isThisTagInFilter(): boolean {
       return this.filter.includes(this.tag);
     },
-    ...mapGetters(["tags"]),
-    ...mapState(["filter"]),
+    ...mapGetters(["tags", "settings"]),
+    filter(): string[] {
+      return this.settings.filter;
+    },
     buttonStyle(): string {
       const tagColor = this.tags[this.tag];
       return `background-color: rgba(${tagColor}, 1)`;

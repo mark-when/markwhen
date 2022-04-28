@@ -5,6 +5,7 @@ import {
   EUROPEAN_DATE_FORMAT,
   DateFormat,
   PAGE_BREAK,
+  sorts,
 } from "~/src/Parser";
 import sortEvents, { EventSubGroup, Sort } from "~/src/Sort";
 import {
@@ -26,7 +27,6 @@ interface State {
   currentTimelineName: string;
   settings: { [page: number]: Settings };
   startedWidthChange: boolean;
-  filter: string[];
   eventsString: string | undefined;
   timelinePath: string | null;
   username: string | null;
@@ -67,21 +67,14 @@ export interface Settings {
   viewportDateInterval: DateInterval;
   viewport: Viewport;
   sort: Sort;
+  filter: string[];
 }
 
 export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
   settings: {
-    0: {
-      scale: initialScale,
-      viewportDateInterval: {
-        from: DateTime.now().minus({ years: 10 }),
-        to: DateTime.now().plus({ years: 10 }),
-      },
-      viewport: { left: 0, width: 0, top: 0 },
-      sort: "none",
-    },
+    0: blankSettings(),
   },
   startedWidthChange: false,
   filter: [],
@@ -150,6 +143,7 @@ function blankSettings(): Settings {
     },
     viewport: { left: 0, width: 0, top: 0 },
     sort: "none",
+    filter: [],
   };
 }
 
@@ -183,6 +177,13 @@ export const mutations: MutationTree<State> = {
   },
   setSort(state: State, sort: Sort) {
     state.settings[state.cascadeIndex].sort = sort;
+  },
+  toggleSort(state: State, sort: Sort) {
+    state.settings[state.cascadeIndex].sort =
+      sorts[
+        (sorts.indexOf(state.settings[state.cascadeIndex].sort) + 1) %
+          sorts.length
+      ];
   },
   setHasSeenHowTo(state: State, hasSeen: boolean) {
     state.hasSeenHowTo = hasSeen;
@@ -253,14 +254,14 @@ export const mutations: MutationTree<State> = {
     }
   },
   clearFilters(state: State) {
-    state.filter = [];
+    state.settings[state.cascadeIndex].filter = [];
   },
   filterTag(state: State, tag: string) {
-    const index = state.filter.indexOf(tag);
+    const index = state.settings[state.cascadeIndex].filter.indexOf(tag);
     if (index >= 0) {
-      state.filter.splice(index, 1);
+      state.settings[state.cascadeIndex].filter.splice(index, 1);
     } else {
-      state.filter.push(tag);
+      state.settings[state.cascadeIndex].filter.push(tag);
     }
   },
   setViewportDateInterval(state: State, interval: DateInterval) {
@@ -356,25 +357,24 @@ export const getters: GetterTree<State, State> = {
   },
   filteredEvents(state: State, getters: any): Events {
     const events = getters.events as Events;
-    if (state.filter.length === 0) {
+    const filter = state.settings[state.cascadeIndex].filter;
+    if (filter.length === 0) {
       return events;
     }
 
     const filtered = [];
     for (const eventOrEvents of events) {
       if (eventOrEvents instanceof Event) {
-        if (
-          eventOrEvents.event.tags.some((tag) => state.filter.includes(tag))
-        ) {
+        if (eventOrEvents.event.tags.some((tag) => filter.includes(tag))) {
           filtered.push(eventOrEvents);
         }
       } else {
         const group = eventOrEvents as EventSubGroup;
-        if (group.tags?.some((tag) => state.filter.includes(tag))) {
+        if (group.tags?.some((tag) => filter.includes(tag))) {
           filtered.push(group);
         } else {
           const filteredSubEvents: EventSubGroup = group.filter((event) =>
-            event.event.tags.some((tag) => state.filter.includes(tag))
+            event.event.tags.some((tag) => filter.includes(tag))
           );
           if (filteredSubEvents.length) {
             filteredSubEvents.range = group.range;

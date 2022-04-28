@@ -71,7 +71,7 @@ const GROUP_END_REGEX = /^end(?:Group|Section)/i;
 export const PAGE_BREAK = "\n_-_-_break_-_-_\n";
 const PAGE_BREAK_REGEX = /^_-_-_break_-_-_$/;
 
-export const sorts = ["none", "down", "up"];
+export const sorts: Sort[] = ["none", "down", "up"];
 
 export type DateFormat =
   | typeof AMERICAN_DATE_FORMAT
