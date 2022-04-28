@@ -342,7 +342,9 @@ export function parseCascade(
           startLineIndex,
           startStringIndex: lengthAtIndex[startLineIndex],
           endLineIndex: i,
-          endStringIndex: lengthAtIndex[i],
+
+          // minus one to make sure the newline character is always there
+          endStringIndex: lengthAtIndex[i] - 1,
           ...(title ? { title } : {}),
           ...(description ? { description } : {}),
         },

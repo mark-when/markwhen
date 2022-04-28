@@ -58,7 +58,7 @@
         <component :is="selectedComponentComponent" />
       </keep-alive>
       <div
-        class="bg-transparent w-2 hover:bg-gray-700 absolute bottom-0 top-0"
+        class="bg-transparent w-1 hover:bg-gray-700 absolute bottom-0 top-0"
         :class="{
           'right-0': isLeft,
           'left-0': !isLeft,

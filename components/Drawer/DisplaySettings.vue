@@ -31,7 +31,7 @@ function calculateScaledPosition(width: number): number {
 export default Vue.extend({
   data() {
     return {
-      width: calculateScaledPosition(this.$store.state.settings.scale),
+      width: calculateScaledPosition(this.$store.getters.settings.scale),
     };
   },
   created() {
@@ -57,8 +57,11 @@ export default Vue.extend({
       const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
       this.updateWidth(Math.exp(minWidth + scale * (val - minSelection)));
     },
-    "$store.state.settings.scale": function (val, oldVal) {
-      this.width = calculateScaledPosition(val);
+    "$store.getters.settings": {
+      handler: function (val, oldVal) {
+        this.width = calculateScaledPosition(val.scale);
+      },
+      deep: true,
     },
   },
 });

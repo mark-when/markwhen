@@ -83,7 +83,6 @@ export default Vue.extend({
   },
   watch: {
     cascadeString(val, oldVal) {
-      console.log("Setting new cascade string", val);
       if (val !== this.editorView?.state.sliceDoc()) {
         const transaction = this.editorView!.state.update({
           changes: {
@@ -186,9 +185,9 @@ export default Vue.extend({
                 )
               ) {
                 const tagIndex = view.posAtDOM(target);
-                const associatedTagRange = (vm.adjustedRanges as CascadeRange[]).find(
-                  (r) => r.type === "tag" && r.from === tagIndex
-                );
+                const associatedTagRange = (
+                  vm.adjustedRanges as CascadeRange[]
+                ).find((r) => r.type === "tag" && r.from === tagIndex);
                 if (!associatedTagRange) {
                   return false;
                 }

@@ -24,7 +24,7 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import Hammer from "@squadette/hammerjs";
 import { mapState, mapGetters } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
-import { MAX_SCALE, TimeMarker } from "~/store";
+import { MAX_SCALE, Settings, TimeMarker } from "~/store";
 import { throttle } from "throttle-debounce";
 import TimeMarkersBack from "./TimeMarkersBack.vue";
 import TimeMarkersFront from "./TimeMarkersFront.vue";
@@ -79,16 +79,26 @@ export default Vue.extend({
     },
     startedWidthChange(val) {
       this.widthChangeStartScrollLeft = val ? this.$el.scrollLeft : null;
-      this.widthChangeStartYearWidth = this.scale;
+      this.widthChangeStartYearWidth = this.settings.scale;
     },
-    scale(val, oldVal) {
-      if (!this.startedWidthChange) {
-        return;
-      }
-      const startCenter =
-        this.widthChangeStartScrollLeft! + this.$el.clientWidth / 2;
-      const scale = val / this.widthChangeStartYearWidth!;
-      this.$el.scrollLeft = scale * startCenter - this.$el.clientWidth / 2!;
+    settings: {
+      handler: function (val: Settings, oldVal) {
+        if (!this.startedWidthChange) {
+          return;
+        }
+        const startCenter =
+          this.widthChangeStartScrollLeft! + this.$el.clientWidth / 2;
+        const scale = val.scale / this.widthChangeStartYearWidth!;
+        this.$el.scrollLeft = scale * startCenter - this.$el.clientWidth / 2!;
+      },
+      deep: true,
+    },
+    cascadeIndex(val) {
+      this.markers = [...this.markers];
+      Vue.nextTick(() => {
+        this.$el.scrollLeft = (this.settings as Settings).viewport.left;
+        this.$el.scrollTop = (this.settings as Settings).viewport.top;
+      });
     },
     sidebarSide(val) {
       this.setViewportDateInterval();
@@ -102,8 +112,8 @@ export default Vue.extend({
   },
   computed: {
     ...mapState({
-      scale: (state: any) => state.settings.scale,
-      startedWidthChange: (state: any) => state.settings.startedWidthChange,
+      cascadeIndex: (state: any) => state.cascadeIndex,
+      startedWidthChange: (state: any) => state.startedWidthChange,
       sidebarSide: (state: any) => state.sidebar.position,
       sidebarVisible: (state: any) => state.sidebar.visible,
       selectedComponent: (state: any) => state.sidebar.selectedComponent,
@@ -111,7 +121,7 @@ export default Vue.extend({
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
     },
-    ...mapGetters(["timeMarkers"]),
+    ...mapGetters(["timeMarkers", "settings"]),
     isRight(): boolean {
       return this.$store.state.sidebar.position === "right";
     },
@@ -184,9 +194,11 @@ export default Vue.extend({
     throttledSetViewportDateInterval() {},
     setViewportDateInterval() {
       const el = this.$el as HTMLElement;
+      console.log("scrollTop", el.scrollTop);
       this.$store.dispatch("setViewport", {
         left: el.scrollLeft - el.offsetLeft,
         width: el.clientWidth + el.offsetLeft,
+        top: el.scrollTop,
       });
     },
     handleResize() {
@@ -212,7 +224,7 @@ export default Vue.extend({
     },
     startGesture(wg: WheelGesture) {
       if (!this.startingZoom) {
-        this.startingZoom = this.$store.state.settings.scale;
+        this.startingZoom = this.$store.getters.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
         this.pinchStartScrollLeft = this.$el.scrollLeft;
         this.pinchStartCenterX =
@@ -255,7 +267,7 @@ export default Vue.extend({
       const offsetLeft = (this.$el as HTMLElement).offsetLeft;
 
       if (!this.startingZoom) {
-        this.startingZoom = this.$store.state.settings.scale;
+        this.startingZoom = this.$store.getters.settings.scale;
         this.pinchStartScrollTop = this.$el.scrollTop;
         this.pinchStartScrollLeft = this.$el.scrollLeft - offsetLeft;
         this.pinchStartCenterX = e.center.x;

@@ -62,8 +62,7 @@ import Tag from "./Tag.vue";
 export default Vue.extend({
   components: { Tag },
   computed: {
-    ...mapGetters(["tags", "timeMarkerWeights"]),
-    ...mapState(["settings"]),
+    ...mapGetters(["tags", "timeMarkerWeights", "settings"]),
   },
   data() {
     return {

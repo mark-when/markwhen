@@ -24,18 +24,13 @@ import { exampleTimeline } from "./exampleTimeline";
 interface State {
   list: string[];
   currentTimelineName: string;
-  settings: {
-    startedWidthChange: boolean;
-    scale: number;
-  };
+  settings: { [page: number]: Settings };
+  startedWidthChange: boolean;
   filter: string[];
   eventsString: string | undefined;
   timelinePath: string | null;
   username: string | null;
   hasSeenHowTo: boolean;
-  viewportDateInterval: DateInterval;
-  viewport: Viewport;
-  sort: Sort;
   editable: boolean;
   globalClass: string;
   cascadeIndex: number;
@@ -67,24 +62,33 @@ const eventsString = currentTimelineName
   ? localStorage.getItem(currentTimelineName)
   : "";
 
+export interface Settings {
+  scale: number;
+  viewportDateInterval: DateInterval;
+  viewport: Viewport;
+  sort: Sort;
+}
+
 export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
   settings: {
-    startedWidthChange: false,
-    scale: initialScale,
+    0: {
+      scale: initialScale,
+      viewportDateInterval: {
+        from: DateTime.now().minus({ years: 10 }),
+        to: DateTime.now().plus({ years: 10 }),
+      },
+      viewport: { left: 0, width: 0, top: 0 },
+      sort: "none",
+    },
   },
+  startedWidthChange: false,
   filter: [],
   eventsString: eventsString || undefined,
   timelinePath: "",
   username: "",
   hasSeenHowTo: true,
-  viewportDateInterval: {
-    from: DateTime.now().minus({ years: 10 }),
-    to: DateTime.now().plus({ years: 10 }),
-  },
-  viewport: { left: 0, width: 0 },
-  sort: "none",
   editable: true,
   globalClass: "",
   cascadeIndex: 0,
@@ -122,6 +126,7 @@ export type TimeMarkerWeights = [
 interface Viewport {
   left: number;
   width: number;
+  top: number;
 }
 
 const diffScale = "days";
@@ -136,9 +141,27 @@ const DECADE = 10 * YEAR;
 
 export const ACTION_SET_EVENTS_STRING = "setEventsString";
 
+function blankSettings(): Settings {
+  return {
+    scale: initialScale,
+    viewportDateInterval: {
+      from: DateTime.now().minus({ years: 10 }),
+      to: DateTime.now().plus({ years: 10 }),
+    },
+    viewport: { left: 0, width: 0, top: 0 },
+    sort: "none",
+  };
+}
+
 export const mutations: MutationTree<State> = {
   setCascadeIndex(state: State, index: number) {
     state.cascadeIndex = index;
+    if (!state.settings[state.cascadeIndex]) {
+      state.settings = {
+        ...state.settings,
+        [state.cascadeIndex]: blankSettings(),
+      };
+    }
   },
   seteditable(state: State, editable: boolean) {
     state.editable = editable;
@@ -150,7 +173,7 @@ export const mutations: MutationTree<State> = {
     state.globalClass = "";
   },
   setStartedWidthChange(state: State, changing: boolean) {
-    state.settings.startedWidthChange = changing;
+    state.startedWidthChange = changing;
   },
   setUsername(state: State, username: string) {
     state.username = username;
@@ -159,7 +182,7 @@ export const mutations: MutationTree<State> = {
     state.timelinePath = path;
   },
   setSort(state: State, sort: Sort) {
-    state.sort = sort;
+    state.settings[state.cascadeIndex].sort = sort;
   },
   setHasSeenHowTo(state: State, hasSeen: boolean) {
     state.hasSeenHowTo = hasSeen;
@@ -219,7 +242,9 @@ export const mutations: MutationTree<State> = {
     }
   },
   setScale(state: State, width: number) {
-    state.settings.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, width));
+    console.log("setting scale to", width, state.cascadeIndex);
+    const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, width));
+    state.settings[state.cascadeIndex].scale = scale;
   },
   setEventsString(state: State, str: string) {
     state.eventsString = str;
@@ -239,10 +264,10 @@ export const mutations: MutationTree<State> = {
     }
   },
   setViewportDateInterval(state: State, interval: DateInterval) {
-    state.viewportDateInterval = interval;
+    state.settings[state.cascadeIndex].viewportDateInterval = interval;
   },
   setViewport(state: State, viewport: Viewport) {
-    state.viewport = viewport;
+    state.settings[state.cascadeIndex].viewport = viewport;
   },
 };
 
@@ -300,7 +325,6 @@ function roundToTwoDecimalPlaces(n: number): number {
 export function clamp(value: number, min: number = 0, max: number = 1) {
   return Math.min(max, Math.max(value, min));
 }
-
 export const getters: GetterTree<State, State> = {
   cascades(state: State, getters: any): Cascades {
     return parse(state.eventsString);
@@ -320,8 +344,14 @@ export const getters: GetterTree<State, State> = {
   ranges(state: State, getters: any): Range[] {
     return getters.cascade.ranges;
   },
+  settings(state: State, getters: any): Settings {
+    return state.settings[state.cascadeIndex];
+  },
   events(state: State, getters: any): Events {
-    const sorted = sortEvents([...getters.cascade.events], state.sort);
+    const sorted = sortEvents(
+      [...getters.cascade.events],
+      getters.settings.sort
+    );
     return sorted;
   },
   filteredEvents(state: State, getters: any): Events {
@@ -357,7 +387,7 @@ export const getters: GetterTree<State, State> = {
         }
       }
     }
-    sortEvents(filtered, state.sort);
+    sortEvents(filtered, getters.settings.sort);
     return filtered;
   },
   tags(state: State, getters: any): Tags {
@@ -369,16 +399,16 @@ export const getters: GetterTree<State, State> = {
   dateFromOffsetLeft(state: State, getters: any) {
     return (offset: number) => {
       const leftDate = getters.baselineLeftmostDate.plus({
-        [diffScale]: state.viewport.left / state.settings.scale,
+        [diffScale]: getters.settings.viewport.left / getters.settings.scale,
       });
       return leftDate.plus({
-        days: offset / state.settings.scale,
+        days: offset / getters.settings.scale,
       });
     };
   },
   distanceBetweenDates(state: State, getters: any) {
     return (a: DateTime, b: DateTime) =>
-      b.diff(a).as(diffScale) * state.settings.scale;
+      b.diff(a).as(diffScale) * getters.settings.scale;
   },
   baselineLeftmostDate(state: State, getters: any) {
     return floorDateTime(
@@ -399,19 +429,20 @@ export const getters: GetterTree<State, State> = {
   },
   distanceFromBaselineLeftmostDate(state: State, getters: any) {
     return (a: DateTime) =>
-      a.diff(getters.baselineLeftmostDate).as(diffScale) * state.settings.scale;
+      a.diff(getters.baselineLeftmostDate).as(diffScale) *
+      getters.settings.scale;
   },
   viewportDateInterval(state: State, getters: any): DateInterval {
     if (
-      typeof state.viewportDateInterval.from === "string" &&
-      typeof state.viewportDateInterval.to === "string"
+      typeof getters.settings.viewportDateInterval.from === "string" &&
+      typeof getters.settings.viewportDateInterval.to === "string"
     ) {
       return {
-        from: DateTime.fromISO(state.viewportDateInterval.from),
-        to: DateTime.fromISO(state.viewportDateInterval.to),
+        from: DateTime.fromISO(getters.settings.viewportDateInterval.from),
+        to: DateTime.fromISO(getters.settings.viewportDateInterval.to),
       };
     }
-    return state.viewportDateInterval;
+    return getters.settings.viewportDateInterval;
   },
   setDateIntervalFromViewport(
     state: State,
@@ -425,10 +456,10 @@ export const getters: GetterTree<State, State> = {
 
       const earliest = getters.baselineLeftmostDate;
       const leftDate = earliest.plus({
-        [diffScale]: scrollLeft / state.settings.scale,
+        [diffScale]: scrollLeft / getters.settings.scale,
       });
       const rightDate = earliest.plus({
-        [diffScale]: (scrollLeft + width) / state.settings.scale,
+        [diffScale]: (scrollLeft + width) / getters.settings.scale,
       });
       return { from: leftDate, to: rightDate };
     };
@@ -437,7 +468,7 @@ export const getters: GetterTree<State, State> = {
     const diff = getters.viewportDateInterval.to
       .diff(getters.viewportDateInterval.from)
       .as("seconds");
-    const width = state.viewport.width;
+    const width = getters.settings.viewport.width;
     const denom = diff / (width / 2000);
     return [
       clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),
@@ -695,7 +726,7 @@ export const actions: ActionTree<State, State> = {
       store.commit("setTimelinePath", context.req.timelinePath);
     }
   },
-  setViewport({ commit, getters }, viewport) {
+  setViewport({ commit, getters }, viewport: Viewport) {
     const viewportInterval = getters.setDateIntervalFromViewport(
       viewport.left,
       viewport.width

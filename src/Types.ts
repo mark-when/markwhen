@@ -172,10 +172,6 @@ export class DateRangePart implements DateRange {
   }
 }
 
-export interface Settings {
-  scale: number;
-}
-
 export const LINK_REGEX = /\[([^\]]+)\]\(((https?:\/\/)?[\w\d./?=\-#]+)\)/g;
 export const LOCATION_REGEX = /\[([^\]]+)\]\((location|map)\)/g;
 export const GOOGLE_PHOTOS_REGEX = /(?:https:\/\/)?photos.app.goo.gl\/\w+/g;
