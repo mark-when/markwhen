@@ -8,6 +8,7 @@
       :key="index"
       :index="index"
       :cascade="cascade"
+      :shadowed="shadowed"
     />
     <button
       v-if="$store.state.editable"

@@ -11,9 +11,11 @@
       flex-shrink-0
       relative
     "
+    :style="style"
     @mouseover="startHover"
     @mouseleave="endHover"
-    @click="$store.commit('setCascadeIndex', index)"
+    @mousedown.stop="startMoving"
+    @click="click"
     :class="`${
       index === $store.state.cascadeIndex
         ? 'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500'
@@ -29,17 +31,14 @@
         translate-x-1/2
         text-slate-300
         hover:text-slate-500
-        dark:text-slate-500
-        dark:hover:text-slate-300
+        dark:text-slate-500 dark:hover:text-slate-300
         rounded-full
         dark:bg-slate-700
         bg-slate-100
       "
       @click.prevent.stop="del"
       v-if="
-        $store.state.editable &&
-        $store.getters.cascades.length > 1 &&
-        hovering
+        $store.state.editable && $store.getters.cascades.length > 1 && hovering
       "
     >
       <svg
@@ -75,15 +74,73 @@ export default Vue.extend({
       softHover: false,
       hovering: false,
       timer: undefined as number | undefined,
+      startX: undefined as number | undefined,
+      offsetX: undefined as number | undefined,
+      translateX: 0,
+      clickE: true,
     };
   },
   computed: {
+    style(): string {
+      if (this.translateX !== 0) {
+        return `transform: translateX(${this.translateX}px); z-index: 20;`;
+      }
+      return "";
+    },
     cascadeTitle() {
       const c = this.cascade as Cascade;
       return (c && c.metadata && c.metadata.title) || "";
     },
   },
   methods: {
+    click() {
+      this.$store.commit("setCascadeIndex", this.index);
+    },
+    stopMoving() {
+      this.startX = undefined;
+      this.offsetX = undefined;
+      this.translateX = 0;
+      this.clickE = true;
+      document.removeEventListener("mousemove", this.moveListener);
+      document.removeEventListener("mouseup", this.endMoveListener);
+      document.removeEventListener("keydown", this.escapeListener);
+    },
+    moveListener(e: MouseEvent) {
+      // Since we're moving, cancel any hover timer we had
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = undefined;
+      }
+      this.clickE = false;
+      const el = this.$el as HTMLButtonElement;
+
+      // We shouldn't go any further than the start of the parent element
+      const diff = e.clientX - this.startX!;
+      const parentOffsetLeft = el.parentElement?.offsetLeft || 0;
+      this.translateX = Math.max(-el.offsetLeft + parentOffsetLeft, diff);
+    },
+    endMoveListener(e: MouseEvent) {
+      if (Math.abs(e.clientX - this.startX!) > 2) {
+        document.addEventListener("click", this.captureClick, true);
+      }
+      this.stopMoving();
+    },
+    captureClick(e: MouseEvent) {
+      e.stopPropagation();
+      document.removeEventListener("click", this.captureClick, true);
+    },
+    escapeListener(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        this.stopMoving();
+      }
+    },
+    startMoving(e: MouseEvent) {
+      this.startX = e.clientX;
+      this.offsetX = e.offsetX;
+      document.addEventListener("mousemove", this.moveListener);
+      document.addEventListener("mouseup", this.endMoveListener);
+      document.addEventListener("keydown", this.escapeListener);
+    },
     del() {
       if (confirm(`Delete ${this.cascadeTitle || "this page"}?`)) {
         this.$store.dispatch("deletePage", this.index);

@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapGetters, mapState } from "vuex";
+import { mapGetters } from "vuex";
 import Tag from "./Tag.vue";
 
 export default Vue.extend({

@@ -148,7 +148,11 @@ export const mutations: MutationTree<State> = {
   setCascadeIndex(state: State, index: number) {
     state.cascadeIndex = index;
     if (!state.settings[state.cascadeIndex]) {
-      state.settings = [...state.settings, blankSettings()];
+      for (let i = 0; i <= state.cascadeIndex; i++) {
+        if (!state.settings[i]) {
+          state.settings.push(blankSettings());
+        }
+      }
     }
   },
   seteditable(state: State, editable: boolean) {
@@ -411,7 +415,7 @@ export const getters: GetterTree<State, State> = {
       return floorDateTime(earliestTime.minus({ days: 1 }), "day");
     }
     if (days < 30) {
-      return floorDateTime(earliestTime.minus({ months: 4 }), "month");
+      return floorDateTime(earliestTime.minus({ months: 4 }), "year");
     }
     if (days < 180) {
       return floorDateTime(earliestTime.minus({ months: 6 }), "year");
@@ -829,6 +833,9 @@ export const actions: ActionTree<State, State> = {
     } else {
       startIndex -= PAGE_BREAK.length;
     }
+
+    // Also, if the page is before us, we need to decrement the index of the page we're on
+    commit('setCascadeIndex', state.cascadeIndex - 1)
     commit(
       ACTION_SET_EVENTS_STRING,
       currentEventsString.substring(0, startIndex) +

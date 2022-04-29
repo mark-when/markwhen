@@ -194,13 +194,16 @@ export default Vue.extend({
       }
     },
     throttledSetViewportDateInterval() {},
-    setViewportDateInterval() {
+    getViewport() {
       const el = this.$el as HTMLElement;
-      this.$store.dispatch("setViewport", {
+      return {
         left: el.scrollLeft - el.offsetLeft,
         width: el.clientWidth + el.offsetLeft,
         top: el.scrollTop,
-      });
+      };
+    },
+    setViewportDateInterval() {
+      this.$store.dispatch("setViewport", this.getViewport());
     },
     handleResize() {
       this.setViewportDateInterval();

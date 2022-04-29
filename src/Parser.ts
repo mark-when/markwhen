@@ -465,7 +465,6 @@ export function parseCascade(
       );
 
       const eventDuration = endDateTime.diff(fromDateTime);
-      console.log("event duration to", eventDuration.as("days"), "days");
       if (!maxDuration || !eventDuration > !maxDuration) {
         maxDuration = eventDuration;
       }
