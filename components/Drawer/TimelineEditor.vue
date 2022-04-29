@@ -2,7 +2,7 @@
   <div class="w-full dark:bg-gray-900 bg-slate-200 h-full flex flex-col">
     <div class="ml-2">
       <h3 class="text-xl font-bold ml-1 text-gray-500 px-2 pt-2">Edit</h3>
-      <div class="flex-shrink-0 ml-3">
+      <div class="flex-shrink-0 ml-3 flex">
         <cascade-buttons :shadowed="false" />
       </div>
     </div>

@@ -15,7 +15,7 @@
         {{ metadata.description }}
       </h4>
     </div>
-    <div class="ml-1 py-1">
+    <div class="ml-1 py-1 flex">
       <cascade-buttons :shadowed="true" />
     </div>
     <div class="flex flex-row items-center" @mousedown="mousedown">

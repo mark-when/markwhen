@@ -107,9 +107,11 @@ export default Vue.extend({
     },
     moveListener(e: MouseEvent) {
       // Since we're moving, cancel any hover timer we had
-      if (this.timer) {
+      if (this.timer || this.hovering || this.softHover) {
         clearTimeout(this.timer);
         this.timer = undefined;
+        this.hovering = false;
+        this.softHover = false;
       }
       this.clickE = false;
       const el = this.$el as HTMLButtonElement;
@@ -117,7 +119,16 @@ export default Vue.extend({
       // We shouldn't go any further than the start of the parent element
       const diff = e.clientX - this.startX!;
       const parentOffsetLeft = el.parentElement?.offsetLeft || 0;
-      this.translateX = Math.max(-el.offsetLeft + parentOffsetLeft, diff);
+      const addPageButtonWidth = 24;
+      const maxRight =
+        el.parentElement!.clientWidth -
+        el.offsetLeft -
+        el.clientWidth -
+        addPageButtonWidth;
+      this.translateX = Math.min(
+        Math.max(-el.offsetLeft + parentOffsetLeft, diff),
+        maxRight
+      );
     },
     endMoveListener(e: MouseEvent) {
       if (Math.abs(e.clientX - this.startX!) > 2) {
@@ -135,6 +146,9 @@ export default Vue.extend({
       }
     },
     startMoving(e: MouseEvent) {
+      if (!this.$store.state.editable) {
+        return
+      }
       this.startX = e.clientX;
       this.offsetX = e.offsetX;
       document.addEventListener("mousemove", this.moveListener);
