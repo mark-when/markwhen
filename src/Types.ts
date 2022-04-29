@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import {
   AMERICAN_DATE_FORMAT,
   AMOUNT_REGEX,
@@ -307,6 +307,7 @@ export interface Cascade {
 }
 
 export function emptyCascade(): Cascade {
+  const now = DateTime.now()
   return {
     events: [],
     ranges: [],
@@ -314,8 +315,9 @@ export function emptyCascade(): Cascade {
     tags: {},
     ids: {},
     metadata: {
-      earliestTime: DateTime.now().minus({ years: 5 }),
-      latestTime: DateTime.now().plus({ years: 5 }),
+      earliestTime: now.minus({ years: 5 }),
+      latestTime: now.plus({ years: 5 }),
+      maxDuration: now.diff(now.minus({ years: 1 })),
       dateFormat: AMERICAN_DATE_FORMAT,
       startLineIndex: 0,
       endLineIndex: 0,
@@ -341,6 +343,7 @@ export interface CascadeMetadata {
   endStringIndex: number;
   title?: string;
   description?: string;
+  maxDuration: Duration
 }
 
 export type GroupStyle = "section" | "tight";

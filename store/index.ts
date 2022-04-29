@@ -11,7 +11,6 @@ import sortEvents, { EventSubGroup, Sort } from "~/src/Sort";
 import {
   Cascade,
   CascadeMetadata,
-  Cascades,
   DateRange,
   Event,
   Events,
@@ -410,10 +409,19 @@ export const getters: GetterTree<State, State> = {
       b.diff(a).as(diffScale) * getters.settings.scale;
   },
   baselineLeftmostDate(state: State, getters: any) {
-    return floorDateTime(
-      (getters.metadata as CascadeMetadata).earliestTime.minus({ years: 1 }),
-      "year"
-    );
+    const metadata = getters.metadata as CascadeMetadata;
+    const earliestTime = metadata.earliestTime;
+    const days = metadata.maxDuration.as("days");
+    if (days < 1) {
+      return floorDateTime(earliestTime.minus({ days: 1 }), "day");
+    }
+    if (days < 30) {
+      return floorDateTime(earliestTime.minus({ months: 4 }), "month");
+    }
+    if (days < 180) {
+      return floorDateTime(earliestTime.minus({ months: 6 }), "year");
+    }
+    return floorDateTime(earliestTime.minus({ days }), "year");
   },
   baselineRightmostDate(state: State, getters: any) {
     return floorDateTime(

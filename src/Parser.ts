@@ -1,5 +1,5 @@
 import e from "express";
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { COLORS, hexToRgb, HUMAN_COLORS } from "./ColorUtils";
 import sortEvents, { Sort, EventSubGroup } from "./Sort";
 import {
@@ -127,7 +127,8 @@ export function parseCascade(
   let paletteIndex = 0;
   let dateFormat = AMERICAN_DATE_FORMAT;
   let earliest: DateTime | null = null,
-    latest: DateTime | null = null;
+    latest: DateTime | null = null,
+    maxDuration: Duration | null = null;
 
   // For events that are grouped
   let eventSubgroup: EventSubGroup | undefined = undefined;
@@ -323,11 +324,15 @@ export function parseCascade(
         events.push(eventSubgroup);
       }
 
+      const now = DateTime.now();
       if (!earliest) {
-        earliest = DateTime.now().minus({ years: 5 });
+        earliest = now.minus({ years: 5 });
       }
       if (!latest) {
-        latest = DateTime.now().plus({ years: 5 });
+        latest = now.plus({ years: 5 });
+      }
+      if (!maxDuration) {
+        maxDuration = now.diff(now.minus({ years: 1 }));
       }
       return {
         events,
@@ -338,6 +343,7 @@ export function parseCascade(
         metadata: {
           earliestTime: earliest,
           latestTime: latest,
+          maxDuration,
           dateFormat,
           startLineIndex,
           startStringIndex: lengthAtIndex[startLineIndex],
@@ -458,6 +464,12 @@ export function parseCascade(
         dateRangeInText
       );
 
+      const eventDuration = endDateTime.diff(fromDateTime);
+      console.log("event duration to", eventDuration.as("days"), "days");
+      if (!maxDuration || !eventDuration > !maxDuration) {
+        maxDuration = eventDuration;
+      }
+
       const eventRange: Range = {
         from: dateRangeInText.from,
         to: lengthAtIndex[end],
@@ -502,11 +514,15 @@ export function parseCascade(
     events.push(eventSubgroup);
   }
 
+  const now = DateTime.now();
   if (!earliest) {
-    earliest = DateTime.now().minus({ years: 5 });
+    earliest = now.minus({ years: 5 });
   }
   if (!latest) {
-    latest = DateTime.now().plus({ years: 5 });
+    latest = now.plus({ years: 5 });
+  }
+  if (!maxDuration) {
+    maxDuration = now.diff(now.minus({ years: 1 }));
   }
   return {
     events,
@@ -517,6 +533,7 @@ export function parseCascade(
     metadata: {
       earliestTime: earliest,
       latestTime: latest,
+      maxDuration,
       dateFormat,
       startStringIndex: lengthAtIndex[startLineIndex],
       startLineIndex: startLineIndex,
