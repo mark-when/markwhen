@@ -4,7 +4,7 @@
     style="--webkit-overflow-scrolling: touch"
   >
     <cascade-button
-      v-for="(cascade, index) in $store.getters.cascades.cascades"
+      v-for="(cascade, index) in $store.getters.cascades"
       :key="index"
       :index="index"
       :cascade="cascade"

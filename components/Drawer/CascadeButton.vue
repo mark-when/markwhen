@@ -8,7 +8,6 @@
       flex
       items-center
       justify-center
-      transition
       flex-shrink-0
       relative
     "
@@ -28,16 +27,18 @@
         top-0
         -translate-y-1/2
         translate-x-1/2
-        text-slate-400
-        opacity-50
-        hover:opacity-100 hover:text-slate-300
+        text-slate-300
+        hover:text-slate-500
+        dark:text-slate-500
+        dark:hover:text-slate-300
         rounded-full
-        bg-slate-700
+        dark:bg-slate-700
+        bg-slate-100
       "
       @click.prevent.stop="del"
       v-if="
         $store.state.editable &&
-        $store.getters.cascades.cascades.length > 1 &&
+        $store.getters.cascades.length > 1 &&
         hovering
       "
     >

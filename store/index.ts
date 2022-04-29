@@ -326,11 +326,11 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
   return Math.min(max, Math.max(value, min));
 }
 export const getters: GetterTree<State, State> = {
-  cascades(state: State, getters: any): Cascades {
-    return parse(state.eventsString);
+  cascades(state: State, getters: any): Cascade[] {
+    return parse(state.eventsString).cascades;
   },
   cascade(state: State, getters: any): Cascade {
-    return getters.cascades.cascades[state.cascadeIndex];
+    return getters.cascades[state.cascadeIndex];
   },
   cascadeString(state: State, getters: any): string {
     const cascade = getters.cascade as Cascade;
@@ -787,7 +787,7 @@ export const actions: ActionTree<State, State> = {
     );
   },
   addNewPage({ commit, state, getters }) {
-    const currentLength = getters.cascades.cascades.length;
+    const currentLength = getters.cascades.length;
     commit(
       ACTION_SET_EVENTS_STRING,
       state.eventsString
@@ -810,13 +810,13 @@ export const actions: ActionTree<State, State> = {
     commit(ACTION_SET_EVENTS_STRING, newEventsString);
   },
   deletePage({ commit, state, getters }, index: number) {
-    if (getters.cascades.cascades.length === 1) {
+    if (getters.cascades.length === 1) {
       commit(ACTION_SET_EVENTS_STRING, "");
     }
 
     // If we're deleting the first page, we delete the
     // break after if, otherwise we delete the break before it
-    const cascade = getters.cascades.cascades[index] as Cascade;
+    const cascade = getters.cascades[index] as Cascade;
     const currentEventsString = state.eventsString || "";
 
     let startIndex = cascade.metadata.startStringIndex;

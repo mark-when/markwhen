@@ -230,20 +230,23 @@ export default Vue.extend({
           decorations() {
             return Decoration.set(
               ((vm.adjustedRanges as CascadeRange[]) || [])
-                .map((r) => {
+                .flatMap((r) => {
                   if (r.type === "dateRange") {
-                    return dateRangeMark.range(r.from, r.to);
+                    return [dateRangeMark.range(r.from, r.to)];
                   }
                   if (r.type === "section") {
-                    return sectionMark.range(r.from, r.to);
+                    return [sectionMark.range(r.from, r.to)];
                   }
                   if (r.type === "tag") {
-                    return tagMark.range(r.from, r.to);
+                    return [tagMark.range(r.from, r.to)];
                   }
                   if (["title", "description"].includes(r.type)) {
-                    return sectionMark.range(r.from, r.to);
+                    return [sectionMark.range(r.from, r.to)];
                   }
-                  return commentMark.range(r.from, r.to);
+                  if (r.type === "comment") {
+                    return [commentMark.range(r.from, r.to)];
+                  }
+                  return [];
                 })
                 .sort((a, b) => a.from - b.from)
             );
