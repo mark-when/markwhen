@@ -24,7 +24,7 @@ import { exampleTimeline } from "./exampleTimeline";
 interface State {
   list: string[];
   currentTimelineName: string;
-  settings: { [page: number]: Settings };
+  settings: Settings[];
   startedWidthChange: boolean;
   eventsString: string | undefined;
   timelinePath: string | null;
@@ -72,9 +72,7 @@ export interface Settings {
 export const state: () => State = () => ({
   list: list,
   currentTimelineName: currentTimelineName,
-  settings: {
-    0: blankSettings(),
-  },
+  settings: [blankSettings()],
   startedWidthChange: false,
   filter: [],
   eventsString: eventsString || undefined,
@@ -150,10 +148,7 @@ export const mutations: MutationTree<State> = {
   setCascadeIndex(state: State, index: number) {
     state.cascadeIndex = index;
     if (!state.settings[state.cascadeIndex]) {
-      state.settings = {
-        ...state.settings,
-        [state.cascadeIndex]: blankSettings(),
-      };
+      state.settings = [...state.settings, blankSettings()];
     }
   },
   seteditable(state: State, editable: boolean) {
