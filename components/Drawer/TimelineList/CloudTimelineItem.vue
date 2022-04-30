@@ -134,7 +134,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import Vue from "vue";
-import { ACTION_SET_EVENTS_STRING } from "~/store";
+import { MUTATION_SET_EVENTS_STRING } from "~/store";
 
 export default Vue.extend({
   props: ["item"],
@@ -165,7 +165,7 @@ export default Vue.extend({
       this.loading = true;
       const downloadLink = await getDownloadURL(this.item);
       const timelineText = await fetch(downloadLink);
-      this.$store.commit(ACTION_SET_EVENTS_STRING, await timelineText.text());
+      this.$store.commit(MUTATION_SET_EVENTS_STRING, await timelineText.text());
       this.loading = false;
     },
   },

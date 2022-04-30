@@ -848,125 +848,34 @@ export const actions: ActionTree<State, State> = {
     if (from === to) {
       return;
     }
-    console.log(from, "to", to);
-
-    const cascadeFrom = getters.cascades[from] as Cascade;
-    const indexOfLast = getters.cascades.length - 1;
-    const cascadeTo = getters.cascades[to] as Cascade;
-    let insertIndex = cascadeTo.metadata.startStringIndex
-      // to > from
-      //   ? cascadeTo.metadata.endStringIndex
-      //   : cascadeTo.metadata.startStringIndex; // should be endStringIndex in some cases
-
-    if (from === 0 || from === indexOfLast || to === 0 || to === indexOfLast) {
-      console.log("unimplemented");
-      return;
-    }
-
-    // Generally, we can take the previous page break with us.
-    // Unless we're dealing with the first or last page.
-
-    let startIndex = cascadeFrom.metadata.startStringIndex;
-    let endIndex = cascadeFrom.metadata.endStringIndex;
-    const currentEventsString = state.eventsString || "";
-    let movingPage: string;
-
-    // 0|mid|last
-
-    if (from === 0) {
-      // from 0
-      // if from === 0 and to === 0, do nothing
-      // if from === 0 and to === mid, take next break
-      // if from === 0 and to === last, take next break and prepend
-
-      if (to === indexOfLast) {
-        // take next break and prepend
-        console.log("from 0 to last");
-
-        movingPage =
-          PAGE_BREAK + currentEventsString.substring(startIndex, endIndex);
-        endIndex += PAGE_BREAK.length;
-      } else {
-        // take next break
-        console.log("from 0 to mid");
-
-        endIndex += PAGE_BREAK.length;
-        movingPage = currentEventsString.substring(startIndex, endIndex);
-      }
-    } else if (from === indexOfLast) {
-      // from last
-      // if from === last and to === 0, take previous break and append
-      // if from === last and to === mid, take previous break
-      // if from === last and to === last, do nothing
-
-      if (to === 0) {
-        // take previous break and append
-        console.log("from last to 0");
-
-        movingPage =
-          currentEventsString.substring(startIndex, endIndex) + PAGE_BREAK;
-        startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length;
-      } else {
-        // take previous break
-        console.log("from last to mid");
-
-        startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length;
-        movingPage = currentEventsString.substring(startIndex, endIndex);
-      }
-    } else {
-      // from mid
-      // if from === mid and to === 0, take next break
-      // if from === mid and to === mid, take previous break
-      // if from === mid and to === last, take previous break
-
-      if (to === 0) {
-        // take next break
-        console.log("from mid to 0");
-
-        endIndex += PAGE_BREAK.length;
-        movingPage = currentEventsString.substring(startIndex, endIndex);
-      } else {
-        // take previous break
-        console.log("from mid to mid/last");
-        startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length;
-        movingPage = currentEventsString.substring(startIndex, endIndex);
-      }
-    }
-
-    // If the insertion is after where we're moving from,
-    // insert first, then delete. Otherwise, if the
-    // insertion is before where we're moving from,
-    // delete first, then insert
-
-    let newString: string;
-    if (startIndex > insertIndex) {
-      // Inserting before
-      newString =
-        currentEventsString.substring(0, insertIndex) +
-        movingPage +
-        currentEventsString.substring(insertIndex, startIndex) +
-        currentEventsString.substring(endIndex);
-    } else {
-      // Inserting after
-      newString =
-        currentEventsString.substring(0, startIndex) +
-        currentEventsString.substring(endIndex, insertIndex) +
-        movingPage +
-        currentEventsString.substring(insertIndex);
-    }
-
+    // Just do it heavy-handedly
+    const cascades = getters.cascades as Cascade[];
+    const ces = state.eventsString || "";
+    const sub = (from: number, to: number) => ces.substring(from, to);
+    const order = newOrder(
+      cascades.map((c, i) => i),
+      from,
+      to
+    );
+    const newString = order
+      .map((i) => {
+        const metadata = cascades[i].metadata;
+        const start = metadata.startStringIndex;
+        const end = metadata.endStringIndex;
+        return sub(start, end);
+      })
+      .join(PAGE_BREAK);
     commit(MUTATION_SET_EVENTS_STRING, newString);
-    let newCascadeIndex = state.cascadeIndex;
-    if (to < state.cascadeIndex) {
-      ++newCascadeIndex;
-    } else if (from < state.cascadeIndex) {
-      --newCascadeIndex;
-    } else if (from === state.cascadeIndex) {
-      newCascadeIndex = to;
-    }
-    // commit("setCascadeIndex", newCascadeIndex);
   },
 };
+
+function newOrder(order: number[], from: number, to: number) {
+  if (from > to) {
+    order.splice(from, 1);
+    order.splice(to, 0, from);
+  } else {
+    order.splice(to + 1, 0, from)
+    order.splice(from, 1);
+  }
+  return order;
+}
