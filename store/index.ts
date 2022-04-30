@@ -129,7 +129,7 @@ const MONTH = 30 * DAY;
 const YEAR = 12 * MONTH;
 const DECADE = 10 * YEAR;
 
-export const ACTION_SET_EVENTS_STRING = "setEventsString";
+export const MUTATION_SET_EVENTS_STRING = "setEventsString";
 
 function blankSettings(): Settings {
   return {
@@ -728,7 +728,7 @@ function getNextEvent(event: Event, events: Event[]) {
 export const actions: ActionTree<State, State> = {
   nuxtServerInit(store: any, context: Context) {
     if (context.req.timelineFile) {
-      store.commit(ACTION_SET_EVENTS_STRING, context.req.timelineFile);
+      store.commit(MUTATION_SET_EVENTS_STRING, context.req.timelineFile);
     }
     if (context.req.timelinePath) {
       store.commit("setTimelinePath", context.req.timelinePath);
@@ -774,7 +774,7 @@ export const actions: ActionTree<State, State> = {
       firstFullEventString +
       es.substring(second.ranges.event.to, es.length);
 
-    commit(ACTION_SET_EVENTS_STRING, newString);
+    commit(MUTATION_SET_EVENTS_STRING, newString);
   },
   updateEventDateRange({ commit, state, getters }, params) {
     const { event, from, to } = params as {
@@ -789,7 +789,7 @@ export const actions: ActionTree<State, State> = {
     const post = state.eventsString?.slice(inTextTo);
     const scale = getters.scaleOfViewportDateInterval;
     commit(
-      ACTION_SET_EVENTS_STRING,
+      MUTATION_SET_EVENTS_STRING,
       pre +
         `${dateRangeToString(range, scale, getters.metadata.dateFormat)}:` +
         post
@@ -798,7 +798,7 @@ export const actions: ActionTree<State, State> = {
   addNewPage({ commit, state, getters }) {
     const currentLength = getters.cascades.length;
     commit(
-      ACTION_SET_EVENTS_STRING,
+      MUTATION_SET_EVENTS_STRING,
       state.eventsString
         ?.concat(PAGE_BREAK)
         .concat(`title: Page ${currentLength + 1}`)
@@ -816,11 +816,11 @@ export const actions: ActionTree<State, State> = {
       currentCascade.metadata.endStringIndex
     );
     const newEventsString = pre + cascadeString + post;
-    commit(ACTION_SET_EVENTS_STRING, newEventsString);
+    commit(MUTATION_SET_EVENTS_STRING, newEventsString);
   },
   deletePage({ commit, state, getters }, index: number) {
     if (getters.cascades.length === 1) {
-      commit(ACTION_SET_EVENTS_STRING, "");
+      commit(MUTATION_SET_EVENTS_STRING, "");
     }
 
     // If we're deleting the first page, we delete the
@@ -839,7 +839,7 @@ export const actions: ActionTree<State, State> = {
     // Also, if the page is before us, we need to decrement the index of the page we're on
     // commit("setCascadeIndex", state.cascadeIndex - 1);
     commit(
-      ACTION_SET_EVENTS_STRING,
+      MUTATION_SET_EVENTS_STRING,
       currentEventsString.substring(0, startIndex) +
         currentEventsString.substring(endIndex)
     );
@@ -958,7 +958,7 @@ export const actions: ActionTree<State, State> = {
         currentEventsString.substring(insertIndex);
     }
 
-    commit(ACTION_SET_EVENTS_STRING, newString);
+    commit(MUTATION_SET_EVENTS_STRING, newString);
     let newCascadeIndex = state.cascadeIndex;
     if (to < state.cascadeIndex) {
       ++newCascadeIndex;
