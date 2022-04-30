@@ -20,6 +20,7 @@ import {
 import { MutationTree, GetterTree, ActionTree } from "vuex";
 import { DateTime } from "luxon";
 import { exampleTimeline } from "./exampleTimeline";
+import Vue from "vue";
 
 interface State {
   list: string[];
@@ -146,15 +147,24 @@ function blankSettings(): Settings {
 
 export const mutations: MutationTree<State> = {
   setCascadeIndex(state: State, index: number) {
-    console.log("setting cascade index to ", index);
-    if (!state.settings[index]) {
-      for (let i = 0; i <= index; i++) {
-        if (!state.settings[i]) {
-          state.settings.push(blankSettings());
-        }
+    let newSettings = false;
+    for (let i = 0; i <= index; i++) {
+      if (!state.settings[i]) {
+        newSettings = true;
+        state.settings[i] = blankSettings();
       }
     }
+    if (newSettings) {
+      state.settings = [...state.settings];
+      console.log("settings after", state.settings);
+    }
     state.cascadeIndex = index;
+  },
+  setSettings(state: State, settings: Settings[]) {
+    state.settings = settings;
+  },
+  removeSettings(state: State, index: number) {
+    state.settings.splice(index, 1);
   },
   seteditable(state: State, editable: boolean) {
     state.editable = editable;
@@ -836,8 +846,17 @@ export const actions: ActionTree<State, State> = {
       startIndex -= PAGE_BREAK.length;
     }
 
+    // if we have settings for that page, delete them
+    if (state.settings[index]) {
+      commit("removeSettings", index);
+    }
+
     // Also, if the page is before us, we need to decrement the index of the page we're on
-    // commit("setCascadeIndex", state.cascadeIndex - 1);
+    if (state.cascadeIndex === index && index === getters.cascades.length - 1) {
+      commit("setCascadeIndex", state.cascadeIndex - 1);
+    } else if (index < state.cascadeIndex) {
+      commit("setCascadeIndex", state.cascadeIndex - 1);
+    }
     commit(
       MUTATION_SET_EVENTS_STRING,
       currentEventsString.substring(0, startIndex) +
@@ -857,6 +876,9 @@ export const actions: ActionTree<State, State> = {
       from,
       to
     );
+
+    const rearrangedSettings = order.map((i) => state.settings[i]);
+    const newIndex = order.findIndex((i) => i === state.cascadeIndex);
     const newString = order
       .map((i) => {
         const metadata = cascades[i].metadata;
@@ -866,6 +888,9 @@ export const actions: ActionTree<State, State> = {
       })
       .join(PAGE_BREAK);
     commit(MUTATION_SET_EVENTS_STRING, newString);
+    commit("setSettings", rearrangedSettings);
+    console.log("setting settings to", rearrangedSettings);
+    commit("setCascadeIndex", newIndex);
   },
 };
 
@@ -874,7 +899,7 @@ function newOrder(order: number[], from: number, to: number) {
     order.splice(from, 1);
     order.splice(to, 0, from);
   } else {
-    order.splice(to + 1, 0, from)
+    order.splice(to + 1, 0, from);
     order.splice(from, 1);
   }
   return order;
