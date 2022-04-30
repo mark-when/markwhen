@@ -68,7 +68,7 @@ import Vue from "vue";
 import { Cascade } from "~/src/Types";
 
 export default Vue.extend({
-  props: ["cascade", "index", "shadowed"],
+  props: ["cascade", "index", "shadowed", "translate"],
   data() {
     return {
       softHover: false,
@@ -77,7 +77,6 @@ export default Vue.extend({
       startX: undefined as number | undefined,
       offsetX: undefined as number | undefined,
       translateX: 0,
-      clickE: true,
     };
   },
   computed: {
@@ -85,11 +84,19 @@ export default Vue.extend({
       if (this.translateX !== 0) {
         return `transform: translateX(${this.translateX}px); z-index: 20;`;
       }
-      return "";
+      if (this.translate) {
+        return `transform: translateX(${this.translate}px)`;
+      }
+      return "transform: translateX(0px)";
     },
     cascadeTitle() {
       const c = this.cascade as Cascade;
       return (c && c.metadata && c.metadata.title) || "";
+    },
+  },
+  watch: {
+    translateX(val) {
+      this.$emit("moving", val);
     },
   },
   methods: {
@@ -100,7 +107,6 @@ export default Vue.extend({
       this.startX = undefined;
       this.offsetX = undefined;
       this.translateX = 0;
-      this.clickE = true;
       document.removeEventListener("mousemove", this.moveListener);
       document.removeEventListener("mouseup", this.endMoveListener);
       document.removeEventListener("keydown", this.escapeListener);
@@ -113,15 +119,14 @@ export default Vue.extend({
         this.hovering = false;
         this.softHover = false;
       }
-      this.clickE = false;
       const el = this.$el as HTMLButtonElement;
 
       // We shouldn't go any further than the start of the parent element
       const diff = e.clientX - this.startX!;
       const parentOffsetLeft = el.parentElement?.offsetLeft || 0;
-      const addPageButtonWidth = 24;
+      const addPageButtonWidth = 20;
       const maxRight =
-        el.parentElement!.clientWidth -
+        el.parentElement!.scrollWidth -
         el.offsetLeft -
         el.clientWidth -
         addPageButtonWidth;
@@ -134,6 +139,7 @@ export default Vue.extend({
       if (Math.abs(e.clientX - this.startX!) > 2) {
         document.addEventListener("click", this.captureClick, true);
       }
+      this.$emit("doneMoving");
       this.stopMoving();
     },
     captureClick(e: MouseEvent) {
@@ -147,7 +153,7 @@ export default Vue.extend({
     },
     startMoving(e: MouseEvent) {
       if (!this.$store.state.editable) {
-        return
+        return;
       }
       this.startX = e.clientX;
       this.offsetX = e.offsetX;
