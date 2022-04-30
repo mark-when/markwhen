@@ -853,11 +853,14 @@ export const actions: ActionTree<State, State> = {
     const cascadeFrom = getters.cascades[from] as Cascade;
     const indexOfLast = getters.cascades.length - 1;
     const cascadeTo = getters.cascades[to] as Cascade;
-    let insertIndex = cascadeTo.metadata.startStringIndex;
+    let insertIndex = cascadeTo.metadata.startStringIndex
+      // to > from
+      //   ? cascadeTo.metadata.endStringIndex
+      //   : cascadeTo.metadata.startStringIndex; // should be endStringIndex in some cases
 
     if (from === 0 || from === indexOfLast || to === 0 || to === indexOfLast) {
-      console.log("unimplemented")
-      return
+      console.log("unimplemented");
+      return;
     }
 
     // Generally, we can take the previous page break with us.
@@ -903,13 +906,13 @@ export const actions: ActionTree<State, State> = {
         movingPage =
           currentEventsString.substring(startIndex, endIndex) + PAGE_BREAK;
         startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length
+        insertIndex -= PAGE_BREAK.length;
       } else {
         // take previous break
         console.log("from last to mid");
 
         startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length
+        insertIndex -= PAGE_BREAK.length;
         movingPage = currentEventsString.substring(startIndex, endIndex);
       }
     } else {
@@ -928,7 +931,7 @@ export const actions: ActionTree<State, State> = {
         // take previous break
         console.log("from mid to mid/last");
         startIndex -= PAGE_BREAK.length;
-        insertIndex -= PAGE_BREAK.length
+        insertIndex -= PAGE_BREAK.length;
         movingPage = currentEventsString.substring(startIndex, endIndex);
       }
     }
