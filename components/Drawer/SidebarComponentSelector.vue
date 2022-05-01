@@ -134,7 +134,7 @@ export default Vue.extend({
       if (process.browser) {
         this.$store.commit("setHasSeenHowTo", true);
       }
-      window.location.href = "https://github.com/kochrt/cascade.page#readme";
+      window.location.href = "/docs";
     },
     selectExplore() {
       this.$store.commit("sidebar/setSelectedComponent", "explore");
