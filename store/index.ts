@@ -20,7 +20,6 @@ import {
 import { MutationTree, GetterTree, ActionTree } from "vuex";
 import { DateTime } from "luxon";
 import { exampleTimeline } from "./exampleTimeline";
-import Vue from "vue";
 
 interface State {
   list: string[];
