@@ -19,6 +19,7 @@ interface State {
   sidebarHeight: number;
   darkMode: DarkMode;
   width: number;
+  hideNowLine: boolean;
 }
 
 export const state: () => State = () => ({
@@ -31,6 +32,7 @@ export const state: () => State = () => ({
   sidebarHeight: 300,
   darkMode: "system",
   width: 350,
+  hideNowLine: false,
 });
 
 export const mutations: MutationTree<State> = {
@@ -48,6 +50,12 @@ export const mutations: MutationTree<State> = {
     } else {
       state.darkMode = "system";
     }
+  },
+  setHideNowLine(state: State, hideNowLine: boolean) {
+    state.hideNowLine = hideNowLine;
+  },
+  toggleHideNowLine(state: State) {
+    state.hideNowLine = !state.hideNowLine;
   },
   toggleDarkMode(state: State) {
     if (state.darkMode === "system") {

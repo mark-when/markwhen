@@ -1,10 +1,10 @@
 <template>
-  <button @click="click" class="mx-2 pr-2" :title="buttonTitle">
+  <button @click="click" class="mx-2" :title="buttonTitle">
     <svg
       v-if="sort === 'none'"
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
-      viewBox="1 3 17 14"
+      viewBox="1 1 17 14"
       fill="currentColor"
     >
       <path
@@ -15,7 +15,7 @@
       v-if="sort === 'down'"
       class="h-5 w-5"
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="1 3 17 14"
+      viewBox="1 1 17 14"
       fill="currentColor"
     >
       <path
@@ -26,7 +26,7 @@
       v-if="sort === 'up'"
       class="h-5 w-5"
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="1 3 17 14"
+      viewBox="1 1 17 14"
       fill="currentColor"
     >
       <path

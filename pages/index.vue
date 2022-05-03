@@ -42,6 +42,10 @@ export default Vue.extend({
     if (width) {
       context.store.commit("sidebar/setWidth", parseInt(width));
     }
+    const hideNowLine = context.app.$cookies.get('hnl')
+    if (hideNowLine) {
+      context.store.commit('sidebar/setHideNowLine', hideNowLine)
+    }
   },
   components: { Main },
   computed: mapGetters(["metadata"]),

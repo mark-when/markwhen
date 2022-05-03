@@ -127,7 +127,30 @@
         </div>
 
         <display-settings></display-settings>
-        <sort></sort>
+        <div class="pr-3 flex flex-row items-center">
+          <sort></sort>
+          <button
+            class="pl-1"
+            title="Toggle now line"
+            @click="toggleHideNowLine"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="1 2 17 12"
+              class="h-5 w-5"
+            >
+              <path
+                d="m 2 3 a 1 1 0 0 0 0 2 h 11 a 1 1 0 1 0 0 -2 h -11 z m 1 4 a 1 1 0 0 0 0 2 h 11 a 1 1 0 0 0 0 -2 h -11 z m 1 4 a 1 1 0 1 0 0 2 h 11 a 1 1 0 1 0 0 -2 h -11 z"
+                fill="currentColor"
+              />
+              <path
+                v-if="showNowLine"
+                d="M 9 1 L 9 15 L 12 15 L 12 1 L 12 1 Z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </button>
+        </div>
         <tags></tags>
       </div>
     </div>
@@ -150,12 +173,22 @@ export default Vue.extend({
     CascadeButtons,
   },
   computed: {
-    ...mapGetters(["metadata"]),
+    ...mapGetters(["metadata", "sidebar/darkMode"]),
+    showNowLine(): boolean {
+      return !this.$store.state.sidebar.hideNowLine;
+    },
+    isDark(): boolean {
+      return this["sidebar/darkMode"] === "dark";
+    },
   },
   props: ["value", "timelinePath"],
   methods: {
     toggleSidebar() {
       this.$store.commit("sidebar/toggle");
+    },
+    toggleHideNowLine() {
+      this.$store.commit("sidebar/toggleHideNowLine");
+      this.$cookies.set("hnl", this.$store.state.sidebar.hideNowLine);
     },
     mousedown(e: MouseEvent) {
       e.stopPropagation();
