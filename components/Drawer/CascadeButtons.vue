@@ -58,7 +58,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { cascade } from "~/src/codeMirrorParser";
 import CascadeButton from "./CascadeButton.vue";
 
 export default Vue.extend({

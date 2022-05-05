@@ -13,14 +13,15 @@
         @moveDown="moveDown"
         @mouseenter="hover = true"
         @mouseleave="hover = false"
+        @edit="edit"
       />
     </template>
-    <div
+    <!-- <div
       v-if="showingMeta"
       :class="photoBarClass"
       class="absolute left-0 mr-2 bottom-2 z-10 opacity-50"
       :style="photoBarStyle"
-    ></div>
+    ></div> -->
     <div class="flex flex-row">
       <div
         class="
@@ -224,6 +225,16 @@ export default Vue.extend({
     },
   },
   methods: {
+    edit() {
+      const vm = this;
+      vm.$store.commit("sidebar/setVisibility", true);
+      if (vm.$store.state.sidebar.selectedComponent !== "editor") {
+        vm.$store.commit("sidebar/setSelectedComponent", "editor");
+      }
+      Vue.nextTick(() => {
+        vm.$store.dispatch('moveCursorToEvent', vm.event)
+      })
+    },
     moveUp() {
       this.$store.dispatch("moveEventUpOrDown", {
         up: true,
@@ -246,7 +257,7 @@ export default Vue.extend({
           x = e.clientX;
           e.preventDefault();
         }
-        const date = this.$store.getters.dateFromOffsetLeft(x) as DateTime;
+        const date = this.$store.getters.dateFromClientLeft(x) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval
@@ -290,7 +301,7 @@ export default Vue.extend({
           x = e.clientX;
           e.preventDefault();
         }
-        const date = this.$store.getters.dateFromOffsetLeft(x) as DateTime;
+        const date = this.$store.getters.dateFromClientLeft(x) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval
@@ -335,7 +346,7 @@ export default Vue.extend({
           x = e.clientX;
         }
         // + 18 because of where the handle is
-        const date = this.$store.getters.dateFromOffsetLeft(x + 18) as DateTime;
+        const date = this.$store.getters.dateFromClientLeft(x + 18) as DateTime;
         const rounded = roundDateTime(
           date,
           this.$store.getters.nextMostGranularScaleOfViewportDateInterval

@@ -104,6 +104,7 @@ export default Vue.extend({
       ),
       parent: this.$el,
     });
+    this.$store.commit("setEditorGetter", () => this.editorView);
   },
   methods: {
     setColorForTag(tag: string, color: string) {

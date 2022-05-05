@@ -91,6 +91,9 @@ export const mutations: MutationTree<State> = {
       localStorage.sidebarSide = state.position;
     }
   },
+  setVisibility(state: State, visible: boolean) {
+    state.visible = visible;
+  },
   toggle(state: State) {
     state.visible = !state.visible;
   },

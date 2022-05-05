@@ -15,7 +15,7 @@
         "
         style="max-width: min(90vw, 600px)"
       >
-        <div class="ml-5">
+        <div class="">
           <p
             :class="{ 'mb-1': index !== supplemental.length - 1 }"
             v-for="(item, index) in supplemental"
@@ -41,7 +41,6 @@
       style="max-width: 100vw"
       v-if="hasLocations || hasImages"
     >
-      <div class="ml-2 mr-3"></div>
       <div class="flex flex-row overflow-x-scroll items-center rounded">
         <template v-if="hasLocations">
           <iframe

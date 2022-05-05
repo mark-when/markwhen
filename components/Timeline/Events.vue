@@ -25,6 +25,40 @@
         :event="event"
       ></event-row
     ></template>
+    <div class="w-full relative h-3 mt-1">
+      <button
+        class="
+          h-3
+          rounded-full
+          border
+          flex
+          items-center
+          justify-center
+          flex-shrink-0
+          relative
+          border-white
+          bg-white
+          border-slate-600
+          text-slate-600
+          hover:bg-blue-50
+          border-blue-100
+          opacity-60
+          shadow
+          hover:opacity-100
+          dark:text-slate-100
+          dark:bg-slate-500
+          dark:hover:bg-slate-600
+          dark:border-slate-100
+          text-sm
+        "
+        :style="`left: ${newEventPosition[0]}px; width: ${
+          newEventPosition[1] - newEventPosition[0]
+        }px;`"
+        @mousedown.prevent="$emit('startMakingEvent', $event)"
+      >
+        +
+      </button>
+    </div>
     <div style="height: 90vh"></div>
   </div>
 </template>
@@ -38,14 +72,18 @@ import EventGroup from "./EventGroup/EventGroup.vue";
 import { DateTime } from "luxon";
 
 export default Vue.extend({
+  props: ["mouseLeft"],
   components: { EventRow, DrawerHeader, EventGroup },
   computed: {
+    newEventPosition(): [number, number] {
+      return this.rangeFromOffsetLeft(this.mouseLeft);
+    },
     now(): DateTime {
       return DateTime.now();
     },
     shouldShowNow(): boolean {
       if (this.$store.state.sidebar.hideNowLine) {
-        return false
+        return false;
       }
       return (
         this.now > (this.baselineLeftmostDate as DateTime) &&
@@ -53,12 +91,18 @@ export default Vue.extend({
       );
     },
     ...mapGetters([
+      "rangeFromOffsetLeft",
       "distanceBetweenBaselineDates",
       "filteredEvents",
       "distanceFromBaselineLeftmostDate",
       "baselineLeftmostDate",
       "baselineRightmostDate",
     ]),
+  },
+  methods: {
+    clic() {
+      console.log("click");
+    },
   },
 });
 </script>

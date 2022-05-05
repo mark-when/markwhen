@@ -20,6 +20,8 @@ import {
 import { MutationTree, GetterTree, ActionTree } from "vuex";
 import { DateTime } from "luxon";
 import { exampleTimeline } from "./exampleTimeline";
+import { EditorView } from "@codemirror/view";
+import { EditorSelection } from "@codemirror/state";
 
 interface State {
   list: string[];
@@ -33,6 +35,7 @@ interface State {
   editable: boolean;
   globalClass: string;
   cascadeIndex: number;
+  editorGetter: () => EditorView | undefined;
 }
 
 interface DateInterval {
@@ -82,6 +85,7 @@ export const state: () => State = () => ({
   editable: true,
   globalClass: "",
   cascadeIndex: 0,
+  editorGetter: () => undefined,
 });
 
 export type DisplayScale =
@@ -186,6 +190,9 @@ export const mutations: MutationTree<State> = {
   setSort(state: State, sort: Sort) {
     state.settings[state.cascadeIndex].sort = sort;
   },
+  setEditorGetter(state: State, getter: () => EditorView | undefined) {
+    state.editorGetter = getter;
+  },
   toggleSort(state: State, sort: Sort) {
     state.settings[state.cascadeIndex].sort =
       sorts[
@@ -288,7 +295,7 @@ export function roundDateTime(dateTime: DateTime, toScale: DisplayScale) {
   return Math.abs(+upDiff) < Math.abs(+downDiff) ? up : down;
 }
 
-function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
+export function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
   let increment;
   if (toScale === "decade") {
     increment = { years: 10 };
@@ -298,7 +305,7 @@ function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
   return floorDateTime(dateTime, toScale).plus(increment);
 }
 
-function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
+export function floorDateTime(dateTime: DateTime, toScale: DisplayScale) {
   const year = dateTime.year;
   if (toScale === "decade") {
     const roundedYear = year - (year % 10);
@@ -404,7 +411,29 @@ export const getters: GetterTree<State, State> = {
   metadata(state: State, getters: any): CascadeMetadata {
     return getters.cascade.metadata;
   },
-  dateFromOffsetLeft(state: State, getters: any) {
+  rangeFromOffsetLeft(
+    state: State,
+    getters: any
+  ): (offset: number) => [number, number] {
+    return (offset: number) => {
+      const offsetDate = getters.dateFromClientLeft(offset);
+      const scale = getters.scaleOfViewportDateInterval as DisplayScale;
+      const floored = floorDateTime(offsetDate, scale);
+      const ceiled = ceilDateTime(offsetDate, scale);
+      return [
+        getters.distanceFromBaselineLeftmostDate(floored),
+        getters.distanceFromBaselineLeftmostDate(ceiled),
+      ];
+    };
+  },
+  dateFromOffsetLeft(state: State, getters: any): (_: number) => DateTime {
+    return (offset: number) => {
+      return getters.baselineLeftmostDate.plus({
+        [diffScale]: offset / getters.settings.scale,
+      });
+    };
+  },
+  dateFromClientLeft(state: State, getters: any) {
     return (offset: number) => {
       const leftDate = getters.baselineLeftmostDate.plus({
         [diffScale]: getters.settings.viewport.left / getters.settings.scale,
@@ -890,6 +919,25 @@ export const actions: ActionTree<State, State> = {
     commit("setSettings", rearrangedSettings);
     console.log("setting settings to", rearrangedSettings);
     commit("setCascadeIndex", newIndex);
+  },
+  moveCursorToEvent({ commit, state, getters }, event: Event) {
+    const editorView = state.editorGetter();
+    if (!editorView) {
+      return;
+    }
+    const metadata = getters.metadata as CascadeMetadata;
+    const startIndex = metadata.startStringIndex;
+    editorView.dispatch(
+      editorView.state.update({
+        selection: editorView.moveByChar(
+          EditorSelection.cursor(event.ranges.event.from + 1 - startIndex),
+          false
+        ),
+        scrollIntoView: true,
+        userEvent: "select",
+      })
+    );
+    editorView.focus();
   },
 };
 

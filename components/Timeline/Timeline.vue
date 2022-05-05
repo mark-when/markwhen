@@ -9,7 +9,7 @@
     :style="eventsStyle"
   >
     <TimeMarkersBack :markers="markers" />
-    <events />
+    <events :mouseLeft="mouseLeft" @startMakingEvent="startMakingEvent" />
     <TimeMarkersFront :markers="markers" />
     <drawer-header />
     <resize-observer @notify="handleResize" />
@@ -60,6 +60,7 @@ export default Vue.extend({
       widthChangeStartScrollLeft: null as number | null,
       widthChangeStartYearWidth: null as number | null,
       markers: [] as TimeMarker[],
+      mouseLeft: 0,
     };
   },
   created() {
@@ -72,6 +73,9 @@ export default Vue.extend({
     this.touchScreenListener();
     this.setupZoomer();
     this.setViewportDateInterval();
+    if (this.$store.state.editable) {
+      window.addEventListener("mousemove", this.moveListener);
+    }
   },
   watch: {
     timeMarkers(newMarkers: TimeMarker[], oldMarkers: TimeMarker[]) {
@@ -129,6 +133,14 @@ export default Vue.extend({
     },
   },
   methods: {
+    startMakingEvent(e: MouseEvent) {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log(e)
+    },
+    moveListener(e: MouseEvent) {
+      this.mouseLeft = e.clientX;
+    },
     touchScreenListener() {
       const vm = this;
       const touchListener = (e: TouchEvent) => {

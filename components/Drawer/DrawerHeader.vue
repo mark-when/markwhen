@@ -145,7 +145,7 @@
               />
               <path
                 v-if="showNowLine"
-                d="M 9 1 L 9 15 L 12 15 L 12 1 L 12 1 Z"
+                d="M 9 1 L 9 15 L 11 15 L 11 1 L 11 1 Z"
                 fill="currentColor"
               ></path>
             </svg>
