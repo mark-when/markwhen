@@ -14,8 +14,8 @@ import { codeFolding, foldGutter } from "@codemirror/fold";
 import { foldService } from "@codemirror/language";
 import { Decoration, EditorView, keymap, ViewPlugin } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
-import { mapState, mapGetters } from "vuex";
-import { Cascade, Range as CascadeRange, Range } from "~/src/Types";
+import { mapGetters } from "vuex";
+import { Cascade, Event, Range as CascadeRange, Range } from "~/src/Types";
 import { Foldable } from "~/src/Parser";
 import { ColorPickerWidget } from "~/src/ColorPickerWidget";
 import { rgbStringToHex } from "~/src/ColorUtils";
@@ -56,6 +56,7 @@ const dateRangeMark = Decoration.mark({ class: "cm-daterange" });
 const commentMark = Decoration.mark({ class: "cm-comment" });
 const sectionMark = Decoration.mark({ class: "cm-section" });
 const tagMark = Decoration.mark({ class: "cm-tag" });
+const eventMark = Decoration.mark({ class: "cm-event" });
 
 export default Vue.extend({
   props: ["startingText"],
@@ -178,7 +179,7 @@ export default Vue.extend({
             return Decoration.set(ranges);
           },
           eventHandlers: {
-            change: (e: Event, view) => {
+            change: (e, view) => {
               let target = e.target as HTMLInputElement;
               if (
                 target.parentElement!.classList.contains(
@@ -279,12 +280,57 @@ export default Vue.extend({
       });
       return foldingService;
     },
+    hoverExtension(): Extension {
+      const vm = this;
+      const hoverPlugin = ViewPlugin.define(
+        (view) => ({
+          update(u) {},
+          destroy() {},
+        }),
+        {
+          decorations: (view) => {
+            const hoveringEvent = vm.$store.state.hoveringEvent as Event | null;
+            if (!hoveringEvent) {
+              return Decoration.set([]);
+            }
+            return Decoration.set([
+              eventMark.range(
+                hoveringEvent.ranges.event.from,
+                hoveringEvent.ranges.event.to
+              ),
+            ]);
+          },
+          eventHandlers: {
+            mouseover(e: MouseEvent, view: EditorView) {
+              const position = view.posAtCoords({ x: e.x, y: e.y });
+              if (!position) {
+                return false;
+              }
+              const event = vm.$store.getters.eventAtPosition(position);
+              vm.$store.commit("setHovering", event);
+              view.dispatch({});
+              return true;
+            },
+            mouseleave(e: MouseEvent, view: EditorView) {
+              if (!vm.$store.state.hoveringEvent) {
+                return false;
+              }
+              vm.$store.commit("setHovering", null);
+              view.dispatch({});
+              return true;
+            },
+          },
+        }
+      );
+      return hoverPlugin;
+    },
     codeMirrorExtensions(): Extension[] {
       return [
         this.foldingServiceExtension(),
         this.syntaxExtension(),
         this.colorPickerExtension(),
         this.cascadeExtension(),
+        this.hoverExtension(),
       ];
     },
   },
@@ -390,5 +436,8 @@ export default Vue.extend({
 .cm-colorPickerWrapper input[type="color"]::-moz-color-swatch {
   border: none;
   border-radius: 0.125rem;
+}
+.cm-event {
+  @apply bg-slate-300/50 dark:bg-slate-700/50 rounded;
 }
 </style>

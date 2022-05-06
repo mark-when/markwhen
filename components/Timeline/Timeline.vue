@@ -9,7 +9,10 @@
     :style="eventsStyle"
   >
     <TimeMarkersBack :markers="markers" />
-    <events :mouseLeft="mouseLeft" @startMakingEvent="startMakingEvent" />
+    <events
+      :newEventPosition="newEventPosition"
+      @startMakingEvent="startMakingEvent"
+    />
     <TimeMarkersFront :markers="markers" />
     <drawer-header />
     <resize-observer @notify="handleResize" />
@@ -24,7 +27,13 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import Hammer from "@squadette/hammerjs";
 import { mapState, mapGetters } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
-import { MAX_SCALE, Settings, TimeMarker } from "~/store";
+import {
+  DateTimeAndOffset,
+  MAX_SCALE,
+  OffsetRange,
+  Settings,
+  TimeMarker,
+} from "~/store";
 import { throttle } from "throttle-debounce";
 import TimeMarkersBack from "./TimeMarkersBack.vue";
 import TimeMarkersFront from "./TimeMarkersFront.vue";
@@ -61,6 +70,8 @@ export default Vue.extend({
       widthChangeStartYearWidth: null as number | null,
       markers: [] as TimeMarker[],
       mouseLeft: 0,
+      startEventCreationRange: undefined as OffsetRange | undefined,
+      creatingEventRange: undefined as OffsetRange | undefined,
     };
   },
   created() {
@@ -127,16 +138,56 @@ export default Vue.extend({
     eventsStyle(): string {
       return `cursor: ${this.panStartX ? "grabbing" : "grab"};`;
     },
-    ...mapGetters(["timeMarkers", "settings"]),
+    ...mapGetters(["timeMarkers", "settings", "rangeFromOffsetLeft"]),
     isRight(): boolean {
       return this.$store.state.sidebar.position === "right";
+    },
+    newEventPosition(): OffsetRange {
+      return this.creatingEventRange
+        ? this.creatingEventRange
+        : this.rangeFromOffsetLeft(this.mouseLeft);
     },
   },
   methods: {
     startMakingEvent(e: MouseEvent) {
-      e.preventDefault()
-      e.stopPropagation()
-      console.log(e)
+      this.startEventCreationRange = this.newEventPosition;
+      window.addEventListener("mousemove", this.extendCreatingEvent);
+      window.addEventListener("mouseup", this.createEventFromRange);
+      window.addEventListener("keydown", this.stopCreatingKeyboardListener);
+    },
+    stopCreatingKeyboardListener(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        this.stopCreating();
+      }
+    },
+    stopCreating() {
+      this.startEventCreationRange = undefined;
+      this.creatingEventRange = undefined;
+      window.removeEventListener("mousemove", this.extendCreatingEvent);
+      window.removeEventListener("mouseup", this.createEventFromRange);
+      window.removeEventListener("keydown", this.stopCreatingKeyboardListener);
+    },
+    extendCreatingEvent(e: MouseEvent) {
+      const range = this.rangeFromOffsetLeft(e.clientX) as OffsetRange;
+      const creatingEventRange = [];
+      creatingEventRange.push(
+        range[0].left < this.startEventCreationRange![0].left
+          ? range[0]
+          : this.startEventCreationRange![0]
+      );
+      creatingEventRange.push(
+        range[1].left > this.startEventCreationRange![1].left
+          ? range[1]
+          : this.startEventCreationRange![1]
+      );
+      this.creatingEventRange = creatingEventRange as OffsetRange;
+    },
+    createEventFromRange(e: MouseEvent) {
+      const rangeToCreate = this.creatingEventRange
+        ? this.creatingEventRange
+        : this.startEventCreationRange;
+      this.$store.dispatch("createEventFromRange", rangeToCreate);
+      this.stopCreating();
     },
     moveListener(e: MouseEvent) {
       this.mouseLeft = e.clientX;

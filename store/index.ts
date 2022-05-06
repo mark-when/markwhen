@@ -36,6 +36,7 @@ interface State {
   globalClass: string;
   cascadeIndex: number;
   editorGetter: () => EditorView | undefined;
+  hoveringEvent: Event | null;
 }
 
 interface DateInterval {
@@ -86,6 +87,7 @@ export const state: () => State = () => ({
   globalClass: "",
   cascadeIndex: 0,
   editorGetter: () => undefined,
+  hoveringEvent: null as Event | null,
 });
 
 export type DisplayScale =
@@ -135,6 +137,13 @@ const DECADE = 10 * YEAR;
 
 export const MUTATION_SET_EVENTS_STRING = "setEventsString";
 
+export interface DateTimeAndOffset {
+  dateTime: DateTime;
+  left: number;
+}
+
+export type OffsetRange = [DateTimeAndOffset, DateTimeAndOffset];
+
 function blankSettings(): Settings {
   return {
     scale: initialScale,
@@ -149,6 +158,9 @@ function blankSettings(): Settings {
 }
 
 export const mutations: MutationTree<State> = {
+  setHovering(state: State, event: Event | null) {
+    state.hoveringEvent = event;
+  },
   setCascadeIndex(state: State, index: number) {
     let newSettings = false;
     for (let i = 0; i <= index; i++) {
@@ -159,7 +171,6 @@ export const mutations: MutationTree<State> = {
     }
     if (newSettings) {
       state.settings = [...state.settings];
-      console.log("settings after", state.settings);
     }
     state.cascadeIndex = index;
   },
@@ -370,6 +381,37 @@ export const getters: GetterTree<State, State> = {
     );
     return sorted;
   },
+  eventAtPosition(
+    state: State,
+    getters: any
+  ): (position: number) => Event | undefined {
+    return (position: number) => {
+      const events = getters.events as Events;
+      if (!events || !events.length) {
+        return undefined;
+      }
+
+      const included = (p: number, e: Event) =>
+        p > e.ranges.event.from && p < e.ranges.event.to;
+
+      for (const eventOrEvents of events) {
+        if (eventOrEvents instanceof Event) {
+          if (included(position, eventOrEvents)) {
+            return eventOrEvents;
+          }
+        } else {
+          const group = eventOrEvents as EventSubGroup;
+          for (const event of group) {
+            if (included(position, event)) {
+              return event;
+            }
+          }
+        }
+      }
+
+      return undefined;
+    };
+  },
   filteredEvents(state: State, getters: any): Events {
     const events = getters.events as Events;
     const filter = state.settings[state.cascadeIndex].filter;
@@ -414,15 +456,21 @@ export const getters: GetterTree<State, State> = {
   rangeFromOffsetLeft(
     state: State,
     getters: any
-  ): (offset: number) => [number, number] {
+  ): (offset: number) => [DateTimeAndOffset, DateTimeAndOffset] {
     return (offset: number) => {
       const offsetDate = getters.dateFromClientLeft(offset);
       const scale = getters.scaleOfViewportDateInterval as DisplayScale;
       const floored = floorDateTime(offsetDate, scale);
       const ceiled = ceilDateTime(offsetDate, scale);
       return [
-        getters.distanceFromBaselineLeftmostDate(floored),
-        getters.distanceFromBaselineLeftmostDate(ceiled),
+        {
+          dateTime: floored,
+          left: getters.distanceFromBaselineLeftmostDate(floored),
+        },
+        {
+          dateTime: ceiled,
+          left: getters.distanceFromBaselineLeftmostDate(ceiled),
+        },
       ];
     };
   },
@@ -938,6 +986,29 @@ export const actions: ActionTree<State, State> = {
       })
     );
     editorView.focus();
+  },
+  createEventFromRange({ commit, state, getters }, range: OffsetRange) {
+    const dateRange: DateRange = {
+      fromDateTime: range[0].dateTime,
+      toDateTime: range[1].dateTime,
+    };
+    const dateRangeString = dateRangeToString(
+      dateRange,
+      getters.scaleOfViewportDateInterval,
+      getters.metadata.dateFormat
+    );
+    const events = (getters.events as Events).flat();
+    const lastIndexOfLastEvent = events.length
+      ? events[events.length - 1].ranges.event.to
+      : (getters.cascade as Cascade).metadata.endStringIndex;
+
+    const es = state.eventsString || "";
+    const newString =
+      es.slice(0, lastIndexOfLastEvent) +
+      `\n${dateRangeString}: Event\n` +
+      es.slice(lastIndexOfLastEvent);
+
+    commit(MUTATION_SET_EVENTS_STRING, newString);
   },
 };
 

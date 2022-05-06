@@ -10,6 +10,7 @@
       px-2
       pt-2
       overflow-scroll
+      flex-grow
     "
   >
     <timeline-list />

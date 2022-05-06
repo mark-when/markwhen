@@ -18,8 +18,6 @@
       'bg-gray-800': selectedComponent,
       'md:order-2': !isLeft,
       'md:order-1': isLeft,
-      'md:border-l': !isLeft,
-      'md:border-r': isLeft,
       sidebar: !selectedComponent,
     }"
     style="-webkit-transform: translate3d(0, 0, 0)"
@@ -50,7 +48,7 @@
     </div>
     <div
       v-show="selectedComponent"
-      class="relative order-1 hidden md:block"
+      class="order-1 hidden md:flex"
       :class="{ 'md:order-1': !isLeft, 'md:order-2': isLeft }"
       :style="`width: ${tempWidth ? tempWidth : width}px;`"
     >
@@ -58,15 +56,36 @@
         <component :is="selectedComponentComponent" />
       </keep-alive>
       <div
-        class="bg-transparent w-1 hover:bg-gray-700 absolute bottom-0 top-0"
+        class="
+          bg-slate-200
+          hover:bg-slate-300
+          dark:hover:bg-slate-700
+          dark:bg-slate-900
+          flex
+          items-center
+          justify-center
+        "
         :class="{
-          'right-0': isLeft,
-          'left-0': !isLeft,
+          'order-2': isLeft,
+          'order-1': !isLeft,
         }"
         @mousedown.prevent="resizeMouseDown"
         @touchstart.prevent="resizeMouseDown"
-        style="cursor: ew-resize"
-      ></div>
+        :style="`cursor: ew-resize; order: ${isLeft ? '1' : '-1'}`"
+      >
+        <svg
+          class="w-3 h-3"
+          focusable="false"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          style="margin-left: -2px; margin-right: -2px"
+        >
+          <path
+            d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+          ></path>
+        </svg>
+      </div>
     </div>
   </div>
 </template>

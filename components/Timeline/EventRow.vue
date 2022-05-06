@@ -24,21 +24,12 @@
     ></div> -->
     <div class="flex flex-row">
       <div
-        class="
-          eventItem
-          flex-row
-          items-center
-          flex
-          rounded
-          -mx-2
-          px-2
-          py-1
-          transition
-        "
+        class="eventItem flex-row items-center flex rounded -mx-2 px-2 py-1"
         :class="{
           'dark:hover:bg-gray-800 hover:bg-white hover:shadow-lg': hasMeta,
           'dark:bg-gray-900 bg-white shadow-lg': showingMeta,
           'cursor-pointer': hasMeta,
+          'bg-gray-200/75 dark:bg-gray-800/50': isHoveredInEditor,
         }"
         v-on="hasMeta ? { click: togglePhotos } : {}"
       >
@@ -116,7 +107,7 @@
 import { DateRange, Event } from "../../src/Types";
 import Vue from "vue";
 import EventMeta from "./EventMeta.vue";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import EventBar from "./EventBar.vue";
 import { DateTime } from "luxon";
 import { roundDateTime } from "~/store";
@@ -141,6 +132,11 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate"]),
+    ...mapState({
+      isHoveredInEditor(state: any) {
+        return (state.hoveringEvent as Event) === (this.event as Event);
+      },
+    }),
     hovering(): boolean {
       return this.hover || !!this.tempTo || !!this.tempFrom;
     },
@@ -232,8 +228,8 @@ export default Vue.extend({
         vm.$store.commit("sidebar/setSelectedComponent", "editor");
       }
       Vue.nextTick(() => {
-        vm.$store.dispatch('moveCursorToEvent', vm.event)
-      })
+        vm.$store.dispatch("moveCursorToEvent", vm.event);
+      });
     },
     moveUp() {
       this.$store.dispatch("moveEventUpOrDown", {

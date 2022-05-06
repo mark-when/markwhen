@@ -25,8 +25,9 @@
         :event="event"
       ></event-row
     ></template>
-    <div class="w-full relative h-3 mt-1">
+    <div class="w-full relative h-3 mt-2">
       <button
+        title="Click and drag to create new event"
         class="
           h-3
           rounded-full
@@ -38,23 +39,16 @@
           relative
           border-white
           bg-white
-          border-slate-600
           text-slate-600
-          hover:bg-blue-50
+          hover:bg-white
           border-blue-100
-          opacity-60
-          shadow
-          hover:opacity-100
-          dark:text-slate-100
-          dark:bg-slate-500
-          dark:hover:bg-slate-600
-          dark:border-slate-100
+          dark:text-slate-100 dark:border-gray-600 dark:bg-gray-600
           text-sm
         "
-        :style="`left: ${newEventPosition[0]}px; width: ${
-          newEventPosition[1] - newEventPosition[0]
+        :style="`left: ${newEventPosition[0].left}px; width: ${
+          newEventPosition[1].left - newEventPosition[0].left
         }px;`"
-        @mousedown.prevent="$emit('startMakingEvent', $event)"
+        @mousedown.prevent.stop="$emit('startMakingEvent', $event)"
       >
         +
       </button>
@@ -72,12 +66,9 @@ import EventGroup from "./EventGroup/EventGroup.vue";
 import { DateTime } from "luxon";
 
 export default Vue.extend({
-  props: ["mouseLeft"],
+  props: ["newEventPosition"],
   components: { EventRow, DrawerHeader, EventGroup },
   computed: {
-    newEventPosition(): [number, number] {
-      return this.rangeFromOffsetLeft(this.mouseLeft);
-    },
     now(): DateTime {
       return DateTime.now();
     },
@@ -91,7 +82,6 @@ export default Vue.extend({
       );
     },
     ...mapGetters([
-      "rangeFromOffsetLeft",
       "distanceBetweenBaselineDates",
       "filteredEvents",
       "distanceFromBaselineLeftmostDate",
