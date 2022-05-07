@@ -11,6 +11,7 @@
     <TimeMarkersBack :markers="markers" />
     <events
       :newEventPosition="newEventPosition"
+      :creating="!!startEventCreationRange"
       @startMakingEvent="startMakingEvent"
     />
     <TimeMarkersFront :markers="markers" />
@@ -27,13 +28,7 @@ import DrawerHeader from "../Drawer/DrawerHeader.vue";
 import Hammer from "@squadette/hammerjs";
 import { mapState, mapGetters } from "vuex";
 import { zoomer, WheelGesture } from "~/src/zoomer";
-import {
-  DateTimeAndOffset,
-  MAX_SCALE,
-  OffsetRange,
-  Settings,
-  TimeMarker,
-} from "~/store";
+import { MAX_SCALE, OffsetRange, Settings, TimeMarker } from "~/store";
 import { throttle } from "throttle-debounce";
 import TimeMarkersBack from "./TimeMarkersBack.vue";
 import TimeMarkersFront from "./TimeMarkersFront.vue";

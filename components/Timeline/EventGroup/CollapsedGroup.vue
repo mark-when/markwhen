@@ -2,7 +2,14 @@
   <div
     :style="collapsedGroupStyle"
     :class="collapsedGroupClass"
-    class="rounded-full eventTitle transition bg-opacity-10 hover:bg-opacity-30"
+    class="
+      rounded-full
+      eventTitle
+      transition
+      bg-opacity-10
+      dark:bg-opacity-20
+      hover:bg-opacity-30 hover:dark:bg-opacity-40
+    "
     @mouseover="hovering = true"
     @mouseleave="hovering = false"
   >
@@ -51,7 +58,7 @@ export default Vue.extend({
     },
     bgColorClass(): string {
       if (!this.bgColorStyle) {
-        return `bg-gray-400 dark:bg-gray-800`;
+        return `bg-gray-400 dark:bg-gray-900`;
       }
       return "";
     },

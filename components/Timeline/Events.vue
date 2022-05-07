@@ -37,13 +37,18 @@
           justify-center
           flex-shrink-0
           relative
-          border-white
-          bg-white
+          border-transparent
+          bg-transparent
+          hover:border-white hover:bg-white
           text-slate-600
           hover:bg-white
           border-white
-          dark:text-slate-100 dark:border-gray-600 dark:bg-gray-600
-          text-sm
+          dark:text-slate-100 dark:hover:border-gray-600 dark:hover:bg-gray-600
+        "
+        :class="
+          creating
+            ? 'dark:border-gray-600 dark:bg-gray-600 bg-white border-white'
+            : ''
         "
         :style="`left: ${newEventPosition[0].left}px; width: ${
           newEventPosition[1].left - newEventPosition[0].left
@@ -67,7 +72,7 @@ import EventGroup from "./EventGroup/EventGroup.vue";
 import { DateTime } from "luxon";
 
 export default Vue.extend({
-  props: ["newEventPosition"],
+  props: ["newEventPosition", "creating"],
   components: { EventRow, DrawerHeader, EventGroup },
   computed: {
     now(): DateTime {

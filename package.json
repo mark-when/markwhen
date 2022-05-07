@@ -7,7 +7,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "deploy": "npm run build && gcloud app deploy --project timelinecascade --quiet",
+    "deploy": "git checkout analytics && git rebase main && npm run build && gcloud app deploy --project timelinecascade --quiet && git checkout main",
     "test": "jest"
   },
   "dependencies": {

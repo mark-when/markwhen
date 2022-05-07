@@ -60,7 +60,7 @@ app.use(requiresAuth, async (req, res, next) => {
   next();
 });
 
-const RESERVED_USERNAMES = ["api", "assets", "from", 'docs'];
+const RESERVED_USERNAMES = ["api", "assets", "from", "docs", "blog", "about"];
 app.post(chooseUserName, async (req, res) => {
   const username = req.body.username;
   if (!username) {
@@ -234,12 +234,11 @@ app.get(cascade, async (req, res) => {
 });
 
 app.get("/:user/:timeline?", async (req, res, next) => {
-  
   if (RESERVED_USERNAMES.includes(req.params.user)) {
-    next()
-    return
+    next();
+    return;
   }
-  
+
   const user = await admin
     .firestore()
     .collection(`users`)

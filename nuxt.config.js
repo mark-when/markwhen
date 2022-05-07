@@ -20,10 +20,6 @@ export default {
       },
       { name: "format-detection", content: "telephone=no" },
       {
-        property: "og:image",
-        content: "https://api.sw.ink/v0/swink/761QQ2NQBM/qr",
-      },
-      {
         property: "description",
         content: "Create a timeline of meaningful events",
       },

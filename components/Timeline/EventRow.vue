@@ -154,7 +154,7 @@ export default Vue.extend({
         (this.hovering || this.isHoveredInEditor) &&
         this.$store.state.editable
       ) {
-        c += "bg-gray-200/50 dark:bg-gray-800/50 ";
+        c += "bg-gray-200/50 dark:bg-gray-800/25 ";
       }
       return c;
     },

@@ -3,8 +3,7 @@ title: Cascade.page How To
 description: Documentation on how to use and create timelines on cascade.page
 ---
 
-
-# [Cascade.page](https://cascade.page)
+### Documentation
 
 Cascade.page is a text-to-timeline tool. You write markdown-ish text and it gets converted into a nice looking cascading timeline.
 
@@ -12,8 +11,6 @@ Cascade.page is a text-to-timeline tool. You write markdown-ish text and it gets
 
 ### Table of contents
 
-- [Cascade.page](#cascadepage)
-    - [Table of contents](#table-of-contents)
 - [Cascade](#cascade)
   - [Header](#header)
     - [Tags and colors](#tags-and-colors)
