@@ -149,8 +149,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    startMakingEvent(e: MouseEvent) {
+    startMakingEvent(e: MouseEvent | TouchEvent) {
       this.startEventCreationRange = this.newEventPosition;
+      window.addEventListener("touchmove", this.extendCreatingEvent);
+      window.addEventListener("touchend", this.createEventFromRange);
       window.addEventListener("mousemove", this.extendCreatingEvent);
       window.addEventListener("mouseup", this.createEventFromRange);
       window.addEventListener("keydown", this.stopCreatingKeyboardListener);
@@ -167,8 +169,10 @@ export default Vue.extend({
       window.removeEventListener("mouseup", this.createEventFromRange);
       window.removeEventListener("keydown", this.stopCreatingKeyboardListener);
     },
-    extendCreatingEvent(e: MouseEvent) {
-      const range = this.rangeFromOffsetLeft(e.clientX) as OffsetRange;
+    extendCreatingEvent(e: MouseEvent | TouchEvent) {
+      const clientX =
+        e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
+      const range = this.rangeFromOffsetLeft(clientX) as OffsetRange;
       const creatingEventRange = [];
       creatingEventRange.push(
         range[0].left < this.startEventCreationRange![0].left
@@ -182,7 +186,7 @@ export default Vue.extend({
       );
       this.creatingEventRange = creatingEventRange as OffsetRange;
     },
-    createEventFromRange(e: MouseEvent) {
+    createEventFromRange(e: MouseEvent | TouchEvent) {
       const rangeToCreate = this.creatingEventRange
         ? this.creatingEventRange
         : this.startEventCreationRange;

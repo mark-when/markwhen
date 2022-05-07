@@ -25,7 +25,7 @@
         :event="event"
       ></event-row
     ></template>
-    <div class="w-full relative h-3 mt-2">
+    <div class="w-full relative mt-2" v-if="$store.state.editable">
       <button
         title="Click and drag to create new event"
         class="
@@ -41,7 +41,7 @@
           bg-white
           text-slate-600
           hover:bg-white
-          border-blue-100
+          border-white
           dark:text-slate-100 dark:border-gray-600 dark:bg-gray-600
           text-sm
         "
@@ -49,6 +49,7 @@
           newEventPosition[1].left - newEventPosition[0].left
         }px;`"
         @mousedown.prevent.stop="$emit('startMakingEvent', $event)"
+        @touchstart.prevent.stop="$emit('startMakingEvent', $event)"
       >
         +
       </button>

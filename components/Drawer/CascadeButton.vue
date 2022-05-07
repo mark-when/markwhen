@@ -15,6 +15,7 @@
     @mouseover="startHover"
     @mouseleave="endHover"
     @mousedown.stop="startMoving"
+    @touchdown.stop="startMoving"
     @click="click"
     :class="`${
       index === $store.state.cascadeIndex
@@ -75,7 +76,6 @@ export default Vue.extend({
       hovering: false,
       timer: undefined as number | undefined,
       startX: undefined as number | undefined,
-      offsetX: undefined as number | undefined,
       translateX: 0,
     };
   },
@@ -105,13 +105,14 @@ export default Vue.extend({
     },
     stopMoving() {
       this.startX = undefined;
-      this.offsetX = undefined;
       this.translateX = 0;
       document.removeEventListener("mousemove", this.moveListener);
+      document.removeEventListener("touchmove", this.moveListener);
       document.removeEventListener("mouseup", this.endMoveListener);
+      document.removeEventListener("touchend", this.endMoveListener);
       document.removeEventListener("keydown", this.escapeListener);
     },
-    moveListener(e: MouseEvent) {
+    moveListener(e: MouseEvent | TouchEvent) {
       // Since we're moving, cancel any hover timer we had
       if (this.timer || this.hovering || this.softHover) {
         clearTimeout(this.timer);
@@ -122,7 +123,9 @@ export default Vue.extend({
       const el = this.$el as HTMLButtonElement;
 
       // We shouldn't go any further than the start of the parent element
-      const diff = e.clientX - this.startX!;
+      const clientX =
+        e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+      const diff = clientX - this.startX!;
       const parentOffsetLeft = el.parentElement?.offsetLeft || 0;
       const addPageButtonWidth = 20;
       const maxRight =
@@ -135,8 +138,10 @@ export default Vue.extend({
         maxRight
       );
     },
-    endMoveListener(e: MouseEvent) {
-      if (Math.abs(e.clientX - this.startX!) > 2) {
+    endMoveListener(e: MouseEvent | TouchEvent) {
+      const clientX =
+        e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+      if (Math.abs(clientX - this.startX!) > 2) {
         document.addEventListener("click", this.captureClick, true);
       }
       this.$emit("doneMoving");
@@ -151,13 +156,14 @@ export default Vue.extend({
         this.stopMoving();
       }
     },
-    startMoving(e: MouseEvent) {
+    startMoving(e: MouseEvent | TouchEvent) {
       if (!this.$store.state.editable) {
         return;
       }
-      this.startX = e.clientX;
-      this.offsetX = e.offsetX;
+      this.startX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+      document.addEventListener("touchmove", this.moveListener);
       document.addEventListener("mousemove", this.moveListener);
+      document.addEventListener("touchend", this.endMoveListener);
       document.addEventListener("mouseup", this.endMoveListener);
       document.addEventListener("keydown", this.escapeListener);
     },

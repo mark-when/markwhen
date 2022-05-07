@@ -37,6 +37,7 @@ interface State {
   cascadeIndex: number;
   editorGetter: () => EditorView | undefined;
   hoveringEvent: Event | null;
+  choosingColor: boolean;
 }
 
 interface DateInterval {
@@ -88,6 +89,7 @@ export const state: () => State = () => ({
   cascadeIndex: 0,
   editorGetter: () => undefined,
   hoveringEvent: null as Event | null,
+  choosingColor: false,
 });
 
 export type DisplayScale =
@@ -158,8 +160,18 @@ function blankSettings(): Settings {
 }
 
 export const mutations: MutationTree<State> = {
+  setChoosingColor(state: State, choosingColor: boolean) {
+    console.log("choosing color", choosingColor);
+    state.choosingColor = choosingColor;
+  },
   setHovering(state: State, event: Event | null) {
-    state.hoveringEvent = event;
+    if (!state.editable) {
+      return;
+    }
+    if (event != state.hoveringEvent) {
+      state.hoveringEvent = event;
+    }
+    state.editorGetter()?.dispatch({});
   },
   setCascadeIndex(state: State, index: number) {
     let newSettings = false;

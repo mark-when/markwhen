@@ -24,13 +24,10 @@
     ></div> -->
     <div class="flex flex-row">
       <div
+        @mouseover="barHover = true"
+        @mouseleave="barHover = false"
         class="eventItem flex-row items-center flex rounded -mx-2 px-2 py-1"
-        :class="{
-          'dark:hover:bg-gray-800 hover:bg-white hover:shadow-lg': hasMeta,
-          'dark:bg-gray-900 bg-white shadow-lg': showingMeta,
-          'cursor-pointer': hasMeta,
-          'bg-gray-200/75 dark:bg-gray-800/50': isHoveredInEditor,
-        }"
+        :class="eventClass"
         v-on="hasMeta ? { click: togglePhotos } : {}"
       >
         <event-bar
@@ -128,7 +125,13 @@ export default Vue.extend({
       hover: false,
       tempTo: undefined as DateTime | undefined,
       tempFrom: undefined as DateTime | undefined,
+      barHover: false,
     };
+  },
+  watch: {
+    hover(val) {
+      this.$store.commit("setHovering", val ? this.event : null);
+    },
   },
   computed: {
     ...mapGetters(["distanceFromBaselineLeftmostDate"]),
@@ -137,6 +140,24 @@ export default Vue.extend({
         return (state.hoveringEvent as Event) === (this.event as Event);
       },
     }),
+    eventClass(): string {
+      let c = "";
+      if (this.barHover) {
+        if (this.hasMeta) {
+          return "dark:bg-gray-800 bg-white shadow-lg cursor-pointer ";
+        }
+      }
+      if (this.showingMeta) {
+        c += "dark:bg-gray-900 bg-white shadow-lg ";
+      }
+      if (
+        (this.hovering || this.isHoveredInEditor) &&
+        this.$store.state.editable
+      ) {
+        c += "bg-gray-200/50 dark:bg-gray-800/50 ";
+      }
+      return c;
+    },
     hovering(): boolean {
       return this.hover || !!this.tempTo || !!this.tempFrom;
     },

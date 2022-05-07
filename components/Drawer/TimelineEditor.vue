@@ -68,7 +68,7 @@ export default Vue.extend({
       return "Sign in to share";
     },
     buttonDisabled(): boolean {
-      return this.sharing || !(this.userId && this.username);
+      return this.sharing;
     },
   },
   methods: {
@@ -76,6 +76,10 @@ export default Vue.extend({
       return doc(getFirestore(getApp()), path);
     },
     async share() {
+      if (!this.userId) {
+        this.$store.commit("sidebar/setSelectedComponent", "profile");
+        return;
+      }
       const name = prompt(
         `To share to \ncascade.page/${this.username}, share as ${this.username}. \n\nOtherwise, cascades will be shared from \ncascade.page/${this.username}/[timeline name].`,
         this.username

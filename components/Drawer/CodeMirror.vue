@@ -15,7 +15,13 @@ import { foldService } from "@codemirror/language";
 import { Decoration, EditorView, keymap, ViewPlugin } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { mapGetters } from "vuex";
-import { Cascade, Event, Range as CascadeRange, Range } from "~/src/Types";
+import {
+  Cascade,
+  Event,
+  Events,
+  Range as CascadeRange,
+  Range,
+} from "~/src/Types";
 import { Foldable } from "~/src/Parser";
 import { ColorPickerWidget } from "~/src/ColorPickerWidget";
 import { rgbStringToHex } from "~/src/ColorUtils";
@@ -57,6 +63,7 @@ const commentMark = Decoration.mark({ class: "cm-comment" });
 const sectionMark = Decoration.mark({ class: "cm-section" });
 const tagMark = Decoration.mark({ class: "cm-tag" });
 const eventMark = Decoration.mark({ class: "cm-event" });
+const hoveringEventMark = Decoration.mark({ class: "cm-event-hover" });
 
 export default Vue.extend({
   props: ["startingText"],
@@ -108,6 +115,11 @@ export default Vue.extend({
     this.$store.commit("setEditorGetter", () => this.editorView);
   },
   methods: {
+    doneChoosingColor(e: MouseEvent | TouchEvent) {
+      this.$store.commit("setChoosingColor", false);
+      document.removeEventListener("mousedown", this.doneChoosingColor);
+      document.removeEventListener("touchstart", this.doneChoosingColor);
+    },
     setColorForTag(tag: string, color: string) {
       const vm = this;
       const ranges = vm.adjustedRanges as CascadeRange[];
@@ -158,49 +170,53 @@ export default Vue.extend({
     },
     colorPickerExtension(): Extension {
       const vm = this;
-      const colorPickerPlugin = ViewPlugin.define(
-        (view) => {
-          return {};
+      const colorPickerPlugin = ViewPlugin.define((view) => ({ update() {} }), {
+        decorations() {
+          const ranges = (vm.adjustedRanges as CascadeRange[])
+            .filter((range) => range.type === "tag")
+            .map((r) => {
+              const asHex = rgbStringToHex(r.content.color);
+              const widget = Decoration.widget({
+                widget: new ColorPickerWidget(asHex, r.content.tag),
+                side: 0,
+                block: false,
+              });
+              return widget.range(r.from);
+            })
+            .sort((a, b) => a.from - b.from);
+          return Decoration.set(ranges);
         },
-        {
-          decorations() {
-            const ranges = (vm.adjustedRanges as CascadeRange[])
-              .filter((range) => range.type === "tag")
-              .map((r) => {
-                const asHex = rgbStringToHex(r.content.color);
-                const widget = Decoration.widget({
-                  widget: new ColorPickerWidget(asHex, r.content.tag),
-                  side: 0,
-                  block: false,
-                });
-                return widget.range(r.from);
-              })
-              .sort((a, b) => a.from - b.from);
-            return Decoration.set(ranges);
+        eventHandlers: {
+          click(e, view) {
+            let target = e.target as HTMLInputElement;
+            if (
+              !target.parentElement!.classList.contains("cm-colorPickerWrapper")
+            ) {
+              return;
+            }
+            vm.$store.commit("setChoosingColor", true);
+            document.addEventListener("mousedown", vm.doneChoosingColor);
+            document.addEventListener("touchstart", vm.doneChoosingColor);
           },
-          eventHandlers: {
-            change: (e, view) => {
-              let target = e.target as HTMLInputElement;
-              if (
-                target.parentElement!.classList.contains(
-                  "cm-colorPickerWrapper"
-                )
-              ) {
-                const tagIndex = view.posAtDOM(target);
-                const associatedTagRange = (
-                  vm.adjustedRanges as CascadeRange[]
-                ).find((r) => r.type === "tag" && r.from === tagIndex);
-                if (!associatedTagRange) {
-                  return false;
-                }
-                const newColor = target.value;
-                vm.setColorForTag(associatedTagRange.content.tag, newColor);
+          change: (e, view) => {
+            let target = e.target as HTMLInputElement;
+            if (
+              target.parentElement!.classList.contains("cm-colorPickerWrapper")
+            ) {
+              const tagIndex = view.posAtDOM(target);
+              const associatedTagRange = (
+                vm.adjustedRanges as CascadeRange[]
+              ).find((r) => r.type === "tag" && r.from === tagIndex);
+              if (!associatedTagRange) {
+                return false;
               }
-              return false;
-            },
+              const newColor = target.value;
+              vm.setColorForTag(associatedTagRange.content.tag, newColor);
+            }
+            return false;
           },
-        }
-      );
+        },
+      });
       return colorPickerPlugin;
     },
     cascadeExtension(): Extension {
@@ -282,46 +298,48 @@ export default Vue.extend({
     },
     hoverExtension(): Extension {
       const vm = this;
-      const hoverPlugin = ViewPlugin.define(
-        (view) => ({
-          update(u) {},
-          destroy() {},
-        }),
-        {
-          decorations: (view) => {
-            const hoveringEvent = vm.$store.state.hoveringEvent as Event | null;
-            if (!hoveringEvent) {
-              return Decoration.set([]);
+      const hoverPlugin = ViewPlugin.define((view) => ({}), {
+        decorations: (view) => {
+          const hoveringEvent = vm.$store.state.hoveringEvent as Event | null;
+          if (!hoveringEvent) {
+            return Decoration.set([]);
+          }
+          const offset = (vm.$store.getters.cascade as Cascade).metadata
+            .startStringIndex;
+          const from = hoveringEvent.ranges.event.from;
+          const to = hoveringEvent.ranges.event.to;
+          return Decoration.set([
+            hoveringEventMark.range(from - offset, to - offset),
+          ]);
+        },
+        eventHandlers: {
+          mouseover(e: MouseEvent, view: EditorView) {
+            if (vm.$store.state.choosingColor) {
+              return false;
             }
-            return Decoration.set([
-              eventMark.range(
-                hoveringEvent.ranges.event.from,
-                hoveringEvent.ranges.event.to
-              ),
-            ]);
+            const position = view.posAtCoords({ x: e.x, y: e.y });
+            if (!position) {
+              return false;
+            }
+            const event = vm.$store.getters.eventAtPosition(position);
+            if (vm.$store.state.hoveringEvent === event) {
+              return false;
+            }
+            vm.$store.commit("setHovering", event);
+            return true;
           },
-          eventHandlers: {
-            mouseover(e: MouseEvent, view: EditorView) {
-              const position = view.posAtCoords({ x: e.x, y: e.y });
-              if (!position) {
-                return false;
-              }
-              const event = vm.$store.getters.eventAtPosition(position);
-              vm.$store.commit("setHovering", event);
-              view.dispatch({});
-              return true;
-            },
-            mouseleave(e: MouseEvent, view: EditorView) {
-              if (!vm.$store.state.hoveringEvent) {
-                return false;
-              }
-              vm.$store.commit("setHovering", null);
-              view.dispatch({});
-              return true;
-            },
+          mouseleave(e: MouseEvent, view: EditorView) {
+            if (vm.$store.state.choosingColor) {
+              return false;
+            }
+            if (!vm.$store.state.hoveringEvent) {
+              return false;
+            }
+            vm.$store.commit("setHovering", null);
+            return false;
           },
-        }
-      );
+        },
+      });
       return hoverPlugin;
     },
     codeMirrorExtensions(): Extension[] {
@@ -437,7 +455,7 @@ export default Vue.extend({
   border: none;
   border-radius: 0.125rem;
 }
-.cm-event {
+.cm-event-hover {
   @apply bg-slate-300/50 dark:bg-slate-700/50 rounded;
 }
 </style>
