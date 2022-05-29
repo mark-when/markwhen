@@ -1,18 +1,16 @@
 # [Cascade.page](https://cascade.page)
 
-Inspired by @cheeaun's [life](https://github.com/cheeaun/life).
-
 Cascade.page is a text-to-timeline tool. You write markdown-ish text and it gets converted into a nice looking cascading timeline.
 
 Use it [here](https://cascade.page).
 
 <br>
-<br>
 
-### Table of contents
+## Table of contents
 
 - [Cascade.page](#cascadepage)
-    - [Table of contents](#table-of-contents)
+  - [Table of contents](#table-of-contents)
+  - [Downstream repository](#downstream-repository)
 - [Cascade](#cascade)
   - [Header](#header)
     - [Tags and colors](#tags-and-colors)
@@ -36,6 +34,30 @@ Use it [here](https://cascade.page).
 - [Public by default](#public-by-default)
 
 <br>
+
+
+## Downstream repository
+
+This repository is downstream of the main repository that the [live website](https://cascade.page) uses. The main, upstream repository is available to sponsors and is ~100 commits (4-6 weeks) ahead of this repository.
+
+Issues opened in this repo can either be bugs with this repository or the live website. **Please continue to open issues!** They are the largest factor for determining what to work on next.
+
+Some features in the upstream repo not yet in this repo:
+- Hovering events highlights them both in the timeline and editor
+- Style changes
+- Causal dates and times (months via words like `January` or `Dec`; times like `8:30am`)
+- Editting events via the timeline
+- Pages
+- Titles and descriptions
+- "Now" demarcation line
+- Tests
+
+You do not have to be a sponsor to **use** these features - they are all already on [cascade.page](https://cascade.page)! However, if you want prioritized bugs or want a fork that is more up to date then you can sponsor my work, and there would be much rejoicing on my part. 
+
+And even if you don't want your own more up-to-date fork but you use cascade.page for work, please consider having your work be a sponsor!
+
+<br>
+
 
 # Cascade
 
