@@ -6,9 +6,16 @@ Use it [here](https://markwhen.com).
 
 <br>
 
+## Get updated
+
+If you'd like to be kept up-to-date about markwhen's feature development, add your email [here](https://docs.google.com/forms/d/e/1FAIpQLSceSLgm90NljlcMvdU2Ly45JYB7ZWGN1BNzQg-T-NSWO1Hm-w/viewform?usp=sf_link).
+
+<br>
+
 ## Table of contents
 
 - [Markwhen](#markwhen)
+  - [Get updated](#get-updated)
   - [Table of contents](#table-of-contents)
   - [Downstream repository](#downstream-repository)
 - [Timeline](#timeline)
