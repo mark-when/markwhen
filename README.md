@@ -50,14 +50,11 @@ This repository is downstream of the main repository that the [live website](htt
 Issues opened in this repo can either be bugs with this repository or the live website. **Please continue to open issues!** They are the largest factor for determining what to work on next.
 
 Some features in the upstream repo not yet in this repo:
-- Hovering events highlights them both in the timeline and editor
+- Views (map & doc)
+- Importing and exporting markwhen files
+- Better mobile experience
 - Style changes
 - Causal dates and times (months via words like `January` or `Dec`; times like `8:30am`)
-- Editting events via the timeline
-- Pages
-- Titles and descriptions
-- "Now" demarcation line
-- Tests
 
 You do not have to be a sponsor to **use** these features - they are all already on [markwhen.com](https://markwhen.com)! However, if you want prioritized bugs or want a fork that is more up to date then you can sponsor my work, and there would be much rejoicing on my part. 
 
