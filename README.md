@@ -1,17 +1,17 @@
-# [Cascade.page](https://cascade.page)
+# [Markwhen](https://markwhen.com)
 
-Cascade.page is a text-to-timeline tool. You write markdown-ish text and it gets converted into a nice looking cascading timeline.
+Markwhen is a text-to-timeline tool. You write markdown-ish text and it gets converted into a nice looking cascading timeline.
 
-Use it [here](https://cascade.page).
+Use it [here](https://markwhen.com).
 
 <br>
 
 ## Table of contents
 
-- [Cascade.page](#cascadepage)
+- [Markwhen](#markwhen)
   - [Table of contents](#table-of-contents)
   - [Downstream repository](#downstream-repository)
-- [Cascade](#cascade)
+- [Timeline](#timeline)
   - [Header](#header)
     - [Tags and colors](#tags-and-colors)
     - [Date formatting](#date-formatting)
@@ -38,7 +38,7 @@ Use it [here](https://cascade.page).
 
 ## Downstream repository
 
-This repository is downstream of the main repository that the [live website](https://cascade.page) uses. The main, upstream repository is available to sponsors and is ~100 commits (4-6 weeks) ahead of this repository.
+This repository is downstream of the main repository that the [live website](https://markwhen.com) uses. The main, upstream repository is available to sponsors and is ~100 commits (4-6 weeks) ahead of this repository.
 
 Issues opened in this repo can either be bugs with this repository or the live website. **Please continue to open issues!** They are the largest factor for determining what to work on next.
 
@@ -52,21 +52,21 @@ Some features in the upstream repo not yet in this repo:
 - "Now" demarcation line
 - Tests
 
-You do not have to be a sponsor to **use** these features - they are all already on [cascade.page](https://cascade.page)! However, if you want prioritized bugs or want a fork that is more up to date then you can sponsor my work, and there would be much rejoicing on my part. 
+You do not have to be a sponsor to **use** these features - they are all already on [markwhen.com](https://markwhen.com)! However, if you want prioritized bugs or want a fork that is more up to date then you can sponsor my work, and there would be much rejoicing on my part. 
 
-And even if you don't want your own more up-to-date fork but you use cascade.page for work, please consider having your work be a sponsor!
+And even if you don't want your own more up-to-date fork but you use markwhen.com for work, please consider having your work be a sponsor!
 
 <br>
 
 
-# Cascade
+# Timeline
 
-A Cascade is composed of an optional [header](#header) and one or more [events](#events).
+A timeline is composed of an optional [header](#header) and one or more [events](#events).
 <br>
 
 ## Header
 
-The header of a cascade indicates things about the cascade like visual preferences and metadata. It is the first part of a cascade; that is, **anything before the first event is considered the header**.
+The header of a timeline indicates things about the timeline like visual preferences and metadata. It is the first part of a timeline; that is, **anything before the first event is considered the header**.
 
 Right now there are only two things you can include in the header: [tag colors](#tags-and-colors) and [date formatting](#date-formatting). Anything else in the header area (that is, everything else before the first event that is not date formatting or tag colors) will be ignored.
 <br>
@@ -89,7 +89,7 @@ So, if you have an event like the following
 2012-2013: Germany and Italy #Travel
 ```
 
-it will be colored as blue in the cascade.
+it will be colored as blue in the timeline.
 <br>
 
 ### Date formatting
@@ -226,7 +226,7 @@ The word `after` is optional, we could say `!Phase1 2 weeks: Phase 2, in paralle
 
 Relative dates will first attempt to refer to the event that was specified by a provided event id. For `!Phase1 2 weeks: Phase 2`, the event with the id `Phase1` is looked for, is checked for when it ends, and is used as the reference upon which `2 weeks` is based.
 
-If we can't find the event id, or no event id is given, the relative date is instead based upon the last date in the cascade - "last" here meaning most recently written, as the cascade is parsed from top to bottom. So if we have a cascade like this:
+If we can't find the event id, or no event id is given, the relative date is instead based upon the last date in the timeline - "last" here meaning most recently written, as the timeline is parsed from top to bottom. So if we have a timeline like this:
 
 ```
 2020: Pandemic
@@ -314,7 +314,7 @@ An event may include a shareable, public google photos link that will be display
 
 #### References
 
-Link to other cascades with the `@` syntax:
+Link to other timelines with the `@` syntax:
 
 ```
 1919: Treaty of Versailles @wwi
@@ -333,7 +333,7 @@ Indicate that an event is some percent complete by including `0`-`100%` in your 
 ## Groups and Sections
 
 ![](images/groups.gif)
-Events can be grouped. To indicate a group, write `group` at the beginning of a line. All events up to the start of the next group, the end of the cascade, or the keyword `endGroup` (whichever of these three comes first) are in the group.
+Events can be grouped. To indicate a group, write `group` at the beginning of a line. All events up to the start of the next group, the end of the timeline, or the keyword `endGroup` (whichever of these three comes first) are in the group.
 
 For example,
 
@@ -376,14 +376,14 @@ If you want an event group to start out collapsed, indent the `group` line defin
 endGroup
 ```
 
-Sections behave similarly though extend to the width of the entire cascade and are activated by the `section` and `endSection` keywords:
+Sections behave similarly though extend to the width of the entire timeline and are activated by the `section` and `endSection` keywords:
 ![](images/sections.gif)
 <br>
 
 ## Sorting
 
 ![](images/sorting.gif)
-Cascades can be sorted one of three ways: how they were originally written (default), ascending, or descending. Event groups will be sorted internally and then they themselves sorted based on their collective earliest and latest dates.
+Timelines can be sorted one of three ways: how they were originally written (default), ascending, or descending. Event groups will be sorted internally and then they themselves sorted based on their collective earliest and latest dates.
 
 <br>
 
@@ -412,7 +412,7 @@ Cascades can be sorted one of three ways: how they were originally written (defa
 | [Location](#locations)                                                                              | `[location name](location\|map)`                                              | `02/23/1836: Battle of the Alamo (The Alamo, TX)[map]`                                                                      |
 | [Link](#links)                                                                                      | `[display text](link)`                                                        | `05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)` |
 | [Photos](#photos). Has to be a public link! Currently only one photo link per event is supported.   | `<something that looks like a google photos shareable link>`                  | `07/2017: 4th of July in DC https://photos.app.goo.gl/d418j6GSkCD5LGmY8`                                                    |
-| [Reference](#references). Reference and link to other cascades.                                     | `@[other cascade name]`                                                       | `09/2019: Dinner with @karl` or `2020-2022: COVID-19 Pandemic @jenny/covid @covidcascade`                                   |
+| [Reference](#references). Reference and link to other timelines.                                     | `@[other timeline name]`                                                       | `09/2019: Dinner with @karl` or `2020-2022: COVID-19 Pandemic @jenny/covid @covidtimeline`                                   |
 | Comment                                                                                             | `//[text]`                                                                    | `// this is a comment`                                                                                                      |
 
 <br>
@@ -420,19 +420,19 @@ Cascades can be sorted one of three ways: how they were originally written (defa
 
 # Saving and sharing
 
-To save a cascade to your computer, click the `Save...` button while on the Editor tab of the sidebar. It will be saved locally, and you can come back and edit or view it later, as long as it's on the same device.
+To save a timeline to your computer, click the `Save...` button while on the Editor tab of the sidebar. It will be saved locally, and you can come back and edit or view it later, as long as it's on the same device.
 
-You can view cascades that you've saved from the profile tab of the sidebar.
+You can view timelines that you've saved from the profile tab of the sidebar.
 
-To share a cascade with a link, you will need to make an account. You can make an account by sending yourself a signin link from the profile page. Once signed in, you will need to choose a username from which your cascades will be hosted. For example, if you choose the name `jeff`, all your cascades will be accessible from `https://cascade.page/jeff/...`. If you share a cascade with the same name as your username, it will be accessible from `https://cascade.page/[your username]/`, otherwise, it will be accessible from `https://cascade.page/[your username]/[cascade name]`.
+To share a timeline with a link, you will need to make an account. You can make an account by sending yourself a signin link from the profile page. Once signed in, you will need to choose a username from which your timelines will be hosted. For example, if you choose the name `jeff`, all your timelines will be accessible from `https://markwhen.com/jeff/...`. If you share a timeline with the same name as your username, it will be accessible from `https://markwhen.com/[your username]/`, otherwise, it will be accessible from `https://markwhen.com/[your username]/[timeline name]`.
 
 All in all, the steps are:
 
 1. Send yourself a signin link from the profile tab.
 2. Click the link to login.
-3. Choose a username - all your shared cascades will be available from `https://cascade.page/[your username]/...`
-4. Share your cascade
+3. Choose a username - all your shared timelines will be available from `https://markwhen.com/[your username]/...`
+4. Share your timeline
 
 # Public by default
 
-Any cascade you share is public by default - anyone could view it. Any cascade you save locally only on your computer is, of course, only accessible on that device.
+Any timeline you share is public by default - anyone could view it. Any timeline you save locally only on your computer is, of course, only accessible on that device.
