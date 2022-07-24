@@ -8,7 +8,7 @@ import {
   viewportLeftMarginPixels,
   type DateInterval,
   type DisplayScale,
-} from "../utilities/dateTimeUtilities";
+} from "@/timeline/utilities/dateTimeUtilities";
 
 export interface Viewport {
   left: number;

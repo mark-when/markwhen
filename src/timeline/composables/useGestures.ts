@@ -1,5 +1,5 @@
 import { zoomer, type WheelGesture } from "../utilities/zoomer";
-import { MAX_SCALE, useTimelineStore } from "../stores/timelineStore";
+import { MAX_SCALE, useTimelineStore } from "@/timeline/timelineStore";
 
 export const useGestures = (
   element: HTMLElement,

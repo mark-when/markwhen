@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { viewportLeftMarginPixels } from '../utilities/dateTimeUtilities';
-import { useMarkersStore } from '../stores/markersStore';
+import { useMarkersStore } from './markersStore';
 import TimeMarkerBack from './TimeMarkerBack.vue';
 
 const markersStore = useMarkersStore()
@@ -17,7 +17,7 @@ const leftMargin = viewportLeftMarginPixels
   </div>
 </template>
 
-<style scoped>
+<style>
 .timeMarkerContainer {
   position: sticky;
   top: 0px;

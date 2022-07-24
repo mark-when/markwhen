@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { useTimelineStore, type Viewport } from "./stores/timelineStore";
-import TimeMarkersBack from "./markers/TimeMarkersBack.vue"
+import { useTimelineStore, type Viewport } from "./timelineStore";
+import TimeMarkersBack from "@/timeline/markers/TimeMarkersBack.vue"
+import TimeMarkersFront from "@/timeline/markers/TimeMarkersFront.vue";
 import Hammer from "@squadette/hammerjs";
-import { zoomer, WheelGesture } from "./utilities/zoomer";
 import { useGestures } from "./composables/useGestures";
 
 const timelineStore = useTimelineStore()
@@ -55,11 +55,11 @@ onMounted(() => {
   <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement">
     <TimeMarkersBack />
     <!-- <events :newEventPosition="newEventPosition" :creating="!!startEventCreationRange"
-      @startMakingEvent="startMakingEvent" />
-    <TimeMarkersFront :markers="markers" />
-    <debug v-if="$config.dev" />
+      @startMakingEvent="startMakingEvent" />-->
+    <TimeMarkersFront />
+    <!-- <debug v-if="$config.dev" />
     <drawer-header />
-    <resize-observer @notify="handleResize" /> -->
+    <resize-observer @notify="handleResize" />  -->
   </div>
 </template>
 

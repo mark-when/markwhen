@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { DateTime } from "luxon";
-import { useTimelineStore } from "./timelineStore";
+import { useTimelineStore } from "../timelineStore";
 import {
   ceilDateTime,
   diffScale,

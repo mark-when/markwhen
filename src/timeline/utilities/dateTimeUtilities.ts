@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Weight } from "../stores/markersStore";
+import { Weight } from "../markers/markersStore";
 
 export type DisplayScale =
   | "second"
