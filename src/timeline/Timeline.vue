@@ -9,6 +9,7 @@ import Hammer from "@squadette/hammerjs";
 import { useGestures } from "@/timeline/composables/useGestures";
 import { useHoveringMarker } from "@/timeline/composables/useHoveringMarker"
 import { useMouse } from "@vueuse/core"
+import { usePanning } from "./composables/usePanning";
 
 const timelineStore = useTimelineStore()
 const markersStore = useMarkersStore()
@@ -44,18 +45,24 @@ const touchScreenListener = () => {
   }
   timelineElement.value?.addEventListener('touchstart', touchListener)
 }
-useHoveringMarker()
+const { trigger } = useHoveringMarker()
+const scroll = () => {
+  setViewportDateInterval()
+  trigger()
+}
+
+const { isPanning } = usePanning(timelineElement)
+useGestures(timelineElement, () => setViewportDateInterval())
 
 onMounted(() => {
   touchScreenListener()
-  useGestures(timelineElement.value!, () => setViewportDateInterval())
   setViewportDateInterval()
 })
 </script>
 
 <template>
-  <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement"
-    @scroll="setViewportDateInterval">
+  <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement" @scroll="scroll"
+    :style="{ cursor: isPanning ? 'grabbing' : 'grab' }">
     <TimeMarkersBack />
     <events />
     <TimeMarkersFront />

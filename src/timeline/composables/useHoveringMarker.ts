@@ -1,17 +1,25 @@
 import { useMouse } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { watch } from "vue";
 import { useMarkersStore } from "../markers/markersStore";
+import { useTimelineStore } from "../timelineStore";
 
 export const useHoveringMarker = () => {
   const { x } = useMouse();
-  watch(x, (val) => {
-    const markersStore = useMarkersStore();
+  const markersStore = useMarkersStore();
+  const timelineStore = useTimelineStore();
 
-    const range = computed(() => markersStore.rangeFromOffsetLeft(x.value));
-
+  const findHovering = (mouseX: number) => {
+    const range = markersStore.rangeFromOffsetLeft(mouseX);
     const hovering = markersStore.markers.find(
-      (m) => +range.value[0].dateTime === +m.dateTime
+      (m) => +range[0].dateTime === +m.dateTime
     );
     markersStore.setHoveringMarker(hovering);
-  });
+  };
+
+  watch(x, findHovering);
+
+  const trigger = () => findHovering(x.value);
+  watch(() => timelineStore.pageScale, trigger);
+
+  return { trigger };
 };

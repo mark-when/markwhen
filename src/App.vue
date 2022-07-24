@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useAppStore } from './app/store';
 import Timeline from './timeline/Timeline.vue';
+import { useMediaQuery } from '@vueuse/core'
+import { computed } from '@vue/runtime-core';
 
 const appStore = useAppStore()
 const view = appStore.view
-const darkMode = appStore.inferredDarkMode
-const globalClass = darkMode
+const dark = useMediaQuery('(prefers-color-scheme: dark)')
+const globalClass = computed(() => dark.value ? 'dark' : 'light')
 </script>
 
 <template>

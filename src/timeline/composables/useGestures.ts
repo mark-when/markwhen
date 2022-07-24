@@ -1,8 +1,9 @@
 import { zoomer, type WheelGesture } from "../utilities/zoomer";
 import { MAX_SCALE, useTimelineStore } from "@/timeline/timelineStore";
+import { onMounted, type Ref } from "vue";
 
 export const useGestures = (
-  element: HTMLElement,
+  el: Ref<HTMLElement | null>,
   onSetScale: () => void = () => {}
 ) => {
   const timelineStore = useTimelineStore();
@@ -18,9 +19,9 @@ export const useGestures = (
     if (!startingZoom) {
       startingZoom = timelineStore.pageScale;
 
-      pinchStartScrollTop = element.scrollTop;
-      pinchStartScrollLeft = element.scrollLeft;
-      pinchStartCenterX = wg.origin.x - element.offsetLeft;
+      pinchStartScrollTop = el.value!.scrollTop;
+      pinchStartScrollLeft = el.value!.scrollLeft;
+      pinchStartCenterX = wg.origin.x - el.value!.offsetLeft;
       pinchStartCenterY = wg.origin.y;
     }
   };
@@ -30,15 +31,15 @@ export const useGestures = (
       return;
     }
 
-    const offsetLeft = (element as HTMLElement).offsetLeft;
+    const offsetLeft = (el.value! as HTMLElement).offsetLeft;
     const newScrollLeft =
       wg.scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
       (wg.origin.x! - offsetLeft);
     const newScrollTop =
       pinchStartScrollTop! + pinchStartCenterY! - wg.origin.y;
 
-    element.scrollLeft = newScrollLeft;
-    element.scrollTop = newScrollTop;
+    el.value!.scrollLeft = newScrollLeft;
+    el.value!.scrollTop = newScrollTop;
 
     timelineStore.setPageScale(startingZoom! * wg.scale);
     onSetScale();
@@ -56,5 +57,8 @@ export const useGestures = (
     startGesture,
     doGesture,
   };
-  endGesture = zoomer(element, gestures);
+
+  onMounted(() => {
+    endGesture = zoomer(el.value!, gestures);
+  });
 };
