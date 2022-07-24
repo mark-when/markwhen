@@ -3,6 +3,7 @@ import { parse } from "@markwhen/parser";
 import type { Timeline, TimelineMetadata } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import {
+  ceilDateTime,
   diffScale,
   floorDateTime,
   viewportLeftMarginPixels,
@@ -94,6 +95,12 @@ export const useTimelineStore = defineStore({
       }
       return floorDateTime(earliestTime, "year");
     },
+    baselineRightmostDate(state): DateTime {
+      return floorDateTime(
+        this.pageTimelineMetadata.latestTime.plus({ years: 30 }),
+        "year"
+      );
+    },
     dateIntervalFromViewport(
       state
     ): (scrollLeft: number, width: number) => DateInterval {
@@ -120,6 +127,24 @@ export const useTimelineStore = defineStore({
       return (a: DateTime, b: DateTime) =>
         (b.diff(a).as(diffScale) * this.pageScale) / 24;
     },
+    distanceFromBaselineLeftmostDate(state): (a: DateTime) => number {
+      return (a: DateTime) =>
+        (a.diff(this.baselineLeftmostDate).as(diffScale) * this.pageScale) / 24;
+    },
+    distanceBetweenBaselineDates(state): number {
+      return this.distanceFromBaselineLeftmostDate(this.baselineRightmostDate);
+    },
+    dateFromClientLeft(state) {
+      return (offset: number) => {
+        const leftDate = this.baselineLeftmostDate.plus({
+          [diffScale]: (this.pageSettings.viewport.left / this.pageScale) * 24,
+        });
+        return leftDate.plus({
+          [diffScale]: (offset / this.pageScale) * 24,
+        });
+      };
+    },
+    
   },
   actions: {
     setViewport(viewport: Viewport) {
@@ -129,8 +154,11 @@ export const useTimelineStore = defineStore({
         viewport.width
       );
     },
-    setPageScale(scale: number) {
-      this.pageSettings.scale = scale
-    }
+    setPageScale(s: number) {
+      // TODO: also limit zooming in based on our position, if it would put us
+      // past the browser's limit of a div's width
+      const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+      this.pageSettings.scale = scale;
+    },
   },
 });

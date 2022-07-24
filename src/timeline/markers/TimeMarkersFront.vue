@@ -21,7 +21,7 @@ const leftMargin = viewportLeftMarginPixels
             : 'to bottom, rgb(241 245 249), 65%, #ffffff00'})`
         }"></div>
         <!-- <SquashBar /> -->
-        <time-marker-front v-for="timeMarker in markerStore.markers" :key="timeMarker.ts" :timeMarker="timeMarker" />
+        <TimeMarkerFront v-for="timeMarker in markerStore.markers" :key="timeMarker.ts" :timeMarker="timeMarker" />
       </div>
     </div>
   </div>

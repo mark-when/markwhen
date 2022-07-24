@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
+import { useMarkersStore } from "./markers/markersStore";
 import TimeMarkersBack from "@/timeline/markers/TimeMarkersBack.vue"
 import TimeMarkersFront from "@/timeline/markers/TimeMarkersFront.vue";
+import Events from "@/timeline/events/Events.vue"
 import Hammer from "@squadette/hammerjs";
-import { useGestures } from "./composables/useGestures";
+import { useGestures } from "@/timeline/composables/useGestures";
+import { useHoveringMarker } from "@/timeline/composables/useHoveringMarker"
+import { useMouse } from "@vueuse/core"
 
 const timelineStore = useTimelineStore()
+const markersStore = useMarkersStore()
 
 const timelineElement = ref<HTMLDivElement | null>(null)
 const getViewport = (): Viewport => {
@@ -19,7 +24,6 @@ const getViewport = (): Viewport => {
     top: timelineElement.value.scrollTop
   }
 }
-
 
 let mc: Hammer.Manager
 const setupHammer = () => {
@@ -40,22 +44,20 @@ const touchScreenListener = () => {
   }
   timelineElement.value?.addEventListener('touchstart', touchListener)
 }
-
-
+useHoveringMarker()
 
 onMounted(() => {
   touchScreenListener()
   useGestures(timelineElement.value!, () => setViewportDateInterval())
   setViewportDateInterval()
 })
-
 </script>
 
 <template>
-  <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement">
+  <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement"
+    @scroll="setViewportDateInterval">
     <TimeMarkersBack />
-    <!-- <events :newEventPosition="newEventPosition" :creating="!!startEventCreationRange"
-      @startMakingEvent="startMakingEvent" />-->
+    <events />
     <TimeMarkersFront />
     <!-- <debug v-if="$config.dev" />
     <drawer-header />

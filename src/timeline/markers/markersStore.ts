@@ -4,6 +4,7 @@ import { useTimelineStore } from "../timelineStore";
 import {
   ceilDateTime,
   diffScale,
+  floorDateTime,
   scales,
   type DateInterval,
   type DisplayScale,
@@ -62,7 +63,9 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
 
 export const useMarkersStore = defineStore({
   id: "markerStore",
-  state: () => ({}),
+  state: () => ({
+    hoveringMarker: null as TimeMarker | null
+  }),
   getters: {
     markers(state): TimeMarker[] {
       const timelineStore = useTimelineStore();
@@ -147,6 +150,30 @@ export const useMarkersStore = defineStore({
         }
       }
       return "decade";
+    },
+    rangeFromOffsetLeft(state) {
+      const timelineStore = useTimelineStore();
+      return (offset: number) => {
+        const offsetDate = timelineStore.dateFromClientLeft(offset);
+        const scale = this.scaleOfViewportDateInterval as DisplayScale;
+        const floored = floorDateTime(offsetDate, scale);
+        const ceiled = ceilDateTime(offsetDate, scale);
+        return [
+          {
+            dateTime: floored,
+            left: timelineStore.distanceFromBaselineLeftmostDate(floored),
+          },
+          {
+            dateTime: ceiled,
+            left: timelineStore.distanceFromBaselineLeftmostDate(ceiled),
+          },
+        ];
+      };
+    },
+  },
+  actions: {
+    setHoveringMarker(marker: TimeMarker | undefined) {
+      this.hoveringMarker = marker || null
     },
   },
 });
