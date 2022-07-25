@@ -1,5 +1,5 @@
 import { zoomer, type WheelGesture } from "../utilities/zoomer";
-import { MAX_SCALE, useTimelineStore } from "@/timeline/timelineStore";
+import { MAX_SCALE, useTimelineStore } from "@/Timeline/timelineStore";
 import { onMounted, type Ref } from "vue";
 
 export const useGestures = (

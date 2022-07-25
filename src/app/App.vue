@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAppStore } from './app/store';
-import Timeline from './timeline/Timeline.vue';
+import { useAppStore } from '@/app/store';
+import Timeline from '@/Timeline/Timeline.vue';
 import { useMediaQuery } from '@vueuse/core'
 import { computed } from '@vue/runtime-core';
 

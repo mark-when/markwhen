@@ -1,6 +1,6 @@
 import { useMouse } from "@vueuse/core";
 import { watch } from "vue";
-import { useMarkersStore } from "../markers/markersStore";
+import { useMarkersStore } from "../Markers/markersStore";
 import { useTimelineStore } from "../timelineStore";
 
 export const useHoveringMarker = () => {

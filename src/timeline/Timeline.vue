@@ -64,7 +64,7 @@ onMounted(() => {
   <div id="timeline" class="relative h-full overflow-auto w-full order-1" ref="timelineElement" @scroll="scroll"
     :style="{ cursor: isPanning ? 'grabbing' : 'grab' }">
     <TimeMarkersBack />
-    <events />
+    <Events />
     <TimeMarkersFront />
     <!-- <debug v-if="$config.dev" />
     <drawer-header />

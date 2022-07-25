@@ -1,15 +1,13 @@
 import { defineStore } from "pinia";
-import { parse } from "@markwhen/parser";
 import type { Timeline, TimelineMetadata } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import {
-  ceilDateTime,
   diffScale,
   floorDateTime,
   viewportLeftMarginPixels,
   type DateInterval,
-  type DisplayScale,
-} from "@/timeline/utilities/dateTimeUtilities";
+} from "@/Timeline/utilities/dateTimeUtilities";
+import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 
 export interface Viewport {
   left: number;
@@ -21,11 +19,7 @@ export interface Settings {
   scale: number;
   viewportDateInterval: DateInterval;
   viewport: Viewport;
-  sort: Sort;
-  filter: string[];
 }
-
-export type Sort = "none" | "down" | "up";
 
 export const MIN_SCALE = 0.04;
 export const MAX_SCALE = 30000000;
@@ -39,39 +33,22 @@ export function blankSettings(): Settings {
       to: DateTime.now().plus({ years: 10 }),
     },
     viewport: { left: 0, width: 0, top: 0 },
-    sort: "none",
-    filter: [],
   };
 }
 
 export const useTimelineStore = defineStore({
   id: "timeline",
   state: () => ({
-    rawTimelineString: "",
-    pageIndex: 0,
     allSettings: [blankSettings()],
   }),
   getters: {
-    timelines(state): Timeline[] {
-      return parse(state.rawTimelineString).timelines;
-    },
-    pageTimeline(state): Timeline {
-      return this.timelines[this.pageIndex];
-    },
     pageTimelineMetadata(state): TimelineMetadata {
-      return this.pageTimeline.metadata;
-    },
-    pageTimelineString(state): string {
-      const selectedTimelineMetadata = this.pageTimeline.metadata;
-      return (
-        this.rawTimelineString.slice(
-          selectedTimelineMetadata.startStringIndex,
-          selectedTimelineMetadata.endStringIndex
-        ) || ""
-      );
+      return useMarkwhenStore().pageTimelineMetadata
     },
     pageSettings(state): Settings {
-      return state.allSettings[state.pageIndex];
+      const markwhenStore = useMarkwhenStore()
+      const pageIndex = markwhenStore.pageIndex
+      return state.allSettings[pageIndex];
     },
     pageScale(state): number {
       return this.pageSettings.scale;
