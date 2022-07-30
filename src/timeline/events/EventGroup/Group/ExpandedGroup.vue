@@ -2,9 +2,10 @@
 import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import EventRow from "@/Timeline/Events/Event/EventRow.vue";
 import { EventDescription } from "@markwhen/parser/lib/Types";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTimelineStore } from "@/Timeline/timelineStore";
+import { useEventColor } from "../../composables/useEventColor";
 const markwhenStore = useMarkwhenStore();
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
@@ -15,27 +16,12 @@ const props = defineProps<{
   canCalculateButton: boolean;
 }>();
 
+const button = ref<HTMLButtonElement | null>(null);
+
 const titleHtml = computed(() =>
   EventDescription.toInnerHtml(props.eventGroup.title || "")
 );
-const rgb = computed(() => {
-  const tags = props.eventGroup.tags;
-  if (tags && tags.length) {
-    const tag = tags[0];
-    return markwhenStore.tags[tag] || "";
-  }
-  return "";
-});
-
-const hasDefinedColor = computed(() => !!rgb.value);
-const bgColorStyle = computed(() => {
-  return rgb.value
-    ? {
-        backgroundColor: `rgba(${rgb}, ${props.hovering ? "0.09" : "0.05"})`,
-        outline: `1px solid rgba(${rgb}, 0.12)`,
-      }
-    : {};
-});
+const { color } = useEventColor(props.eventGroup);
 
 const left = computed(() => {
   if (!props.eventGroup || !props.eventGroup.range) {
@@ -52,26 +38,33 @@ const fullWidth = computed(() => {
     props.eventGroup.range.latest
   );
 });
+
+const buttonWidth = computed(() => {
+  const title = props.eventGroup.title;
+  if (props.canCalculateButton) {
+    return button.value?.clientWidth;
+  }
+  return 0;
+});
 </script>
 
 <template>
   <div class="relative flex flex-col">
     <div
-      class="absolute h-full flex flex-row items-center dark:text-gray-400 transition rounded-lg"
+      class="absolute h-full flex flex-row items-center dark:text-gray-400 transition rounded"
       :class="{
         'dark:bg-opacity-30 bg-opacity-20': props.hovering,
         'dark:bg-opacity-20 bg-opacity-10': !props.hovering,
-        'bg-gray-400 dark:bg-gray-800': !hasDefinedColor,
+        'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25': !color,
       }"
       :style="{
         marginLeft: `${left - 8}px`,
         width: `max(64px, ${fullWidth + 16}px)`,
-        ...(rgb
+        ...(color
           ? {
-              backgroundColor: `rgba(${rgb}, ${
-                props.hovering ? '0.09' : '0.05'
-              })`,
-              outline: `1px solid rgba(${rgb}, 0.12)`,
+              backgroundColor:
+                color && `rgba(${color}, ${props.hovering ? '0.09' : '0.05'})`,
+              outline: `1px solid rgba(${color}, 0.12)`,
             }
           : {}),
       }"
@@ -101,9 +94,14 @@ const fullWidth = computed(() => {
     >
       <button
         ref="button"
-        class="flex flex-row items-center sticky px-1 mt-px dark:bg-opacity-60 bg-opacity-20"
-        :class="buttonClass"
-        :style="buttonStyle"
+        class="flex flex-row items-center sticky px-1 mt-px dark:bg-opacity-60 bg-opacity-20 rounded-full"
+        :class="{
+          'bg-gray-400 dark:bg-gray-800': !color,
+        }"
+        :style="{
+          left: `calc(50% - ${buttonWidth! / 2}px)`,
+          backgroundColor: color && `rgba(${color}, 0.25)` || '',
+        }"
         @mouseover="$emit('hovering', true)"
         @mouseleave="$emit('hovering', false)"
         @click="$emit('collapse')"
@@ -129,4 +127,11 @@ const fullWidth = computed(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.eventTitle {
+  font-family: system-ui;
+  font-size: 80%;
+  white-space: nowrap;
+  font-weight: 600;
+}
+</style>

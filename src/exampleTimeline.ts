@@ -56,13 +56,14 @@ endGroup
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019
+group 2019 group
 06/08/2019: Paula's wedding
 07/04/2019: 4th of July in Seattle with siblings
 08/23/2019-08/27/2019: SF and Bishop's Ranch
 09/2019: Hawaii with Google
 12/20/2019-12/22/2019: Train from Seattle to Chicago
 12/2019: Christmas at home, Dad to hospital
-
+endGroup 
 // 2020
 02/29/2020: Molly and Kaitlyn to Seattle (thus starting covid)
 03/28/2020: James to Austin

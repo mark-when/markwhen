@@ -1,6 +1,6 @@
 import { exampleTimeline } from "@/exampleTimeline";
 import { parse } from "@markwhen/parser";
-import sortEvents from "@markwhen/parser/lib/Sort";
+import sortEvents, { type Sort } from "@markwhen/parser/lib/Sort";
 import {
   Event,
   type Events,
@@ -10,8 +10,6 @@ import {
   type TimelineMetadata,
 } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
-
-export type Sort = "none" | "down" | "up";
 
 export const useMarkwhenStore = defineStore({
   id: "markwhen",

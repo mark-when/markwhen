@@ -3,6 +3,7 @@ import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Timeline/timelineStore";
 import ExpandedGroup from "./ExpandedGroup.vue";
+import CollapsedGroup from "./CollapsedGroup.vue";
 
 const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 
@@ -49,9 +50,12 @@ watch(expanded, (val) => {
     @hovering="hovering = $event"
     @collapse="expanded = !expanded"
   />
-  <!-- <CollapsedGroup v-if="!expanded && isGroupStyleTight" :eventGroup="eventGroup" :left="left"
-    @expand="expanded = true" />
-  <collapsed-section v-if="!expanded && !isGroupStyleTight" :eventGroup="eventGroup" @expand="expanded = true" /> -->
+  <CollapsedGroup
+    v-if="!expanded"
+    :group="eventGroup"
+    :left="left"
+    @expand="expanded = true"
+  />
 </template>
 
 <style scoped></style>
