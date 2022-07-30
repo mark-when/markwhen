@@ -6,6 +6,7 @@ import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import { useEventColor } from "../../composables/useEventColor";
 import EventRow from "../../Event/EventRow.vue";
+import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 
 const markwhenStore = useMarkwhenStore();
 const { distanceBetweenDates } = useTimelineStore();
@@ -32,22 +33,7 @@ const titleHtml = computed(() =>
 
 <template>
   <div class="relative flex flex-col">
-    <div
-      class="absolute h-full flex flex-row items-center dark:text-gray-400 transition ml-0 w-full"
-      :class="{
-        'dark:bg-opacity-30 bg-opacity-20': props.hovering,
-        'dark:bg-opacity-20 bg-opacity-10': !props.hovering,
-        'bg-gray-400 dark:bg-gray-800': !hasDefinedColor,
-      }"
-      :style="
-        hasDefinedColor
-          ? {
-              backgroundColor: `rgba(${color}, ${hovering ? '0.09' : '0.05'}`,
-              outline: `1px solid rgba(${color}, 0.12)`,
-            }
-          : {}
-      "
-    ></div>
+    <ExpandedSectionBackground :hovering="props.hovering" :color="color" />
     <div
       :style="{
         marginLeft: `${left}px`,
@@ -74,6 +60,9 @@ const titleHtml = computed(() =>
     >
       <button
         class="flex flex-row items-center sticky px-1 mt-px dark:bg-opacity-60 bg-opacity-20"
+        :class="{
+          'bg-gray-500 dark:bg-gray-900': !color
+        }"
         :style="{
           backgroundColor: `rgba(${color}, 0.25)`,
           left: `1rem`,

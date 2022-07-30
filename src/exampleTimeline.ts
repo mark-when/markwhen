@@ -10,7 +10,7 @@ description: Start editing to make it your own 🫡
 #Work: pink
 #Education: #f42
 
-section Education I #Education
+section Education I 
 08/2008-05/2012: Psych degree #Education
 02/2010-06/2012: Dispatcher #Work
 
