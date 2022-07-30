@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
-import { useMarkersStore } from "./markers/markersStore";
-import TimeMarkersBack from "@/timeline/markers/TimeMarkersBack.vue"
-import TimeMarkersFront from "@/timeline/markers/TimeMarkersFront.vue";
-import Events from "@/timeline/events/Events.vue"
+import { useMarkersStore } from "./Markers/markersStore";
+import TimeMarkersBack from "@/Timeline/Markers/TimeMarkersBack.vue"
+import TimeMarkersFront from "@/Timeline/Markers/TimeMarkersFront.vue";
+import Events from "@/Timeline/Events/Events.vue"
 import Hammer from "@squadette/hammerjs";
-import { useGestures } from "@/timeline/composables/useGestures";
-import { useHoveringMarker } from "@/timeline/composables/useHoveringMarker"
-import { useMouse } from "@vueuse/core"
+import { useGestures } from "@/Timeline/composables/useGestures";
+import { useHoveringMarker } from "@/Timeline/composables/useHoveringMarker"
 import { usePanning } from "./composables/usePanning";
 
 const timelineStore = useTimelineStore()

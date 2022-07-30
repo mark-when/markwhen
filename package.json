@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@markwhen/parser": "^0.1.0",
+    "@markwhen/parser": "^0.1.3",
     "@squadette/hammerjs": "^2.1.0-pre3",
     "@vueuse/core": "^8.9.4",
     "lru-cache": "^7.13.1",

@@ -1,27 +1,33 @@
 <script setup lang="ts">
-import { useMarkwhenStore } from '@/markwhen/markwhenStore';
-import { ref } from 'vue';
-import { useMarkersStore } from '@/Timeline/Markers/markersStore';
-import { useTimelineStore } from '@/Timeline/timelineStore';
-import EventRow from '@/Timeline/Events/Event/EventRow.vue';
+import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
+import { ref } from "vue";
+import { useMarkersStore } from "@/Timeline/Markers/markersStore";
+import { useTimelineStore } from "@/Timeline/timelineStore";
+import EventRow from "@/Timeline/Events/Event/EventRow.vue";
+import EventGroup from "./EventGroup/Group/EventGroup.vue";
+import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import GroupOrSection from "./EventGroup/GroupOrSection.vue";
 
-const markwhenStore = useMarkwhenStore()
-const timelineStore = useTimelineStore()
+const markwhenStore = useMarkwhenStore();
+const timelineStore = useTimelineStore();
 </script>
 
 <template>
-  <div id="events" class="flex flex-col relative"
-    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px;`">
+  <div
+    id="events"
+    class="flex flex-col relative"
+    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px;`"
+  >
     <div class="h-24"></div>
     <!-- <div v-if="shouldShowNow" class="absolute h-full dark:bg-slate-400 bg-blue-300"
       :style="`width: 1px; left: ${distanceFromBaselineLeftmostDate(now)}px`"></div> -->
     <template v-for="event in markwhenStore.filteredAndSortedEvents">
-      <template v-if="Array.isArray(event)">
-        <!-- <event-group :key="
-          event.length ? event[0].eventString.substring(0, 50) : 'newGroup'
-        " :eventGroup="event" /> -->
-      </template>
-      <event-row v-else :key="event.eventString.substring(0, 50)" :event="event" />
+      <group-or-section v-if="Array.isArray(event)" :group="event"/>
+      <event-row
+        v-else
+        :key="event.eventString.substring(0, 50)"
+        :event="event"
+      />
     </template>
     <!-- <div class="w-full relative mt-2" v-if="$store.state.editable">
       <button title="Click and drag to create new event" class="
@@ -53,5 +59,4 @@ const timelineStore = useTimelineStore()
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

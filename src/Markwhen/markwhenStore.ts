@@ -1,9 +1,10 @@
 import { exampleTimeline } from "@/exampleTimeline";
 import { parse } from "@markwhen/parser";
-import sortEvents, { type EventSubGroup } from "@markwhen/parser/lib/Sort";
+import sortEvents from "@markwhen/parser/lib/Sort";
 import {
   Event,
   type Events,
+  type EventSubGroup,
   type Tags,
   type Timeline,
   type TimelineMetadata,
