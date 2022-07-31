@@ -22,6 +22,9 @@ endSection
 // 2013
 03/15/2013-04/2015: China https://photos.app.goo.gl/4UEkw3EbUkUuNzKGA #Work
 
+- [ ] task 1
+- [ ] task 2
+- [x] completed
 // 2014
 07/2014: 4th of July in DC https://photos.app.goo.gl/d418j6GSkCD5LGmY8
 
@@ -58,6 +61,8 @@ endGroup
 // 2019
 group 2019 group
 06/08/2019: Paula's wedding
+- [] task
+- [x] finished task
 07/04/2019: 4th of July in Seattle with siblings
 08/23/2019-08/27/2019: SF and Bishop's Ranch
 09/2019: Hawaii with Google

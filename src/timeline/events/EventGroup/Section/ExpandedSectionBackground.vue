@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const props = defineProps<{ hovering: boolean; color: string | null }>();
+const props = defineProps<{
+  hovering: boolean;
+  color: string | null | undefined;
+}>();
 </script>
 
 <template>
