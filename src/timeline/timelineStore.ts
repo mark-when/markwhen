@@ -8,6 +8,7 @@ import {
   type DateInterval,
 } from "@/Timeline/utilities/dateTimeUtilities";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
+import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 
 export interface Viewport {
   left: number;
@@ -39,16 +40,11 @@ export function blankSettings(): Settings {
 export const useTimelineStore = defineStore({
   id: "timeline",
   state: () => ({
-    allSettings: [blankSettings()],
+    pageSettings: usePageEffect(() => blankSettings()),
   }),
   getters: {
     pageTimelineMetadata(state): TimelineMetadata {
       return useMarkwhenStore().pageTimelineMetadata
-    },
-    pageSettings(state): Settings {
-      const markwhenStore = useMarkwhenStore()
-      const pageIndex = markwhenStore.pageIndex
-      return state.allSettings[pageIndex];
     },
     pageScale(state): number {
       return this.pageSettings.scale;

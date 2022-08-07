@@ -11,7 +11,7 @@ const description = markwhenStore.pageTimelineMetadata.description;
 
 <template>
   <div
-    class="flex flex-col sticky bottom-2 md:bottom-6 left-2 right-0 ml-2 md:left-4 md:ml-4 z-20 pointer-events-none drawerHeader"
+    class="flex flex-col absolute bottom-2 md:bottom-6 left-2 right-0 ml-2 z-20 pointer-events-none drawerHeader"
   >
     <div
       class="pointer-events-auto"
@@ -23,7 +23,7 @@ const description = markwhenStore.pageTimelineMetadata.description;
     </div>
     <div class="ml-1 py-1 flex pointer-events-auto">
       <PageButtons />
-    </div> 
+    </div>
   </div>
 </template>
 
