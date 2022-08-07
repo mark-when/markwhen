@@ -33,10 +33,7 @@ const setViewport = (v: Viewport) => {
 
 watch(
   computed(() => timelineStore.pageSettings),
-  (val, oldVal) => {
-    console.log("settings changed, setting viewport", val.viewport);
-    nextTick(() => setViewport(val.viewport));
-  }
+  (settings) => nextTick(() => setViewport(settings.viewport))
 );
 
 // let mc: Hammer.Manager

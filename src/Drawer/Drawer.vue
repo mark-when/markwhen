@@ -2,6 +2,7 @@
 import { useAppStore } from "@/App/appStore";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import PageButtons from "./PageButtons/PageButtons.vue";
+import ViewSwitcher from "./ViewSwitcher.vue";
 
 const markwhenStore = useMarkwhenStore();
 const { currentView } = useAppStore();
@@ -23,6 +24,12 @@ const description = markwhenStore.pageTimelineMetadata.description;
     </div>
     <div class="ml-1 py-1 flex pointer-events-auto">
       <PageButtons />
+    </div>
+    <div
+      class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600"
+      style="width: fit-content"
+    >
+      <ViewSwitcher />
     </div>
   </div>
 </template>

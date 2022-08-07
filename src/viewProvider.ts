@@ -3,11 +3,13 @@ import type { VueElement } from "vue";
 export interface ViewCapabilities {
   edit?: boolean
   hoveringEvent?: boolean
+  mobile?: boolean
 }
 
 export interface ViewUses {
   tags?: boolean
   drawerDescription?: boolean
+  sort?: boolean
 }
 
 export interface ViewSetting {

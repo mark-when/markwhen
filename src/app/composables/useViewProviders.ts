@@ -1,5 +1,5 @@
-import { timelineProvider } from "@/Timeline/provider"
+import { useTimelineProvider } from "@/Timeline/provider";
 
 export const useViewProviders = () => {
-  return [timelineProvider]
-}
+  return [useTimelineProvider()];
+};
