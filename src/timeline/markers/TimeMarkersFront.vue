@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { viewportLeftMarginPixels } from '../utilities/dateTimeUtilities';
 import { useMarkersStore } from './markersStore';
-import { useAppStore } from '../../app/store';
 import TimeMarkerFront from "@/Timeline/Markers/TimeMarkerFront.vue"
 import { useMediaQuery } from '@vueuse/core';
 
 const isDark = useMediaQuery('(prefers-color-scheme: dark)')
 
 const markerStore = useMarkersStore()
-const appStore = useAppStore()
 
 const leftMargin = viewportLeftMarginPixels
 </script>

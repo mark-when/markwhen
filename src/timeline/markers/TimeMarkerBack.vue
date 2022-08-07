@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppStore } from '@/app/store';
+import { useAppStore } from '@/App/appStore';
 import { computed, reactive } from 'vue';
 import { dateScale } from '@/timeline/utilities/dateTimeUtilities';
 import { useMarkersStore, Weight, type TimeMarker } from './markersStore';

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
-import { useMarkersStore } from "./Markers/markersStore";
 import TimeMarkersBack from "@/Timeline/Markers/TimeMarkersBack.vue"
 import TimeMarkersFront from "@/Timeline/Markers/TimeMarkersFront.vue";
 import Events from "@/Timeline/Events/Events.vue"
@@ -11,7 +10,6 @@ import { useHoveringMarker } from "@/Timeline/composables/useHoveringMarker"
 import { usePanning } from "./composables/usePanning";
 
 const timelineStore = useTimelineStore()
-const markersStore = useMarkersStore()
 
 const timelineElement = ref<HTMLDivElement | null>(null)
 const getViewport = (): Viewport => {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/store";
-import Timeline from "@/Timeline/Timeline.vue";
+import { useAppStore } from "@/App/appStore";
 import { useMediaQuery } from "@vueuse/core";
 import { computed } from "@vue/runtime-core";
+import Drawer from "../Drawer/Drawer.vue";
 
 const appStore = useAppStore();
-const view = appStore.view;
+const currentView = appStore.currentView;
+
 const dark = useMediaQuery("(prefers-color-scheme: dark)");
 const globalClass = computed(() => (dark.value ? "dark" : "light"));
 </script>
@@ -19,8 +20,9 @@ const globalClass = computed(() => (dark.value ? "dark" : "light"));
     <div
       class="flex flex-col md:flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
-      <Timeline />
+      <component :is="currentView.component" />
     </div>
+    <Drawer />
   </div>
 </template>
 

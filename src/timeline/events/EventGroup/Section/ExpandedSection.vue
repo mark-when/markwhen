@@ -33,7 +33,7 @@ const titleHtml = computed(() =>
 
 <template>
   <div class="relative flex flex-col">
-    <ExpandedSectionBackground :hovering="props.hovering" :color="color" />
+    <ExpandedSectionBackground :hovering="props.hovering" :color="color || null" />
     <div
       :style="{
         marginLeft: `${left}px`,

@@ -19,6 +19,11 @@ export const useMarkwhenStore = defineStore({
     sort: "none" as Sort,
     filter: [] as String[],
   }),
+  actions: {
+    setPageIndex(index: number) {
+      this.pageIndex = index
+    }
+  },
   getters: {
     timelines(state): Timeline[] {
       return parse(state.rawTimelineString).timelines;
