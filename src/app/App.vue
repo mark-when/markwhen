@@ -4,9 +4,11 @@ import { isEditable } from "@/injectionKeys";
 import { useMediaQuery } from "@vueuse/core";
 import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
+import { useViewStore } from "@/Views/viewStore";
 
 const appStore = useAppStore();
-const currentView = appStore.currentView;
+const viewStore = useViewStore();
+const currentView = viewStore.currentView
 
 const dark = useMediaQuery("(prefers-color-scheme: dark)");
 const globalClass = computed(() => (dark.value ? "dark" : "light"));

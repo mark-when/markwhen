@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/appStore";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import PageButtons from "./PageButtons/PageButtons.vue";
 import ViewSwitcher from "./ViewSwitcher.vue";
 import Sort from "./ViewSettings/Sort.vue";
+import { useViewStore } from "@/Views/viewStore";
 
 const markwhenStore = useMarkwhenStore();
-const { currentView } = useAppStore();
+const { currentView } = useViewStore();
 
 const description = markwhenStore.pageTimelineMetadata.description;
 </script>

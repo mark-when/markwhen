@@ -1,5 +1,4 @@
 import type { ViewProvider } from "@/viewProvider";
-import { useTimelineSettings } from "./composables/useTimelineSettings";
 import TimelineVue from "./Timeline.vue";
 
 export const useTimelineProvider: () => ViewProvider = () => ({
@@ -11,7 +10,7 @@ export const useTimelineProvider: () => ViewProvider = () => ({
         d="m 13 13 h -5 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 5 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -1 -4 h -7 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 7 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -9 -4 h 0 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 2 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z">
       </path>
     </svg>`,
-  settings: useTimelineSettings(),
+  settings: [],
   capabilities: { edit: true, hoveringEvent: true },
   uses: { tags: true, drawerDescription: true, sort: true },
 });
