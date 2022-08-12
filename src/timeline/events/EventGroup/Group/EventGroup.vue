@@ -10,8 +10,6 @@ const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 const props = defineProps<{ eventGroup: EventSubGroup }>();
 const eventGroup = props.eventGroup;
 
-console.log(eventGroup)
-
 const expanded = ref(!!eventGroup.startExpanded);
 const hovering = ref(false);
 const canCalculateButton = ref(false);
