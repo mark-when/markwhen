@@ -3,6 +3,7 @@ import { useAppStore } from "@/App/appStore";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import PageButtons from "./PageButtons/PageButtons.vue";
 import ViewSwitcher from "./ViewSwitcher.vue";
+import Sort from "./ViewSettings/Sort.vue";
 
 const markwhenStore = useMarkwhenStore();
 const { currentView } = useAppStore();
@@ -30,8 +31,15 @@ const description = markwhenStore.pageTimelineMetadata.description;
       style="width: fit-content"
     >
       <ViewSwitcher />
+      <div
+        class="flex flex-col items-center md:flex-row md:backdrop-filter backdrop-blur overflow-x-scroll px-1 md:py-2 py-1"
+        style="width: fit-content"
+      >
+        <Sort v-if="currentView.uses?.sort" />
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>

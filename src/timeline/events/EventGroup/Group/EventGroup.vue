@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Timeline/timelineStore";
 import ExpandedGroup from "./ExpandedGroup.vue";
 import CollapsedGroup from "./CollapsedGroup.vue";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 
 const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 
 const props = defineProps<{ eventGroup: EventSubGroup }>();
 const eventGroup = props.eventGroup;
+
+console.log(eventGroup)
 
 const expanded = ref(!!eventGroup.startExpanded);
 const hovering = ref(false);

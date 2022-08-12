@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useAppStore } from "@/App/appStore";
+import { isEditable } from "@/injectionKeys";
 import { useMediaQuery } from "@vueuse/core";
-import { computed } from "@vue/runtime-core";
+import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
 
 const appStore = useAppStore();
@@ -9,6 +10,8 @@ const currentView = appStore.currentView;
 
 const dark = useMediaQuery("(prefers-color-scheme: dark)");
 const globalClass = computed(() => (dark.value ? "dark" : "light"));
+
+provide(isEditable, appStore.editable);
 </script>
 
 <template>

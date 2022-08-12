@@ -44,7 +44,7 @@ export const useTimelineStore = defineStore({
   }),
   getters: {
     pageTimelineMetadata(state): TimelineMetadata {
-      return useMarkwhenStore().pageTimelineMetadata
+      return useMarkwhenStore().pageTimelineMetadata;
     },
     pageScale(state): number {
       return this.pageSettings.scale;
@@ -117,7 +117,6 @@ export const useTimelineStore = defineStore({
         });
       };
     },
-    
   },
   actions: {
     setViewport(viewport: Viewport) {

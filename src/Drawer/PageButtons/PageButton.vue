@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref, computed } from "vue";
 import type { Timeline } from "@markwhen/parser/lib/Types";
-import { computed } from "@vue/reactivity";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useAppStore } from "@/App/appStore";
+import { isEditable } from "@/injectionKeys";
+import { createSingletonPromise } from "@vueuse/core";
 
 const appStore = useAppStore();
 const markwhenStore = useMarkwhenStore();
@@ -18,7 +19,8 @@ const props = defineProps<{
 const hovering = ref(false);
 const startX = ref<number | undefined>(undefined);
 const translateX = ref(0);
-const pageTitle = markwhenStore.pageTimelineMetadata.title;
+const pageTitle = markwhenStore.timelines[props.pageIndex].metadata.title;
+const button = ref<HTMLButtonElement>();
 
 const computedStyle = computed(() => {
   if (translateX.value !== 0) {
@@ -31,18 +33,87 @@ const computedStyle = computed(() => {
 });
 
 const click = () => {
-  markwhenStore.setPageIndex(props.pageIndex)
-}
+  markwhenStore.setPageIndex(props.pageIndex);
+};
+
+const mouseOver = () => {
+  console.log("mouse over");
+  hovering.value = true;
+};
+
+const mouseLeave = () => {
+  hovering.value = false;
+};
+
+const moveListener = (e: MouseEvent | TouchEvent) => {
+  // Since we're moving, cancel any hover timer we had
+  if (hovering.value) {
+    hovering.value = false;
+  }
+  if (!button.value) {
+    return;
+  }
+
+  // We shouldn't go any further than the start of the parent element
+  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  const diff = clientX - startX.value!;
+  const parentOffsetLeft = button.value.parentElement?.offsetLeft || 0;
+  const addPageButtonWidth = 20;
+  const maxRight =
+    button.value.parentElement!.scrollWidth -
+    button.value.offsetLeft -
+    button.value.clientWidth -
+    addPageButtonWidth;
+  translateX.value = Math.min(
+    Math.max(-button.value.offsetLeft + parentOffsetLeft, diff),
+    maxRight
+  );
+};
+
+const stopMoving = () => {
+  startX.value = undefined;
+  translateX.value = 0;
+  document.removeEventListener("mousemove", moveListener);
+  document.removeEventListener("touchmove", moveListener);
+  document.removeEventListener("mouseup", endMoveListener);
+  document.removeEventListener("touchend", endMoveListener);
+  document.removeEventListener("keydown", escapeListener);
+};
+
+const endMoveListener = (e: MouseEvent | TouchEvent) => {};
+
+const escapeListener = (e: KeyboardEvent) => {
+  if (e.key === "Escape") {
+    stopMoving();
+  }
+};
+
+const editable = inject<boolean>(isEditable, false);
+const startMoving = (e: MouseEvent | TouchEvent) => {
+  startX.value = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  document.addEventListener("touchmove", moveListener);
+  document.addEventListener("mousemove", moveListener);
+  document.addEventListener("touchend", endMoveListener);
+  document.addEventListener("mouseup", endMoveListener);
+  document.addEventListener("keydown", escapeListener);
+};
+const del = () => {};
 </script>
 
 <template>
   <button
     class="h-6 rounded-full border-2 mr-2 flex items-center justify-center flex-shrink-0 relative"
     :style="computedStyle"
-    @mouseover="startHover"
-    @mouseleave="endHover"
-    @mousedown.stop="startMoving"
-    @touchdown.stop="startMoving"
+    v-on="
+      editable
+        ? {
+            mouseover: mouseOver,
+            mouseleave: mouseLeave,
+            'mousedown.stop': startMoving,
+            'touchdown.stop': startMoving,
+          }
+        : {}
+    "
     @click="click"
     :class="{
       'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500':
@@ -52,11 +123,12 @@ const click = () => {
       'w-6': !pageTitle,
       'shadow-sm': shadowed,
     }"
+    ref="button"
   >
     <button
       class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100"
       @click.prevent.stop="del"
-      v-if="appStore.editable && markwhenStore.timelines.length > 1 && hovering"
+      v-if="editable && markwhenStore.timelines.length > 1 && hovering"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

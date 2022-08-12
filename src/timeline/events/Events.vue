@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { ref } from "vue";
-import { useMarkersStore } from "@/Timeline/Markers/markersStore";
 import { useTimelineStore } from "@/Timeline/timelineStore";
 import EventRow from "@/Timeline/Events/Event/EventRow.vue";
-import EventGroup from "./EventGroup/Group/EventGroup.vue";
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import GroupOrSection from "./EventGroup/GroupOrSection.vue";
+import { useTransformStore } from "@/Markwhen/transformStore";
+import EventSection from "@/Timeline/Events/EventGroup/Section/EventSection.vue";
+import EventGroup from "@/Timeline/Events/EventGroup/Group/EventGroup.vue";
 
-const markwhenStore = useMarkwhenStore();
+const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 </script>
 
@@ -21,8 +19,19 @@ const timelineStore = useTimelineStore();
     <div class="h-24"></div>
     <!-- <div v-if="shouldShowNow" class="absolute h-full dark:bg-slate-400 bg-blue-300"
       :style="`width: 1px; left: ${distanceFromBaselineLeftmostDate(now)}px`"></div> -->
-    <template v-for="event in markwhenStore.filteredAndSortedEvents">
-      <group-or-section v-if="Array.isArray(event)" :group="event"/>
+    <template v-for="(event, i) in transformStore.transformedEvents">
+      <template v-if="Array.isArray(event)">
+        <event-group
+          v-if="event.style === 'group'"
+          :eventGroup="event"
+          :key="event.reduce((prev, curr) => prev + curr.eventString, 'group')"
+        />
+        <event-section
+          v-else
+          :eventGroup="event"
+          :key="event.reduce((prev, curr) => prev + curr.eventString, 'section')"
+        />
+      </template>
       <event-row
         v-else
         :key="event.eventString.substring(0, 50)"
