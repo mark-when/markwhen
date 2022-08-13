@@ -3,9 +3,9 @@
 import { computed, ref } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { Event } from "@markwhen/parser/lib/Types";
-import { useMarkersStore } from "@/Timeline/Markers/markersStore";
-import { useTimelineStore } from "@/Timeline/timelineStore";
-import EventBar from "@/Timeline/Events/Event/EventBar.vue"
+import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue"
 import TaskCompletion from "./TaskCompletion.vue";
 
 const { event } = defineProps<{ event: Event }>()

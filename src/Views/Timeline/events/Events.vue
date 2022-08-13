@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useTimelineStore } from "@/Timeline/timelineStore";
-import EventRow from "@/Timeline/Events/Event/EventRow.vue";
-import GroupOrSection from "./EventGroup/GroupOrSection.vue";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { useTransformStore } from "@/Markwhen/transformStore";
-import EventSection from "@/Timeline/Events/EventGroup/Section/EventSection.vue";
-import EventGroup from "@/Timeline/Events/EventGroup/Group/EventGroup.vue";
+import EventSection from "@/Views/Timeline/Events/EventGroup/Section/EventSection.vue";
+import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();

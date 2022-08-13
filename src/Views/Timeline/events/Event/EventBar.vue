@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Event } from "@markwhen/parser/lib/Types";
-import { useTimelineStore } from "@/timeline/timelineStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { computed } from "@vue/runtime-core";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 

@@ -119,10 +119,7 @@ const startMoving = (e: MouseEvent | TouchEvent) => {
   document.addEventListener("mouseup", endMoveListener);
   document.addEventListener("keydown", escapeListener);
 };
-const del = () => {
-  confirm(`Delete ${props.timeline.metadata.title || "this page"}?`) &&
-    update(DELETE_PAGE, props.pageIndex);
-};
+const del = () => update(DELETE_PAGE, props.pageIndex);
 </script>
 
 <template>

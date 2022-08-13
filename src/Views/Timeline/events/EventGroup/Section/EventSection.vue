@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import { useTimelineStore } from "@/Timeline/timelineStore";
-import ExpandedGroup from "./ExpandedGroup.vue";
-import CollapsedGroup from "./CollapsedGroup.vue";
-import type { EventSubGroup } from "@markwhen/parser/lib/Types";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import ExpandedSection from "./ExpandedSection.vue";
+import CollapsedSection from "./CollapsedSection.vue";
 
 const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 
@@ -41,20 +41,19 @@ watch(expanded, (val) => {
 </script>
 
 <template>
-  <expanded-group
+  <expanded-section
     v-if="expanded"
-    :eventGroup="eventGroup"
+    :group="eventGroup"
     :left="left"
     :hovering="hovering"
-    :canCalculateButton="canCalculateButton"
     @hovering="hovering = $event"
     @collapse="expanded = !expanded"
   />
-  <CollapsedGroup
-    v-if="!expanded"
+  <CollapsedSection
+    v-else
     :group="eventGroup"
     :left="left"
-    @expand="expanded = true"
+    @expand="expanded = !expanded"
   />
 </template>
 

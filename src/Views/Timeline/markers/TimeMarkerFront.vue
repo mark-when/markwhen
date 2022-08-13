@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 import { granularities } from "../utilities/DateTimeDisplay";
 import { dateScale } from "../utilities/dateTimeUtilities";
 import { clamp, TimeMarker, timeMarkerWeightMinimum, useMarkersStore, Weight } from "./markersStore";

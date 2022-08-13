@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
-import EventRow from "@/Timeline/Events/Event/EventRow.vue";
+import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { useTimelineStore } from "@/Timeline/timelineStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
 const markwhenStore = useMarkwhenStore();
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =

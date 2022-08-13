@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from '@/App/appStore';
-import { computed, reactive } from 'vue';
-import { dateScale } from '@/timeline/utilities/dateTimeUtilities';
+import { computed } from 'vue';
+import { dateScale } from '@/Views/Timeline/utilities/dateTimeUtilities';
 import { useMarkersStore, Weight, type TimeMarker } from './markersStore';
 import { useWeekdayCache } from '../utilities/weekdayCache';
 

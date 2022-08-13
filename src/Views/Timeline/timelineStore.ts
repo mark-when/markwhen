@@ -6,7 +6,7 @@ import {
   floorDateTime,
   viewportLeftMarginPixels,
   type DateInterval,
-} from "@/Timeline/utilities/dateTimeUtilities";
+} from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 
