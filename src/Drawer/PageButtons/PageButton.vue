@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { inject, ref, computed } from "vue";
+import { inject, ref, computed, watch } from "vue";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { useAppStore } from "@/App/appStore";
 import { isEditable } from "@/injectionKeys";
-import { createSingletonPromise } from "@vueuse/core";
+import {
+  DELETE_PAGE,
+  useEditorOrchestrator,
+} from "@/EditorOrchestrator/composables/useEditorOrchestrator";
 
-const appStore = useAppStore();
+const { update } = useEditorOrchestrator();
 const markwhenStore = useMarkwhenStore();
 
 const props = defineProps<{
   timeline: Timeline;
   pageIndex: number;
   shadowed: boolean;
-  translate: number | null;
+  translate: number;
+}>();
+
+const emit = defineEmits<{
+  (event: "doneMoving"): void;
+  (event: "moving", translateX: number): void;
 }>();
 
 const hovering = ref(false);
@@ -26,18 +33,20 @@ const computedStyle = computed(() => {
   if (translateX.value !== 0) {
     return { transform: `translateX(${translateX.value}px)`, zIndex: 20 };
   }
-  if (props.translate) {
-    return { transform: `translateX(${props.translate}}px)` };
+  const givenTranslation = props.translate;
+  if (givenTranslation) {
+    return { transform: `translateX(${givenTranslation}px)` };
   }
   return { transform: `translateX(0px)` };
 });
+
+watch(translateX, (val) => emit("moving", val));
 
 const click = () => {
   markwhenStore.setPageIndex(props.pageIndex);
 };
 
 const mouseOver = () => {
-  console.log("mouse over");
   hovering.value = true;
 };
 
@@ -80,7 +89,19 @@ const stopMoving = () => {
   document.removeEventListener("keydown", escapeListener);
 };
 
-const endMoveListener = (e: MouseEvent | TouchEvent) => {};
+const endMoveListener = (e: MouseEvent | TouchEvent) => {
+  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  if (Math.abs(clientX - startX.value!) > 2) {
+    document.addEventListener("click", captureClick, true);
+  }
+  emit("doneMoving");
+  stopMoving();
+};
+
+const captureClick = (e: MouseEvent) => {
+  e.stopPropagation();
+  document.removeEventListener("click", captureClick, true);
+};
 
 const escapeListener = (e: KeyboardEvent) => {
   if (e.key === "Escape") {
@@ -90,6 +111,7 @@ const escapeListener = (e: KeyboardEvent) => {
 
 const editable = inject<boolean>(isEditable, false);
 const startMoving = (e: MouseEvent | TouchEvent) => {
+  e.preventDefault();
   startX.value = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
   document.addEventListener("touchmove", moveListener);
   document.addEventListener("mousemove", moveListener);
@@ -97,7 +119,10 @@ const startMoving = (e: MouseEvent | TouchEvent) => {
   document.addEventListener("mouseup", endMoveListener);
   document.addEventListener("keydown", escapeListener);
 };
-const del = () => {};
+const del = () => {
+  confirm(`Delete ${props.timeline.metadata.title || "this page"}?`) &&
+    update(DELETE_PAGE, props.pageIndex);
+};
 </script>
 
 <template>
@@ -109,8 +134,8 @@ const del = () => {};
         ? {
             mouseover: mouseOver,
             mouseleave: mouseLeave,
-            'mousedown.stop': startMoving,
-            'touchdown.stop': startMoving,
+            mousedown: startMoving,
+            touchdown: startMoving,
           }
         : {}
     "

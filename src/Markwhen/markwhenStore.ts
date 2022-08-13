@@ -12,7 +12,6 @@ export const useMarkwhenStore = defineStore({
   state: () => ({
     rawTimelineString: exampleTimeline,
     pageIndex: 0,
-    filter: [] as String[],
   }),
   actions: {
     setPageIndex(index: number) {

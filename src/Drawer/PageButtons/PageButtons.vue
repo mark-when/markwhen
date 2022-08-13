@@ -1,30 +1,31 @@
 <script setup lang="ts">
 import { useAppStore } from "@/App/appStore";
+import {
+  ADD_PAGE,
+  MOVE_PAGES,
+  useEditorOrchestrator,
+} from "@/EditorOrchestrator/composables/useEditorOrchestrator";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import PageButton from "./PageButton.vue";
 
 const appStore = useAppStore();
 const markwhenStore = useMarkwhenStore();
+const { update } = useEditorOrchestrator();
 const shadowed = false;
-
-const emit = defineEmits<{
-  (event: "edit:movePages", pages: { from: number; to: number }): void;
-  (event: "edit:addPage"): void;
-}>();
 
 const moveFrom = ref(undefined as number | undefined);
 const moveTo = ref(undefined as number | undefined);
 const translations = reactive({} as { [index: number]: number });
 
-const buttons = ref<HTMLButtonElement[]>([]);
+const buttons = ref<typeof PageButton[]>([]);
 
 const doneMoving = () => {
   if (isNaN(moveFrom.value as number) || isNaN(moveTo.value as number)) {
     return;
   }
 
-  emit("edit:movePages", {
+  update(MOVE_PAGES, {
     from: moveFrom.value as number,
     to: moveTo.value as number,
   });
@@ -35,7 +36,8 @@ const doneMoving = () => {
 
 const moving = (pageIndex: number, translationAmount: number) => {
   moveFrom.value = pageIndex;
-  const positions = buttons.value.map((b) => {
+  const positions = buttons.value.map((button) => {
+    const b = button.$el;
     const from = b.offsetLeft;
     const to = b.offsetLeft + b.clientWidth;
     return {
@@ -86,7 +88,15 @@ const moving = (pageIndex: number, translationAmount: number) => {
   }
 };
 
-const addNewPage = () => emit("edit:addPage");
+watch(
+  translations,
+  (val) => {
+    console.log(val);
+  },
+  { deep: true }
+);
+
+const addNewPage = () => update(ADD_PAGE);
 </script>
 
 <template>
@@ -100,7 +110,7 @@ const addNewPage = () => emit("edit:addPage");
       :pageIndex="index"
       :timeline="timeline"
       :shadowed="shadowed"
-      :translate="translations[index] || null"
+      :translate="translations[index] || 0"
       @moving="moving(index, $event)"
       @doneMoving="doneMoving"
       ref="buttons"
