@@ -22,7 +22,7 @@ export interface ViewSetting {
 }
 
 export interface ViewProvider {
-  component: any,
+  component: () => any,
   name: string,
   iconSvg?: string,
   settings?: (ViewSetting | VueElement)[]

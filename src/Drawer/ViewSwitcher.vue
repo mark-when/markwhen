@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/appStore";
+import { useViewStore } from "@/Views/viewStore";
 import ViewSwitcherButton from "./ViewSwitcherButton.vue";
 
-const { views, selectedViewIndex } = useAppStore();
+const { views, selectedViewIndex } = useViewStore();
 </script>
 
 <template>

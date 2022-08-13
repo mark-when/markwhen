@@ -88,14 +88,6 @@ const moving = (pageIndex: number, translationAmount: number) => {
   }
 };
 
-watch(
-  translations,
-  (val) => {
-    console.log(val);
-  },
-  { deep: true }
-);
-
 const addNewPage = () => update(ADD_PAGE);
 </script>
 

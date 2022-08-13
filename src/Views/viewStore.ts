@@ -2,14 +2,14 @@ import { useViewProviders } from "@/App/composables/useViewProviders";
 import type { ViewProvider } from "@/viewProvider";
 import { defineStore } from "pinia";
 
-const views = useViewProviders()
 export const useViewStore = defineStore("views", {
   state: () => ({
     selectedViewIndex: 0,
+    views: useViewProviders()
   }),
   getters: {
     currentView(): ViewProvider {
-      return views[this.selectedViewIndex]
+      return this.views[this.selectedViewIndex]
     },
   },
 });
