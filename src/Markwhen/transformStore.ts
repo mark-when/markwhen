@@ -27,7 +27,8 @@ export const useTransformStore = defineStore("transform", {
   },
   getters: {
     transformedEvents(): Events {
-      const { pageTimeline } = useMarkwhenStore();
+      const markwhenStore = useMarkwhenStore();
+      const pageTimeline = markwhenStore.pageTimeline
       const events = [...pageTimeline.events]
       if (!this.filter.length) {
         return sortEvents(events, this.sort);

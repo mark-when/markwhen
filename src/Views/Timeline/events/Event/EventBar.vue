@@ -2,8 +2,9 @@
 import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "@vue/runtime-core";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
+import { useEventColor } from "../composables/useEventColor";
 
-const { tags } = useMarkwhenStore();
+const markwhenStore = useMarkwhenStore();
 
 const props = defineProps<{
   event: Event;
@@ -13,11 +14,8 @@ const props = defineProps<{
   taskDenominator: number;
 }>();
 
-const tagColor = computed(() => {
-  return props.event.event.tags[0]
-    ? tags[props.event.event.tags[0]]
-    : undefined;
-});
+const { color: tagColor } = useEventColor(props.event);
+
 const percent = computed(() => {
   const p = props.event.event.percent as number;
   if (!isNaN(p)) {
@@ -40,8 +38,8 @@ const percent = computed(() => {
       }"
       :style="{
         width: `${width}px`,
-        backgroundColor: tagColor && `rgba(${tagColor}, 0.3)`,
-        border: tagColor && `1px solid rgba(${tagColor}, 0.3)`,
+        backgroundColor: tagColor ? `rgba(${tagColor}, 0.3)` : '',
+        border: tagColor ? `1px solid rgba(${tagColor}, 0.3)` : '',
         height: `10px`,
         borderRadius: `5px`,
         flexShrink: 0,

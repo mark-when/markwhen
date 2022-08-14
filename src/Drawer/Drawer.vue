@@ -7,7 +7,7 @@ import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
 
 const markwhenStore = useMarkwhenStore();
-const { currentView } = useViewStore();
+const viewStore = useViewStore();
 
 const description = markwhenStore.pageTimelineMetadata.description;
 </script>
@@ -18,7 +18,7 @@ const description = markwhenStore.pageTimelineMetadata.description;
   >
     <div
       class="pointer-events-auto"
-      v-if="currentView.uses?.drawerDescription && description"
+      v-if="viewStore.currentView.uses?.drawerDescription && description"
     >
       <h4 class="text-lg font-medium text-gray-400 pl-1 timelineTitle">
         {{ description }}

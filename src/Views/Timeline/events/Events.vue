@@ -9,7 +9,7 @@ import { DateTime } from "luxon";
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 
-const now = DateTime.now()
+const now = DateTime.now();
 </script>
 
 <template>
@@ -22,20 +22,30 @@ const now = DateTime.now()
     <div
       v-if="!timelineStore.hideNowLine"
       class="absolute h-full dark:bg-slate-400 bg-blue-300"
-      :style="`width: 1px; left: ${timelineStore.distanceFromBaselineLeftmostDate(now)}px`"
+      :style="`width: 1px; left: ${timelineStore.distanceFromBaselineLeftmostDate(
+        now
+      )}px`"
     ></div>
     <template v-for="(event, i) in transformStore.transformedEvents">
       <template v-if="Array.isArray(event)">
         <event-group
           v-if="event.style === 'group'"
           :eventGroup="event"
-          :key="event.reduce((prev, curr) => prev + curr.eventString, event.title)"
+          :key="
+            event.reduce(
+              (prev, curr) => prev + curr.eventString,
+              'group' + event.title + (event.tags || []).join(',')
+            )
+          "
         />
         <event-section
           v-else
           :eventGroup="event"
           :key="
-            event.reduce((prev, curr) => prev + curr.eventString, event.title)
+            event.reduce(
+              (prev, curr) => prev + curr.eventString,
+              'section' + event.title + (event.tags || []).join(',')
+            )
           "
         />
       </template>
