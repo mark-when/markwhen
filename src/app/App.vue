@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/appStore";
 import { isEditable } from "@/injectionKeys";
 import { useMediaQuery } from "@vueuse/core";
 import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
 import { useViewStore } from "@/Views/viewStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 
-const appStore = useAppStore();
 const viewStore = useViewStore();
 const currentView = viewStore.currentView
+const editorOrchestrator = useEditorOrchestratorStore();
 
 const dark = useMediaQuery("(prefers-color-scheme: dark)");
 const globalClass = computed(() => (dark.value ? "dark" : "light"));
 
-provide(isEditable, appStore.editable);
+provide(isEditable, editorOrchestrator.editable);
 </script>
 
 <template>

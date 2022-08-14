@@ -6,7 +6,6 @@ export const useAppStore = defineStore({
   id: "app",
   state: () => ({
     darkMode: "system" as DarkMode,
-    editable: true,
   }),
   getters: {
     inferredDarkMode(state) {

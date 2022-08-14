@@ -5,10 +5,10 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { isEditable } from "@/injectionKeys";
 import {
   DELETE_PAGE,
-  useEditorOrchestrator,
-} from "@/EditorOrchestrator/composables/useEditorOrchestrator";
+  useEditorOrchestratorStore,
+} from "@/EditorOrchestrator/editorOrchestratorStore";
 
-const { update } = useEditorOrchestrator();
+const { update } = useEditorOrchestratorStore();
 const markwhenStore = useMarkwhenStore();
 
 const props = defineProps<{

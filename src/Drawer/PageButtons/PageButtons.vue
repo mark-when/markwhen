@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/appStore";
 import {
   ADD_PAGE,
   MOVE_PAGES,
-  useEditorOrchestrator,
-} from "@/EditorOrchestrator/composables/useEditorOrchestrator";
+  useEditorOrchestratorStore,
+} from "@/EditorOrchestrator/editorOrchestratorStore";
+import { isEditable } from "@/injectionKeys";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { reactive, ref, watch } from "vue";
+import { inject, reactive, ref, watch } from "vue";
 import PageButton from "./PageButton.vue";
 
-const appStore = useAppStore();
+const editable = inject(isEditable)
+
 const markwhenStore = useMarkwhenStore();
-const { update } = useEditorOrchestrator();
+const { update } = useEditorOrchestratorStore();
 const shadowed = false;
 
 const moveFrom = ref(undefined as number | undefined);
@@ -108,7 +109,7 @@ const addNewPage = () => update(ADD_PAGE);
       ref="buttons"
     />
     <button
-      v-if="appStore.editable"
+      v-if="editable"
       class="w-6 h-6 rounded-full border-2 mr-2 flex items-center justify-center transition border-white bg-white hover:bg-blue-50 border-blue-100 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addNewPage"
