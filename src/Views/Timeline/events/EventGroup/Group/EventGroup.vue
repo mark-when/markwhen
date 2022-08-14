@@ -48,7 +48,7 @@ watch(expanded, (val) => {
     :hovering="hovering"
     :canCalculateButton="canCalculateButton"
     @hovering="hovering = $event"
-    @collapse="expanded = !expanded"
+    @collapse="collapse"
   />
   <CollapsedGroup
     v-if="!expanded"

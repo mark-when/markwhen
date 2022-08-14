@@ -29,13 +29,13 @@ const now = DateTime.now()
         <event-group
           v-if="event.style === 'group'"
           :eventGroup="event"
-          :key="event.reduce((prev, curr) => prev + curr.eventString, 'group')"
+          :key="event.reduce((prev, curr) => prev + curr.eventString, event.title)"
         />
         <event-section
           v-else
           :eventGroup="event"
           :key="
-            event.reduce((prev, curr) => prev + curr.eventString, 'section')
+            event.reduce((prev, curr) => prev + curr.eventString, event.title)
           "
         />
       </template>

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useEventColor } from "../../composables/useEventColor";
-import GroupOrSectionVue from "../GroupOrSection.vue";
 
 const props = defineProps<{ group: EventSubGroup; left: number }>();
 
