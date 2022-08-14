@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useThrottle, useThrottleFn } from "@vueuse/core";
 import { watch, ref } from "vue";
 import { MAX_SCALE, MIN_SCALE, useTimelineStore } from "../timelineStore";
 
@@ -16,29 +15,26 @@ function calculateScaledPosition(width: number): number {
 
 const width = ref(calculateScaledPosition(timelineStore.pageScale));
 
-const updateWidth = useThrottleFn((w) => {
-  timelineStore.setPageScale(w);
-}, 50);
+const updateWidth = (w: number) => timelineStore.setPageScale(w);
 
-watch(width, (val) => {
+watch(
+  () => timelineStore.pageSettings.scale,
+  (scale) => (width.value = calculateScaledPosition(scale))
+);
+
+const changed = (e: Event) => {
+  const value = parseInt((e.target as HTMLInputElement).value);
   let minSelection = 0;
   let maxSelection = 1000;
   let minWidth = Math.log(MIN_SCALE);
   let maxWidth = Math.log(MAX_SCALE);
   const scale = (maxWidth - minWidth) / (maxSelection - minSelection);
-  width.value = Math.exp(minWidth + scale * (val - minSelection));
-  updateWidth(width.value);
-});
+  const newScale = Math.exp(minWidth + scale * (value - minSelection));
+  updateWidth(newScale);
+};
 
-watch(
-  timelineStore.pageSettings,
-  (settings) => {
-    width.value = calculateScaledPosition(settings.scale);
-  },
-  { deep: true }
-);
-
-const startYearWidthChange = () => timelineStore.setStartedYearWidthChange
+const startYearWidthChange = () => timelineStore.setStartedWidthChange(true);
+const endYearWidthChange = () => timelineStore.setStartedWidthChange(false);
 </script>
 
 <template>
@@ -47,7 +43,8 @@ const startYearWidthChange = () => timelineStore.setStartedYearWidthChange
       type="range"
       min="0"
       max="1000"
-      v-model="width"
+      :value="width"
+      @input="changed"
       class="my-1 bg-transparent"
       @mousedown="startYearWidthChange"
       @mouseup="endYearWidthChange"

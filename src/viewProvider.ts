@@ -25,7 +25,7 @@ export interface ViewProvider {
   component: () => any,
   name: string,
   iconSvg?: string,
-  settings?: (ViewSetting | VueElement)[]
+  settings?: (() => ViewSetting | any)[]
   capabilities?: ViewCapabilities
   uses?: ViewUses
 }

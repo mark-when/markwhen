@@ -35,6 +35,24 @@ watch(
   computed(() => timelineStore.pageSettings),
   (settings) => nextTick(() => setViewport(settings.viewport))
 );
+const widthChangeStartScrollLeft = ref<number | null>(null);
+const widthChangeStartYearWidth = ref<number | null>(null);
+watch(() => timelineStore.startedWidthChange,
+  (started) => {
+    widthChangeStartScrollLeft.value = started
+      ? timelineElement.value?.scrollLeft ?? null
+      : null;
+    widthChangeStartYearWidth.value = timelineStore.pageSettings.scale;
+  }
+);
+watch(() => timelineStore.pageSettings, (settings) => {
+  if (!timelineStore.startedWidthChange || !timelineElement.value) {
+    return
+  }
+  const startCenter = widthChangeStartScrollLeft.value! + timelineElement.value.clientWidth / 2
+  const scale = settings.scale / (widthChangeStartYearWidth.value || 1)
+  timelineElement.value.scrollLeft = scale * startCenter - timelineElement.value.clientWidth / 2
+}, { deep: true })
 
 // let mc: Hammer.Manager
 // const setupHammer = () => {

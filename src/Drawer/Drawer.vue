@@ -3,6 +3,7 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import PageButtons from "./PageButtons/PageButtons.vue";
 import ViewSwitcher from "./ViewSwitcher.vue";
 import Sort from "./ViewSettings/Sort.vue";
+import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
 
 const markwhenStore = useMarkwhenStore();
@@ -36,6 +37,7 @@ const description = markwhenStore.pageTimelineMetadata.description;
         style="width: fit-content"
       >
         <Sort v-if="currentView.uses?.sort" />
+        <ViewSettings />
       </div>
     </div>
   </div>
