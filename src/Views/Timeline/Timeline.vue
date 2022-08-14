@@ -90,8 +90,13 @@ useGestures(timelineElement, () => setViewportDateInterval());
 const scrollToDate = (dateTime: DateTime) => {
   const el = timelineElement.value;
   if (el) {
-    const left = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
-    el.scrollLeft = left - getViewport().width / 2;
+    const fromLeft = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
+    const { left, width } = getViewport();
+
+    // If it isn't already within view
+    if (fromLeft < left || fromLeft > left + width) {
+      el.scrollLeft = fromLeft - width / 2;
+    }
   }
 };
 const scrollToNow = () => scrollToDate(DateTime.now());
