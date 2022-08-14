@@ -135,7 +135,6 @@ export const useTimelineStore = defineStore({
       this.pageSettings.scale = scale;
     },
     setStartedWidthChange(started: boolean) {
-      console.log("startedYearWidthChange", started);
       this.startedWidthChange = started;
     },
     setHideNowLine(hide: boolean) {

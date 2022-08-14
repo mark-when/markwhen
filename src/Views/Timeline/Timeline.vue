@@ -32,6 +32,12 @@ const setViewport = (v: Viewport) => {
   timelineElement.value.scrollTop = v.top;
 };
 
+// This needs to be separate from the watch below, for some reason
+watch(
+  () => timelineStore.pageSettings,
+  (settings) => nextTick(() => setViewport(settings.viewport))
+);
+
 const widthChangeStartScrollLeft = ref<number | null>(null);
 const widthChangeStartYearWidth = ref<number | null>(null);
 watch(
@@ -46,7 +52,6 @@ watch(
 watch(
   () => timelineStore.pageSettings,
   (settings) => {
-    nextTick(() => setViewport(settings.viewport));
     if (!timelineStore.startedWidthChange || !timelineElement.value) {
       return;
     }
