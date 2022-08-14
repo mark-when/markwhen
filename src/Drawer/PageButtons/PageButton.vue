@@ -26,7 +26,7 @@ const emit = defineEmits<{
 const hovering = ref(false);
 const startX = ref<number | undefined>(undefined);
 const translateX = ref(0);
-const pageTitle = markwhenStore.timelines[props.pageIndex].metadata.title;
+const pageTitle = computed(() => markwhenStore.timelines[props.pageIndex].metadata.title);
 const button = ref<HTMLButtonElement>();
 
 const computedStyle = computed(() => {
