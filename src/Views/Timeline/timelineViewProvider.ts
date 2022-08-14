@@ -1,7 +1,8 @@
 import type { ViewProvider } from "@/viewProvider";
 import Timeline from "./Timeline.vue";
-import TimelineScale from "./Settings/TimelineScale.vue"
+import TimelineScale from "./Settings/TimelineScale.vue";
 import { useTimelineStore } from "./timelineStore";
+import ToggleNowLine from "./Settings/ToggleNowLine.vue";
 
 export const useTimelineProvider: () => ViewProvider = () => {
   const timelineStore = useTimelineStore();
@@ -15,7 +16,7 @@ export const useTimelineProvider: () => ViewProvider = () => {
         d="m 13 13 h -5 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 5 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -1 -4 h -7 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 7 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -9 -4 h 0 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 2 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z">
       </path>
     </svg>`,
-    settings: [() => TimelineScale],
+    settings: [() => TimelineScale, () => ToggleNowLine],
     capabilities: { edit: true, hoveringEvent: true },
     uses: { tags: true, drawerDescription: true, sort: true },
   };

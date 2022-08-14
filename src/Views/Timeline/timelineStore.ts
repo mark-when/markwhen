@@ -41,7 +41,8 @@ export const useTimelineStore = defineStore({
   id: "timeline",
   state: () => ({
     pageSettings: usePageEffect(() => blankSettings()),
-    startedWidthChange: false as boolean
+    startedWidthChange: false,
+    hideNowLine: false
   }),
   getters: {
     pageTimelineMetadata(state): TimelineMetadata {
@@ -136,6 +137,9 @@ export const useTimelineStore = defineStore({
     setStartedWidthChange(started: boolean) {
       console.log("startedYearWidthChange", started)
       this.startedWidthChange = started
+    },
+    setHideNowLine(hide: boolean) {
+      this.hideNowLine = hide
     }
   },
 });

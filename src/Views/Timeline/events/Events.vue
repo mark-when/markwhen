@@ -4,9 +4,12 @@ import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import EventSection from "@/Views/Timeline/Events/EventGroup/Section/EventSection.vue";
 import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
+import { DateTime } from "luxon";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
+
+const now = DateTime.now()
 </script>
 
 <template>
@@ -16,8 +19,11 @@ const timelineStore = useTimelineStore();
     :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px;`"
   >
     <div class="h-24"></div>
-    <!-- <div v-if="shouldShowNow" class="absolute h-full dark:bg-slate-400 bg-blue-300"
-      :style="`width: 1px; left: ${distanceFromBaselineLeftmostDate(now)}px`"></div> -->
+    <div
+      v-if="!timelineStore.hideNowLine"
+      class="absolute h-full dark:bg-slate-400 bg-blue-300"
+      :style="`width: 1px; left: ${timelineStore.distanceFromBaselineLeftmostDate(now)}px`"
+    ></div>
     <template v-for="(event, i) in transformStore.transformedEvents">
       <template v-if="Array.isArray(event)">
         <event-group
@@ -28,7 +34,9 @@ const timelineStore = useTimelineStore();
         <event-section
           v-else
           :eventGroup="event"
-          :key="event.reduce((prev, curr) => prev + curr.eventString, 'section')"
+          :key="
+            event.reduce((prev, curr) => prev + curr.eventString, 'section')
+          "
         />
       </template>
       <event-row

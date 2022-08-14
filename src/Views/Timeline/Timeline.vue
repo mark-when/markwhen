@@ -8,6 +8,7 @@ import Events from "@/Views/Timeline/Events/Events.vue";
 import { useGestures } from "@/Views/Timeline/composables/useGestures";
 import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarker";
 import { usePanning } from "./composables/usePanning";
+import { DateTime } from "luxon";
 
 const timelineStore = useTimelineStore();
 
@@ -31,13 +32,10 @@ const setViewport = (v: Viewport) => {
   timelineElement.value.scrollTop = v.top;
 };
 
-watch(
-  computed(() => timelineStore.pageSettings),
-  (settings) => nextTick(() => setViewport(settings.viewport))
-);
 const widthChangeStartScrollLeft = ref<number | null>(null);
 const widthChangeStartYearWidth = ref<number | null>(null);
-watch(() => timelineStore.startedWidthChange,
+watch(
+  () => timelineStore.startedWidthChange,
   (started) => {
     widthChangeStartScrollLeft.value = started
       ? timelineElement.value?.scrollLeft ?? null
@@ -45,14 +43,21 @@ watch(() => timelineStore.startedWidthChange,
     widthChangeStartYearWidth.value = timelineStore.pageSettings.scale;
   }
 );
-watch(() => timelineStore.pageSettings, (settings) => {
-  if (!timelineStore.startedWidthChange || !timelineElement.value) {
-    return
-  }
-  const startCenter = widthChangeStartScrollLeft.value! + timelineElement.value.clientWidth / 2
-  const scale = settings.scale / (widthChangeStartYearWidth.value || 1)
-  timelineElement.value.scrollLeft = scale * startCenter - timelineElement.value.clientWidth / 2
-}, { deep: true })
+watch(
+  () => timelineStore.pageSettings,
+  (settings) => {
+    nextTick(() => setViewport(settings.viewport));
+    if (!timelineStore.startedWidthChange || !timelineElement.value) {
+      return;
+    }
+    const startCenter =
+      widthChangeStartScrollLeft.value! + timelineElement.value.clientWidth / 2;
+    const scale = settings.scale / (widthChangeStartYearWidth.value || 1);
+    timelineElement.value.scrollLeft =
+      scale * startCenter - timelineElement.value.clientWidth / 2;
+  },
+  { deep: true }
+);
 
 // let mc: Hammer.Manager
 // const setupHammer = () => {
@@ -82,6 +87,18 @@ const scroll = () => {
 const { isPanning } = usePanning(timelineElement);
 useGestures(timelineElement, () => setViewportDateInterval());
 
+const scrollToDate = (dateTime: DateTime) => {
+  const el = timelineElement.value;
+  if (el) {
+    const left = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
+    el.scrollLeft = left - getViewport().width / 2;
+  }
+};
+const scrollToNow = () => scrollToDate(DateTime.now());
+watch(
+  () => timelineStore.hideNowLine,
+  (hide) => !hide && scrollToNow()
+);
 onMounted(() => {
   touchScreenListener();
   setViewportDateInterval();
