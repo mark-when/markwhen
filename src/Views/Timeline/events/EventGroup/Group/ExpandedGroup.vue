@@ -88,7 +88,7 @@ const buttonWidth = computed(() => {
         order: -9999,
       }"
       class="sticky top-12 cursor-pointer z-[1]"
-      @click="$emit('collapse')"
+      @click="$emit('collapse', $event)"
       @mouseover="$emit('hovering', true)"
       @mouseleave="$emit('hovering', false)"
     >
@@ -104,7 +104,7 @@ const buttonWidth = computed(() => {
         }"
         @mouseover="$emit('hovering', true)"
         @mouseleave="$emit('hovering', false)"
-        @click="$emit('collapse')"
+        @click="$emit('collapse', $event)"
       >
         <div class="flex flex-row flex-grow items-center justify-center">
           <span class="eventTitle" v-if="eventGroup.title" v-html="titleHtml">
