@@ -7,8 +7,8 @@ import {
   viewportLeftMarginPixels,
   type DateInterval,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
+import { usePageStore } from "@/Markwhen/pageStore";
 
 export interface Viewport {
   left: number;
@@ -42,11 +42,11 @@ export const useTimelineStore = defineStore({
   state: () => ({
     pageSettings: usePageEffect(() => blankSettings()),
     startedWidthChange: false,
-    hideNowLine: false
+    hideNowLine: false,
   }),
   getters: {
     pageTimelineMetadata(state): TimelineMetadata {
-      return useMarkwhenStore().pageTimelineMetadata;
+      return usePageStore().pageTimelineMetadata;
     },
     pageScale(state): number {
       return this.pageSettings.scale;
@@ -135,11 +135,11 @@ export const useTimelineStore = defineStore({
       this.pageSettings.scale = scale;
     },
     setStartedWidthChange(started: boolean) {
-      console.log("startedYearWidthChange", started)
-      this.startedWidthChange = started
+      console.log("startedYearWidthChange", started);
+      this.startedWidthChange = started;
     },
     setHideNowLine(hide: boolean) {
-      this.hideNowLine = hide
-    }
+      this.hideNowLine = hide;
+    },
   },
 });

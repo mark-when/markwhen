@@ -7,7 +7,7 @@ import {
   type EventSubGroup,
 } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
-import { useMarkwhenStore } from "./markwhenStore";
+import { usePageStore } from "./pageStore";
 
 export const useTransformStore = defineStore("transform", {
   state: () => ({
@@ -27,8 +27,8 @@ export const useTransformStore = defineStore("transform", {
   },
   getters: {
     transformedEvents(): Events {
-      const markwhenStore = useMarkwhenStore();
-      const pageTimeline = markwhenStore.pageTimeline
+      const pageStore = usePageStore();
+      const pageTimeline = pageStore.pageTimeline
       const events = [...pageTimeline.events]
       if (!this.filter.length) {
         return sortEvents(events, this.sort);

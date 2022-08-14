@@ -3,10 +3,9 @@ import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
-const markwhenStore = useMarkwhenStore();
+
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
 
@@ -55,7 +54,8 @@ const buttonWidth = computed(() => {
       :class="{
         'dark:bg-opacity-30 bg-opacity-20': props.hovering,
         'dark:bg-opacity-20 bg-opacity-10': !props.hovering,
-        'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25': !color,
+        'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25':
+          !color,
       }"
       :style="{
         marginLeft: `${left - 8}px`,

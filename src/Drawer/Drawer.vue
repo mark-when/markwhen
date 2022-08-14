@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import PageButtons from "./PageButtons/PageButtons.vue";
 import ViewSwitcher from "./ViewSwitcher.vue";
 import Sort from "./ViewSettings/Sort.vue";
 import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
+import { usePageStore } from "@/Markwhen/pageStore";
 
-const markwhenStore = useMarkwhenStore();
+const pageStore = usePageStore();
 const viewStore = useViewStore();
 
-const description = markwhenStore.pageTimelineMetadata.description;
+const description = pageStore.pageTimelineMetadata.description;
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const description = markwhenStore.pageTimelineMetadata.description;
         class="flex flex-col items-center md:flex-row md:backdrop-filter backdrop-blur overflow-x-scroll px-1 md:py-2 py-1"
         style="width: fit-content"
       >
-        <Sort v-if="currentView.uses?.sort" />
+        <Sort v-if="viewStore.currentView.uses?.sort" />
         <ViewSettings />
       </div>
     </div>

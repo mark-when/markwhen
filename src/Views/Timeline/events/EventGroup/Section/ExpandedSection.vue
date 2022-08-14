@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
 import { EventDescription } from "@markwhen/parser/lib/Types";
@@ -8,7 +7,6 @@ import { useEventColor } from "../../composables/useEventColor";
 import EventRow from "../../Event/EventRow.vue";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 
-const markwhenStore = useMarkwhenStore();
 const { distanceBetweenDates } = useTimelineStore();
 
 const props = defineProps<{
@@ -17,8 +15,6 @@ const props = defineProps<{
   left: number;
 }>();
 const { color } = useEventColor(props.group);
-
-const hasDefinedColor = computed(() => !!color.value);
 
 const fullWidth = computed(() => {
   if (!props.group || !props.group.range) {

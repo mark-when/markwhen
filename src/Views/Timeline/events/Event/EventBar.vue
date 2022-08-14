@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "@vue/runtime-core";
-import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useEventColor } from "../composables/useEventColor";
-
-const markwhenStore = useMarkwhenStore();
 
 const props = defineProps<{
   event: Event;

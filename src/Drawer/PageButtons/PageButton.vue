@@ -7,9 +7,11 @@ import {
   DELETE_PAGE,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { usePageStore } from "@/Markwhen/pageStore";
 
 const { update } = useEditorOrchestratorStore();
 const markwhenStore = useMarkwhenStore();
+const pageStore = usePageStore()
 
 const props = defineProps<{
   timeline: Timeline;
@@ -43,7 +45,7 @@ const computedStyle = computed(() => {
 watch(translateX, (val) => emit("moving", val));
 
 const click = () => {
-  markwhenStore.setPageIndex(props.pageIndex);
+  pageStore.setPageIndex(props.pageIndex);
 };
 
 const mouseOver = () => {
@@ -139,9 +141,9 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
     @click="click"
     :class="{
       'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500':
-        pageIndex === markwhenStore.pageIndex,
+        pageIndex === pageStore.pageIndex,
       'border-white bg-white hover:bg-blue-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-600':
-        pageIndex !== markwhenStore.pageIndex,
+        pageIndex !== pageStore.pageIndex,
       'w-6': !pageTitle,
       'shadow-sm': shadowed,
     }"
