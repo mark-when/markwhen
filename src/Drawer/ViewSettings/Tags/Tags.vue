@@ -13,7 +13,7 @@ const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
 </script>
 
 <template>
-  <div class="flex flex-row noScrollBar px-2">
+  <div class="flex flex-row noScrollBar pl-2 overflow-scroll">
     <div class="hidden md:block" style="height: 28px">
       <!-- Spacer for timelines that have no tags to ensure the drawer header is a consistent height -->
     </div>
@@ -25,7 +25,7 @@ const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
     </button>
     <button
       :class="{
-        'dark:border-zinc-100 border-gray-900': isUntaggedFiltered
+        'dark:border-zinc-100 border-gray-900': isUntaggedFiltered,
       }"
       class="mr-2 rounded bg-white hover:bg-zinc-100 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:bg-gray-800 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold border-2 print-hidden"
       @click="toggleFilterUntagged"

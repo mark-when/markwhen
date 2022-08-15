@@ -36,7 +36,7 @@ const description = pageStore.pageTimelineMetadata.description;
     >
       <ViewSwitcher />
       <div
-        class="flex flex-col items-center md:flex-row md:backdrop-filter backdrop-blur overflow-x-scroll px-1 md:py-2 py-1"
+        class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-x-scroll px-1 md:py-2 py-1"
         style="width: fit-content"
       >
         <Sort v-if="viewStore.currentView.uses?.sort" />
