@@ -6,6 +6,7 @@ import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import Tags from "./ViewSettings/Tags/Tags.vue";
 
 const pageStore = usePageStore();
 const viewStore = useViewStore();
@@ -40,10 +41,10 @@ const description = pageStore.pageTimelineMetadata.description;
       >
         <Sort v-if="viewStore.currentView.uses?.sort" />
         <ViewSettings />
+        <Tags />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
