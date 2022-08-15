@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
@@ -10,9 +10,10 @@ import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarke
 import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { useResizeObserver } from "@vueuse/core";
 
 const timelineStore = useTimelineStore();
-const pageStore = usePageStore()
+const pageStore = usePageStore();
 
 const timelineElement = ref<HTMLDivElement | null>(null);
 const getViewport = (): Viewport => {
@@ -65,10 +66,15 @@ watch(
   },
   { deep: true }
 );
-watch(() => pageStore.pageIndex, () => {
+watch(
+  () => pageStore.pageIndex,
+  () => {
+    nextTick(setViewportDateInterval);
+  }
+);
+useResizeObserver(timelineElement, (entries) =>
   nextTick(setViewportDateInterval)
-})
-
+);
 // let mc: Hammer.Manager
 // const setupHammer = () => {
 //   timelineElement.value?.addEventListener('touchstart', touchStart)
@@ -98,7 +104,7 @@ const { isPanning } = usePanning(timelineElement);
 useGestures(timelineElement, () => setViewportDateInterval());
 
 const scrollToDate = (dateTime: DateTime) => {
-  const el = timelineElement.value
+  const el = timelineElement.value;
   if (el) {
     const fromLeft = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
     const { left, width } = getViewport();
