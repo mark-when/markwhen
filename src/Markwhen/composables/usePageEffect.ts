@@ -1,4 +1,12 @@
-import { computed, reactive, watchEffect } from "vue";
+import {
+  computed,
+  reactive,
+  ref,
+  shallowRef,
+  watchEffect,
+  type Ref,
+  type UnwrapRef,
+} from "vue";
 import { usePageStore } from "../pageStore";
 
 export const usePageEffect = <T>(defaultPageState: () => T) => {
@@ -8,7 +16,7 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
 
   watchEffect(() => {
     const pageIndex = pageStore.pageIndex;
-    if (!pageState[pageIndex]) {
+    if (pageState[pageIndex] === undefined) {
       // If we do not have state for this page, give it the default
       pageState[pageIndex] = defaultPageState();
     }
@@ -17,11 +25,16 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
   pageStore.$onAction(({ name, store, args, after }) => {
     if (name === "setPageIndex") {
       const pageIndex = args[0];
-      if (!pageState[pageIndex]) {
+      if (pageState[pageIndex] === undefined) {
         pageState[pageIndex] = defaultPageState();
       }
     }
   });
 
-  return computed(() => pageState[pageStore.pageIndex]);
+  return computed({
+    get: () => pageState[pageStore.pageIndex],
+    set(newVal: T) {
+      pageState[pageStore.pageIndex] = newVal;
+    },
+  });
 };
