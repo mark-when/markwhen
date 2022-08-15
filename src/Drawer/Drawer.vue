@@ -5,9 +5,11 @@ import Sort from "./ViewSettings/Sort.vue";
 import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 
 const pageStore = usePageStore();
 const viewStore = useViewStore();
+const editorOrchestratorStore = useEditorOrchestratorStore();
 
 const description = pageStore.pageTimelineMetadata.description;
 </script>
@@ -25,7 +27,7 @@ const description = pageStore.pageTimelineMetadata.description;
       </h4>
     </div>
     <div class="ml-1 py-1 flex pointer-events-auto">
-      <PageButtons />
+      <PageButtons v-if="editorOrchestratorStore.showPageButtons" />
     </div>
     <div
       class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600"

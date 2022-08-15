@@ -15,6 +15,8 @@ export type UpdateMethod =
 export const useEditorOrchestratorStore = defineStore("editorOrchestrator", {
   state: () => ({
     editable: false,
+    showTagFilterButtons: true,
+    showPageButtons: true
   }),
   actions: {
     update(updateMethod: UpdateMethod, args?: any) {
