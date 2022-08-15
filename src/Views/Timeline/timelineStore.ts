@@ -9,6 +9,7 @@ import {
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { ref, computed } from "vue";
 
 export interface Viewport {
   left: number;
@@ -37,108 +38,126 @@ export function blankSettings(): Settings {
   };
 }
 
-export const useTimelineStore = defineStore({
-  id: "timeline",
-  state: () => ({
-    pageSettings: usePageEffect(() => blankSettings()),
-    startedWidthChange: false,
-    hideNowLine: false,
-  }),
-  getters: {
-    pageTimelineMetadata(state): TimelineMetadata {
-      return usePageStore().pageTimelineMetadata;
-    },
-    pageScale(state): number {
-      return this.pageSettings.scale;
-    },
-    baselineLeftmostDate(state): DateTime {
-      const md = this.pageTimelineMetadata;
-      const earliestTime = md.earliestTime;
-      const days = md.maxDuration.as("days");
+export const useTimelineStore = defineStore("timeline", () => {
+  const viewportGetter = ref<() => Viewport>();
+  const pageSettings = usePageEffect(() => blankSettings());
+  const startedWidthChange = ref(false);
+  const hideNowLine = ref(false);
 
-      if (days < 0.1) {
-        return floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
-      }
-      if (days < 1) {
-        return floorDateTime(earliestTime.minus({ days: 1 }), "day");
-      }
-      if (days < 30) {
-        return floorDateTime(earliestTime.minus({ months: 4 }), "year");
-      }
-      if (days < 180) {
-        return floorDateTime(earliestTime.minus({ months: 3 }), "year");
-      }
-      return floorDateTime(earliestTime, "year");
-    },
-    baselineRightmostDate(state): DateTime {
-      return floorDateTime(
-        this.pageTimelineMetadata.latestTime.plus({ years: 30 }),
-        "year"
-      );
-    },
-    dateIntervalFromViewport(
-      state
-    ): (scrollLeft: number, width: number) => DateInterval {
-      return (scrollLeft: number, width: number) => {
-        // We're adding these so that when we are scrolling it looks like the left
-        // time markers are going off the screen
-        scrollLeft = scrollLeft - viewportLeftMarginPixels;
-        width = width + viewportLeftMarginPixels;
+  const pageTimelineMetadata = computed(
+    () => usePageStore().pageTimelineMetadata
+  );
+  const pageScale = computed(() => pageSettings.value.scale);
+  const baselineLeftmostDate = computed(() => {
+    const md = pageTimelineMetadata.value;
+    const earliestTime = md.earliestTime;
+    const days = md.maxDuration.as("days");
 
-        const earliest = this.baselineLeftmostDate;
-        const leftDate = earliest.plus({
-          [diffScale]: (scrollLeft / this.pageScale) * 24,
-        });
-        const rightDate = earliest.plus({
-          [diffScale]: ((scrollLeft + width) / this.pageScale) * 24,
-        });
-        return { from: leftDate, to: rightDate };
-      };
-    },
-    scalelessDistanceBetweenDates(state) {
-      return (a: DateTime, b: DateTime) => b.diff(a).as(diffScale);
-    },
-    distanceBetweenDates(state) {
-      return (a: DateTime, b: DateTime) =>
-        (b.diff(a).as(diffScale) * this.pageScale) / 24;
-    },
-    distanceFromBaselineLeftmostDate(state): (a: DateTime) => number {
-      return (a: DateTime) =>
-        (a.diff(this.baselineLeftmostDate).as(diffScale) * this.pageScale) / 24;
-    },
-    distanceBetweenBaselineDates(state): number {
-      return this.distanceFromBaselineLeftmostDate(this.baselineRightmostDate);
-    },
-    dateFromClientLeft(state) {
-      return (offset: number) => {
-        const leftDate = this.baselineLeftmostDate.plus({
-          [diffScale]: (this.pageSettings.viewport.left / this.pageScale) * 24,
-        });
-        return leftDate.plus({
-          [diffScale]: (offset / this.pageScale) * 24,
-        });
-      };
-    },
-  },
-  actions: {
-    setViewport(viewport: Viewport) {
-      this.pageSettings.viewport = viewport;
-      this.pageSettings.viewportDateInterval = this.dateIntervalFromViewport(
-        viewport.left,
-        viewport.width
-      );
-    },
-    setPageScale(s: number) {
-      // TODO: also limit zooming in based on our position, if it would put us
-      // past the browser's limit of a div's width
-      const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
-      this.pageSettings.scale = scale;
-    },
-    setStartedWidthChange(started: boolean) {
-      this.startedWidthChange = started;
-    },
-    setHideNowLine(hide: boolean) {
-      this.hideNowLine = hide;
-    },
-  },
+    if (days < 0.1) {
+      return floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
+    }
+    if (days < 1) {
+      return floorDateTime(earliestTime.minus({ days: 1 }), "day");
+    }
+    if (days < 30) {
+      return floorDateTime(earliestTime.minus({ months: 4 }), "year");
+    }
+    if (days < 180) {
+      return floorDateTime(earliestTime.minus({ months: 3 }), "year");
+    }
+    return floorDateTime(earliestTime, "year");
+  });
+  const baselineRightmostDate = computed(() =>
+    floorDateTime(
+      pageTimelineMetadata.value.latestTime.plus({ years: 30 }),
+      "year"
+    )
+  );
+  const dateIntervalFromViewport = computed(() => {
+    return (scrollLeft: number, width: number) => {
+      // We're adding these so that when we are scrolling it looks like the left
+      // time markers are going off the screen
+      scrollLeft = scrollLeft - viewportLeftMarginPixels;
+      width = width + viewportLeftMarginPixels;
+
+      const earliest = baselineLeftmostDate.value;
+      const leftDate = earliest.plus({
+        [diffScale]: (scrollLeft / pageScale.value) * 24,
+      });
+      const rightDate = earliest.plus({
+        [diffScale]: ((scrollLeft + width) / pageScale.value) * 24,
+      });
+      return { from: leftDate, to: rightDate };
+    };
+  });
+  const scalelessDistanceBetweenDates = computed(
+    () => (a: DateTime, b: DateTime) => b.diff(a).as(diffScale)
+  );
+  const distanceBetweenDates = computed(
+    () => (a: DateTime, b: DateTime) =>
+      (b.diff(a).as(diffScale) * pageScale.value) / 24
+  );
+  const distanceFromBaselineLeftmostDate = computed(
+    () => (a: DateTime) =>
+      (a.diff(baselineLeftmostDate.value).as(diffScale) * pageScale.value) / 24
+  );
+  const distanceBetweenBaselineDates = computed(() =>
+    distanceFromBaselineLeftmostDate.value(baselineRightmostDate.value)
+  );
+  const dateFromClientLeft = computed(() => (offset: number) => {
+    const leftDate = baselineLeftmostDate.value.plus({
+      [diffScale]: (pageSettings.value.viewport.left / pageScale.value) * 24,
+    });
+    return leftDate.plus({
+      [diffScale]: (offset / pageScale.value) * 24,
+    });
+  });
+
+  const setViewport = (viewport: Viewport) => {
+    pageSettings.value.viewport = viewport;
+    pageSettings.value.viewportDateInterval = dateIntervalFromViewport.value(
+      viewport.left,
+      viewport.width
+    );
+  };
+  const setViewportGetter = (getter: () => Viewport) => {
+    viewportGetter.value = getter;
+  };
+  const setPageScale = (s: number) => {
+    // TODO: also limit zooming in based on our position, if it would put us
+    // past the browser's limit of a div's width
+    const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+    pageSettings.value.scale = scale;
+  };
+  const setStartedWidthChange = (started: boolean) => {
+    startedWidthChange.value = started;
+  };
+  const setHideNowLine = (hide: boolean) => {
+    hideNowLine.value = hide;
+  };
+  return {
+    // state
+    pageSettings,
+    startedWidthChange,
+    hideNowLine,
+
+    // getters
+    pageTimelineMetadata,
+    pageScale,
+    baselineLeftmostDate,
+    baselineRightmostDate,
+    dateIntervalFromViewport,
+    scalelessDistanceBetweenDates,
+    distanceBetweenDates,
+    distanceFromBaselineLeftmostDate,
+    distanceBetweenBaselineDates,
+    dateFromClientLeft,
+
+    // actions
+    setViewport,
+    setViewportGetter,
+    setPageScale,
+    setStartedWidthChange,
+    setHideNowLine,
+  };
 });
