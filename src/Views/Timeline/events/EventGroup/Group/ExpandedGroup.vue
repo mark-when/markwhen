@@ -50,11 +50,11 @@ const buttonWidth = computed(() => {
 <template>
   <div class="relative flex flex-col">
     <div
-      class="absolute h-full flex flex-row items-center dark:text-gray-400 transition rounded"
+      class="absolute h-full flex flex-row items-center dark:text-gray-400 transition rounded-[12px]"
       :class="{
         'dark:bg-opacity-30 bg-opacity-20': props.hovering,
         'dark:bg-opacity-20 bg-opacity-10': !props.hovering,
-        'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25':
+        'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 border-gray-400/25':
           !color,
       }"
       :style="{
@@ -64,7 +64,7 @@ const buttonWidth = computed(() => {
           ? {
               backgroundColor:
                 color && `rgba(${color}, ${props.hovering ? '0.09' : '0.05'})`,
-              outline: `1px solid rgba(${color}, 0.12)`,
+              border: `1px solid rgba(${color}, 0.12)`,
             }
           : {}),
       }"

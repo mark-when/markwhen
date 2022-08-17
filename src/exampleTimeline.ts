@@ -41,6 +41,7 @@ section Education II #Education
 
 endSection
 
+group
 // 2016
 05/22/2016-08/12/2016: Cardinal Health #Work
 08/16/2016-08/27/2016: Italy
@@ -56,7 +57,6 @@ group Unemployed Travel #Travel
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
-endGroup
 
 10/01/2018-01/2021: [Google](https://www.google.com) #Work
 12/28/2018-12/29/2018: Nemacolin and Fallingwater

@@ -19,14 +19,14 @@ const hasDefinedColor = computed(() => !!color.value);
   <div
     class="dark:border-gray-600 eventTitle transition bg-opacity-10 dark:bg-opacity-20 hover:bg-opacity-30 hover:dark:bg-opacity-40 cursor-pointer"
     :class="{
-      'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25':
+      'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 v-gray-400/25':
         !hasDefinedColor,
     }"
     :style="
       hasDefinedColor
         ? {
             backgroundColor: `rgba(${color}, ${hovering ? '0.2' : '0.1'})`,
-            outline: `1px solid rgba(${color}, 0.16)`,
+            border: `1px solid rgba(${color}, 0.16)`,
           }
         : {}
     "

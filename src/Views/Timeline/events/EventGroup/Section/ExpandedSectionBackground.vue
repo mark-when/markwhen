@@ -11,14 +11,14 @@ const props = defineProps<{
     :class="{
       'dark:bg-opacity-30 bg-opacity-20': hovering,
       'dark:bg-opacity-20 bg-opacity-10': !hovering,
-      'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25':
+      'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 border-gray-400/25':
         !color,
     }"
     :style="
       color
         ? {
             backgroundColor: `rgba(${color}, ${hovering ? '0.09' : '0.05'}`,
-            outline: `1px solid rgba(${color}, 0.12)`,
+            border: `1px solid rgba(${color}, 0.12)`,
           }
         : {}
     "

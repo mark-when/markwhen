@@ -27,13 +27,13 @@ const fullWidth = computed(() => {
   <div
     :style="{
       marginLeft: `${left - 8}px`,
-      width: `max(64px, ${fullWidth + 16}px)`,
+      width: `max(24px, ${fullWidth + 16}px)`,
       backgroundColor:
         (color && `rgba(${color}, ${hovering ? 0.3 : 0.2})`) || '',
-      outline: (color && `1px solid rgba(${color}, 0.3)`) || '',
+      border: (color && `1px solid rgba(${color}, 0.3)`) || '',
     }"
     :class="{
-      'bg-gray-400 dark:bg-gray-800 outline outline-1 dark:outline-gray-900/25 outline-gray-400/25':
+      'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 border-gray-400/25':
         !color,
     }"
     class="rounded-full transition bg-opacity-10 dark:bg-opacity-20 hover:bg-opacity-30 hover:dark:bg-opacity-40"
