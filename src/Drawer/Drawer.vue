@@ -32,7 +32,6 @@ const description = pageStore.pageTimelineMetadata.description;
     </div>
     <div
       class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600"
-      style="width: fit-content"
     >
       <ViewSwitcher />
       <div
