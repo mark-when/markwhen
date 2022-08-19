@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import { dateScale } from '@/Views/Timeline/utilities/dateTimeUtilities';
 import { useMarkersStore, Weight, type TimeMarker } from './markersStore';
 import { useWeekdayCache } from '../utilities/weekdayCache';
+import { useMediaQuery } from '@vueuse/core';
 
 const { timeMarker } = defineProps<{
   timeMarker: TimeMarker
@@ -12,13 +13,13 @@ const { timeMarker } = defineProps<{
 const appStore = useAppStore()
 const markersStore = useMarkersStore()
 const { getWeekday } = useWeekdayCache()
+const isDark = useMediaQuery('(prefers-color-scheme: dark)')
 
 const alpha = computed(() => markersStore.weights[dateScale(timeMarker.dateTime)])
 
 const borderColor = computed(() => {
-  const isDark = appStore.inferredDarkMode === 'dark'
   const a = (alpha.value - 0.3) * 2
-  return isDark ? `rgba(100, 100, 100, ${a})` : `rgba(200, 200, 200, ${a})`;
+  return isDark.value ? `rgba(100, 100, 100, ${a})` : `rgba(200, 200, 200, ${a})`;
 })
 
 const backgroundColor = computed(() => {

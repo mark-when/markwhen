@@ -87,14 +87,14 @@ const buttonWidth = computed(() => {
         width: `${fullWidth}px`,
         order: -9999,
       }"
-      class="sticky top-12 cursor-pointer z-[1]"
+      class="sticky top-12 cursor-pointer"
       @click="$emit('collapse', $event)"
       @mouseover="$emit('hovering', true)"
       @mouseleave="$emit('hovering', false)"
     >
       <button
         ref="button"
-        class="flex flex-row items-center sticky px-1 mt-px dark:bg-opacity-60 bg-opacity-20 rounded-full"
+        class="flex flex-row items-center sticky px-2 py-px mt-px dark:bg-opacity-60 bg-opacity-20 rounded-full"
         :class="{
           'bg-gray-400 dark:bg-gray-800': !color,
         }"

@@ -46,7 +46,7 @@ const titleHtml = computed(() =>
       :event="event"
     />
     <div
-      class="sticky top-12 cursor-pointer z-[1]"
+      class="sticky top-12 cursor-pointer"
       :style="{
         order: -9999,
       }"
