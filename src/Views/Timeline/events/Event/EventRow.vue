@@ -6,16 +6,21 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "./Edit/composables/useResize";
+import type { DateTime } from "luxon";
+import {
+  EDIT_EVENT_DATE_RANGE,
+  useEditorOrchestratorStore,
+} from "@/EditorOrchestrator/editorOrchestratorStore";
 
 const props = defineProps<{ event: Event }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
+const { update } = useEditorOrchestratorStore();
 
 const eventRow = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
-const isHovering = useElementHover(eventRow);
 const hasLocations = computed(() => props.event.event.locations.length > 0);
 const hasImages = computed(() => !!props.event.event.googlePhotosLink);
 const hasSupplemental = computed(() => !!props.event.event.supplemental.length);
@@ -54,9 +59,18 @@ const canShowMeta = computed(() => {
   return false;
 });
 
+const moveEnded = () =>
+  update(EDIT_EVENT_DATE_RANGE, {
+    ...range.value,
+    event: props.event,
+  });
+
 const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
-  props.event
+  props.event,
+  moveEnded
 );
+const elementHover = useElementHover(eventRow);
+const isHovering = computed(() => elementHover.value || tempDate.value);
 
 const range = computed(() => {
   if (!tempDate.value) {

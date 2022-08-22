@@ -14,7 +14,7 @@ import type { MaybeRef } from "@vueuse/core";
 import type { DateTime } from "luxon";
 import { ref, unref } from "vue";
 
-export const useResize = (event: MaybeRef<Event>) => {
+export const useResize = (event: MaybeRef<Event>, done?: (tempDate?: DateTime) => void) => {
   const isFrom = ref<boolean>(true);
   const tempDate = ref<DateTime>();
   const ev = unref(event);
@@ -30,22 +30,7 @@ export const useResize = (event: MaybeRef<Event>) => {
       e.preventDefault();
     }
 
-    if (tempDate.value && ev) {
-      if (+tempDate.value > +ev.ranges.date.toDateTime) {
-        editorOrchestrator.update(EDIT_EVENT_DATE_RANGE, {
-          event,
-          from: ev.ranges.date.toDateTime,
-          to: tempDate.value,
-        });
-      } else {
-        editorOrchestrator.update(EDIT_EVENT_DATE_RANGE, {
-          event,
-          from: tempDate.value,
-          to: ev.ranges.date.toDateTime,
-        });
-      }
-    }
-
+    done?.(tempDate.value)
     tempDate.value = undefined;
 
     document.removeEventListener("mousemove", moveListener);
