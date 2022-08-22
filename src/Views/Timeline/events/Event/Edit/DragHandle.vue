@@ -9,7 +9,7 @@ defineProps<{ isLeft: boolean; mouseDownTouchStartListener: EventListener }>();
     @touchstart="mouseDownTouchStartListener"
     @mousedown.prevent.stop="mouseDownTouchStartListener"
   >
-    <div class="absolute w-[2px] h-4 bg-white rounded dark:bg-gray-400"></div>
+    <div class="absolute w-[2px] h-4 bg-gray-600 rounded dark:bg-gray-400"></div>
     <div class="w-4 h-4 absolute flex items-center justify-center">
       <div
         class="w-2 h-2 rounded-full border border-white dark:border-gray-400 bg-gray-600 dark:bg-gray-900"

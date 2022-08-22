@@ -70,7 +70,7 @@ const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
   moveEnded
 );
 const elementHover = useElementHover(eventRow);
-const isHovering = computed(() => elementHover.value || tempDate.value);
+const isHovering = computed(() => elementHover.value || !!tempDate.value);
 
 const range = computed(() => {
   if (!tempDate.value) {
