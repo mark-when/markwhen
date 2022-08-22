@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
-import { useResize } from "./Edit/composables/useResize";
-import type { DateTime } from "luxon";
+import { useResize } from "@/Views/Timeline/events/Event/Edit/composables/useResize";
 import {
   EDIT_EVENT_DATE_RANGE,
   useEditorOrchestratorStore,

@@ -2,7 +2,7 @@
 import { useAppStore } from "@/App/appStore";
 import { computed } from "vue";
 import { dateScale } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import { useMarkersStore, Weight, type TimeMarker } from "./markersStore";
+import { useMarkersStore, Weight, type TimeMarker } from "@/Views/Timeline/Markers/markersStore";
 import { useWeekdayCache } from "../utilities/weekdayCache";
 import { useMediaQuery } from "@vueuse/core";
 

@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Weight } from "../Markers/markersStore";
+import { Weight } from "@/Views/Timeline/Markers/markersStore";
 
 export type DisplayScale =
   | "second"
@@ -128,3 +128,10 @@ export function roundDateTime(dateTime: DateTime, toScale: DisplayScale) {
   const downDiff = dateTime.diff(down);
   return Math.abs(+upDiff) < Math.abs(+downDiff) ? up : down;
 }
+
+export interface DateTimeAndOffset {
+  dateTime: DateTime;
+  left: number;
+}
+
+export type OffsetRange = [DateTimeAndOffset, DateTimeAndOffset];

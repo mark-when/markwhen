@@ -5,9 +5,14 @@ import { useTransformStore } from "@/Markwhen/transformStore";
 import EventSection from "@/Views/Timeline/Events/EventGroup/Section/EventSection.vue";
 import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
 import NowLine from "../events/NowLine.vue";
+import { isEditable } from "@/injectionKeys";
+import { inject } from "vue";
+import NewEvent from "./NewEvent/NewEvent.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
+
+const editable = inject(isEditable);
 </script>
 
 <template>
@@ -47,32 +52,7 @@ const timelineStore = useTimelineStore();
         :event="event"
       />
     </template>
-    <!-- <div class="w-full relative mt-2" v-if="$store.state.editable">
-      <button title="Click and drag to create new event" class="
-          h-3
-          rounded-full
-          border
-          flex
-          items-center
-          justify-center
-          flex-shrink-0
-          relative
-          border-transparent
-          bg-transparent
-          hover:border-white hover:bg-white
-          text-slate-600
-          hover:bg-white hover:shadow
-          dark:text-slate-100 dark:hover:border-gray-600 dark:hover:bg-gray-600
-        " :class="
-          creating
-            ? 'dark:border-gray-600 dark:bg-gray-600 bg-white border-white shadow'
-            : ''
-        " :style="`left: ${newEventPosition[0].left}px; width: ${newEventPosition[1].left - newEventPosition[0].left
-}px;`" @mousedown.prevent.stop="$emit('startMakingEvent', $event)"
-        @touchstart.prevent.stop="$emit('startMakingEvent', $event)">
-        +
-      </button>
-    </div> -->
+    <new-event v-if="editable" />
     <div style="height: 90vh"></div>
   </div>
 </template>

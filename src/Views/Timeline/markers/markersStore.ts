@@ -8,6 +8,7 @@ import {
   scales,
   type DateInterval,
   type DisplayScale,
+  type OffsetRange,
 } from "../utilities/dateTimeUtilities";
 
 export enum Weight {
@@ -65,6 +66,7 @@ export const useMarkersStore = defineStore({
   id: "markerStore",
   state: () => ({
     hoveringMarker: null as TimeMarker | null,
+    range: undefined as OffsetRange | undefined
   }),
   getters: {
     markers(state): TimeMarker[] {
@@ -151,7 +153,7 @@ export const useMarkersStore = defineStore({
       }
       return "decade";
     },
-    rangeFromOffsetLeft(state) {
+    rangeFromOffsetLeft(state): (offset: number) => OffsetRange {
       const timelineStore = useTimelineStore();
       return (offset: number) => {
         const offsetDate = timelineStore.dateFromClientLeft(offset);
@@ -184,5 +186,8 @@ export const useMarkersStore = defineStore({
     setHoveringMarker(marker: TimeMarker | undefined) {
       this.hoveringMarker = marker || null;
     },
+    setRange(range?: OffsetRange) {
+      this.range = range
+    }
   },
 });

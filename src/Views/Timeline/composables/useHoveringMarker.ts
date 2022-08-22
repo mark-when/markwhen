@@ -14,6 +14,7 @@ export const useHoveringMarker = () => {
       (m) => +range[0].dateTime === +m.dateTime
     );
     markersStore.setHoveringMarker(hovering);
+    markersStore.setRange(range)
   };
 
   watch(x, findHovering);

@@ -9,7 +9,7 @@ import {
   floorDateTime,
   roundDateTime,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import { Event } from "@markwhen/parser/lib/Types";
+import type { Event } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import type { DateTime } from "luxon";
 import { ref, unref } from "vue";
