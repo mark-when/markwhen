@@ -6,8 +6,8 @@ import { computed, ref } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
 
-const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
-  useTimelineStore();
+const timelineStore = useTimelineStore();
+const { distanceFromBaselineLeftmostDate, distanceBetweenDates } = timelineStore
 
 const props = defineProps<{
   eventGroup: EventSubGroup;

@@ -5,13 +5,17 @@ import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
 import { useViewStore } from "@/Views/viewStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { useAppStore } from "./appStore";
 
+const appStore = useAppStore();
 const viewStore = useViewStore();
-const currentView = viewStore.currentView
+const currentView = viewStore.currentView;
 const editorOrchestrator = useEditorOrchestratorStore();
 
 const dark = useMediaQuery("(prefers-color-scheme: dark)");
-const globalClass = computed(() => (dark.value ? "dark" : "light"));
+const globalClass = computed(
+  () => `${dark.value ? "dark" : "light"} ${appStore.globalClass}`
+);
 
 provide(isEditable, editorOrchestrator.editable);
 </script>

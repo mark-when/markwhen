@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import { isEditable } from "@/injectionKeys";
 import type { Event } from "@markwhen/parser/lib/Types";
-import { computed } from "@vue/runtime-core";
+import { computed, inject } from "vue";
 import { useEventColor } from "../composables/useEventColor";
+import DragHandle from "./Edit/DragHandle.vue";
 
 const props = defineProps<{
   event: Event;
   hovering: boolean;
   width: number;
   taskNumerator: number;
-  taskDenominator: number;
+  taskDenominator: number,
+  dragHandleListener: (isFrom: boolean) => EventListener
 }>();
+
+const editable = inject(isEditable);
 
 const { color: tagColor } = useEventColor(props.event);
 
@@ -56,8 +61,16 @@ const percent = computed(() => {
         width: `${percent}%`,
       }"
     ></div>
-    <!-- <drag-handle v-if="$store.state.editable && hovering" @startResize="startResizeLeft" :isLeft="true" />
-    <drag-handle v-if="$store.state.editable && hovering" @startResize="startResizeRight" :isLeft="false" /> -->
+    <drag-handle
+      v-if="editable && hovering"
+      :is-left="true"
+      :mouse-down-touch-start-listener="dragHandleListener(true)"
+    />
+    <drag-handle
+      v-if="editable && hovering"
+      :is-left="false"
+      :mouse-down-touch-start-listener="dragHandleListener(false)"
+    />
   </div>
 </template>
 

@@ -6,6 +6,7 @@ export const useAppStore = defineStore({
   id: "app",
   state: () => ({
     darkMode: "system" as DarkMode,
+    globalClass: ''
   }),
   getters: {
     inferredDarkMode(state) {
@@ -20,4 +21,12 @@ export const useAppStore = defineStore({
         : "light";
     },
   },
+  actions: {
+    setGlobalClass(gc: string) {
+      this.globalClass = gc
+    },
+    clearGlobalClass() {
+      this.globalClass = ''
+    }
+  }
 });

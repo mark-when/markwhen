@@ -6,15 +6,17 @@ import type { Timeline } from "@markwhen/parser/lib/Types";
 export const ADD_PAGE = "edit:pages:add";
 export const MOVE_PAGES = "edit:pages:move";
 export const DELETE_PAGE = "edit:pages:delete";
+export const EDIT_EVENT_DATE_RANGE = "edit:event:dateRange"
 
 export type UpdateMethod =
   | typeof ADD_PAGE
   | typeof MOVE_PAGES
-  | typeof DELETE_PAGE;
+  | typeof DELETE_PAGE 
+  | typeof EDIT_EVENT_DATE_RANGE
 
 export const useEditorOrchestratorStore = defineStore("editorOrchestrator", {
   state: () => ({
-    editable: false,
+    editable: true,
     showTagFilterButtons: true,
     showPageButtons: true
   }),

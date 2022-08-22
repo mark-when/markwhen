@@ -120,3 +120,11 @@ export function ceilDateTime(dateTime: DateTime, toScale: DisplayScale) {
   const ceiled = floorDateTime(dateTime, toScale).plus(increment);
   return ceiled;
 }
+
+export function roundDateTime(dateTime: DateTime, toScale: DisplayScale) {
+  const up = ceilDateTime(dateTime, toScale);
+  const down = floorDateTime(dateTime, toScale);
+  const upDiff = dateTime.diff(up);
+  const downDiff = dateTime.diff(down);
+  return Math.abs(+upDiff) < Math.abs(+downDiff) ? up : down;
+}

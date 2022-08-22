@@ -148,10 +148,10 @@ export const useTimelineStore = defineStore("timeline", () => {
     baselineRightmostDate,
     dateIntervalFromViewport,
     scalelessDistanceBetweenDates,
-    distanceBetweenDates,
-    distanceFromBaselineLeftmostDate,
+    distanceBetweenDates: distanceBetweenDates as unknown as (a: DateTime, b: DateTime) => number,
+    distanceFromBaselineLeftmostDate: distanceFromBaselineLeftmostDate as unknown as (a: DateTime) => number,
     distanceBetweenBaselineDates,
-    dateFromClientLeft,
+    dateFromClientLeft: dateFromClientLeft as unknown as (offset: number) => DateTime,
 
     // actions
     setViewport,

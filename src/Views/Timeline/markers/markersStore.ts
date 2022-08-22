@@ -64,7 +64,7 @@ export function clamp(value: number, min: number = 0, max: number = 1) {
 export const useMarkersStore = defineStore({
   id: "markerStore",
   state: () => ({
-    hoveringMarker: null as TimeMarker | null
+    hoveringMarker: null as TimeMarker | null,
   }),
   getters: {
     markers(state): TimeMarker[] {
@@ -170,10 +170,19 @@ export const useMarkersStore = defineStore({
         ];
       };
     },
+    nextMostGranularScaleOfViewportDateInterval(): DisplayScale {
+      const weights = this.weights;
+      for (let i = 0; i < weights.length; i++) {
+        if (weights[i] > 0.05) {
+          return scales[i];
+        }
+      }
+      return "decade";
+    },
   },
   actions: {
     setHoveringMarker(marker: TimeMarker | undefined) {
-      this.hoveringMarker = marker || null
+      this.hoveringMarker = marker || null;
     },
   },
 });
