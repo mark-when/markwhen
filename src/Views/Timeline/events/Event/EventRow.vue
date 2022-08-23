@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
@@ -8,14 +8,17 @@ import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/events/Event/Edit/composables/useResize";
 import {
   EDIT_EVENT_DATE_RANGE,
+  HOVER_EVENT,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { isEditable } from "@/injectionKeys";
 
 const props = defineProps<{ event: Event }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
-const { update } = useEditorOrchestratorStore();
+const editorOrchestratorStore = useEditorOrchestratorStore();
+const update = editorOrchestratorStore.update;
 
 const eventRow = ref();
 const eventHeightPx = 10;
@@ -70,6 +73,20 @@ const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
 );
 const elementHover = useElementHover(eventRow);
 const isHovering = computed(() => elementHover.value || !!tempDate.value);
+const editable = inject(isEditable);
+
+const isHoveredInEditor = computed(
+  () =>
+    editable &&
+    editorOrchestratorStore.hoveringEvent?.ranges.event.from ===
+      props.event.ranges.event.from &&
+    editorOrchestratorStore.hoveringEvent.ranges.event.to ===
+      props.event.ranges.event.to
+);
+
+watch(elementHover, (hovering) => {
+  update(HOVER_EVENT, hovering ? props.event : null);
+});
 
 const range = computed(() => {
   if (!tempDate.value) {
@@ -133,6 +150,7 @@ const barWidth = computed(() => {
           'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
             isHovering && hasMeta,
           'dark:bg-gray-900 bg-white shadow-lg': showingMeta,
+          'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
         }"
         v-on="hasMeta ? { click: toggleMeta } : {}"
       >
