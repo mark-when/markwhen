@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useEventColor } from "../../composables/useEventColor";

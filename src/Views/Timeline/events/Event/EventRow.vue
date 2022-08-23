@@ -5,7 +5,7 @@ import type { DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
-import { useResize } from "@/Views/Timeline/events/Event/Edit/composables/useResize";
+import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import {
   EDIT_EVENT_DATE_RANGE,
   HOVER_EVENT,

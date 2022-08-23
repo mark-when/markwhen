@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import { useEventColor } from "../../composables/useEventColor";
@@ -29,7 +29,10 @@ const titleHtml = computed(() =>
 
 <template>
   <div class="relative flex flex-col">
-    <ExpandedSectionBackground :hovering="props.hovering" :color="color || null" />
+    <ExpandedSectionBackground
+      :hovering="props.hovering"
+      :color="color || null"
+    />
     <div
       :style="{
         marginLeft: `${left}px`,
@@ -57,7 +60,7 @@ const titleHtml = computed(() =>
       <button
         class="flex flex-row items-center sticky px-1 mt-px dark:bg-opacity-60 bg-opacity-20"
         :class="{
-          'bg-gray-500 dark:bg-gray-900': !color
+          'bg-gray-500 dark:bg-gray-900': !color,
         }"
         :style="{
           backgroundColor: `rgba(${color}, 0.25)`,

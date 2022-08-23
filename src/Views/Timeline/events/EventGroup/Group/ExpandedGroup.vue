@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";

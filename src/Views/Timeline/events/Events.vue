@@ -4,7 +4,7 @@ import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import EventSection from "@/Views/Timeline/Events/EventGroup/Section/EventSection.vue";
 import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
-import NowLine from "../events/NowLine.vue";
+import NowLine from "../Events/NowLine.vue";
 import { isEditable } from "@/injectionKeys";
 import { inject } from "vue";
 import NewEvent from "./NewEvent/NewEvent.vue";

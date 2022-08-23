@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "@vue/reactivity";
 import { useEventColor } from "../../composables/useEventColor";

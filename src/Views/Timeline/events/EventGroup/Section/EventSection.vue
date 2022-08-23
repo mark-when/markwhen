@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Sort";
+import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import ExpandedSection from "./ExpandedSection.vue";

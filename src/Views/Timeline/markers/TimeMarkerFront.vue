@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { computed } from "vue";
 import { granularities } from "../utilities/DateTimeDisplay";
 import { dateScale } from "../utilities/dateTimeUtilities";
-import { clamp, TimeMarker, timeMarkerWeightMinimum, useMarkersStore, Weight } from "./markersStore";
+import { clamp, type TimeMarker, timeMarkerWeightMinimum, useMarkersStore, Weight } from "./markersStore";
 
 const { timeMarker } = defineProps<{ timeMarker: TimeMarker }>()
 

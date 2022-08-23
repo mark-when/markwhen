@@ -3,7 +3,7 @@ import { isEditable } from "@/injectionKeys";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { computed, inject } from "vue";
 import { useEventColor } from "../composables/useEventColor";
-import DragHandle from "@/Views/Timeline/events/Event/Edit/DragHandle.vue";
+import DragHandle from "@/Views/Timeline/Events/Event/Edit/DragHandle.vue";
 
 const props = defineProps<{
   event: Event;
