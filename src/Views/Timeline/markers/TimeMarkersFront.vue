@@ -2,9 +2,12 @@
 import { viewportLeftMarginPixels } from '../utilities/dateTimeUtilities';
 import { useMarkersStore } from './markersStore';
 import TimeMarkerFront from "@/Views/Timeline/Markers/TimeMarkerFront.vue"
-import { useMediaQuery } from '@vueuse/core';
+import { useAppStore } from '@/App/appStore';
+import { computed } from 'vue';
 
-const isDark = useMediaQuery('(prefers-color-scheme: dark)')
+const appStore = useAppStore()
+
+const dark = computed(() => appStore.inferredDarkMode)
 
 const markerStore = useMarkersStore()
 
@@ -16,7 +19,7 @@ const leftMargin = viewportLeftMarginPixels
     <div class="timeMarkerContainer h-full">
       <div class="flex h-full" :style="`margin-left: -${leftMargin}px`">
         <div class="timeMarkerShader w-full h-12 fixed top-0" :style="{
-          marginLeft: `${leftMargin}px`, background: `linear-gradient(${isDark ? 'to bottom, #374151, 65%, #38404700'
+          marginLeft: `${leftMargin}px`, background: `linear-gradient(${dark ? 'to bottom, #374151, 65%, #38404700'
             : 'to bottom, rgb(241 245 249), 65%, #ffffff00'})`
         }"></div>
         <!-- <SquashBar /> -->
