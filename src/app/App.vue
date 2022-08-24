@@ -30,10 +30,11 @@ provide(isEditable, editorOrchestrator.editable);
       class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
       <Sidebar />
-      <div class="flex flex-col"></div>
-      <component :is="currentView.component()" />
+      <div class="flex flex-col w-full h-full">
+        <component :is="currentView.component()" />
+        <Drawer />
+      </div>
     </div>
-    <Drawer />
   </div>
 </template>
 

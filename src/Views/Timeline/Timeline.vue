@@ -129,7 +129,7 @@ onMounted(() => {
 <template>
   <div
     id="timeline"
-    class="relative h-full overflow-auto w-full order-1"
+    class="relative h-full overflow-auto w-full"
     ref="timelineElement"
     @scroll="scroll"
     :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
@@ -137,9 +137,6 @@ onMounted(() => {
     <TimeMarkersBack />
     <Events />
     <TimeMarkersFront />
-    <!-- <debug v-if="$config.dev" />
-    <drawer-header />
-    <resize-observer @notify="handleResize" />  -->
   </div>
 </template>
 
