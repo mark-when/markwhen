@@ -1,5 +1,3 @@
-import type { VueElement } from "vue";
-
 export interface ViewCapabilities {
   edit?: boolean
   hoveringEvent?: boolean

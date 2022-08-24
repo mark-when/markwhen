@@ -6,6 +6,7 @@ import Drawer from "../Drawer/Drawer.vue";
 import { useViewStore } from "@/Views/viewStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useAppStore } from "./appStore";
+import Sidebar from "../Sidebar/Sidebar.vue";
 
 const appStore = useAppStore();
 const viewStore = useViewStore();
@@ -29,6 +30,7 @@ provide(isEditable, editorOrchestrator.editable);
     <div
       class="flex flex-col md:flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
+      <Sidebar />
       <component :is="currentView.component()" />
     </div>
     <Drawer />
