@@ -27,9 +27,10 @@ provide(isEditable, editorOrchestrator.editable);
     style="print-color-adjust: exact"
   >
     <div
-      class="flex flex-col md:flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
+      class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
       <Sidebar />
+      <div class="flex flex-col"></div>
       <component :is="currentView.component()" />
     </div>
     <Drawer />

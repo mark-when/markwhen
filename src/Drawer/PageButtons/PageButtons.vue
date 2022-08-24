@@ -9,7 +9,7 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { inject, reactive, ref, watch } from "vue";
 import PageButton from "./PageButton.vue";
 
-const editable = inject(isEditable)
+const editable = inject(isEditable);
 
 const markwhenStore = useMarkwhenStore();
 const { update } = useEditorOrchestratorStore();
@@ -94,9 +94,12 @@ const addNewPage = () => update(ADD_PAGE);
 
 <template>
   <div
-    class="flex flex-row overflow-x-scroll pages py-1"
+    class="flex flex-row overflow-x-scroll pages w-full"
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
+    <div
+      class="w-2 border-t-2 border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700"
+    ></div>
     <PageButton
       v-for="(timeline, index) in markwhenStore.timelines"
       :key="index"
@@ -110,7 +113,7 @@ const addNewPage = () => update(ADD_PAGE);
     />
     <button
       v-if="editable"
-      class="w-6 h-6 rounded-full border-2 mr-2 flex items-center justify-center transition border-white bg-white hover:bg-blue-50 border-blue-100 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-600 flex-shrink-0 print-hidden"
+      class="w-8 h-8 border-t-2 border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addNewPage"
     >
@@ -127,6 +130,9 @@ const addNewPage = () => update(ADD_PAGE);
         />
       </svg>
     </button>
+    <div
+      class="flex-grow border-t-slate-200 dark:border-t-slate-500 border-t-2 bg-white dark:bg-slate-700"
+    ></div>
   </div>
 </template>
 

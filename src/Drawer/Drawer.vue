@@ -17,30 +17,33 @@ const description = pageStore.pageTimelineMetadata.description;
 
 <template>
   <div
-    class="flex flex-col absolute bottom-2 md:bottom-6 left-2 right-0 ml-2 z-20 pointer-events-none drawerHeader"
+    class="absolute bottom-0 left-0 right-0 z-20 pointer-events-none drawerHeader bg-slate-50 dark:bg-slate-800 border-t border-t-slate-200 dark:border-t-slate-500"
   >
-    <div
-      class="pointer-events-auto"
-      v-if="viewStore.currentView.uses?.drawerDescription && description"
-    >
-      <h4 class="text-lg font-medium text-gray-400 pl-1 timelineTitle">
-        {{ description }}
-      </h4>
-    </div>
-    <div class="ml-1 py-1 flex pointer-events-auto">
-      <PageButtons v-if="editorOrchestratorStore.showPageButtons" />
-    </div>
-    <div
-      class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600"
-    >
-      <ViewSwitcher />
+    <div class="flex flex-col">
       <div
-        class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-auto px-1 md:py-2 py-1"
-        style="width: fit-content"
+        class="pointer-events-auto px-2 pt-1"
+        v-if="viewStore.currentView.uses?.drawerDescription && description"
       >
-        <Sort v-if="viewStore.currentView.uses?.sort" />
-        <ViewSettings />
-        <Tags />
+        <h4 class="text-lg font-medium text-gray-400 pl-1 timelineTitle">
+          {{ description }}
+        </h4>
+      </div>
+
+      <div
+        class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600 px-2 pb-1"
+      >
+        <ViewSwitcher />
+        <div
+          class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-auto px-1 md:py-2 py-1"
+          style="width: fit-content"
+        >
+          <Sort v-if="viewStore.currentView.uses?.sort" />
+          <ViewSettings />
+          <Tags />
+        </div>
+      </div>
+      <div class="flex pointer-events-auto bg-white dark:bg-slate-700">
+        <PageButtons v-if="editorOrchestratorStore.showPageButtons" />
       </div>
     </div>
   </div>

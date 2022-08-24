@@ -126,7 +126,7 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
 
 <template>
   <button
-    class="h-6 rounded-full border-2 mr-2 flex items-center justify-center flex-shrink-0 relative"
+    class="h-8 border-2 flex items-center justify-center flex-shrink-0 relative p-1"
     :style="computedStyle"
     v-on="
       editable
@@ -140,17 +140,17 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
     "
     @click="click"
     :class="{
-      'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500':
+      'border-slate-200 border-t-0 bg-slate-50 dark:bg-slate-800 dark:border-slate-500':
         pageIndex === pageStore.pageIndex,
-      'border-white bg-white hover:bg-blue-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-600':
+      'border-white border-t-slate-200 dark:border-t-slate-500 border-x-0 border-b-0 bg-white hover:bg-slate-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600':
         pageIndex !== pageStore.pageIndex,
-      'w-6': !pageTitle,
+      'w-8': !pageTitle,
       'shadow-sm': shadowed,
     }"
     ref="button"
   >
     <button
-      class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100"
+      class="absolute right-0 top-0  text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100 z-30"
       @click.prevent.stop="del"
       v-if="editable && markwhenStore.timelines.length > 1 && hovering"
     >
