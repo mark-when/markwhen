@@ -1,15 +1,23 @@
 <script setup lang="ts">
+import { useSidebarStore } from "./sidebarStore";
 
+const sidebarStore = useSidebarStore();
 </script>
 
 <template>
-<div class="flex flex-row md:flex-col items-center">
+  <div class="flex flex-row md:flex-col items-center">
     <button
       class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700"
       :class="
-        selectedComponent === 'editor' ? 'bg-slate-200 dark:bg-slate-700' : ''
+        sidebarStore.selectedComponent === 'editor'
+          ? 'bg-slate-200 dark:bg-slate-700'
+          : ''
       "
-      @click="selectEdit"
+      @click="
+        sidebarStore.selectedComponent === 'editor'
+          ? sidebarStore.selectComponent('')
+          : sidebarStore.selectComponent('editor')
+      "
       title="Timeline Editor"
     >
       <svg
@@ -25,19 +33,17 @@
       </svg>
     </button>
     <button
-      class="
-        p-2
-        md:mb-3
-        mb-0
-        mr-3
-        md:mr-0
-        hover:bg-slate-200
-        dark:hover:bg-slate-700
-      "
+      class="p-2 md:mb-3 mb-0 mr-3 md:mr-0 hover:bg-slate-200 dark:hover:bg-slate-700"
       :class="
-        selectedComponent === 'profile' ? 'bg-slate-200 dark:bg-slate-700' : ''
+        sidebarStore.selectedComponent === 'profile'
+          ? 'bg-slate-200 dark:bg-slate-700'
+          : ''
       "
-      @click="selectProfile"
+      @click="
+        sidebarStore.selectedComponent === 'profile'
+          ? sidebarStore.selectComponent('')
+          : sidebarStore.selectComponent('profile')
+      "
       title="My markwhen documents"
     >
       <svg
@@ -52,22 +58,20 @@
         ></path>
       </svg>
     </button>
-    <button class="p-2" @click="selectHowTo" title="Help and How to">
+    <a href="/docs" class="p-2" title="Help and How to">
       <svg
         class="h-6 w-6 rounded-full"
         focusable="false"
         aria-hidden="true"
         viewBox="0 0 24 24"
         fill="currentColor"
-        :style="hasSeenHowTo ? '' : 'box-shadow: 0 0 8px 3px white'"
       >
         <path
           d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"
         ></path>
       </svg>
-    </button>
+    </a>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

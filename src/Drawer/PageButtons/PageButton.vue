@@ -126,7 +126,7 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
 
 <template>
   <button
-    class="h-8 border-2 flex items-center justify-center flex-shrink-0 relative p-1"
+    class="h-10 border-2 flex items-center justify-center flex-shrink-0 relative p-1"
     :style="computedStyle"
     v-on="
       editable
@@ -144,7 +144,7 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
         pageIndex === pageStore.pageIndex,
       'border-white border-t-slate-200 dark:border-t-slate-500 border-x-0 border-b-0 bg-white hover:bg-slate-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600':
         pageIndex !== pageStore.pageIndex,
-      'w-8': !pageTitle,
+      'w-10': !pageTitle,
       'shadow-sm': shadowed,
     }"
     ref="button"

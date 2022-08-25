@@ -6,11 +6,13 @@ import { useViewStore } from "@/Views/viewStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useAppStore } from "./appStore";
 import Sidebar from "../Sidebar/Sidebar.vue";
+import { useSidebarStore } from "@/Sidebar/sidebarStore";
 
 const appStore = useAppStore();
 const viewStore = useViewStore();
 const currentView = viewStore.currentView;
 const editorOrchestrator = useEditorOrchestratorStore();
+const sidebarStore = useSidebarStore();
 
 const globalClass = computed(
   () =>
@@ -30,7 +32,13 @@ provide(isEditable, editorOrchestrator.editable);
       class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
       <Sidebar />
-      <div class="flex flex-col w-full h-full">
+      <div
+        class="flex flex-col w-full h-full overflow-auto"
+        :class="{
+          'order-1': !sidebarStore.isLeft,
+          'order-2': sidebarStore.isLeft,
+        }"
+      >
         <component :is="currentView.component()" />
         <Drawer />
       </div>

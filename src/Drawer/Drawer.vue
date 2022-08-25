@@ -7,12 +7,13 @@ import { useViewStore } from "@/Views/viewStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import Tags from "./ViewSettings/Tags/Tags.vue";
+import { computed } from "vue";
 
 const pageStore = usePageStore();
 const viewStore = useViewStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 
-const description = pageStore.pageTimelineMetadata.description;
+const description = computed(() => pageStore.pageTimelineMetadata.description);
 </script>
 
 <template>
@@ -28,11 +29,9 @@ const description = pageStore.pageTimelineMetadata.description;
           {{ description }}
         </h4>
       </div>
-
       <div
         class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600 px-2 pb-1"
       >
-        <ViewSwitcher />
         <div
           class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-auto px-1 md:py-2 py-1"
           style="width: fit-content"

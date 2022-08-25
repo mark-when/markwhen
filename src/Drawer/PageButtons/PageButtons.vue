@@ -113,7 +113,7 @@ const addNewPage = () => update(ADD_PAGE);
     />
     <button
       v-if="editable"
-      class="w-8 h-8 border-t-2 border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
+      class="w-10 h-10 border-t-2 border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addNewPage"
     >

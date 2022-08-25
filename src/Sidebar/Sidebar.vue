@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useSidebarResize } from "./composables/useSidebarResize";
 import { useSidebarStore } from "./sidebarStore";
+import SidebarComponentSelector from "./SidebarComponentSelector.vue";
 
 const sidebarStore = useSidebarStore();
 const { tempWidth, resizeMouseDown } = useSidebarResize();
@@ -25,7 +26,7 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
     >
       <!-- <sidebar-visibility /> -->
       <div class="flex flex-row md:flex-col items-center">
-        <!-- <sidebar-component-selector /> -->
+        <SidebarComponentSelector />
         <!-- <sidebar-links /> -->
       </div>
     </div>
