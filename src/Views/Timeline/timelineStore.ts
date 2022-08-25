@@ -104,6 +104,11 @@ export const useTimelineStore = defineStore("timeline", () => {
   const distanceBetweenBaselineDates = computed(() =>
     distanceFromBaselineLeftmostDate.value(baselineRightmostDate.value)
   );
+  const distanceFromViewportLeftDate = (a: DateTime) =>
+    (a.diff(pageSettings.value.viewportDateInterval.from).as(diffScale) *
+      pageScale.value) /
+    24;
+
   const dateFromClientLeft = computed(() => (offset: number) => {
     const leftDate = baselineLeftmostDate.value.plus({
       [diffScale]: (pageSettings.value.viewport.left / pageScale.value) * 24,
@@ -148,10 +153,17 @@ export const useTimelineStore = defineStore("timeline", () => {
     baselineRightmostDate,
     dateIntervalFromViewport,
     scalelessDistanceBetweenDates,
-    distanceBetweenDates: distanceBetweenDates as unknown as (a: DateTime, b: DateTime) => number,
-    distanceFromBaselineLeftmostDate: distanceFromBaselineLeftmostDate as unknown as (a: DateTime) => number,
+    distanceBetweenDates: distanceBetweenDates as unknown as (
+      a: DateTime,
+      b: DateTime
+    ) => number,
+    distanceFromViewportLeftDate,
+    distanceFromBaselineLeftmostDate:
+      distanceFromBaselineLeftmostDate as unknown as (a: DateTime) => number,
     distanceBetweenBaselineDates,
-    dateFromClientLeft: dateFromClientLeft as unknown as (offset: number) => DateTime,
+    dateFromClientLeft: dateFromClientLeft as unknown as (
+      offset: number
+    ) => DateTime,
 
     // actions
     setViewport,

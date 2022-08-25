@@ -31,7 +31,7 @@ provide(isEditable, editorOrchestrator.editable);
     <div
       class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
-      <Sidebar />
+      <Sidebar v-show="sidebarStore.visible"/>
       <div
         class="flex flex-col w-full h-full overflow-auto"
         :class="{

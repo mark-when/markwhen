@@ -28,6 +28,16 @@ export const useAppStore = defineStore("app", () => {
     globalClass.value = "";
   }
 
+  const toggleDarkMode = () => {
+    if (darkMode.value === 'system') {
+      darkMode.value = 'dark'
+    } else if (darkMode.value === 'dark') {
+      darkMode.value = 'light'
+    } else {
+      darkMode.value = 'system'
+    }
+  }
+
   return {
     // state
     darkMode,
@@ -36,6 +46,7 @@ export const useAppStore = defineStore("app", () => {
     // actions
     setGlobalClass,
     clearGlobalClass,
+    toggleDarkMode,
 
     // getters
     inferredDarkMode,

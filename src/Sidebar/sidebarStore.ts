@@ -8,9 +8,7 @@ export const useSidebarStore = defineStore("sidebar", () => {
   const isLeft = ref(true);
   const hasSeenHowTo = ref(true);
   const width = ref(450);
-  const resizeXStarted = ref(false);
-  const resizeStartX = ref(0);
-  const tempWidth = ref(0);
+  const visible = ref(true)
 
   const setWidth = (w: number) => {
     width.value = w;
@@ -20,18 +18,26 @@ export const useSidebarStore = defineStore("sidebar", () => {
     selectedComponent.value = c
   }
 
+  const toggleSide = () => {
+    isLeft.value = !isLeft.value
+  }
+
+  const toggle = () => {
+    visible.value = !visible.value
+  }
+
   return {
     // state
     selectedComponent,
     isLeft,
     hasSeenHowTo,
     width,
-    resizeXStarted,
-    resizeStartX,
-    tempWidth,
+    visible,
     
     // actions
     setWidth,
-    selectComponent
+    selectComponent,
+    toggleSide,
+    toggle
   };
 });

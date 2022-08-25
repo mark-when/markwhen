@@ -22,7 +22,7 @@ const leftMargin = viewportLeftMarginPixels
           marginLeft: `${leftMargin}px`, background: `linear-gradient(${dark ? 'to bottom, #374151, 65%, #38404700'
             : 'to bottom, rgb(241 245 249), 65%, #ffffff00'})`
         }"></div>
-        <!-- <SquashBar /> -->
+        <!-- <SquashBars /> -->
         <TimeMarkerFront v-for="timeMarker in markerStore.markers" :key="timeMarker.ts" :timeMarker="timeMarker" />
       </div>
     </div>

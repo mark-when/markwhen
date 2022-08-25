@@ -1,9 +1,30 @@
 <script setup lang="ts">
+import { useAppStore } from "@/App/appStore";
+import { useSidebarStore } from "./sidebarStore";
 
+const sidebarStore = useSidebarStore();
+const appStore = useAppStore();
+
+const close = () => {
+  if (!!sidebarStore.selectedComponent) {
+    sidebarStore.selectComponent("");
+  } else {
+    sidebarStore.toggle();
+  }
+};
+
+const switchSides = () => {
+  // TODO: cookie
+  sidebarStore.toggleSide();
+};
+
+const toggleDarkMode = () => {
+  appStore.toggleDarkMode();
+};
 </script>
 
 <template>
-<div class="md:flex flex-col md:mb-auto items-center justify-center hidden">
+  <div class="md:flex flex-col md:mb-auto items-center justify-center hidden">
     <button
       role="button"
       title="Close/collapse sidebar"
@@ -26,15 +47,7 @@
     <button
       role="button"
       title="Switch sidebar side"
-      class="
-        transition
-        p-2
-        mt-2
-        hidden
-        md:block
-        hover:bg-slate-200
-        dark:hover:bg-slate-700
-      "
+      class="transition p-2 mt-2 hidden md:block hover:bg-slate-200 dark:hover:bg-slate-700"
       @click="switchSides"
     >
       <svg
@@ -51,19 +64,11 @@
     <button
       role="button"
       title="Toggle dark mode"
-      class="
-        transition
-        p-2
-        mt-2
-        hidden
-        md:block
-        hover:bg-slate-200
-        dark:hover:bg-slate-700
-      "
+      class="transition p-2 mt-2 hidden md:block hover:bg-slate-200 dark:hover:bg-slate-700"
       @click="toggleDarkMode"
     >
       <svg
-        v-if="darkMode === 'light'"
+        v-if="appStore.darkMode === 'light'"
         xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4"
         viewBox="0 0 20 20"
@@ -76,7 +81,7 @@
         />
       </svg>
       <svg
-        v-if="darkMode === 'dark'"
+        v-if="appStore.darkMode === 'dark'"
         xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4"
         viewBox="0 0 20 20"
@@ -87,7 +92,7 @@
         />
       </svg>
       <svg
-        v-if="darkMode === 'system'"
+        v-if="appStore.darkMode === 'system'"
         class="h-4 w-4"
         focusable="false"
         aria-hidden="true"
@@ -102,5 +107,4 @@
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -2,8 +2,14 @@
 import { useSidebarResize } from "./composables/useSidebarResize";
 import { useSidebarStore } from "./sidebarStore";
 import SidebarComponentSelector from "./SidebarComponentSelector.vue";
+import SidebarVisibility from "./SidebarVisibility.vue";
+import SidebarLinks from "./SidebarLinks.vue";
+import EventDetail from "./EventDetail/EventDetail.vue";
+import { useEventDetailStore } from "./EventDetail/eventDetailStore";
 
 const sidebarStore = useSidebarStore();
+const eventDetailStore = useEventDetailStore()
+
 const { tempWidth, resizeMouseDown } = useSidebarResize();
 </script>
 
@@ -18,16 +24,16 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
     style="-webkit-transform: translate3d(0, 0, 0); overflow: visible"
   >
     <div
-      class="flex flex-row md:flex-col justify-center md:justify-end md:mb-6 order-2"
+      class="flex flex-row md:flex-col justify-center md:justify-end md:mb-10 order-2"
       :class="{
         'md:order-1': sidebarStore.isLeft,
         'md:order-2': !sidebarStore.isLeft,
       }"
     >
-      <!-- <sidebar-visibility /> -->
+      <SidebarVisibility />
       <div class="flex flex-row md:flex-col items-center">
         <SidebarComponentSelector />
-        <!-- <sidebar-links /> -->
+        <SidebarLinks />
       </div>
     </div>
     <div
@@ -44,10 +50,6 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
       </keep-alive> -->
       <div
         class="flex items-center justify-center"
-        :class="{
-          'order-2': sidebarStore.isLeft,
-          'order-1': !sidebarStore.isLeft,
-        }"
         @mousedown.prevent="resizeMouseDown"
         @touchstart.prevent="resizeMouseDown"
         :style="`cursor: ew-resize; order: ${sidebarStore.isLeft ? '1' : '-1'}`"
@@ -66,6 +68,10 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
         </svg>
       </div>
     </div>
+    <EventDetail :class="{
+      'order-0': eventDetailStore.isLeft,
+      'order-3': !eventDetailStore.isLeft
+    }"/>
   </div>
 </template>
 

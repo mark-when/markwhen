@@ -8,6 +8,7 @@ import { isEditable } from "@/injectionKeys";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { inject, reactive, ref, watch } from "vue";
 import PageButton from "./PageButton.vue";
+import ToggleSidebarButton from "../../Sidebar/ToggleSidebarButton.vue";
 
 const editable = inject(isEditable);
 
@@ -98,8 +99,10 @@ const addNewPage = () => update(ADD_PAGE);
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
     <div
-      class="w-2 border-t-2 border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700"
-    ></div>
+      class="border-t-2 border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700 px-2 pt-[2px]"
+    >
+      <ToggleSidebarButton />
+    </div>
     <PageButton
       v-for="(timeline, index) in markwhenStore.timelines"
       :key="index"

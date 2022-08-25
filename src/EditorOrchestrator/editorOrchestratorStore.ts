@@ -2,7 +2,7 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { defineStore } from "pinia";
 import { PAGE_BREAK } from "@markwhen/parser/lib/regex";
 import type { Event, Timeline } from "@markwhen/parser/lib/Types";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export const ADD_PAGE = "edit:pages:add";
 export const MOVE_PAGES = "edit:pages:move";
@@ -34,6 +34,13 @@ export const useEditorOrchestratorStore = defineStore(
       console.log(updateMethod, arg);
     };
 
+    const isEventHoveredInEditor = (e: Event) => {
+      return (
+        hoveringEvent.value?.ranges.event.from === e.ranges.event.from &&
+        hoveringEvent.value.ranges.event.to === e.ranges.event.to
+      );
+    }
+
     return {
       // state
       editable,
@@ -42,7 +49,10 @@ export const useEditorOrchestratorStore = defineStore(
       hoveringEvent,
 
       // actions
-      update
+      update,
+
+      // getters
+      isEventHoveredInEditor
     };
   }
 );

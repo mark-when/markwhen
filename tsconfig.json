@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "target": "es2020"
+  },
   "files": [],
   "references": [
     {
