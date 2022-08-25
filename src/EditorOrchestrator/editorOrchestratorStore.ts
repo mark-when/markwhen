@@ -10,6 +10,7 @@ export const DELETE_PAGE = "edit:pages:delete";
 export const EDIT_EVENT_DATE_RANGE = "edit:event:dateRange";
 export const CREATE_EVENT_FROM_RANGE = "edit:event:createFromRange";
 export const HOVER_EVENT = "view:event:hover";
+export const DETAIL_EVENT = "view:event:detail"
 
 export type UpdateMethod =
   | typeof ADD_PAGE
@@ -17,7 +18,8 @@ export type UpdateMethod =
   | typeof DELETE_PAGE
   | typeof EDIT_EVENT_DATE_RANGE
   | typeof CREATE_EVENT_FROM_RANGE
-  | typeof HOVER_EVENT;
+  | typeof HOVER_EVENT
+  | typeof DETAIL_EVENT
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -26,10 +28,14 @@ export const useEditorOrchestratorStore = defineStore(
     const showTagFilterButtons = ref(true);
     const showPageButtons = ref(true);
     const hoveringEvent = ref<Event | null>(null);
+    const detailEvent = ref<Event | null>(null)
 
     const update = (updateMethod: UpdateMethod, arg?: any) => {
       if (updateMethod === HOVER_EVENT) {
         hoveringEvent.value = arg ? arg : null;
+      }
+      if (updateMethod === DETAIL_EVENT) {
+        detailEvent.value = arg ? arg : null
       }
       console.log(updateMethod, arg);
     };

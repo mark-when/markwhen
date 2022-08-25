@@ -7,7 +7,7 @@ const { views, selectedViewIndex } = useViewStore();
 
 <template>
   <div
-    class="flex flex-row rounded bg-white dark:bg-slate-700 print-hidden"
+    class="flex flex-col rounded bg-white dark:bg-slate-700 print-hidden"
   >
     <ViewSwitcherButton
       v-for="(view, i) in views"

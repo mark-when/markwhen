@@ -12,6 +12,7 @@ import {
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
+import EventMeta from "./EventMeta.vue";
 
 const props = defineProps<{ event: Event }>();
 
@@ -129,6 +130,16 @@ const barWidth = computed(() => {
   );
   return Math.max(eventHeightPx, distance);
 });
+const locations = computed(() =>
+  props.event.event.locations.map(
+    (l) =>
+      `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
+  )
+);
+
+const close = () => {
+  showingMeta.value = false;
+};
 </script>
 
 <template>
@@ -143,13 +154,13 @@ const barWidth = computed(() => {
       <move-widgets v-show="hovering" @move="move" @moveUp="moveUp" @moveDown="moveDown" @mouseenter="hover = true"
         @mouseleave="hover = false" @edit="edit" />
     </template> -->
-    <div class="flex flex-row eventContent">
+    <div class="flex flex-row eventContent items-center">
       <div
         class="eventItem flex-row items-center flex rounded -mx-2 px-2 py-1"
         :class="{
           'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
             isHovering && hasMeta,
-          'dark:bg-gray-900 bg-white shadow-lg': showingMeta,
+          'dark:bg-gray-900 bg-white shadow-lg': false && showingMeta,
           'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
         }"
         v-on="hasMeta ? { click: toggleMeta } : {}"
@@ -218,12 +229,48 @@ const barWidth = computed(() => {
         </div>
         <p class="eventTitle ml-2">
           <span v-html="event.getInnerHtml()"></span>
-          <span v-if="hasSupplemental && !showingMeta">...</span>
+          <span v-if="hasSupplemental">...</span>
         </p>
       </div>
+      <button
+        @click="toggleMeta"
+        class="ml-3 rounded p-1"
+        v-if="hasMeta"
+        :class="{
+          'dark:bg-gray-800 bg-white shadow-lg': isHovering || showingMeta,
+          'dark:text-gray-300 text-gray-500': !isHovering,
+        }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4"
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          fill="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path
+            d="M 17 14 l -5 -6 l -5 6 h 10"
+            :transform="`rotate(${showingMeta ? 0 : 180} 12 12)`"
+          ></path>
+        </svg>
+      </button>
     </div>
-    <!-- <event-meta v-if="canShowMeta" :locations="locations" :images="images" :supplemental="supplemental"
-      :matchedListItems="event.event.matchedListItems" :photosLink="event.event.googlePhotosLink" /> -->
+    <event-meta
+      v-if="canShowMeta"
+      :locations="locations"
+      :images="images"
+      :supplemental="event.event.supplemental"
+      :matchedListItems="event.event.matchedListItems"
+      :photosLink="event.event.googlePhotosLink"
+      :left="barWidth"
+      @close="close"
+    />
   </div>
 </template>
 

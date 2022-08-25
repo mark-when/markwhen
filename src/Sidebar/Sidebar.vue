@@ -6,9 +6,10 @@ import SidebarVisibility from "./SidebarVisibility.vue";
 import SidebarLinks from "./SidebarLinks.vue";
 import EventDetail from "./EventDetail/EventDetail.vue";
 import { useEventDetailStore } from "./EventDetail/eventDetailStore";
+import ViewSwitcher from "../Drawer/ViewSwitcher.vue";
 
 const sidebarStore = useSidebarStore();
-const eventDetailStore = useEventDetailStore()
+const eventDetailStore = useEventDetailStore();
 
 const { tempWidth, resizeMouseDown } = useSidebarResize();
 </script>
@@ -24,14 +25,19 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
     style="-webkit-transform: translate3d(0, 0, 0); overflow: visible"
   >
     <div
-      class="flex flex-row md:flex-col justify-center md:justify-end md:mb-10 order-2"
+      class="flex flex-col justify-center md:justify-end md:mb-10 order-2"
       :class="{
         'md:order-1': sidebarStore.isLeft,
         'md:order-2': !sidebarStore.isLeft,
       }"
     >
-      <SidebarVisibility />
-      <div class="flex flex-row md:flex-col items-center">
+      <div class="top flex-grow flex flex-col">
+        <SidebarVisibility />
+      </div>
+      <div class="middle flex-grow flex flex-col items-center justify-center">
+        <ViewSwitcher />
+      </div>
+      <div class="bottom flex-grow flex flex-col justify-end">
         <SidebarComponentSelector />
         <SidebarLinks />
       </div>
@@ -68,10 +74,12 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
         </svg>
       </div>
     </div>
-    <EventDetail :class="{
-      'order-0': eventDetailStore.isLeft,
-      'order-3': !eventDetailStore.isLeft
-    }"/>
+    <EventDetail
+      :class="{
+        'order-0': eventDetailStore.isLeft,
+        'order-3': !eventDetailStore.isLeft,
+      }"
+    />
   </div>
 </template>
 
