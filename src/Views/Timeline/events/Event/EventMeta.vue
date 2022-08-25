@@ -19,7 +19,7 @@ const hasLocations = computed(() => props.locations.length > 0);
 </script>
 
 <template>
-  <div class="flex flex-row eventMeta ml-[16px]">
+  <div class="flex flex-row eventMeta ml-2">
     <div class="flex flex-col items-start">
       <div class="flex flex-row cursor-default" v-if="supplemental.length">
         <div
@@ -66,7 +66,7 @@ const hasLocations = computed(() => props.locations.length > 0);
         </div>
       </div>
     </div>
-    <div class="ml-3 flex flex-col">
+    <!-- <div class="ml-3 flex flex-col">
       <button
         class="dark:bg-gray-800 bg-white rounded mt-1 p-1 shadow-lg"
         @click="emit('close')"
@@ -86,7 +86,7 @@ const hasLocations = computed(() => props.locations.length > 0);
           ></path>
         </svg>
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 

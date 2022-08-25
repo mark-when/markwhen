@@ -25,7 +25,7 @@ const onChange = (index: number, checked: boolean) => {};
         />
         <label
           v-html="EventDescription.toInnerHtml(item.raw)"
-          class="ml-2"
+          class="ml-2 pointer-events-auto"
           :for="`checkbox_${index}_${item.raw}`"
         ></label>
       </div>

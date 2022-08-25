@@ -164,7 +164,6 @@ const close = () => {
             'dark:bg-gray-900 bg-white shadow-lg': false && showingMeta,
             'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
           }"
-          v-on="hasMeta ? { click: toggleMeta } : {}"
         ></div>
         <event-bar
           :event="event"
@@ -179,12 +178,42 @@ const close = () => {
         </p>
         <div class="eventTitle p-1 flex flex-row">
           <div
-            class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500"
+            class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center"
           >
+            <button
+              @click="toggleMeta"
+              class="rounded px-px pointer-events-auto"
+              v-if="hasMeta"
+              :class="{
+                'bg-white dark:bg-gray-900': showingMeta,
+                'shadow-lg':
+                  isHovering || showingMeta,
+                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300': !showingMeta,
+              }"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M 17 14 l -5 -6 l -5 6 h 10"
+                  :transform="`rotate(${showingMeta ? 0 : 180} 12 12)`"
+                ></path>
+              </svg>
+            </button>
             <svg
               v-if="hasImages && imageStatus !== 'loading'"
               xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 ml-2"
+              class="h-4 w-4"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -196,7 +225,7 @@ const close = () => {
             </svg>
             <svg
               v-else-if="hasImages && imageStatus === 'loading'"
-              class="animate-spin h-3 w-3 ml-3"
+              class="animate-spin h-3 w-3"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -217,7 +246,7 @@ const close = () => {
             </svg>
             <svg
               v-if="hasLocations"
-              class="h-4 w-4 ml-2"
+              class="h-4 w-4"
               focusable="false"
               aria-hidden="true"
               viewBox="0 0 24 24"
@@ -234,9 +263,14 @@ const close = () => {
             />
           </div>
           <p class="ml-2">
-            <span v-html="event.getInnerHtml()" :class="{
-              'pointer-events-auto': event.getInnerHtml().includes('underline')
-            }"></span>
+            <span
+              v-html="event.getInnerHtml()"
+              :class="{
+                'pointer-events-auto': event
+                  .getInnerHtml()
+                  .includes('underline'),
+              }"
+            ></span>
             <span v-if="hasSupplemental">...</span>
           </p>
         </div>
@@ -252,34 +286,6 @@ const close = () => {
           @close="close"
         />
       </div>
-      <button
-        @click="toggleMeta"
-        class="ml-3 rounded p-1"
-        v-if="hasMeta"
-        :class="{
-          'dark:bg-gray-800 bg-white shadow-lg': isHovering || showingMeta,
-          'dark:text-gray-300 text-gray-500': !isHovering,
-        }"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4"
-          width="40"
-          height="40"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          fill="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-          <path
-            d="M 17 14 l -5 -6 l -5 6 h 10"
-            :transform="`rotate(${showingMeta ? 0 : 180} 12 12)`"
-          ></path>
-        </svg>
-      </button>
     </div>
   </div>
 </template>

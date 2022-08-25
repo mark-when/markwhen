@@ -99,6 +99,7 @@ endGroup
 #Travel
 
 some text here for the people
+[linky time](www.google.com)
 - [] and another line
 
 [Eugene, Oregon](location)
