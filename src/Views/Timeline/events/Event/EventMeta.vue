@@ -19,7 +19,7 @@ const hasLocations = computed(() => props.locations.length > 0);
 </script>
 
 <template>
-  <div class="flex flex-row eventMeta">
+  <div class="flex flex-row eventMeta ml-[16px]">
     <div class="flex flex-col items-start">
       <div class="flex flex-row cursor-default" v-if="supplemental.length">
         <div

@@ -98,6 +98,9 @@ endGroup
 02/18/2022-02/21/2022: Road trip to LA
 #Travel
 
+some text here for the people
+- [] and another line
+
 [Eugene, Oregon](location)
 [Mt Shasta](location)
 [Los Angeles](location)

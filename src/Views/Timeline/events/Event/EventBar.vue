@@ -31,7 +31,7 @@ const percent = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-row items-center">
+  <div class="flex flex-row items-center eventBar">
     <div class="relative">
       <div
         :class="{
@@ -63,11 +63,13 @@ const percent = computed(() => {
         }"
       ></div>
       <drag-handle
+        class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="true"
         :mouse-down-touch-start-listener="dragHandleListener(true)"
       />
       <drag-handle
+        class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="false"
         :mouse-down-touch-start-listener="dragHandleListener(false)"
@@ -76,4 +78,9 @@ const percent = computed(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.eventBar {
+  grid-row: 1;
+  grid-column: 1;
+}
+</style>

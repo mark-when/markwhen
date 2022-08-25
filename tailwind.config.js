@@ -7,6 +7,7 @@ module.exports = {
   theme: {
     extend: {},
   },
+  safelist: ['underline'],
   plugins: [],
   darkMode: "class",
 }
