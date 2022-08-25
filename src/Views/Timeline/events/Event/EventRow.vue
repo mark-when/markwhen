@@ -155,82 +155,98 @@ const close = () => {
         @mouseleave="hover = false" @edit="edit" />
     </template> -->
     <div class="flex flex-row eventContent items-center">
-      <div
-        class="eventItem flex-row items-center flex rounded -mx-2 px-2 py-1"
-        :class="{
-          'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
-            isHovering && hasMeta,
-          'dark:bg-gray-900 bg-white shadow-lg': false && showingMeta,
-          'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
-        }"
-        v-on="hasMeta ? { click: toggleMeta } : {}"
-      >
-        <event-bar
-          :event="event"
-          :hovering="isHovering"
-          :width="barWidth"
-          :taskNumerator="taskNumerator"
-          :taskDenominator="taskDenominator"
-          :drag-handle-listener="mouseDownTouchStartListener"
-        />
-        <p class="eventDate">{{ event.getDateHtml() }}</p>
-        <div class="flex flex-row dark:text-gray-300 text-gray-500">
-          <svg
-            v-if="hasImages && imageStatus !== 'loading'"
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 ml-2"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <svg
-            v-else-if="hasImages && imageStatus === 'loading'"
-            class="animate-spin h-3 w-3 ml-3"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <svg
-            v-if="hasLocations"
-            class="h-4 w-4 ml-2"
-            focusable="false"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-            ></path>
-          </svg>
-          <task-completion
-            v-if="taskDenominator"
+      <div class="eventItem">
+        <div
+          class="eventBarAndTitle flex flex-row rounded -mx-2 px-2 py-1"
+          :class="{
+            'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
+              isHovering && hasMeta,
+            'dark:bg-gray-900 bg-white shadow-lg': false && showingMeta,
+            'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
+          }"
+          v-on="hasMeta ? { click: toggleMeta } : {}"
+        >
+          <event-bar
+            :event="event"
+            :hovering="isHovering"
+            :width="barWidth"
             :taskNumerator="taskNumerator"
             :taskDenominator="taskDenominator"
+            :drag-handle-listener="mouseDownTouchStartListener"
           />
+          <p class="eventDate">{{ event.getDateHtml() }}</p>
+          <div class="eventTitle flex flex-row">
+            <div
+              class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500"
+            >
+              <svg
+                v-if="hasImages && imageStatus !== 'loading'"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <svg
+                v-else-if="hasImages && imageStatus === 'loading'"
+                class="animate-spin h-3 w-3 ml-3"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <svg
+                v-if="hasLocations"
+                class="h-4 w-4 ml-2"
+                focusable="false"
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                ></path>
+              </svg>
+              <task-completion
+                v-if="taskDenominator"
+                :taskNumerator="taskNumerator"
+                :taskDenominator="taskDenominator"
+              />
+            </div>
+            <p class="ml-2">
+              <span v-html="event.getInnerHtml()"></span>
+              <span v-if="hasSupplemental">...</span>
+            </p>
+          </div>
         </div>
-        <p class="eventTitle ml-2">
-          <span v-html="event.getInnerHtml()"></span>
-          <span v-if="hasSupplemental">...</span>
-        </p>
+        <event-meta
+          v-if="canShowMeta"
+          :locations="locations"
+          :images="images"
+          :supplemental="event.event.supplemental"
+          :matchedListItems="event.event.matchedListItems"
+          :photosLink="event.event.googlePhotosLink"
+          :left="barWidth"
+          @close="close"
+        />
       </div>
       <button
         @click="toggleMeta"
@@ -261,16 +277,6 @@ const close = () => {
         </svg>
       </button>
     </div>
-    <event-meta
-      v-if="canShowMeta"
-      :locations="locations"
-      :images="images"
-      :supplemental="event.event.supplemental"
-      :matchedListItems="event.event.matchedListItems"
-      :photosLink="event.event.googlePhotosLink"
-      :left="barWidth"
-      @close="close"
-    />
   </div>
 </template>
 
@@ -297,5 +303,22 @@ const close = () => {
   font-size: 80%;
   white-space: nowrap;
   font-weight: 600;
+}
+
+.eventBarAndTitle {
+  grid-area: eventBarAndTitle;
+}
+
+.eventMeta {
+  grid-area: eventMeta;
+}
+
+.eventItem {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-rows: repeat(2, auto);
+  grid-template-areas:
+    "eventBarAndTitle eventBarAndTitle eventBarAndTitle"
+    ". . eventMeta";
 }
 </style>

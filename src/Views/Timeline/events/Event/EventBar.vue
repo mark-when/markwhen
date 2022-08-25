@@ -10,8 +10,8 @@ const props = defineProps<{
   hovering: boolean;
   width: number;
   taskNumerator: number;
-  taskDenominator: number,
-  dragHandleListener: (isFrom: boolean) => EventListener
+  taskDenominator: number;
+  dragHandleListener: (isFrom: boolean) => EventListener;
 }>();
 
 const editable = inject(isEditable);
@@ -31,46 +31,48 @@ const percent = computed(() => {
 </script>
 
 <template>
-  <div class="relative">
-    <div
-      :class="{
-        'eventBar transition rounded-lg shadow': true,
-        'dark:bg-slate-400 bg-slate-700 opacity-30 border border-solid border-black dark:border-white':
-          !tagColor,
-      }"
-      :style="{
-        width: `${width}px`,
-        backgroundColor: tagColor ? `rgba(${tagColor}, 0.3)` : '',
-        border: tagColor ? `1px solid rgba(${tagColor}, 0.3)` : '',
-        height: `10px`,
-        borderRadius: `5px`,
-        flexShrink: 0,
-      }"
-    ></div>
-    <div
-      class="absolute left-0 top-0 bottom-0 rounded-full percentBar transition"
-      :class="{
-        'dark:bg-gray-400 bg-slate-700': !tagColor,
-        'opacity-100 shadow-lg': hovering,
-        'opacity-60': !hovering,
-      }"
-      :style="{
-        minWidth: `10px`,
-        maxWidth: `100%`,
-        backgroundColor: `rgba(${tagColor}, 0.8)`,
-        width: `${percent}%`,
-      }"
-    ></div>
-    <drag-handle
-      v-if="editable && hovering"
-      :is-left="true"
-      :mouse-down-touch-start-listener="dragHandleListener(true)"
-    />
-    <drag-handle
-      v-if="editable && hovering"
-      :is-left="false"
-      :mouse-down-touch-start-listener="dragHandleListener(false)"
-    />
+  <div class="flex flex-row items-center">
+    <div class="relative">
+      <div
+        :class="{
+          'eventBar transition rounded-lg shadow': true,
+          'dark:bg-slate-400 bg-slate-700 opacity-30 border border-solid border-black dark:border-white':
+            !tagColor,
+        }"
+        :style="{
+          width: `${width}px`,
+          backgroundColor: tagColor ? `rgba(${tagColor}, 0.3)` : '',
+          border: tagColor ? `1px solid rgba(${tagColor}, 0.3)` : '',
+          height: `10px`,
+          borderRadius: `5px`,
+          flexShrink: 0,
+        }"
+      ></div>
+      <div
+        class="absolute left-0 top-0 bottom-0 rounded-full percentBar transition"
+        :class="{
+          'dark:bg-gray-400 bg-slate-700': !tagColor,
+          'opacity-100 shadow-lg': hovering,
+          'opacity-60': !hovering,
+        }"
+        :style="{
+          minWidth: `10px`,
+          maxWidth: `100%`,
+          backgroundColor: `rgba(${tagColor}, 0.8)`,
+          width: `${percent}%`,
+        }"
+      ></div>
+      <drag-handle
+        v-if="editable && hovering"
+        :is-left="true"
+        :mouse-down-touch-start-listener="dragHandleListener(true)"
+      />
+      <drag-handle
+        v-if="editable && hovering"
+        :is-left="false"
+        :mouse-down-touch-start-listener="dragHandleListener(false)"
+      />
+    </div>
   </div>
 </template>
 
