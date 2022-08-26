@@ -55,7 +55,7 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
         <component :is="selectedComponentComponent" />
       </keep-alive> -->
       <div
-        class="flex items-center justify-center"
+        class="flex items-center justify-center relative"
         @mousedown.prevent="resizeMouseDown"
         @touchstart.prevent="resizeMouseDown"
         :style="`cursor: ew-resize; order: ${sidebarStore.isLeft ? '1' : '-1'}`"
@@ -72,9 +72,15 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
             d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
           ></path>
         </svg>
+        <div
+          v-if="false"
+          class="absolute w-[2px] top-0 bottom-0 left-[2px] bg-red-500"
+          style="z-index: -1; transform: translateX(50%)"
+        ></div>
       </div>
     </div>
     <EventDetailPane
+      v-if="eventDetailStore.visible"
       :class="{
         'order-0': eventDetailStore.isLeft,
         'order-3': !eventDetailStore.isLeft,

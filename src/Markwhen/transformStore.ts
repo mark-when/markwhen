@@ -87,7 +87,6 @@ export const useTransformStore = defineStore("transform", () => {
         }
       }
     }
-    console.log("sorting", filtered);
     filtered = sortEvents(filtered, sort.value);
     return filtered;
   });

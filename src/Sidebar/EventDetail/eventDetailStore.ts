@@ -22,6 +22,9 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
 
   const setDetailEvent = (e: Event | null) => {
     detailEvent.value = e;
+    if (!!e) {
+      visible.value = true
+    }
   };
 
   const isLeft = computed(() => !sidebarStore.isLeft);
@@ -36,6 +39,7 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     // actions
     setWidth,
     setDetailEvent,
+    toggle,
 
     // getters
     isLeft,

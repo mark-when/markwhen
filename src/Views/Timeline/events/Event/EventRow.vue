@@ -89,6 +89,8 @@ const isHoveredInEditor = computed(
       props.event.ranges.event.to
 );
 
+const isDetailEvent = computed(() => eventDetailStore.isDetailEvent(props.event))
+
 watch(elementHover, (hovering) => {
   update(HOVER_EVENT, hovering ? props.event : null);
 });
@@ -175,7 +177,8 @@ const eventDetail = () => {
               isHovering && hasMeta,
             'dark:bg-gray-900 bg-white shadow-lg':
               eventDetailStore.isDetailEvent(props.event),
-            'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
+            'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor && !isDetailEvent,
+            'ring-1 dark:ring-purple-600 ring-purple-500': isDetailEvent
           }"
           @click="eventDetail"
         ></div>
