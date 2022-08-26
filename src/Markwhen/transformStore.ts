@@ -12,6 +12,8 @@ import { usePageEffect } from "./composables/usePageEffect";
 import { usePageStore } from "./pageStore";
 
 export const useTransformStore = defineStore("transform", () => {
+  const pageStore = usePageStore();
+
   const sort = usePageEffect(() => "none" as Sort);
   const filter = usePageEffect(() => [] as string[]);
   const filterUntagged = usePageEffect(() => false);
@@ -36,10 +38,8 @@ export const useTransformStore = defineStore("transform", () => {
   const toggleFilterUntagged = () =>
     (filterUntagged.value = !filterUntagged.value);
 
+  const events = computed(() => [...pageStore.pageTimeline.events]);
   const transformedEvents = computed(() => {
-    const pageStore = usePageStore();
-    const pageTimeline = pageStore.pageTimeline;
-    const events = [...pageTimeline.events];
     const includeUntagged = filterUntagged.value;
 
     const filterFunction = (e: Event | EventSubGroup): boolean => {
@@ -51,7 +51,7 @@ export const useTransformStore = defineStore("transform", () => {
         if (filter.value.length) {
           return tags?.some((tag) => filter.value.includes(tag)) || false;
         }
-        return false
+        return false;
       }
       if (!filter.value.length) {
         return true;
@@ -59,14 +59,19 @@ export const useTransformStore = defineStore("transform", () => {
       return tags?.some((tag) => filter.value.includes(tag)) || false;
     };
 
-    const filtered = [];
-    for (const eventOrEvents of events) {
+    let filtered = [];
+    for (const eventOrEvents of events.value) {
       if (eventOrEvents instanceof Event) {
         if (filterFunction(eventOrEvents)) {
           filtered.push(eventOrEvents);
         }
       } else {
-        const group = eventOrEvents as EventSubGroup;
+        const group = [...eventOrEvents] as EventSubGroup;
+        group.range = eventOrEvents.range;
+        group.tags = eventOrEvents.tags;
+        group.title = eventOrEvents.title;
+        group.startExpanded = eventOrEvents.startExpanded;
+        group.style = eventOrEvents.style;
         if (filterFunction(group)) {
           filtered.push(group);
         } else {
@@ -82,7 +87,8 @@ export const useTransformStore = defineStore("transform", () => {
         }
       }
     }
-    sortEvents(filtered, sort.value);
+    console.log("sorting", filtered);
+    filtered = sortEvents(filtered, sort.value);
     return filtered;
   });
 
