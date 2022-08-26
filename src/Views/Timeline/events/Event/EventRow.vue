@@ -7,18 +7,22 @@ import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import {
+  DETAIL_EVENT,
   EDIT_EVENT_DATE_RANGE,
+  equivalentEvents,
   HOVER_EVENT,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
+import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
 
 const props = defineProps<{ event: Event }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
+const eventDetailStore = useEventDetailStore();
 const update = editorOrchestratorStore.update;
 
 const eventRow = ref();
@@ -140,6 +144,14 @@ const locations = computed(() =>
 const close = () => {
   showingMeta.value = false;
 };
+
+const eventDetail = () => {
+  eventDetailStore.setDetailEvent(
+    equivalentEvents(eventDetailStore.detailEvent, props.event)
+      ? null
+      : props.event
+  );
+};
 </script>
 
 <template>
@@ -161,9 +173,11 @@ const close = () => {
           :class="{
             'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
               isHovering && hasMeta,
-            'dark:bg-gray-900 bg-white shadow-lg': false && showingMeta,
+            'dark:bg-gray-900 bg-white shadow-lg':
+              eventDetailStore.isDetailEvent(props.event),
             'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor,
           }"
+          @click="eventDetail"
         ></div>
         <event-bar
           :event="event"
@@ -186,9 +200,9 @@ const close = () => {
               v-if="hasMeta"
               :class="{
                 'bg-white dark:bg-gray-900': showingMeta,
-                'shadow-lg':
-                  isHovering || showingMeta,
-                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300': !showingMeta,
+                'shadow-lg': isHovering || showingMeta,
+                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300':
+                  !showingMeta,
               }"
             >
               <svg

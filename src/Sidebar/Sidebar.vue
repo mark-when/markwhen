@@ -4,7 +4,7 @@ import { useSidebarStore } from "./sidebarStore";
 import SidebarComponentSelector from "./SidebarComponentSelector.vue";
 import SidebarVisibility from "./SidebarVisibility.vue";
 import SidebarLinks from "./SidebarLinks.vue";
-import EventDetail from "./EventDetail/EventDetail.vue";
+import EventDetailPane from "./EventDetail/EventDetailPane.vue";
 import { useEventDetailStore } from "./EventDetail/eventDetailStore";
 import ViewSwitcher from "../Drawer/ViewSwitcher.vue";
 
@@ -74,7 +74,7 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
         </svg>
       </div>
     </div>
-    <EventDetail
+    <EventDetailPane
       :class="{
         'order-0': eventDetailStore.isLeft,
         'order-3': !eventDetailStore.isLeft,

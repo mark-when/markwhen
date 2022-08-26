@@ -1,5 +1,6 @@
-import { DateTime } from "luxon";
+import { DateTime, type DurationUnits } from "luxon";
 import { Weight } from "@/Views/Timeline/Markers/markersStore";
+import type { DateRange, Event } from "@markwhen/parser/lib/Types";
 
 export type DisplayScale =
   | "second"
@@ -135,3 +136,22 @@ export interface DateTimeAndOffset {
 }
 
 export type OffsetRange = [DateTimeAndOffset, DateTimeAndOffset];
+
+export const humanDuration = (range: DateRange): string => {
+  const units: DurationUnits = [
+    "years",
+    "months",
+    "days",
+    "hours",
+    "minutes",
+    "seconds",
+  ];
+  const diff = range.toDateTime.diff(range.fromDateTime, units);
+  let adjustedUnits = units.filter((u) => diff.get(u) > 0);
+  return range.toDateTime
+    .diff(range.fromDateTime, adjustedUnits)
+    .toHuman();
+};
+
+export const eventHumanDuration = (e: Event): string =>
+  humanDuration(e.ranges.date);

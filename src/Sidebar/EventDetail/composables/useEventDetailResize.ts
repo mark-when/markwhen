@@ -29,7 +29,7 @@ export const useEventDetailResize = () => {
 
   const resizeMouseMove = (e: MouseEvent | TouchEvent) => {
     if (resizeXStarted.value) {
-      if (eventDetailStore.isLeft) {
+      if (!eventDetailStore.isLeft) {
         tempWidth.value = eventDetailStore.width - resizeStartX.value + pageX(e);
       } else {
         tempWidth.value = eventDetailStore.width + resizeStartX.value - pageX(e);

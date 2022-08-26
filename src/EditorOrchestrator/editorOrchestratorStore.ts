@@ -10,7 +10,7 @@ export const DELETE_PAGE = "edit:pages:delete";
 export const EDIT_EVENT_DATE_RANGE = "edit:event:dateRange";
 export const CREATE_EVENT_FROM_RANGE = "edit:event:createFromRange";
 export const HOVER_EVENT = "view:event:hover";
-export const DETAIL_EVENT = "view:event:detail"
+export const DETAIL_EVENT = "view:event:detail";
 
 export type UpdateMethod =
   | typeof ADD_PAGE
@@ -19,7 +19,17 @@ export type UpdateMethod =
   | typeof EDIT_EVENT_DATE_RANGE
   | typeof CREATE_EVENT_FROM_RANGE
   | typeof HOVER_EVENT
-  | typeof DETAIL_EVENT
+  | typeof DETAIL_EVENT;
+
+export const equivalentEvents = (e1?: Event | null, e2?: Event | null) => {
+  if (!e1 || !e2) {
+    return false;
+  }
+  return (
+    e1.ranges.event.from === e2.ranges.event.from &&
+    e1.ranges.event.to === e2.ranges.event.to
+  );
+};
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -28,24 +38,16 @@ export const useEditorOrchestratorStore = defineStore(
     const showTagFilterButtons = ref(true);
     const showPageButtons = ref(true);
     const hoveringEvent = ref<Event | null>(null);
-    const detailEvent = ref<Event | null>(null)
 
     const update = (updateMethod: UpdateMethod, arg?: any) => {
       if (updateMethod === HOVER_EVENT) {
         hoveringEvent.value = arg ? arg : null;
       }
-      if (updateMethod === DETAIL_EVENT) {
-        detailEvent.value = arg ? arg : null
-      }
       console.log(updateMethod, arg);
     };
 
-    const isEventHoveredInEditor = (e: Event) => {
-      return (
-        hoveringEvent.value?.ranges.event.from === e.ranges.event.from &&
-        hoveringEvent.value.ranges.event.to === e.ranges.event.to
-      );
-    }
+    const isEventHoveredInEditor = (e: Event) =>
+      equivalentEvents(hoveringEvent.value, e);
 
     return {
       // state
@@ -58,7 +60,7 @@ export const useEditorOrchestratorStore = defineStore(
       update,
 
       // getters
-      isEventHoveredInEditor
+      isEventHoveredInEditor,
     };
   }
 );
