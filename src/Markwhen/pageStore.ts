@@ -7,9 +7,11 @@ export const usePageStore = defineStore("page", () => {
   const markwhenStore = useMarkwhenStore();
 
   const setPageIndex = (index: number) => (pageIndex.value = index);
+
   const pageTimeline = computed(() => markwhenStore.timelines[pageIndex.value]);
   const pageTimelineMetadata = computed(() => pageTimeline.value.metadata);
   const tags = computed(() => pageTimeline.value.tags)
+
   const pageTimelineString = computed(() =>
     markwhenStore.rawTimelineString.slice(
       pageTimelineMetadata.value.startStringIndex,
@@ -25,8 +27,13 @@ export const usePageStore = defineStore("page", () => {
   })
 
   return {
+    // state
     pageIndex,
+
+    // actions
     setPageIndex,
+
+    // getters
     pageTimeline,
     pageTimelineMetadata,
     pageTimelineString,

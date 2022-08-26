@@ -11,9 +11,11 @@ import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useResizeObserver } from "@vueuse/core";
+import { useSidebarStore } from "@/Sidebar/sidebarStore";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
+const sidebarStore = useSidebarStore();
 
 const timelineElement = ref<HTMLDivElement | null>(null);
 const getViewport = (): Viewport => {
@@ -68,9 +70,11 @@ watch(
 );
 watch(
   () => pageStore.pageIndex,
-  () => {
-    nextTick(setViewportDateInterval);
-  }
+  () => nextTick(setViewportDateInterval)
+);
+watch(
+  () => sidebarStore.isLeft,
+  () => nextTick(setViewportDateInterval)
 );
 useResizeObserver(timelineElement, (entries) =>
   nextTick(setViewportDateInterval)

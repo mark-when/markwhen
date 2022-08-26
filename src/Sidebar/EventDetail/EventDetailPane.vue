@@ -31,11 +31,8 @@ const { resizeMouseDown, tempWidth } = useEventDetailResize();
         ></path>
       </svg>
     </div>
-    <div
-      class=""
-      :style="`width: ${tempWidth ? tempWidth : eventDetailStore.width}px;`"
-    >
-      <EventDetail />
+    <div :style="`width: ${tempWidth ? tempWidth : eventDetailStore.width}px;`">
+      <EventDetail v-if="eventDetailStore.detailEvent"/>
     </div>
   </div>
 </template>

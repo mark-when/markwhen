@@ -19,8 +19,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="">
-    <div class="">FROM</div>
+  <div class="px-3">
     <div class="font-bold" style="font-family: system-ui">
       <div class="">
         {{ dateTime.year }}

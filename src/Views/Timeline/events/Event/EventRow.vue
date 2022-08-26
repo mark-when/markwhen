@@ -169,9 +169,9 @@ const eventDetail = () => {
     <div class="flex flex-row eventContent items-center">
       <div class="eventItem pointer-events-none">
         <div
-          class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto"
+          class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
           :class="{
-            'dark:bg-gray-800 bg-white shadow-lg cursor-pointer':
+            'dark:bg-gray-800 bg-white shadow-lg':
               isHovering && hasMeta,
             'dark:bg-gray-900 bg-white shadow-lg':
               eventDetailStore.isDetailEvent(props.event),
@@ -200,7 +200,7 @@ const eventDetail = () => {
               v-if="hasMeta"
               :class="{
                 'bg-white dark:bg-gray-900': showingMeta,
-                'shadow-lg': isHovering || showingMeta,
+                'shadow': isHovering || showingMeta,
                 'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300':
                   !showingMeta,
               }"

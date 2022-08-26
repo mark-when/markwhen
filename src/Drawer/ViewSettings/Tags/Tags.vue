@@ -10,6 +10,8 @@ const pageStore = usePageStore();
 const clearFilters = () => transformStore.clear();
 const toggleFilterUntagged = () => transformStore.toggleFilterUntagged();
 const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
+
+const filterTag = (tag: string) => transformStore.filterTag(tag);
 </script>
 
 <template>
@@ -39,7 +41,14 @@ const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
       ></div>
       <span class="ml-2">Untagged</span>
     </button>
-    <tag v-for="tag in Object.keys(pageStore.tags)" :key="tag" :tag="tag"></tag>
+    <tag
+      v-for="tag in Object.keys(pageStore.tags)"
+      :key="tag"
+      :tag="tag"
+      :muted="false"
+      @click="filterTag(tag)"
+      :selected="transformStore.filter.includes(tag)"
+    ></tag>
   </div>
 </template>
 

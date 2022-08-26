@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { eventHumanDuration } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import DateAdjuster from "./DatePicker/DateAdjuster.vue";
 import { useEventDetailStore } from "./eventDetailStore";
+import { computed } from "vue";
+import EventDetailTags from "./EventDetailTags.vue";
+import EventDetailWhen from "./EventDetailWhen.vue";
+import EventDetailMarkdown from "./EventDetailMarkdown.vue";
 
 const eventDetailStore = useEventDetailStore();
+
+const ev = computed(() => eventDetailStore.detailEvent);
 </script>
 
 <template>
-  <div class="">
-    {{ eventDetailStore.detailEvent && eventHumanDuration(eventDetailStore.detailEvent) }}
-    <DateAdjuster
-      v-if="eventDetailStore.detailEvent"
-      :date-time="eventDetailStore.detailEvent.ranges.date.fromDateTime"
-    />
+  <div class="py-2">
+    <div class="font-bold text-xl px-3 pb-3" v-html="ev?.getInnerHtml()"></div>
+    <EventDetailWhen />
+    <EventDetailTags />
+    <EventDetailMarkdown />
   </div>
 </template>
 
