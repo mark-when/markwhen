@@ -1,28 +1,21 @@
 import { useAppStore } from "@/App/appStore";
-import {
-  EDIT_EVENT_DATE_RANGE,
-  useEditorOrchestratorStore,
-} from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import {
   floorDateTime,
-  roundDateTime,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import type { Event } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import type { DateTime } from "luxon";
-import { ref, unref } from "vue";
+import { ref } from "vue";
 
 export const useResize = (event: MaybeRef<Event>, done?: (tempDate?: DateTime) => void) => {
   const isFrom = ref<boolean>(true);
   const tempDate = ref<DateTime>();
-  const ev = unref(event);
 
   const markersStore = useMarkersStore();
   const timelineStore = useTimelineStore();
   const appStore = useAppStore();
-  const editorOrchestrator = useEditorOrchestratorStore();
 
   const upListener = (e: MouseEvent | TouchEvent) => {
     if (typeof TouchEvent !== "undefined" && e instanceof TouchEvent) {

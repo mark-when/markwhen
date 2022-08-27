@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import {
-  ADD_PAGE,
-  MOVE_PAGES,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
@@ -13,7 +11,7 @@ import ToggleSidebarButton from "../../Sidebar/ToggleSidebarButton.vue";
 const editable = inject(isEditable);
 
 const markwhenStore = useMarkwhenStore();
-const { update } = useEditorOrchestratorStore();
+const { addPage, movePages } = useEditorOrchestratorStore();
 const shadowed = false;
 
 const moveFrom = ref(undefined as number | undefined);
@@ -27,10 +25,7 @@ const doneMoving = () => {
     return;
   }
 
-  update(MOVE_PAGES, {
-    from: moveFrom.value as number,
-    to: moveTo.value as number,
-  });
+  movePages(moveFrom.value!, moveTo.value!);
 
   moveFrom.value = undefined;
   moveTo.value = undefined;
@@ -89,8 +84,6 @@ const moving = (pageIndex: number, translationAmount: number) => {
     }
   }
 };
-
-const addNewPage = () => update(ADD_PAGE);
 </script>
 
 <template>
@@ -118,7 +111,7 @@ const addNewPage = () => update(ADD_PAGE);
       v-if="editable"
       class="w-10 h-10 border-t-2 border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
-      @click="addNewPage"
+      @click="addPage"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

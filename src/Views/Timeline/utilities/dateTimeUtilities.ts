@@ -1,6 +1,6 @@
 import { DateTime, type DurationUnits } from "luxon";
 import { Weight } from "@/Views/Timeline/Markers/markersStore";
-import type { DateRange, Event } from "@markwhen/parser/lib/Types";
+import { AMERICAN_DATE_FORMAT, EUROPEAN_DATE_FORMAT, type DateFormat, type DateRange, type Event } from "@markwhen/parser/lib/Types";
 
 export type DisplayScale =
   | "second"
@@ -155,3 +155,152 @@ export const humanDuration = (range: DateRange): string => {
 
 export const eventHumanDuration = (e: Event): string =>
   humanDuration(e.ranges.date);
+
+
+function isAtLeastDaySpecificDate(
+  dateTime: DateTime,
+  scale: DisplayScale
+): boolean {
+  return (
+    isDayStartOrEnd(dateTime, scale) ||
+    isMonthStartOrEnd(dateTime, scale) ||
+    isYearStartOrEnd(dateTime, scale)
+  );
+}
+
+function isAtLeastDaySpecificRange(
+  range: DateRange,
+  scale: DisplayScale
+): boolean {
+  return (
+    isAtLeastDaySpecificDate(range.fromDateTime, scale) &&
+    isAtLeastDaySpecificDate(range.toDateTime, scale)
+  );
+}
+
+export function dateRangeToString(
+  range: DateRange,
+  scale: DisplayScale,
+  dateFormat: DateFormat | undefined
+) {
+  if (isAtLeastDaySpecificRange(range, scale)) {
+    const fromAsString = dateTimeToString(
+      range.fromDateTime,
+      scale,
+      true,
+      dateFormat
+    );
+    const toAsString = dateTimeToString(
+      range.toDateTime,
+      scale,
+      false,
+      dateFormat
+    );
+    if (fromAsString === toAsString) {
+      return `${fromAsString}`;
+    }
+    return dateFormat
+      ? `${fromAsString} - ${toAsString}`
+      : `${fromAsString}/${toAsString}`;
+  }
+  return `${asIso(range.fromDateTime)} - ${asIso(range.toDateTime)}`;
+}
+
+function isMinuteStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
+  if (!["day", "hour", "minute", "second"].includes(scale)) {
+    return false;
+  }
+  return [57, 58, 59, 0, 1, 2, 3].includes(dateTime.second);
+}
+
+function isDayStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
+  if (!["month", "day"].includes(scale)) {
+    return false;
+  }
+  return [23, 0, 1].includes(dateTime.hour);
+}
+
+function isMonthStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
+  if (!["decade", "year", "month"].includes(scale)) {
+    return false;
+  }
+  return [28, 29, 30, 31, 1, 2].includes(dateTime.day);
+}
+
+function isYearStartOrEnd(dateTime: DateTime, scale: DisplayScale): boolean {
+  if (!["decade", "year", "month"].includes(scale)) {
+    return false;
+  }
+  if (dateTime.month === 12 && (dateTime.day === 31 || dateTime.day === 30)) {
+    return true;
+  }
+  if (dateTime.month === 1 && (dateTime.day === 1 || dateTime.day === 2)) {
+    return true;
+  }
+  return false;
+}
+
+function dateTimeToString(
+  dateTime: DateTime,
+  scale: DisplayScale,
+  isStartDate: boolean,
+  dateFormat: DateFormat | undefined
+): string | undefined {
+  if (isYearStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const fromYear = dateTime.plus({ days: 2 }).year;
+      return `${fromYear}`;
+    } else {
+      const toYear = dateTime.minus({ days: 2 }).year;
+      return `${toYear}`;
+    }
+  }
+  if (isMonthStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const adjustedForward = dateTime.plus({ days: 2 });
+      const adjustedMonth =
+        adjustedForward.month < 10
+          ? "0" + adjustedForward.month
+          : adjustedForward.month;
+      return dateFormat
+        ? `${adjustedMonth}/${adjustedForward.year}`
+        : `${adjustedForward.year}-${adjustedMonth}`;
+    } else {
+      const adjustedBack = dateTime.minus({ days: 2 });
+      const adjustedMonth =
+        adjustedBack.month < 10 ? "0" + adjustedBack.month : adjustedBack.month;
+      return dateFormat
+        ? `${adjustedMonth}/${adjustedBack.year}`
+        : `${adjustedBack.year}-${adjustedMonth}`;
+    }
+  }
+  if (isDayStartOrEnd(dateTime, scale)) {
+    if (isStartDate) {
+      const adjustedForward = dateTime.plus({ hours: 2 });
+      return dateFormat
+        ? dayFormat(adjustedForward, dateFormat)
+        : adjustedForward.toISODate();
+    } else {
+      const adjustedBack = dateTime.minus({ hours: 2 });
+      return dateFormat
+        ? dayFormat(adjustedBack, dateFormat)
+        : adjustedBack.toISODate();
+    }
+  }
+}
+
+function dayFormat(dateTime: DateTime, dateFormat: DateFormat): string {
+  const day = dateTime.day;
+  const month = dateTime.month;
+  const year = dateTime.year;
+  if (dateFormat === AMERICAN_DATE_FORMAT) {
+    return `${month}/${day}/${year}`;
+  } else if (dateFormat === EUROPEAN_DATE_FORMAT) {
+    return `${day}/${month}/${year}`;
+  }
+  return "unexpected date format";
+}
+
+function asIso(dateTime: DateTime): string {
+  return dateTime.toUTC().toISO({ includeOffset: false }) + "Z";
+}

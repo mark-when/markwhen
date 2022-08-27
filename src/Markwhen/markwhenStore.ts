@@ -13,4 +13,9 @@ export const useMarkwhenStore = defineStore({
       return parse(state.rawTimelineString).timelines;
     },
   },
+  actions: {
+    setRawTimelineString(s: string) {
+      this.rawTimelineString = s
+    }
+  }
 });

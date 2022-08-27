@@ -7,12 +7,14 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import { useAppStore } from "./appStore";
 import Sidebar from "../Sidebar/Sidebar.vue";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
+import { usePageEffects } from "@/Markwhen/composables/usePageEffects";
 
 const appStore = useAppStore();
 const viewStore = useViewStore();
 const currentView = viewStore.currentView;
 const editorOrchestrator = useEditorOrchestratorStore();
 const sidebarStore = useSidebarStore();
+usePageEffects()
 
 const globalClass = computed(
   () =>

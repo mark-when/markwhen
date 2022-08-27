@@ -3,15 +3,12 @@ import { inject, ref, computed, watch } from "vue";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { isEditable } from "@/injectionKeys";
-import {
-  DELETE_PAGE,
-  useEditorOrchestratorStore,
-} from "@/EditorOrchestrator/editorOrchestratorStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 
-const { update } = useEditorOrchestratorStore();
+const { deletePage } = useEditorOrchestratorStore();
 const markwhenStore = useMarkwhenStore();
-const pageStore = usePageStore()
+const pageStore = usePageStore();
 
 const props = defineProps<{
   timeline: Timeline;
@@ -28,7 +25,9 @@ const emit = defineEmits<{
 const hovering = ref(false);
 const startX = ref<number | undefined>(undefined);
 const translateX = ref(0);
-const pageTitle = computed(() => markwhenStore.timelines[props.pageIndex].metadata.title);
+const pageTitle = computed(
+  () => markwhenStore.timelines[props.pageIndex].metadata.title
+);
 const button = ref<HTMLButtonElement>();
 
 const computedStyle = computed(() => {
@@ -121,7 +120,7 @@ const startMoving = (e: MouseEvent | TouchEvent) => {
   document.addEventListener("mouseup", endMoveListener);
   document.addEventListener("keydown", escapeListener);
 };
-const del = () => update(DELETE_PAGE, props.pageIndex);
+const del = () => deletePage(props.pageIndex);
 </script>
 
 <template>
@@ -150,7 +149,7 @@ const del = () => update(DELETE_PAGE, props.pageIndex);
     ref="button"
   >
     <button
-      class="absolute right-0 top-0  text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100 z-30"
+      class="absolute right-0 top-0 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100 z-30"
       @click.prevent.stop="del"
       v-if="editable && markwhenStore.timelines.length > 1 && hovering"
     >

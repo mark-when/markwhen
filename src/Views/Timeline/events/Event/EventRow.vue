@@ -7,10 +7,7 @@ import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import {
-  DETAIL_EVENT,
-  EDIT_EVENT_DATE_RANGE,
   equivalentEvents,
-  HOVER_EVENT,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
@@ -23,7 +20,7 @@ const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
-const update = editorOrchestratorStore.update;
+const { editEventDateRange, setHoveringEvent } = editorOrchestratorStore;
 
 const eventRow = ref();
 const eventHeightPx = 10;
@@ -66,11 +63,7 @@ const canShowMeta = computed(() => {
   return false;
 });
 
-const moveEnded = () =>
-  update(EDIT_EVENT_DATE_RANGE, {
-    ...range.value,
-    event: props.event,
-  });
+const moveEnded = () => editEventDateRange(props.event, range.value);
 
 const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
   props.event,
@@ -89,10 +82,12 @@ const isHoveredInEditor = computed(
       props.event.ranges.event.to
 );
 
-const isDetailEvent = computed(() => eventDetailStore.isDetailEvent(props.event))
+const isDetailEvent = computed(() =>
+  eventDetailStore.isDetailEvent(props.event)
+);
 
 watch(elementHover, (hovering) => {
-  update(HOVER_EVENT, hovering ? props.event : null);
+  setHoveringEvent(hovering ? props.event : null);
 });
 
 const range = computed(() => {
@@ -173,12 +168,12 @@ const eventDetail = () => {
         <div
           class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
           :class="{
-            'dark:bg-gray-800 bg-white shadow-lg':
-              isHovering && hasMeta,
+            'dark:bg-gray-800 bg-white shadow-lg': isHovering && hasMeta,
             'dark:bg-gray-900 bg-white shadow-lg':
               eventDetailStore.isDetailEvent(props.event),
-            'ring-1 dark:ring-red-600 ring-red-500': isHoveredInEditor && !isDetailEvent,
-            'ring-1 dark:ring-purple-600 ring-purple-500': isDetailEvent
+            'ring-1 dark:ring-red-600 ring-red-500':
+              isHoveredInEditor && !isDetailEvent,
+            'ring-1 dark:ring-purple-600 ring-purple-500': isDetailEvent,
           }"
           @click="eventDetail"
         ></div>
@@ -203,7 +198,7 @@ const eventDetail = () => {
               v-if="hasMeta"
               :class="{
                 'bg-white dark:bg-gray-900': showingMeta,
-                'shadow': isHovering || showingMeta,
+                shadow: isHovering || showingMeta,
                 'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300':
                   !showingMeta,
               }"

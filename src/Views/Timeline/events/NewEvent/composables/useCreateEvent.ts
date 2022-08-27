@@ -1,7 +1,4 @@
-import {
-  CREATE_EVENT_FROM_RANGE,
-  useEditorOrchestratorStore,
-} from "@/EditorOrchestrator/editorOrchestratorStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import type { OffsetRange } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { computed, ref } from "vue";
@@ -52,8 +49,7 @@ export const useCreateEvent = () => {
       ? creatingEventRange.value
       : startEventCreationRange.value;
 
-    editorOrchestrator.update(
-      CREATE_EVENT_FROM_RANGE,
+    editorOrchestrator.createEventFromRange(
       rangeToCreate
         ? {
             fromDateTime: rangeToCreate[0].dateTime,
