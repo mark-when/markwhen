@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
@@ -15,6 +15,7 @@ import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "../../Markers/markersStore";
+import MoveWidgets from "./Edit/MoveWidgets.vue";
 
 const props = defineProps<{ event: Event }>();
 
@@ -84,12 +85,22 @@ const moveEnded = () =>
     preferredInterpolationFormat.value
   );
 
-const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
-  props.event,
-  moveEnded
-);
+const {
+  dragHandleListenerLeft,
+  dragHandleListenerRight,
+  moveHandleListener,
+  tempFrom,
+  tempTo,
+} = useResize(props.event, moveEnded);
 const elementHover = useElementHover(eventRow);
-const isHovering = computed(() => elementHover.value || !!tempDate.value);
+const hoveringWidgets = ref(false);
+const isHovering = computed(
+  () =>
+    elementHover.value ||
+    !!tempFrom.value ||
+    !!tempTo.value ||
+    hoveringWidgets.value
+);
 const editable = inject(isEditable);
 
 const isHoveredInEditor = computed(
@@ -110,34 +121,38 @@ watch(elementHover, (hovering) => {
 });
 
 const range = computed(() => {
-  if (!tempDate.value) {
+  if (!tempFrom.value && !tempTo.value) {
     return props.event.ranges.date as DateRange;
-  }
-  if (isFrom.value) {
-    if (+tempDate.value < +props.event.ranges.date.toDateTime) {
+  } else if (!tempFrom.value) {
+    if (+tempTo.value! > +props.event.ranges.date.fromDateTime) {
       return {
-        fromDateTime: tempDate.value,
+        fromDateTime: props.event.ranges.date.fromDateTime,
+        toDateTime: tempTo.value!,
+      };
+    } else {
+      return {
+        fromDateTime: tempTo.value!,
+        toDateTime: props.event.ranges.date.fromDateTime,
+      };
+    }
+  } else if (!tempTo.value) {
+    if (+tempFrom.value < +props.event.ranges.date.toDateTime) {
+      return {
+        fromDateTime: tempFrom.value,
         toDateTime: props.event.ranges.date.toDateTime,
       };
     } else {
       return {
         fromDateTime: props.event.ranges.date.toDateTime,
-        toDateTime: tempDate.value,
-      };
-    }
-  } else {
-    if (+tempDate.value > +props.event.ranges.date.fromDateTime) {
-      return {
-        fromDateTime: props.event.ranges.date.fromDateTime,
-        toDateTime: tempDate.value,
-      };
-    } else {
-      return {
-        fromDateTime: tempDate.value,
-        toDateTime: props.event.ranges.date.fromDateTime,
+        toDateTime: tempFrom.value,
       };
     }
   }
+  return {
+    fromDateTime:
+      +tempFrom.value < +tempTo.value ? tempFrom.value : tempTo.value,
+    toDateTime: +tempFrom.value < +tempTo.value ? tempTo.value : tempFrom.value,
+  };
 });
 
 const marginLeft = computed(() =>
@@ -168,6 +183,11 @@ const eventDetail = () => {
       : props.event
   );
 };
+
+const moveUp = () => {};
+const moveDown = () => {};
+const edit = () => {};
+
 </script>
 
 <template>
@@ -178,10 +198,17 @@ const eventDetail = () => {
     }"
     ref="eventRow"
   >
-    <!-- <template v-if="$store.state.editable">
-      <move-widgets v-show="hovering" @move="move" @moveUp="moveUp" @moveDown="moveDown" @mouseenter="hover = true"
-        @mouseleave="hover = false" @edit="edit" />
-    </template> -->
+    <template v-if="editorOrchestratorStore.editable">
+      <move-widgets
+        v-show="isHovering"
+        :move="moveHandleListener"
+        @moveUp="moveUp"
+        @moveDown="moveDown"
+        @mouseenter="hoveringWidgets = true"
+        @mouseleave="hoveringWidgets = false"
+        @edit="edit"
+      />
+    </template>
     <div class="flex flex-row eventContent items-center">
       <div class="eventItem pointer-events-none">
         <div
@@ -202,7 +229,8 @@ const eventDetail = () => {
           :width="barWidth"
           :taskNumerator="taskNumerator"
           :taskDenominator="taskDenominator"
-          :drag-handle-listener="mouseDownTouchStartListener"
+          :drag-handle-listener-left="dragHandleListenerLeft"
+          :drag-handle-listener-right="dragHandleListenerRight"
         />
         <p class="eventDate p-1">
           {{ event.getDateHtml() }}

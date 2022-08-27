@@ -24,9 +24,9 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     detailEvent.value = e;
     if (!!e) {
       visible.value = true;
-    }
-    if (!sidebarStore.visible) {
-      sidebarStore.toggle();
+      if (!sidebarStore.visible) {
+        sidebarStore.toggle();
+      }
     }
   };
 

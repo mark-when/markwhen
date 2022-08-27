@@ -11,7 +11,8 @@ const props = defineProps<{
   width: number;
   taskNumerator: number;
   taskDenominator: number;
-  dragHandleListener: (isFrom: boolean) => EventListener;
+  dragHandleListenerLeft: (e: MouseEvent | TouchEvent) => void;
+  dragHandleListenerRight: (e: MouseEvent | TouchEvent) => void;
 }>();
 
 const editable = inject(isEditable);
@@ -66,13 +67,13 @@ const percent = computed(() => {
         class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="true"
-        :mouse-down-touch-start-listener="dragHandleListener(true)"
+        :mouse-down-touch-start-listener="dragHandleListenerLeft"
       />
       <drag-handle
         class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="false"
-        :mouse-down-touch-start-listener="dragHandleListener(false)"
+        :mouse-down-touch-start-listener="dragHandleListenerRight"
       />
     </div>
   </div>
