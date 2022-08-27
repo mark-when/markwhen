@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { type Block, EventDescription, type Range } from "@markwhen/parser/lib/Types";
+import {
+  type Block,
+  EventDescription,
+  type Range,
+} from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{
   supplemental: Block[];
@@ -15,7 +19,11 @@ const onChange = (index: number, checked: boolean) => {};
 <template>
   <div style="font-family: system-ui">
     <template v-for="(item, index) in supplemental">
-      <div v-if="item.type === 'checkbox'" :key="index" class="flex flex-row">
+      <div
+        v-if="item.type === 'checkbox'"
+        :key="index"
+        class="flex flex-row items-center"
+      >
         <input
           type="checkbox"
           :disabled="!editorOrchestratorStore.editable"
