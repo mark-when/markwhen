@@ -1,11 +1,14 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import type { OffsetRange } from "@/Views/Timeline/utilities/dateTimeUtilities";
+import type { DateFormat } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 
 export const useCreateEvent = () => {
   const markersStore = useMarkersStore();
   const editorOrchestrator = useEditorOrchestratorStore();
+  const pageStore = usePageStore();
 
   const startEventCreationRange = ref<OffsetRange>();
   const creatingEventRange = ref<OffsetRange>();
@@ -49,14 +52,18 @@ export const useCreateEvent = () => {
       ? creatingEventRange.value
       : startEventCreationRange.value;
 
-    editorOrchestrator.createEventFromRange(
-      rangeToCreate
-        ? {
-            fromDateTime: rangeToCreate[0].dateTime,
-            toDateTime: rangeToCreate[1].dateTime,
-          }
-        : undefined
-    );
+    if (rangeToCreate) {
+      editorOrchestrator.createEventFromRange(
+        {
+          fromDateTime: rangeToCreate[0].dateTime,
+          toDateTime: rangeToCreate[1].dateTime,
+        },
+        markersStore.scaleOfViewportDateInterval,
+        pageStore.pageTimelineMetadata.preferredInterpolationFormat as
+          | DateFormat
+          | undefined
+      );
+    }
 
     stopCreating();
   };

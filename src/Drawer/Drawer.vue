@@ -30,10 +30,10 @@ const description = computed(() => pageStore.pageTimelineMetadata.description);
         </h4>
       </div>
       <div
-        class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600 px-2 pb-1"
+        class="flex flex-row items-center pointer-events-auto text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300 hover:text-zinc-600 px-2"
       >
         <div
-          class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-auto px-1 md:py-2 py-1"
+          class="flex flex-row items-center md:flex-row md:backdrop-filter backdrop-blur overflow-auto px-1 py-2"
           style="width: fit-content"
         >
           <Sort v-if="viewStore.currentView.uses?.sort" />

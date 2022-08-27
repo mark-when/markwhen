@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
-import type { DateRange, Event } from "@markwhen/parser/lib/Types";
+import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
@@ -13,6 +13,8 @@ import {
 import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
+import { usePageStore } from "@/Markwhen/pageStore";
+import { useMarkersStore } from "../../Markers/markersStore";
 
 const props = defineProps<{ event: Event }>();
 
@@ -20,6 +22,8 @@ const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
+const pageStore = usePageStore();
+const markersStore = useMarkersStore();
 const { editEventDateRange, setHoveringEvent } = editorOrchestratorStore;
 
 const eventRow = ref();
@@ -63,7 +67,22 @@ const canShowMeta = computed(() => {
   return false;
 });
 
-const moveEnded = () => editEventDateRange(props.event, range.value);
+const preferredInterpolationFormat = computed(
+  () =>
+    pageStore.pageTimelineMetadata.preferredInterpolationFormat as
+      | DateFormat
+      | undefined
+);
+
+const scale = computed(() => markersStore.scaleOfViewportDateInterval);
+
+const moveEnded = () =>
+  editEventDateRange(
+    props.event,
+    range.value,
+    scale.value,
+    preferredInterpolationFormat.value
+  );
 
 const { mouseDownTouchStartListener, tempDate, isFrom } = useResize(
   props.event,

@@ -1,12 +1,19 @@
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { defineStore } from "pinia";
 import { PAGE_BREAK } from "@markwhen/parser/lib/regex";
-import type { DateFormat, DateRange, Event, Timeline } from "@markwhen/parser/lib/Types";
+import type {
+  DateFormat,
+  DateRange,
+  Event,
+  Timeline,
+} from "@markwhen/parser/lib/Types";
 import { ref } from "vue";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
-import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
+import {
+  dateRangeToString,
+  type DisplayScale,
+} from "@/Views/Timeline/utilities/dateTimeUtilities";
 
 // Edit
 // export const ADD_PAGE = "edit:pages:add";
@@ -54,7 +61,6 @@ export const useEditorOrchestratorStore = defineStore(
   () => {
     const markwhenStore = useMarkwhenStore();
     const pageStore = usePageStore();
-    const markersStore = useMarkersStore();
 
     const editable = ref(true);
     const showTagFilterButtons = ref(true);
@@ -122,14 +128,16 @@ export const useEditorOrchestratorStore = defineStore(
       );
     };
 
-    const editEventDateRange = (event: Event, range: DateRange) => {
+    const editEventDateRange = (
+      event: Event,
+      range: DateRange,
+      scale: DisplayScale,
+      preferredInterpolationFormat: DateFormat | undefined
+    ) => {
       if (equivalentRanges(event.ranges.date, range)) {
         return;
       }
       const timelineString = markwhenStore.rawTimelineString;
-      const preferredInterpolationFormat = pageStore.pageTimelineMetadata
-        .preferredInterpolationFormat as DateFormat | undefined;
-      const scale = markersStore.scaleOfViewportDateInterval;
 
       const inTextFrom = event.ranges.date.dateRangeInText.from;
       const inTextTo = event.ranges.date.dateRangeInText.to;
@@ -147,10 +155,30 @@ export const useEditorOrchestratorStore = defineStore(
       hoveringEvent.value = e;
     };
 
-    const createEventFromRange = (range: DateRange | undefined) => {
+    const createEventFromRange = (
+      range: DateRange | undefined,
+      scale: DisplayScale,
+      preferredInterpolationFormat: DateFormat | undefined
+    ) => {
       if (!range) {
         return;
       }
+      const dateRangeString = dateRangeToString(
+        range,
+        scale,
+        preferredInterpolationFormat
+      );
+      const events = pageStore.pageTimeline.events.flat();
+      const lastIndexOfLastEvent = events.length
+        ? events[events.length - 1].ranges.event.to
+        : pageStore.pageTimeline.metadata.endStringIndex;
+
+      const es = markwhenStore.rawTimelineString;
+      const newString =
+        es.slice(0, lastIndexOfLastEvent) +
+        `\n${dateRangeString}: Event\n` +
+        es.slice(lastIndexOfLastEvent);
+      markwhenStore.setRawTimelineString(newString);
     };
 
     const isEventHoveredInEditor = (e: Event) =>
