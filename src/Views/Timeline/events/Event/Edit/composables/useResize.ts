@@ -1,15 +1,16 @@
 import { useAppStore } from "@/App/appStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import {
-  floorDateTime,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+import { floorDateTime } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import type { Event } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import type { DateTime } from "luxon";
 import { ref } from "vue";
 
-export const useResize = (event: MaybeRef<Event>, done?: (tempDate?: DateTime) => void) => {
+export const useResize = (
+  event: MaybeRef<Event>,
+  done?: (tempDate?: DateTime) => void
+) => {
   const isFrom = ref<boolean>(true);
   const tempDate = ref<DateTime>();
 
@@ -17,21 +18,32 @@ export const useResize = (event: MaybeRef<Event>, done?: (tempDate?: DateTime) =
   const timelineStore = useTimelineStore();
   const appStore = useAppStore();
 
-  const upListener = (e: MouseEvent | TouchEvent) => {
-    if (typeof TouchEvent !== "undefined" && e instanceof TouchEvent) {
-    } else {
-      e.preventDefault();
-    }
-
-    done?.(tempDate.value)
+  const stop = () => {
     tempDate.value = undefined;
 
     document.removeEventListener("mousemove", moveListener);
     document.removeEventListener("mouseup", upListener);
     document.removeEventListener("touchmove", moveListener);
     document.removeEventListener("touchend", upListener);
+    document.removeEventListener("keydown", escapeListener);
 
     appStore.clearGlobalClass();
+  };
+
+  const escapeListener = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      stop();
+    }
+  };
+
+  const upListener = (e: MouseEvent | TouchEvent) => {
+    if (typeof TouchEvent !== "undefined" && e instanceof TouchEvent) {
+    } else {
+      e.preventDefault();
+    }
+
+    done?.(tempDate.value);
+    stop();
   };
 
   const moveListener = (e: MouseEvent | TouchEvent) => {
@@ -59,6 +71,7 @@ export const useResize = (event: MaybeRef<Event>, done?: (tempDate?: DateTime) =
       document.addEventListener("mouseup", upListener);
       document.addEventListener("touchmove", moveListener);
       document.addEventListener("touchend", upListener);
+      document.addEventListener("keydown", escapeListener);
 
       appStore.setGlobalClass("pointer-events-none cursor-ew-resize");
     };
