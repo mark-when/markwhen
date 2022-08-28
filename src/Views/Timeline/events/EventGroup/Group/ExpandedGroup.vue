@@ -5,6 +5,7 @@ import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
+import type { EventPath } from "@/Markwhen/transformStore";
 
 const timelineStore = useTimelineStore();
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } = timelineStore
@@ -13,6 +14,7 @@ const props = defineProps<{
   eventGroup: EventSubGroup;
   hovering: Boolean;
   canCalculateButton: boolean;
+  path: EventPath
 }>();
 
 const button = ref<HTMLButtonElement | null>(null);
@@ -77,7 +79,8 @@ const buttonWidth = computed(() => {
       @mouseleave="$emit('hovering', false)"
     ></div>
     <event-row
-      v-for="event in eventGroup"
+      :path="[path[0], i]"
+      v-for="(event, i) in eventGroup"
       :key="event.eventString.substring(0, 30)"
       :event="event"
     ></event-row>

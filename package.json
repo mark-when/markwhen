@@ -8,10 +8,12 @@
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "link:parser": "yalc add @markwhen/parser && yalc link @markwhen/parser && npm install",
+    "unlink:parser": "yalc remove @markwhen/parser && npm install"
   },
   "dependencies": {
-    "@markwhen/parser": "^0.1.5",
+    "@markwhen/parser": "^0.1.6",
     "@squadette/hammerjs": "^2.1.0-pre3",
     "@vueuse/core": "^9.1.1",
     "lru-cache": "^7.14.0",

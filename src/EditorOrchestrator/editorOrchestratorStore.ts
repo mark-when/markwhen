@@ -1,59 +1,39 @@
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { defineStore } from "pinia";
 import { PAGE_BREAK } from "@markwhen/parser/lib/regex";
-import type {
-  DateFormat,
-  DateRange,
+import {
   Event,
-  Timeline,
+  type DateFormat,
+  type DateRange,
+  type EventSubGroup,
+  type Timeline,
 } from "@markwhen/parser/lib/Types";
 import { ref } from "vue";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import {
   dateRangeToString,
   type DisplayScale,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 
-// Edit
-// export const ADD_PAGE = "edit:pages:add";
-// export const MOVE_PAGES = "edit:pages:move";
-// export const DELETE_PAGE = "edit:pages:delete";
-
-// export const EDIT_EVENT_DATE_RANGE = "edit:event:dateRange";
-// export const CREATE_EVENT_FROM_RANGE = "edit:event:createFromRange";
-// export const MOVE_EVENT_UP = "edit:event:moveUp";
-// export const MOVE_EVENT_DOWN = "edit:event:moveDown";
-
-// // View
-// export const HOVER_EVENT = "view:event:hover";
-// export const DETAIL_EVENT = "view:event:detail";
-
-// type EditMethod =
-//   | typeof ADD_PAGE
-//   | typeof MOVE_PAGES
-//   | typeof DELETE_PAGE
-//   | typeof EDIT_EVENT_ = "view:event:detail";
-
-// type EditMethod =
-//   | typeof ADD_PAGE
-//   | typeof MOVE_PAGES
-//   | typeof DELETE_PAGE
-//   | typeof EDIT_EVENT_DATE_RANGE
-//   | typeof CREATE_EVENT_FROM_RANGE
-//   | typeof MOVE_EVENT_UP
-//   | typeof MOVE_EVENT_DOWN;
-
-// export type UpdateMethod =
-//   | EditMethod
-//   | typeof HOVER_EVENT
-//   | typeof DETAIL_EVENT;
-
-export const equivalentEvents = (e1?: Event | null, e2?: Event | null) => {
+export const equivalentEvents = (
+  e1?: Event | EventSubGroup | null,
+  e2?: Event | EventSubGroup | null
+) => {
   if (!e1 || !e2) {
     return false;
   }
-  return e1.ranges.event.from === e2.ranges.event.from;
+  if (e1 instanceof Event && e2 instanceof Event) {
+    return e1.ranges.event.from === e2.ranges.event.from;
+  }
+  if (e1 instanceof Event || e2 instanceof Event) {
+    // They weren't both Events
+    return false
+  }
+  return equivalentSubgroups(e1, e2);
+};
+
+export const equivalentSubgroups = (e1: EventSubGroup, e2: EventSubGroup) => {
+
 };
 
 export const useEditorOrchestratorStore = defineStore(
@@ -181,7 +161,7 @@ export const useEditorOrchestratorStore = defineStore(
         es.slice(0, lastIndexOfLastEvent) +
         `\n${dateRangeString}: Event\n` +
         es.slice(lastIndexOfLastEvent);
-        
+
       markwhenStore.setRawTimelineString(newString);
     };
 

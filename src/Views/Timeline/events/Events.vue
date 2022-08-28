@@ -27,6 +27,7 @@ const editable = inject(isEditable);
       <template v-if="Array.isArray(event)">
         <event-group
           v-if="event.style === 'group'"
+          :path="[i]"
           :eventGroup="event"
           :key="
             event.reduce(
@@ -37,6 +38,7 @@ const editable = inject(isEditable);
         />
         <event-section
           v-else
+          :path="[i]"
           :eventGroup="event"
           :key="
             event.reduce(
@@ -48,6 +50,7 @@ const editable = inject(isEditable);
       </template>
       <event-row
         v-else
+        :path="[i]"
         :key="event.eventString.substring(0, 50)"
         :event="event"
       />

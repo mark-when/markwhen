@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { viewportLeftMarginPixels } from '../utilities/dateTimeUtilities';
-import { useMarkersStore } from './markersStore';
-import TimeMarkerBack from './TimeMarkerBack.vue';
+import { viewportLeftMarginPixels } from "../utilities/dateTimeUtilities";
+import { useMarkersStore } from "./markersStore";
+import TimeMarkerBack from "./TimeMarkerBack.vue";
 
-const markersStore = useMarkersStore()
-const leftMargin = viewportLeftMarginPixels
+const markersStore = useMarkersStore();
+const leftMargin = viewportLeftMarginPixels;
 </script>
 
 <template>
   <div class="fixed inset-0">
     <div class="timeMarkerContainer h-full">
-      <div class="flex flex-row h-full" :style="`margin-left: -${leftMargin}px`">
-        <time-marker-back v-for="timeMarker in markersStore.markers" :key="timeMarker.ts" :timeMarker="timeMarker" />
+      <div
+        class="flex flex-row h-full"
+        :style="`margin-left: -${leftMargin}px`"
+      >
+        <time-marker-back
+          v-for="timeMarker in markersStore.markers"
+          :key="timeMarker.ts"
+          :timeMarker="timeMarker"
+          v-memo="[timeMarker.left]"
+        />
       </div>
     </div>
   </div>

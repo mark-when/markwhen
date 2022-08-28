@@ -7,7 +7,6 @@ import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import {
-  equivalentEvents,
   useEditorOrchestratorStore,
 } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
@@ -17,7 +16,7 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 
-const props = defineProps<{ event: Event }>();
+const props = defineProps<{ event: Event; path: number[] }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
@@ -113,7 +112,7 @@ const isHoveredInEditor = computed(
 );
 
 const isDetailEvent = computed(() =>
-  eventDetailStore.isDetailEvent(props.event)
+  eventDetailStore.isDetailEventPath(props.path)
 );
 
 watch(elementHover, (hovering) => {
@@ -177,17 +176,12 @@ const close = () => {
 };
 
 const eventDetail = () => {
-  eventDetailStore.setDetailEvent(
-    equivalentEvents(eventDetailStore.detailEvent, props.event)
-      ? null
-      : props.event
-  );
+  eventDetailStore.setDetailEvent(props.event);
 };
 
 const moveUp = () => {};
 const moveDown = () => {};
 const edit = () => {};
-
 </script>
 
 <template>
@@ -215,8 +209,7 @@ const edit = () => {};
           class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
           :class="{
             'dark:bg-gray-800 bg-white shadow-lg': isHovering && hasMeta,
-            'dark:bg-gray-900 bg-white shadow-lg':
-              eventDetailStore.isDetailEvent(props.event),
+            'dark:bg-gray-900 bg-white shadow-lg': isDetailEvent,
             'ring-1 dark:ring-red-600 ring-red-500':
               isHoveredInEditor && !isDetailEvent,
             'ring-1 dark:ring-purple-600 ring-purple-500': isDetailEvent,
@@ -232,12 +225,12 @@ const edit = () => {};
           :drag-handle-listener-left="dragHandleListenerLeft"
           :drag-handle-listener-right="dragHandleListenerRight"
         />
-        <p class="eventDate p-1">
+        <p class="eventDate py-1">
           {{ event.getDateHtml() }}
         </p>
-        <div class="eventTitle p-1 flex flex-row">
+        <div class="eventTitle py-1 flex flex-row">
           <div
-            class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center"
+            class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
           >
             <button
               @click="toggleMeta"

@@ -17,12 +17,7 @@ const toggle = (tag: string) => {};
 
 <template>
   <div class="flex flex-col pb-3">
-    <h3
-      class="uppercase font-bold text-xs dark:text-gray-500 text-gray-400 px-3"
-    >
-      TAGS
-    </h3>
-    <div class="flex flex-row p-1 overflow-auto">
+    <div class="flex flex-row px-1 overflow-auto pb-1">
       <div
         class="w-full h-6 px-2 font-bold dark:text-gray-400 text-gray-500"
         v-if="ourTags.length === 0"
@@ -34,12 +29,13 @@ const toggle = (tag: string) => {};
         :key="tag"
         :tag="tag"
         :selected="true"
-        :muted="true"
+        :muted="false"
         @click="toggle(tag)"
       />
     </div>
+    <!-- <hr class="dark:border-gray-700 py-px"> -->
     <div
-      class="flex flex-row dark:bg-gray-700 bg-gray-200 p-1 rounded overflow-auto"
+      class="flex flex-row px-1 overflow-auto"
       v-if="notOurTags.length"
     >
       <Tag
@@ -47,7 +43,7 @@ const toggle = (tag: string) => {};
         :key="tag"
         :tag="tag"
         :selected="false"
-        :muted="true"
+        :muted="false"
         @click="toggle(tag)"
       />
     </div>

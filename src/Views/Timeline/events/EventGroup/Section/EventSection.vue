@@ -4,10 +4,11 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import ExpandedSection from "./ExpandedSection.vue";
 import CollapsedSection from "./CollapsedSection.vue";
+import type { EventPath } from "@/Markwhen/transformStore";
 
 const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 
-const props = defineProps<{ eventGroup: EventSubGroup }>();
+const props = defineProps<{ eventGroup: EventSubGroup; path: EventPath }>();
 const eventGroup = props.eventGroup;
 
 const expanded = ref(!!eventGroup.startExpanded);
@@ -43,6 +44,7 @@ watch(expanded, (val) => {
 <template>
   <expanded-section
     v-if="expanded"
+    :path="props.path"
     :group="eventGroup"
     :left="left"
     :hovering="hovering"

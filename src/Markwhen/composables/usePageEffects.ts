@@ -12,7 +12,8 @@ export const usePageEffects = () => {
     switch (name) {
       case "addPage":
         // it's either timelines.length or timelines.length + 1
-        pageStore.setPageIndex(markwhenStore.timelines.length);
+        const newLength = markwhenStore.timelines.length;
+        after(() => pageStore.setPageIndex(newLength));
         break;
       case "deletePage":
         const index = args[0];
@@ -25,7 +26,7 @@ export const usePageEffects = () => {
         ) {
           pageStore.setPageIndex(index - 1);
         } else if (index < pageStore.pageIndex) {
-          pageStore.setPageIndex(index - 1)
+          pageStore.setPageIndex(index - 1);
         }
     }
   });

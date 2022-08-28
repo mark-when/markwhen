@@ -11,6 +11,7 @@ import { computed, watch } from "vue";
 import { usePageEffect } from "./composables/usePageEffect";
 import { usePageStore } from "./pageStore";
 
+export type EventPath = number[];
 export const useTransformStore = defineStore("transform", () => {
   const pageStore = usePageStore();
 
@@ -72,6 +73,7 @@ export const useTransformStore = defineStore("transform", () => {
         group.title = eventOrEvents.title;
         group.startExpanded = eventOrEvents.startExpanded;
         group.style = eventOrEvents.style;
+        group.rangeInText = eventOrEvents.rangeInText;
         if (filterFunction(group)) {
           filtered.push(group);
         } else {
@@ -82,6 +84,7 @@ export const useTransformStore = defineStore("transform", () => {
             filteredSubEvents.title = group.title;
             filteredSubEvents.startExpanded = group.startExpanded;
             filteredSubEvents.style = group.style;
+            filteredSubEvents.rangeInText = group.rangeInText;
             filtered.push(filteredSubEvents);
           }
         }
@@ -90,6 +93,65 @@ export const useTransformStore = defineStore("transform", () => {
     filtered = sortEvents(filtered, sort.value);
     return filtered;
   });
+
+  // TODO: binary search this
+  const findPath = computed(
+    () =>
+      (e: Event | EventSubGroup | undefined): EventPath => {
+        if (!e) {
+          return [];
+        }
+        return e instanceof Event ? findEventPath(e) : findEventSubGroupPath(e);
+      }
+  );
+
+  const findEventPath = (e: Event): EventPath => {
+    for (let i = 0; i < transformedEvents.value.length; i++) {
+      const eventOrGroup = transformedEvents.value[i];
+      if (eventOrGroup instanceof Event) {
+        if (eventOrGroup.ranges.event.from === e.ranges.event.from) {
+          return [i];
+        }
+      } else {
+        const group = eventOrGroup as EventSubGroup;
+        for (let j = 0; j < group.length; j++) {
+          if (group[j].ranges.event.from === e.ranges.event.from) {
+            return [i, j];
+          }
+        }
+      }
+    }
+    return [];
+  };
+
+  const findEventSubGroupPath = (e: EventSubGroup): EventPath => {
+    const groupIndex = transformedEvents.value.findIndex(
+      (eventOrGroup) =>
+        !(eventOrGroup instanceof Event) &&
+        (eventOrGroup as EventSubGroup).rangeInText?.from ===
+          e.rangeInText?.from
+    );
+    return groupIndex >= 0 ? [groupIndex] : [];
+  };
+
+  const eventOrGroupFromPath = computed(
+    () =>
+      (path: EventPath): Event | EventSubGroup | undefined => {
+        if (path.length === 0) {
+          return;
+        }
+        if (path.length === 1) {
+          return transformedEvents.value[path[0]];
+        }
+        if (path.length === 2) {
+          const subGroup = transformedEvents.value[path[0]] as EventSubGroup;
+          if (subGroup && subGroup.length && path[1] < subGroup.length) {
+            return subGroup[path[1]];
+          }
+        }
+        return
+      }
+  );
 
   return {
     // state
@@ -106,5 +168,7 @@ export const useTransformStore = defineStore("transform", () => {
 
     // getters
     transformedEvents,
+    findPath,
+    eventOrGroupFromPath,
   };
 });

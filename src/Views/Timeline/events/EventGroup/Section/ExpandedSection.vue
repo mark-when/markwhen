@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EventPath } from "@/Markwhen/transformStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { EventDescription } from "@markwhen/parser/lib/Types";
@@ -13,6 +14,7 @@ const props = defineProps<{
   group: EventSubGroup;
   hovering: boolean;
   left: number;
+  path: EventPath;
 }>();
 const { color } = useEventColor(props.group);
 
@@ -44,7 +46,8 @@ const titleHtml = computed(() =>
       @mouseleave="$emit('hovering', false)"
     ></div>
     <EventRow
-      v-for="event in group"
+      v-for="(event, i) in group"
+      :path="[path[0], i]"
       :key="event.eventString.substring(0, 30)"
       :event="event"
     />
