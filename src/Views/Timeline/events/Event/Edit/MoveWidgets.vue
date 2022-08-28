@@ -14,13 +14,11 @@ const filter = computed(() => transformStore.filter);
     class="flex flex-row text-gray-500 dark:text-gray-400 absolute mr-8 moveWidgets top-0 bottom-0 items-center justify-center p-2"
     style="left: -6rem"
   >
-    <div
-      class="flex flex-row mr-1 items-center justify-center"
-      v-if="sort === 'none' && (!filter || !filter.length)"
-    >
+    <div class="flex flex-row mr-1 items-center justify-center">
       <button
         title="Edit event"
-        class="mr-1 transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px"
+        disabled
+        class="mr-1 transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px disabled:text-gray-300 disabled:dark:text-gray-600"
         @click="$emit('edit')"
       >
         <svg
@@ -35,8 +33,9 @@ const filter = computed(() => transformStore.filter);
         </svg>
       </button>
       <button
+        disabled
         title="Move up"
-        class="transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px"
+        class="transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px disabled:text-gray-300 disabled:dark:text-gray-600"
         @click="$emit('moveUp')"
       >
         <svg
@@ -53,8 +52,9 @@ const filter = computed(() => transformStore.filter);
         </svg>
       </button>
       <button
+        disabled
         title="Move down"
-        class="transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px"
+        class="transition dark:hover:text-slate-100 hover:text-black rounded-sm p-px disabled:text-gray-300 disabled:dark:text-gray-600"
         @click="$emit('moveDown')"
       >
         <svg

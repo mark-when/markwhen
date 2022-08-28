@@ -68,11 +68,11 @@ export const useEditorOrchestratorStore = defineStore(
     const hoveringEvent = ref<Event | null>(null);
 
     const addPage = () => {
-      markwhenStore.setRawTimelineString(
-        markwhenStore.rawTimelineString
-          .concat(PAGE_BREAK)
-          .concat(`title: Page ${markwhenStore.timelines.length + 1}`)
-      );
+      const newString = markwhenStore.rawTimelineString
+        .concat(PAGE_BREAK)
+        .concat(`title: Page ${markwhenStore.timelines.length + 1}`);
+
+      markwhenStore.setRawTimelineString(newString);
     };
 
     const movePages = (from: number, to: number) => {
@@ -99,6 +99,7 @@ export const useEditorOrchestratorStore = defineStore(
           return sub(start, end);
         })
         .join(PAGE_BREAK);
+
       markwhenStore.setRawTimelineString(newString);
     };
 
@@ -122,10 +123,11 @@ export const useEditorOrchestratorStore = defineStore(
         startIndex -= PAGE_BREAK.length;
       }
 
-      markwhenStore.setRawTimelineString(
+      const newString =
         currentTimelineString.substring(0, startIndex) +
-          currentTimelineString.substring(endIndex)
-      );
+        currentTimelineString.substring(endIndex);
+
+      markwhenStore.setRawTimelineString(newString);
     };
 
     const editEventDateRange = (
@@ -144,11 +146,12 @@ export const useEditorOrchestratorStore = defineStore(
       const pre = timelineString.slice(0, inTextFrom);
       const post = timelineString.slice(inTextTo);
 
-      markwhenStore.setRawTimelineString(
+      const newString =
         pre +
-          `${dateRangeToString(range, scale, preferredInterpolationFormat)}:` +
-          post
-      );
+        `${dateRangeToString(range, scale, preferredInterpolationFormat)}:` +
+        post;
+
+      markwhenStore.setRawTimelineString(newString);
     };
 
     const setHoveringEvent = (e: Event | null) => {
@@ -178,6 +181,7 @@ export const useEditorOrchestratorStore = defineStore(
         es.slice(0, lastIndexOfLastEvent) +
         `\n${dateRangeString}: Event\n` +
         es.slice(lastIndexOfLastEvent);
+        
       markwhenStore.setRawTimelineString(newString);
     };
 
