@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
 import { computed } from "vue";
-import { useEventDetailStore } from "./eventDetailStore";
 import Tag from "../../Drawer/ViewSettings/Tags/Tag.vue";
+import type { Event } from "@markwhen/parser/lib/Types";
 
-const eventDetailStore = useEventDetailStore();
+const props = defineProps<{ event: Event }>();
 const pageStore = usePageStore();
 
 const allTags = computed(() => Object.keys(pageStore.pageTimeline.tags));
-const ourTags = computed(() => eventDetailStore.detailEvent?.event.tags || []);
+const ourTags = computed(() => props.event.event.tags || []);
 const notOurTags = computed(() =>
   allTags.value.filter((t) => !ourTags.value.includes(t))
 );
@@ -34,10 +34,7 @@ const toggle = (tag: string) => {};
       />
     </div>
     <!-- <hr class="dark:border-gray-700 py-px"> -->
-    <div
-      class="flex flex-row px-1 overflow-auto"
-      v-if="notOurTags.length"
-    >
+    <div class="flex flex-row px-1 overflow-auto" v-if="notOurTags.length">
       <Tag
         v-for="tag in notOurTags"
         :key="tag"

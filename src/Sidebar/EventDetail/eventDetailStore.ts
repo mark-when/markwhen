@@ -5,6 +5,12 @@ import type { Event, EventSubGroup } from "@markwhen/parser/lib/Types";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { useTransformStore, type EventPath } from "@/Markwhen/transformStore";
 
+const equivalentPaths = (path1: EventPath, path2: EventPath): boolean =>
+  path1.length > 0 &&
+  path2.length > 0 &&
+  path1.length === path2.length &&
+  path1.every((pathValue, index) => path2[index] === pathValue);
+
 export const useEventDetailStore = defineStore("eventDetail", () => {
   const sidebarStore = useSidebarStore();
   const transformStore = useTransformStore();
@@ -22,16 +28,15 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     visible.value = !visible.value;
   };
 
-  const setDetailEvent = (e: Event | EventSubGroup) => {
-    const path = transformStore.findPath(e);
-
-    detailEventPath.value = path;
-    detailEvent.value = e;
-    if (!!e) {
+  const setDetailEventPath = (path: EventPath) => {
+    if (equivalentPaths(path, detailEventPath.value)) {
+      detailEventPath.value = [];
+    } else {
+      detailEventPath.value = path;
       visible.value = true;
-      if (!sidebarStore.visible) {
-        sidebarStore.toggle();
-      }
+    }
+    if (!sidebarStore.visible) {
+      sidebarStore.toggle();
     }
   };
 
@@ -63,14 +68,15 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     visible,
     width,
     detailEvent,
+    detailEventPath,
 
     // actions
     setWidth,
-    setDetailEvent,
+    setDetailEventPath,
     toggle,
 
     // getters
     isLeft,
-    isDetailEventPath
+    isDetailEventPath,
   };
 });

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useEventDetailStore } from "./eventDetailStore";
 import EventMarkdown from "../../Views/Timeline/Events/Event/EventMarkdown.vue";
+import type { Event } from "@markwhen/parser/lib/Types";
 
-const eventDetailStore = useEventDetailStore();
+const props = defineProps<{ event: Event }>();
 
-const ev = computed(() => eventDetailStore.detailEvent);
-
-const supplemental = computed(() => ev.value?.event.supplemental || []);
-const matchedListItems = computed(() => ev.value?.event.matchedListItems || []);
+const supplemental = computed(() => props.event.event.supplemental || []);
+const matchedListItems = computed(
+  () => props.event.event.matchedListItems || []
+);
 </script>
 
 <template>

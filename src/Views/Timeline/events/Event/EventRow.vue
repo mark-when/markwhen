@@ -176,7 +176,7 @@ const close = () => {
 };
 
 const eventDetail = () => {
-  eventDetailStore.setDetailEvent(props.event);
+  eventDetailStore.setDetailEventPath(props.path);
 };
 
 const moveUp = () => {};
