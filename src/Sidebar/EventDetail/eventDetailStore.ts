@@ -63,6 +63,34 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     );
   });
 
+  const prev = computed(() => {
+    
+  })
+
+  const next = computed(() => {
+    if (!detailEventPath.value || !detailEventPath.value.length) {
+      return;
+    }
+    if (detailEventPath.value.length === 1) {
+      const nextPath = [detailEventPath.value[0] + 1];
+      if (transformStore.eventOrGroupFromPath(nextPath)) {
+        return nextPath;
+      }
+    } else {
+      const nextInGroup = [
+        detailEventPath.value[0],
+        detailEventPath.value[1] + 1,
+      ];
+      if (transformStore.eventOrGroupFromPath(nextInGroup)) {
+        return nextInGroup;
+      }
+      const next = [detailEventPath.value[0] + 1];
+      if (transformStore.eventOrGroupFromPath(next)) {
+        return next;
+      }
+    }
+  });
+
   return {
     // state
     visible,
@@ -78,5 +106,7 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     // getters
     isLeft,
     isDetailEventPath,
+    prev,
+    next,
   };
 });
