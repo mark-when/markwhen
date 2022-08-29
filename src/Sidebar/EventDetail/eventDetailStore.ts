@@ -1,7 +1,7 @@
 import { ref, computed, watchEffect } from "vue";
 import { defineStore } from "pinia";
 import { useSidebarStore } from "../sidebarStore";
-import type { Event, EventSubGroup } from "@markwhen/parser/lib/Types";
+import { Event, type EventSubGroup } from "@markwhen/parser/lib/Types";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { useTransformStore, type EventPath } from "@/Markwhen/transformStore";
 
@@ -64,14 +64,51 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
   });
 
   const prev = computed(() => {
-    
-  })
+    if (!detailEventPath.value || !detailEventPath.value.length) {
+      return;
+    }
+
+    if (detailEventPath.value.length === 1 && detailEventPath.value[0] > 0) {
+      const prevPath = [detailEventPath.value[0] - 1];
+      const possibleGroup = transformStore.eventOrGroupFromPath(prevPath);
+      if (!possibleGroup) {
+        return;
+      }
+      if (possibleGroup instanceof Event || !possibleGroup.length) {
+        return prevPath;
+      } else {
+        return [prevPath[0], possibleGroup.length - 1];
+      }
+    }
+    if (detailEventPath.value.length === 2) {
+      if (detailEventPath.value[1] === 0) {
+        const prevPath = [detailEventPath.value[0]];
+        const possibleGroup = transformStore.eventOrGroupFromPath(prevPath);
+        if (possibleGroup) {
+          return prevPath;
+        }
+      } else {
+        const prevPath = [
+          detailEventPath.value[0],
+          detailEventPath.value[1] - 1,
+        ];
+        const possibleGroup = transformStore.eventOrGroupFromPath(prevPath);
+        if (possibleGroup) {
+          return prevPath;
+        }
+      }
+    }
+  });
 
   const next = computed(() => {
     if (!detailEventPath.value || !detailEventPath.value.length) {
       return;
     }
     if (detailEventPath.value.length === 1) {
+      const subEvent = [detailEventPath.value[0], 0]
+      if (transformStore.eventOrGroupFromPath(subEvent)) {
+        return subEvent
+      }
       const nextPath = [detailEventPath.value[0] + 1];
       if (transformStore.eventOrGroupFromPath(nextPath)) {
         return nextPath;

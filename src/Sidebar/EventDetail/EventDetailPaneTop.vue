@@ -1,9 +1,22 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useEventDetailStore } from "./eventDetailStore";
 
 const eventDetailStore = useEventDetailStore();
 
 const close = eventDetailStore.toggle;
+
+const hasPrev = computed(
+  () => eventDetailStore.prev && eventDetailStore.prev.length
+);
+const hasNext = computed(
+  () => eventDetailStore.next && eventDetailStore.next.length
+);
+
+const selectPrev = () =>
+  eventDetailStore.setDetailEventPath(eventDetailStore.prev!);
+const selectNext = () =>
+  eventDetailStore.setDetailEventPath(eventDetailStore.next!);
 </script>
 
 <template>
@@ -30,11 +43,16 @@ const close = eventDetailStore.toggle;
         />
       </svg>
     </button>
-    <div class="flex-grow flex flex-row items-center justify-center">
+    <div
+      class="flex-grow flex flex-row items-center justify-center"
+      v-if="eventDetailStore.detailEvent"
+    >
       <div class="flex flex-row md:mt-1">
         <button
-          class="uppercase font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 flex flex-row items-center p-2"
+          :disabled="!hasPrev"
+          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-2 disabled:dark:text-gray-500 disabled:text-gray-400"
           style="line-height: initial"
+          @click="selectPrev"
         >
           <span
             ><svg
@@ -51,8 +69,10 @@ const close = eventDetailStore.toggle;
         </button>
         <div class="w-px"></div>
         <button
-          class="uppercase font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 flex flex-row items-center p-2"
+          :disabled="!hasNext"
+          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-2 disabled:dark:text-gray-500 disabled:text-gray-400"
           style="line-height: initial"
+          @click="selectNext"
         >
           <span>next</span
           ><span
