@@ -22,13 +22,16 @@ const selectNext = () =>
 <template>
   <div
     class="flex flex-row"
-    :class="{ 'justify-end': !eventDetailStore.isLeft }"
+    :class="{
+      'justify-end': !eventDetailStore.detailEvent && !eventDetailStore.isLeft,
+    }"
   >
     <button
       role="button"
       title="Close/collapse sidebar"
       @click="close"
       class="transition p-2 md:mt-1 hover:bg-slate-200 dark:hover:bg-slate-700"
+      :class="{ 'order-2': !eventDetailStore.isLeft }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +62,7 @@ const selectNext = () =>
               class="w-4 h-4"
               focusable="false"
               aria-hidden="true"
-              viewBox="0 0 24 24"
+              viewBox="0 1 24 24"
               fill="currentColor"
             >
               <path
@@ -80,7 +83,7 @@ const selectNext = () =>
               class="w-4 h-4"
               focusable="false"
               aria-hidden="true"
-              viewBox="0 0 24 24"
+              viewBox="0 1 24 24"
               fill="currentColor"
             >
               <path

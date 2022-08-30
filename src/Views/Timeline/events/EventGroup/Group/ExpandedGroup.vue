@@ -6,9 +6,11 @@ import { computed, ref } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
 import type { EventPath } from "@/Markwhen/transformStore";
+import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
 
 const timelineStore = useTimelineStore();
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } = timelineStore
+const eventDetailStore = useEventDetailStore()
 
 const props = defineProps<{
   eventGroup: EventSubGroup;
@@ -47,6 +49,7 @@ const buttonWidth = computed(() => {
   }
   return 0;
 });
+
 </script>
 
 <template>

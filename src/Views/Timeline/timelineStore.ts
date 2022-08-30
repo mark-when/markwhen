@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import type { Timeline, TimelineMetadata } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import {
   diffScale,

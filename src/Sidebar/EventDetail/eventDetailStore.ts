@@ -26,6 +26,9 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
 
   const toggle = () => {
     visible.value = !visible.value;
+    if (!visible.value) {
+      detailEventPath.value = []
+    }
   };
 
   const setDetailEventPath = (path: EventPath) => {
