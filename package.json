@@ -26,7 +26,6 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^16.2.14",
-    "@types/lru-cache": "^7.10.10",
     "@types/luxon": "^3.0.0",
     "@types/node": "^16.11.45",
     "@types/throttle-debounce": "^5.0.0",
