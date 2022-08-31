@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { inject, ref, computed, watch } from "vue";
+import { useMediaQuery } from "@vueuse/core";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { isEditable } from "@/injectionKeys";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
 
+const { isTouchscreen, canHover } = useIsTouchscreen();
 const { deletePage } = useEditorOrchestratorStore();
 const markwhenStore = useMarkwhenStore();
 const pageStore = usePageStore();
@@ -110,7 +113,7 @@ const escapeListener = (e: KeyboardEvent) => {
   }
 };
 
-const editable = inject<boolean>(isEditable, false);
+const editable = inject(isEditable, false);
 const startMoving = (e: MouseEvent | TouchEvent) => {
   e.preventDefault();
   startX.value = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
@@ -121,22 +124,26 @@ const startMoving = (e: MouseEvent | TouchEvent) => {
   document.addEventListener("keydown", escapeListener);
 };
 const del = () => deletePage(props.pageIndex);
+
+const events = computed(() => {
+  if (!editable) {
+    return {};
+  }
+
+  const e = { mousedown: startMoving, touchdown: startMoving } as any;
+  if (canHover.value) {
+    e["mouseover"] = mouseOver;
+    e["mouseleave"] = mouseLeave;
+  }
+  return e;
+});
 </script>
 
 <template>
   <button
     class="h-10 border-2 flex items-center justify-center flex-shrink-0 relative p-1"
     :style="computedStyle"
-    v-on="
-      editable
-        ? {
-            mouseover: mouseOver,
-            mouseleave: mouseLeave,
-            mousedown: startMoving,
-            touchdown: startMoving,
-          }
-        : {}
-    "
+    v-on="events"
     @click="click"
     :class="{
       'border-slate-200 border-t-0 bg-slate-50 dark:bg-slate-800 dark:border-slate-500':

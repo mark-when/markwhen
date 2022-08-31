@@ -18,7 +18,7 @@ const description = computed(() => pageStore.pageTimelineMetadata.description);
 
 <template>
   <div
-    class="drawerHeader bg-slate-50 dark:bg-slate-800 border-t border-t-slate-200 dark:border-t-slate-500 z-20"
+    class="drawerHeader bg-slate-50 dark:bg-slate-800 border-t border-t-slate-200 dark:border-t-slate-500 z-20 backdrop-filter backdrop-blur"
   >
     <div class="flex flex-col">
       <div
