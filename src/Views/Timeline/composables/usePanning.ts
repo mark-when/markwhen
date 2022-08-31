@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, type Ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
 
 export const usePanning = (el: Ref<HTMLElement | null>) => {
   // panStartX is a ref as we're using it as a proxy
@@ -39,6 +39,8 @@ export const usePanning = (el: Ref<HTMLElement | null>) => {
   onMounted(() =>
     el.value ? el.value.addEventListener("mousedown", panStart) : {}
   );
+
+  onUnmounted(() => el.value?.removeEventListener("mousedown", panStart));
 
   return { isPanning: computed(() => panStartX.value !== null) };
 };

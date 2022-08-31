@@ -4,7 +4,6 @@ import { useTimelineStore, type Viewport } from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
 import Events from "@/Views/Timeline/Events/Events.vue";
-// import Hammer from "@squadette/hammerjs";
 import { useGestures } from "@/Views/Timeline/composables/useGestures";
 import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarker";
 import { usePanning } from "./composables/usePanning";
@@ -79,25 +78,9 @@ watch(
 useResizeObserver(timelineElement, (entries) =>
   nextTick(setViewportDateInterval)
 );
-// let mc: Hammer.Manager
-// const setupHammer = () => {
-//   timelineElement.value?.addEventListener('touchstart', touchStart)
-//   timelineElement.value?.addEventListener('touchend', touchEnd)
-//   mc = new Hammer.Manager(timelineElement.value)
-//   mc.add(new Hammer.Pinch({ touchAction: 'none' }))
-//   mc.on("pinch", pinch);
-//   mc.on("pinchend", pinchEnd);
-// }
+
 const setViewportDateInterval = () => timelineStore.setViewport(getViewport());
-const touchScreenListener = () => {
-  const touchListener = (e: TouchEvent) => {
-    // if (!mc) {
-    //   setupHammer()
-    //   timelineElement.value?.removeEventListener('touchstart', touchListener)
-    // }
-  };
-  timelineElement.value?.addEventListener("touchstart", touchListener);
-};
+
 const { trigger } = useHoveringMarker();
 const scroll = () => {
   setViewportDateInterval();
@@ -125,7 +108,6 @@ watch(
   (hide) => !hide && scrollToNow()
 );
 onMounted(() => {
-  touchScreenListener();
   setViewportDateInterval();
 });
 </script>
