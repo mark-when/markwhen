@@ -17,7 +17,7 @@ const { color } = useTagColor(props.tag);
     :title="selected ? `Filtering by ${tag}` : `Filter by ${tag}`"
     :class="{ 'dark:border-gray-900': !selected, 'border-2': !muted }"
     :style="{ borderColor: selected && !muted ? `rgba(${color})` : '' }"
-    class="flex flex-row items-center mr-2 md:px-2 md:py-0 px-1 rounded bg-slate-50 hover:bg-zinc-100 transition dark:bg-gray-800 tagButton font-bold dark:hover:bg-gray-900"
+    class="flex flex-row items-center mr-2 md:px-2 md:py-0 px-1 rounded bg-slate-50 hover:bg-zinc-100 transition dark:bg-gray-800 tagButton font-bold text-sm lg:text-base dark:hover:bg-gray-900"
     @click="emit('click')"
   >
     <div

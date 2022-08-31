@@ -56,7 +56,7 @@ export const useGestures = (
       timelineStore.setPageScale(startingZoom! * e.scale);
     }
 
-    // this.throttledSetViewportDateInterval();
+    onSetScale();
   };
 
   const pinchEnd = (e: Event) => {

@@ -92,7 +92,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
     <div
-      class="border-t-2 border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700 px-2 pt-[2px]"
+      class="border-t border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700 px-2 pt-[2px]"
     >
       <ToggleSidebarButton />
     </div>
@@ -109,7 +109,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
     />
     <button
       v-if="editable"
-      class="w-10 h-10 border-t-2 border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
+      class="w-10 h-10 border-t border-t-slate-200 dark:border-t-slate-500 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addPage"
     >
@@ -127,7 +127,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
       </svg>
     </button>
     <div
-      class="flex-grow border-t-slate-200 dark:border-t-slate-500 border-t-2 bg-white dark:bg-slate-700"
+      class="flex-grow border-t-slate-200 dark:border-t-slate-500 border-t bg-white dark:bg-slate-700"
     ></div>
   </div>
 </template>

@@ -5,7 +5,7 @@ const sidebarStore = useSidebarStore();
 </script>
 
 <template>
-  <div class="flex flex-row md:flex-col items-center">
+  <div class="flex flex-col items-center">
     <button
       class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700"
       :class="

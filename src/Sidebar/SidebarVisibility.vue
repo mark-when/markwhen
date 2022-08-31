@@ -24,12 +24,12 @@ const toggleDarkMode = () => {
 </script>
 
 <template>
-  <div class="md:flex flex-col md:mb-auto items-center justify-center hidden">
+  <div class="flex flex-col mb-auto items-center justify-center">
     <button
       role="button"
       title="Close/collapse sidebar"
       @click="close"
-      class="transition p-2 md:mt-1 hover:bg-slate-200 dark:hover:bg-slate-700"
+      class="transition p-2 md:mt-1 hover:bg-slate-200 dark:hover:bg-slate-700 hidden md:block"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +47,7 @@ const toggleDarkMode = () => {
     <button
       role="button"
       title="Switch sidebar side"
-      class="transition p-2 mt-2 hidden md:block hover:bg-slate-200 dark:hover:bg-slate-700"
+      class="transition p-2 mt-2 hover:bg-slate-200 dark:hover:bg-slate-700 hidden md:block"
       @click="switchSides"
     >
       <svg
@@ -64,7 +64,7 @@ const toggleDarkMode = () => {
     <button
       role="button"
       title="Toggle dark mode"
-      class="transition p-2 mt-2 hidden md:block hover:bg-slate-200 dark:hover:bg-slate-700"
+      class="transition p-2 mt-2 hover:bg-slate-200 dark:hover:bg-slate-700"
       @click="toggleDarkMode"
     >
       <svg

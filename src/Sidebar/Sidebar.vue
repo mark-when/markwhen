@@ -16,10 +16,10 @@ const { tempWidth, resizeMouseDown } = useSidebarResize();
 
 <template>
   <div
-    class="hidden md:h-full overflow-y-auto flex-shrink-0 md:flex flex-col md:flex-row border-gray-600 z-10 pb-4 md:pb-0 bg-slate-50 dark:bg-slate-800 order-2 text-zinc-600 dark:text-zinc-200"
+    class="hidden md:h-full overflow-y-auto flex-shrink-0 md:flex flex-col md:flex-row border-slate-200 dark:border-slate-500 z-10 pb-4 md:pb-0 bg-slate-50 dark:bg-slate-800 order-2 text-zinc-600 dark:text-zinc-200"
     :class="{
-      'md:order-2': !sidebarStore.isLeft,
-      'md:order-1': sidebarStore.isLeft,
+      'md:order-2 border-l': !sidebarStore.isLeft,
+      'md:order-1 border-r': sidebarStore.isLeft,
       sidebar: !sidebarStore.selectedComponent,
     }"
     style="-webkit-transform: translate3d(0, 0, 0); overflow: visible"

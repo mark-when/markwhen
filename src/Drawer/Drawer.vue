@@ -25,7 +25,7 @@ const description = computed(() => pageStore.pageTimelineMetadata.description);
         class="pointer-events-auto px-2 pt-1"
         v-if="viewStore.currentView.uses?.drawerDescription && description"
       >
-        <h4 class="text-lg font-medium text-gray-400 pl-1 timelineTitle">
+        <h4 class="lg:text-lg font-medium text-gray-400 pl-1 timelineTitle">
           {{ description }}
         </h4>
       </div>

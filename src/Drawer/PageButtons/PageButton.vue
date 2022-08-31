@@ -141,12 +141,12 @@ const events = computed(() => {
 
 <template>
   <button
-    class="h-10 border-2 flex items-center justify-center flex-shrink-0 relative p-1"
+    class="h-10 border flex items-center justify-center flex-shrink-0 relative p-1"
     :style="computedStyle"
     v-on="events"
     @click="click"
     :class="{
-      'border-slate-200 border-t-0 bg-slate-50 dark:bg-slate-800 dark:border-slate-500':
+      'border-slate-200 dark:border-slate-500 border-t-0 bg-slate-50 dark:bg-slate-800 ':
         pageIndex === pageStore.pageIndex,
       'border-white border-t-slate-200 dark:border-t-slate-500 border-x-0 border-b-0 bg-white hover:bg-slate-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600':
         pageIndex !== pageStore.pageIndex,
@@ -156,7 +156,7 @@ const events = computed(() => {
     ref="button"
   >
     <button
-      class="absolute right-0 top-0 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 rounded-full dark:bg-slate-700 bg-slate-100 z-30"
+      class="absolute right-0 top-0 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 dark:bg-slate-700 bg-slate-100 z-30"
       @click.prevent.stop="del"
       v-if="editable && markwhenStore.timelines.length > 1 && hovering"
     >
@@ -175,7 +175,7 @@ const events = computed(() => {
     </button>
     <h3
       v-if="pageTitle"
-      class="px-2 font-bold text-gray-500 dark:text-gray-300"
+      class="px-2 text-sm lg:text-base font-bold text-gray-500 dark:text-gray-300"
     >
       {{ pageTitle }}
     </h3>
