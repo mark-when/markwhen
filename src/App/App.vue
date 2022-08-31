@@ -14,7 +14,7 @@ const viewStore = useViewStore();
 const currentView = viewStore.currentView;
 const editorOrchestrator = useEditorOrchestratorStore();
 const sidebarStore = useSidebarStore();
-usePageEffects()
+usePageEffects();
 
 const globalClass = computed(
   () =>
@@ -33,7 +33,7 @@ provide(isEditable, editorOrchestrator.editable);
     <div
       class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
-      <Sidebar v-show="sidebarStore.visible"/>
+      <Sidebar v-show="sidebarStore.visible" />
       <div
         class="flex flex-col w-full h-full overflow-auto"
         :class="{
@@ -41,7 +41,9 @@ provide(isEditable, editorOrchestrator.editable);
           'order-2': sidebarStore.isLeft,
         }"
       >
-        <component :is="currentView.component()" />
+        <keep-alive>
+          <component :is="currentView.component()" />
+        </keep-alive>
         <Drawer />
       </div>
     </div>
