@@ -6,6 +6,13 @@ Use it [here](https://markwhen.com).
 
 <br>
 
+## VSCode Extension
+
+Get the VSCode extension [here](https://marketplace.visualstudio.com/items?itemName=Markwhen.markwhen).
+
+To switch between the text editor and the timeline view, select `View: Reopen editor with...` from the command palette and choose `Text Editor`.
+
+
 ## Get updated
 
 If you'd like to be kept up-to-date about markwhen's feature development, add your email [here](https://docs.google.com/forms/d/e/1FAIpQLSceSLgm90NljlcMvdU2Ly45JYB7ZWGN1BNzQg-T-NSWO1Hm-w/viewform?usp=sf_link).
