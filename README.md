@@ -10,6 +10,7 @@ Use the editor [here](https://markwhen.com).
 |Editor|[https://markwhen.com](https://markwhen.com)|
 |More documentation|[https://docs.markwhen.com](https://docs.markwhen.com)|
 |Blog|[https://blog.markwhen.com](https://blog.markwhen.com)|
+|VSCode extension|[https://marketplace.visualstudio.com/items?itemName=Markwhen.markwhen](https://marketplace.visualstudio.com/items?itemName=Markwhen.markwhen)|
 
 Note that this repo is for the *renderer*, not the editor. The editor (markwhen.com) and VSCode extension are built on top of the renderer.
 
