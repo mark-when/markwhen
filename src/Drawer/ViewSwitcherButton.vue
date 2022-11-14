@@ -1,19 +1,40 @@
 <script setup lang="ts">
-defineProps<{ selected: boolean }>();
+import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { ref } from "vue";
+import HoverHint from "./HoverHint.vue";
+
+defineProps<{ selected: boolean; title: string; shortcut?: string }>();
+
+const hovering = ref(false);
+const { canHover } = useIsTouchscreen();
+
+const events = canHover.value
+  ? {
+      mouseover: () => {
+        hovering.value = true;
+      },
+      mouseleave: () => {
+        hovering.value = false;
+      },
+    }
+  : {};
 </script>
 
 <template>
   <button
-    @click="$emit('click')"
-    class="rounded p-1 border-2"
+    v-on="events"
+    class="p-1 border-2 disabled:text-gray-400 dark:disabled:text-gray-500 relative"
     :class="
       selected
-        ? 'border-blue-300 bg-blue-50 dark:bg-slate-600 dark:border-slate-500 dark:text-gray-300'
+        ? 'border-indigo-500 dark:border-indigo-400 rounded text-indigo-800 dark:text-indigo-100'
         : 'border-transparent'
     "
   >
     <slot></slot>
+    <HoverHint :hovering="hovering" :title="title" :shortcut="shortcut" />
   </button>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

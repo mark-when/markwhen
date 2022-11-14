@@ -2,19 +2,24 @@
 import { isEditable } from "@/injectionKeys";
 import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
-import { useViewStore } from "@/Views/viewStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useAppStore } from "./appStore";
-import Sidebar from "../Sidebar/Sidebar.vue";
-import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { usePageEffects } from "@/Markwhen/composables/usePageEffects";
+import Sidebar from "../Sidebar/Sidebar.vue";
+import { useAppHead } from "./composables/useAppHead";
+import Panels from "../Panels/Panels.vue";
+import { useSidebarStore } from "@/Sidebar/sidebarStore";
+import { useRouteWatcherStore } from "@/router/useRouteWatcherStore";
+import { useKeyboardStore } from "@/Keyboard/keyboardStore";
 
 const appStore = useAppStore();
-const viewStore = useViewStore();
-const currentView = viewStore.currentView;
-const editorOrchestrator = useEditorOrchestratorStore();
 const sidebarStore = useSidebarStore();
+const editorOrchestrator = useEditorOrchestratorStore();
+
 usePageEffects();
+useAppHead();
+useRouteWatcherStore();
+useKeyboardStore();
 
 const globalClass = computed(
   () =>
@@ -34,16 +39,8 @@ provide(isEditable, editorOrchestrator.editable);
       class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
     >
       <Sidebar v-show="sidebarStore.visible" />
-      <div
-        class="flex flex-col w-full h-full overflow-auto"
-        :class="{
-          'order-1': !sidebarStore.isLeft,
-          'order-2': sidebarStore.isLeft,
-        }"
-      >
-        <keep-alive>
-          <component :is="currentView.component()" />
-        </keep-alive>
+      <div class="flex flex-col overflow-auto w-full">
+        <Panels />
         <Drawer />
       </div>
     </div>

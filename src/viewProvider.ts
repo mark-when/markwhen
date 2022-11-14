@@ -2,12 +2,14 @@ export interface ViewCapabilities {
   edit?: boolean
   hoveringEvent?: boolean
   mobile?: boolean
+  jumpToEvent?: boolean
 }
 
 export interface ViewUses {
   tags?: boolean
   drawerDescription?: boolean
   sort?: boolean
+  pages?: boolean
 }
 
 export interface ViewSetting {

@@ -14,38 +14,19 @@ import {
   dateRangeToString,
   type DisplayScale,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-
-export const equivalentEvents = (
-  e1?: Event | EventSubGroup | null,
-  e2?: Event | EventSubGroup | null
-) => {
-  if (!e1 || !e2) {
-    return false;
-  }
-  if (e1 instanceof Event && e2 instanceof Event) {
-    return e1.ranges.event.from === e2.ranges.event.from;
-  }
-  if (e1 instanceof Event || e2 instanceof Event) {
-    // They weren't both Events
-    return false
-  }
-  return equivalentSubgroups(e1, e2);
-};
-
-export const equivalentSubgroups = (e1: EventSubGroup, e2: EventSubGroup) => {
-
-};
+import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
   () => {
     const markwhenStore = useMarkwhenStore();
     const pageStore = usePageStore();
+    const eventMapStore = useEventMapStore();
 
     const editable = ref(true);
     const showTagFilterButtons = ref(true);
-    const showPageButtons = ref(true);
-    const hoveringEvent = ref<Event | null>(null);
+    const hoveringEventPaths = ref<EventPaths | null>(null);
+    const choosingColor = ref(false);
 
     const addPage = () => {
       const newString = markwhenStore.rawTimelineString
@@ -81,6 +62,19 @@ export const useEditorOrchestratorStore = defineStore(
         .join(PAGE_BREAK);
 
       markwhenStore.setRawTimelineString(newString);
+    };
+
+    const setPageTimelineString = (newString: string) => {
+      const pageMetadata = pageStore.pageTimelineMetadata;
+      const currentTimelineString = markwhenStore.rawTimelineString;
+      const pre = currentTimelineString.substring(
+        0,
+        pageMetadata.startStringIndex
+      );
+      const post = currentTimelineString.substring(pageMetadata.endStringIndex);
+      const newTimelineString = pre + newString + post;
+
+      markwhenStore.setRawTimelineString(newTimelineString);
     };
 
     const deletePage = (index: number) => {
@@ -134,8 +128,20 @@ export const useEditorOrchestratorStore = defineStore(
       markwhenStore.setRawTimelineString(newString);
     };
 
-    const setHoveringEvent = (e: Event | null) => {
-      hoveringEvent.value = e;
+    const clearHoveringEvent = () => {
+      hoveringEventPaths.value = null;
+    };
+
+    const setHoveringEventPaths = (paths: EventPaths) => {
+      hoveringEventPaths.value = paths;
+    };
+
+    const setHoveringEvent = (e: Event | EventSubGroup | number) => {
+      hoveringEventPaths.value = eventMapStore.getAllPaths(e);
+    };
+
+    const setChoosingColor = (choosing: boolean) => {
+      choosingColor.value = choosing;
     };
 
     const createEventFromRange = (
@@ -165,15 +171,28 @@ export const useEditorOrchestratorStore = defineStore(
       markwhenStore.setRawTimelineString(newString);
     };
 
-    const isEventHoveredInEditor = (e: Event) =>
-      equivalentEvents(hoveringEvent.value, e);
+    const indexInString = (e: Event | EventSubGroup) => {
+      if (e instanceof Event) {
+        return e.ranges.event.from + 1;
+      } else {
+        return e.rangeInText!.from + 1;
+      }
+    };
+
+    const isEventPaths = (e: any): e is EventPaths => {
+      return "whole" in e || "pageFiltered" in e || "page" in e;
+    };
+
+    const showInEditor = (e: Event | EventSubGroup | EventPaths) => {
+     
+    };
 
     return {
       // state
       editable,
       showTagFilterButtons,
-      showPageButtons,
-      hoveringEvent,
+      hoveringEventPaths,
+      choosingColor,
 
       // actions
       addPage,
@@ -181,10 +200,12 @@ export const useEditorOrchestratorStore = defineStore(
       deletePage,
       editEventDateRange,
       setHoveringEvent,
+      setHoveringEventPaths,
+      clearHoveringEvent,
       createEventFromRange,
-
-      // getters
-      isEventHoveredInEditor,
+      setChoosingColor,
+      setPageTimelineString,
+      showInEditor,
     };
   }
 );

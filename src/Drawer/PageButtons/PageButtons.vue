@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  useEditorOrchestratorStore,
-} from "@/EditorOrchestrator/editorOrchestratorStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { inject, reactive, ref, watch } from "vue";
@@ -60,8 +58,8 @@ const moving = (pageIndex: number, translationAmount: number) => {
   }
   const newIndex =
     translationAmount < 0
-      ? Math.min(leftOf, rightOf)
-      : Math.max(leftOf, rightOf);
+      ? Math.max(leftOf, rightOf)
+      : Math.min(leftOf, rightOf);
 
   moveTo.value = newIndex;
 
@@ -88,11 +86,11 @@ const moving = (pageIndex: number, translationAmount: number) => {
 
 <template>
   <div
-    class="flex flex-row overflow-x-scroll pages w-full"
+    class="flex flex-row overflow-x-scroll noScrollBar w-full"
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
     <div
-      class="border-t border-t-slate-200 dark:border-t-slate-500 dark:bg-slate-700 px-2 pt-[2px]"
+      class=" dark:bg-slate-700 px-2 items-center justify-center flex"
     >
       <ToggleSidebarButton />
     </div>
@@ -109,7 +107,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
     />
     <button
       v-if="editable"
-      class="w-10 h-10 border-t border-t-slate-200 dark:border-t-slate-600 flex items-center justify-center transition bg-white hover:bg-slate-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
+      class="w-8 h-8  flex items-center justify-center transition bg-white hover:bg-indigo-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addPage"
     >
@@ -127,13 +125,10 @@ const moving = (pageIndex: number, translationAmount: number) => {
       </svg>
     </button>
     <div
-      class="flex-grow border-t-slate-200 dark:border-t-slate-600 border-t bg-white dark:bg-slate-700"
+      class="flex-grow bg-white dark:bg-slate-700"
     ></div>
   </div>
 </template>
 
 <style scoped>
-.pages::-webkit-scrollbar {
-  display: none;
-}
 </style>
