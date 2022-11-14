@@ -1,14 +1,12 @@
 import { defineStore } from "pinia";
 import { useMagicKeys, useActiveElement, whenever } from "@vueuse/core";
-import { computed, watch, type ComputedRef, type Ref } from "vue";
+import { computed, type ComputedRef, type Ref } from "vue";
 import { useAppStore } from "@/App/appStore";
-import { useGoToMenuItem } from "@/Menu/composables/useGoToMenuItem";
 import { usePanelStore } from "@/Panels/panelStore";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 
 export const useKeyboardStore = defineStore("keyboard", () => {
-  const { toggleEditor } = useGoToMenuItem();
 
   const sidebarStore = useSidebarStore();
   const panelStore = usePanelStore();

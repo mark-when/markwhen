@@ -64,7 +64,6 @@ const select = (i: number) => {
     </ViewSwitcherButton>
     <Spacer />
   </div>
-  <Spacer />
 </template>
 
 <style scoped></style>

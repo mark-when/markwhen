@@ -9,7 +9,6 @@ import Sidebar from "../Sidebar/Sidebar.vue";
 import { useAppHead } from "./composables/useAppHead";
 import Panels from "../Panels/Panels.vue";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
-import { useRouteWatcherStore } from "@/router/useRouteWatcherStore";
 import { useKeyboardStore } from "@/Keyboard/keyboardStore";
 
 const appStore = useAppStore();
@@ -18,7 +17,6 @@ const editorOrchestrator = useEditorOrchestratorStore();
 
 usePageEffects();
 useAppHead();
-useRouteWatcherStore();
 useKeyboardStore();
 
 const globalClass = computed(

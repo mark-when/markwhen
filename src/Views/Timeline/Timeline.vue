@@ -12,7 +12,6 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useResizeObserver } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
-import { useRouteWatcherStore } from "@/router/useRouteWatcherStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
 import { Event, type DateRangePart } from "@markwhen/parser/lib/Types";
 import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
@@ -21,7 +20,6 @@ import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const panelStore = usePanelStore();
-const routeWatcherStore = useRouteWatcherStore();
 
 const timelineElement = ref<HTMLDivElement | null>(null);
 const { isActive } = useIsActive();
@@ -215,8 +213,6 @@ onMounted(() => {
   panelStore.setPanelElement(PanelVisualization, timelineElement.value!);
 });
 
-const loading = computed(() => routeWatcherStore.watchState === "loading");
-
 const showJumpToRange = computed({
   get() {
     return timelineStore.showingJumpToRange;
@@ -238,13 +234,6 @@ const showJumpToRange = computed({
     <TimeMarkersBack />
     <Events />
     <TimeMarkersFront />
-    <div
-      class="fixed inset-0 h-full flex items-center justify-center animate-pulse transition pointer-events-none"
-      :class="{
-        'bg-indigo-500/50 duration-500': loading,
-        'duration-100': !loading,
-      }"
-    ></div>
   </div>
   <JumpToRangeDialog v-model="showJumpToRange" />
 </template>

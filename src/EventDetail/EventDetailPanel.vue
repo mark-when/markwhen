@@ -36,13 +36,7 @@ const isEvent = computed(() => eventDetailStore.detailEvent instanceof Event);
 const panelState = computed(() => panelStore.detailPanelState);
 
 const computedOrder = computed(() => {
-  if (panelState.value.order === 0) {
-    return -2;
-  }
-  if (panelState.value.order === 2) {
-    return 2;
-  }
-  return panelStore.editorPanelState.order === 2 ? 1 : -1;
+  return panelState.value.order === 0 ? -2 : 2;
 });
 const panel = ref();
 const { translateX, moveListener } = usePanelMove(panel, () =>
