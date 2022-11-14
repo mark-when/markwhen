@@ -1,21 +1,24 @@
-import { exampleTimeline } from "@/exampleTimeline";
 import { parse } from "@markwhen/parser";
-import type { Timeline } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 
-export const useMarkwhenStore = defineStore({
-  id: "markwhen",
-  state: () => ({
-    rawTimelineString: exampleTimeline,
-  }),
-  getters: {
-    timelines(state): Timeline[] {
-      return parse(state.rawTimelineString).timelines;
-    },
-  },
-  actions: {
-    setRawTimelineString(s: string) {
-      this.rawTimelineString = s
-    }
-  }
+export const useMarkwhenStore = defineStore("markwhen", () => {
+  const rawTimelineString = ref<string>("");
+
+  const timelines = computed(() => parse(rawTimelineString.value).timelines);
+
+  const setRawTimelineString = (s: string) => {
+    rawTimelineString.value = s;
+  };
+
+  return {
+    // state
+    rawTimelineString,
+
+    // getters
+    timelines,
+
+    // actions
+    setRawTimelineString,
+  };
 });

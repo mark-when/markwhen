@@ -9,7 +9,7 @@ const props = defineProps<{ event: Event }>();
   <div class="pb-3">
     <div class="px-3 font-bold">{{ event.getDateHtml() }}</div>
     <div
-      class="uppercase font-bold text-xs dark:text-gray-400 text-gray-500 px-3 pt-1"
+      class="uppercase font-bold text-xs dark:text-gray-400 text-gray-500 px-3"
     >
       {{ eventHumanDuration(event) }}
     </div>

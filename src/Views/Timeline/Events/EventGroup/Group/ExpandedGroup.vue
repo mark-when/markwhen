@@ -1,28 +1,29 @@
 <script setup lang="ts">
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
-import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventColor } from "../../composables/useEventColor";
-import type { EventPath } from "@/Markwhen/transformStore";
-import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
+import type { EventPath } from "@/Markwhen/composables/useEventFinder";
+import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const timelineStore = useTimelineStore();
-const { distanceFromBaselineLeftmostDate, distanceBetweenDates } = timelineStore
-const eventDetailStore = useEventDetailStore()
+const eventDetailStore = useEventDetailStore();
+const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
+  timelineStore;
 
 const props = defineProps<{
   eventGroup: EventSubGroup;
   hovering: Boolean;
   canCalculateButton: boolean;
-  path: EventPath
+  path: EventPath;
 }>();
 
 const button = ref<HTMLButtonElement | null>(null);
 
 const titleHtml = computed(() =>
-  EventDescription.toInnerHtml(props.eventGroup.title || "")
+  toInnerHtml(props.eventGroup.title || "")
 );
 const { color } = useEventColor(props.eventGroup);
 
@@ -49,7 +50,7 @@ const buttonWidth = computed(() => {
   }
   return 0;
 });
-
+const isDetail = computed(() => eventDetailStore.isDetailEventPath(props.path));
 </script>
 
 <template>
@@ -60,12 +61,14 @@ const buttonWidth = computed(() => {
         'dark:bg-opacity-30 bg-opacity-20': props.hovering,
         'dark:bg-opacity-20 bg-opacity-10': !props.hovering,
         'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 border-gray-400/25':
-          !color,
+          !isDetail && !color,
+        'dark:bg-gray-900 bg-white bg-opacity-50 ring-1 dark:ring-blue-600 ring-blue-500 shadow-lg':
+          isDetail,
       }"
       :style="{
         marginLeft: `${left - 8}px`,
         width: `max(64px, ${fullWidth + 16}px)`,
-        ...(color
+        ...(!isDetail && color
           ? {
               backgroundColor:
                 color && `rgba(${color}, ${props.hovering ? '0.09' : '0.05'})`,
@@ -82,9 +85,9 @@ const buttonWidth = computed(() => {
       @mouseleave="$emit('hovering', false)"
     ></div>
     <event-row
-      :path="[path[0], i]"
+      :path="{ type: path.type, path: [props.path.path[0]!, i] }"
       v-for="(event, i) in eventGroup"
-      :key="event.eventString.substring(0, 30)"
+      :key="event.eventString"
       :event="event"
     ></event-row>
     <div

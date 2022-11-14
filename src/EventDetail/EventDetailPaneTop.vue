@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useEventDetailStore } from "./eventDetailStore";
+import PanelViewButtons from "../Panels/PanelViewButtons.vue";
+import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 
 const eventDetailStore = useEventDetailStore();
+const panelStore = usePanelStore();
+const props = defineProps<{
+  moveListener: (e: MouseEvent | TouchEvent) => void;
+  left: boolean;
+}>();
 
-const close = eventDetailStore.toggle;
+const close = () =>
+  panelStore.setVisibility(PanelDetail, !panelStore.detailPanelState.visible);
 
-const hasPrev = computed(
-  () => eventDetailStore.prev && eventDetailStore.prev.length
-);
-const hasNext = computed(
-  () => eventDetailStore.next && eventDetailStore.next.length
-);
+const hasPrev = computed(() => eventDetailStore.prev);
+const hasNext = computed(() => eventDetailStore.next);
 
 const selectPrev = () =>
   eventDetailStore.setDetailEventPath(eventDetailStore.prev!);
@@ -21,45 +25,35 @@ const selectNext = () =>
 
 <template>
   <div
-    class="flex flex-row"
+    class="flex flex-row relative"
     :class="{
-      'justify-end': !eventDetailStore.detailEvent && !eventDetailStore.isLeft,
+      'justify-end': !eventDetailStore.detailEvent && left,
     }"
   >
-    <button
-      role="button"
-      title="Close/collapse sidebar"
-      @click="close"
-      class="transition p-2 md:mt-1 hover:bg-slate-200 dark:hover:bg-slate-700"
-      :class="{ 'order-2': !eventDetailStore.isLeft }"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
+    <PanelViewButtons
+      :move-listener="props.moveListener"
+      :left="left"
+      @close="close"
+      :fill="false"
+    />
     <div
       class="flex-grow flex flex-row items-center justify-center"
       v-if="eventDetailStore.detailEvent"
+      :class="{
+        'order-1': left,
+        'order-2': !left,
+      }"
     >
       <div class="flex flex-row md:mt-1">
         <button
           :disabled="!hasPrev"
-          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-2 disabled:dark:text-gray-500 disabled:text-gray-400"
+          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-1 disabled:dark:text-gray-500 disabled:text-gray-400"
           style="line-height: initial"
           @click="selectPrev"
         >
           <span
             ><svg
-              class="w-4 h-4"
+              class="w-3 h-3"
               focusable="false"
               aria-hidden="true"
               viewBox="0 1 24 24"
@@ -73,14 +67,14 @@ const selectNext = () =>
         <div class="w-px"></div>
         <button
           :disabled="!hasNext"
-          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-2 disabled:dark:text-gray-500 disabled:text-gray-400"
+          class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-1 disabled:dark:text-gray-500 disabled:text-gray-400"
           style="line-height: initial"
           @click="selectNext"
         >
           <span>next</span
           ><span
             ><svg
-              class="w-4 h-4"
+              class="w-3 h-3"
               focusable="false"
               aria-hidden="true"
               viewBox="0 1 24 24"

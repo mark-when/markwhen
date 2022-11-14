@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
-import type { EventSubGroup } from "@markwhen/parser/lib/Types";
+import { Event, type EventSubGroup } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import SquashBar from "./SquashBar.vue";
 

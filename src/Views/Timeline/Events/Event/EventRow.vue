@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from "vue";
+import { computed, inject, nextTick, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
-import {
-  useEditorOrchestratorStore,
-} from "@/EditorOrchestrator/editorOrchestratorStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
-import { useEventDetailStore } from "@/Sidebar/EventDetail/eventDetailStore";
+import {
+  equivalentPaths,
+  useEventDetailStore,
+} from "@/EventDetail/eventDetailStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
+import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
+import Spinner from "../../../../utilities/Spinner.vue";
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
-const props = defineProps<{ event: Event; path: number[] }>();
+const props = defineProps<{ event: Event; path: EventPath }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
@@ -24,9 +28,12 @@ const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const pageStore = usePageStore();
 const markersStore = useMarkersStore();
-const { editEventDateRange, setHoveringEvent } = editorOrchestratorStore;
+const { editEventDateRange, setHoveringEvent, clearHoveringEvent } =
+  editorOrchestratorStore;
+const timelineStore = useTimelineStore();
 
 const eventRow = ref();
+const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
 const hasLocations = computed(() => props.event.event.locations.length > 0);
@@ -105,10 +112,10 @@ const editable = inject(isEditable);
 const isHoveredInEditor = computed(
   () =>
     editable &&
-    editorOrchestratorStore.hoveringEvent?.ranges.event.from ===
-      props.event.ranges.event.from &&
-    editorOrchestratorStore.hoveringEvent.ranges.event.to ===
-      props.event.ranges.event.to
+    equivalentPaths(
+      editorOrchestratorStore.hoveringEventPaths?.[props.path.type],
+      props.path
+    )
 );
 
 const isDetailEvent = computed(() =>
@@ -116,7 +123,11 @@ const isDetailEvent = computed(() =>
 );
 
 watch(elementHover, (hovering) => {
-  setHoveringEvent(hovering ? props.event : null);
+  if (hovering) {
+    setHoveringEvent(props.event);
+  } else {
+    clearHoveringEvent();
+  }
 });
 
 const range = computed(() => {
@@ -179,9 +190,29 @@ const eventDetail = () => {
   eventDetailStore.setDetailEventPath(props.path);
 };
 
-const moveUp = () => {};
-const moveDown = () => {};
-const edit = () => {};
+const edit = () => editorOrchestratorStore.showInEditor(props.event);
+
+watch(
+  () => timelineStore.scrollToPath,
+  (path) => {
+    if (path) {
+      if (
+        eqPath(props.path, path) ||
+        // We are going to use this event (the first of the group) as a proxy for scrolling to the group
+        (props.path.path[1] === 0 &&
+          eqPath({ type: props.path.type, path: [props.path.path[0]!] }, path))
+      ) {
+        nextTick(() =>
+          (eventBar.value.$el as HTMLDivElement).scrollIntoView({
+            block: "center",
+            inline: "center",
+            behavior: "smooth",
+          })
+        );
+      }
+    }
+  }
+);
 </script>
 
 <template>
@@ -196,8 +227,6 @@ const edit = () => {};
       <move-widgets
         v-show="isHovering"
         :move="moveHandleListener"
-        @moveUp="moveUp"
-        @moveDown="moveDown"
         @mouseenter="hoveringWidgets = true"
         @mouseleave="hoveringWidgets = false"
         @edit="edit"
@@ -210,13 +239,14 @@ const edit = () => {};
           :class="{
             'dark:bg-gray-800 bg-white shadow-lg': isHovering && hasMeta,
             'dark:bg-gray-900 bg-white shadow-lg': isDetailEvent,
-            'ring-1 dark:ring-red-600 ring-red-500':
+            'ring-1 dark:ring-gray-100 ring-black':
               isHoveredInEditor && !isDetailEvent,
-            'ring-1 dark:ring-purple-600 ring-purple-500': isDetailEvent,
+            'ring-1 dark:ring-indigo-600 ring-indigo-500': isDetailEvent,
           }"
           @click="eventDetail"
         ></div>
         <event-bar
+          ref="eventBar"
           :event="event"
           :hovering="isHovering"
           :width="barWidth"
@@ -234,12 +264,12 @@ const edit = () => {};
           >
             <button
               @click="toggleMeta"
-              class="rounded px-px pointer-events-auto"
+              class="rounded px-px pointer-events-auto border"
               v-if="hasMeta"
               :class="{
-                'bg-white dark:bg-gray-900': showingMeta,
+                'bg-white dark:bg-gray-900 border-indigo-500/75': showingMeta,
                 shadow: isHovering || showingMeta,
-                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300':
+                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300 border-transparent':
                   !showingMeta,
               }"
             >
@@ -275,27 +305,10 @@ const edit = () => {};
                 clip-rule="evenodd"
               />
             </svg>
-            <svg
+            <spinner
               v-else-if="hasImages && imageStatus === 'loading'"
-              class="animate-spin h-3 w-3"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+              class="h-3 w-3"
+            />
             <svg
               v-if="hasLocations"
               class="h-4 w-4"
@@ -316,7 +329,7 @@ const edit = () => {};
           </div>
           <p class="ml-2">
             <span
-              v-html="event.getInnerHtml()"
+              v-html="toInnerHtml(event.event.eventDescription)"
               :class="{
                 'pointer-events-auto': event
                   .getInnerHtml()

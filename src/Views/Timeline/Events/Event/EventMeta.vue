@@ -23,7 +23,7 @@ const hasLocations = computed(() => props.locations.length > 0);
     <div class="flex flex-col items-start">
       <div class="flex flex-row cursor-default" v-if="supplemental.length">
         <div
-          class="dark:bg-gray-900 bg-white rounded px-2 py-1 -mx-2 mt-1 shadow-lg flex-shrink-0"
+          class="dark:bg-gray-900 bg-white rounded px-2 py-1 -mx-2 mt-px shadow-lg flex-shrink-0 border border-indigo-500/50"
           style="max-width: min(90vw, 600px)"
         >
           <event-markdown
@@ -34,7 +34,7 @@ const hasLocations = computed(() => props.locations.length > 0);
         </div>
       </div>
       <div
-        class="dark:bg-gray-900 bg-white rounded p-2 -mx-2 inline-flex mt-1 relative shadow-lg"
+        class="dark:bg-gray-900 bg-white rounded p-2 -mx-2 inline-flex mt-px relative shadow-lg border border-indigo-500/75"
         style="max-width: 100vw"
         v-if="hasLocations || hasImages"
       >

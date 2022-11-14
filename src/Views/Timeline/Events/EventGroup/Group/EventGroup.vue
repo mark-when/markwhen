@@ -4,11 +4,11 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import ExpandedGroup from "./ExpandedGroup.vue";
 import CollapsedGroup from "./CollapsedGroup.vue";
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
-import type { EventPath } from "@/Markwhen/transformStore";
+import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 
 const { distanceFromBaselineLeftmostDate } = useTimelineStore();
 
-const props = defineProps<{ eventGroup: EventSubGroup, path: EventPath }>();
+const props = defineProps<{ eventGroup: EventSubGroup; path: EventPath }>();
 const eventGroup = props.eventGroup;
 
 const expanded = ref(!!eventGroup.startExpanded);
@@ -54,6 +54,7 @@ watch(expanded, (val) => {
   />
   <CollapsedGroup
     v-if="!expanded"
+    :path="props.path"
     :group="eventGroup"
     :left="left"
     @expand="expanded = true"

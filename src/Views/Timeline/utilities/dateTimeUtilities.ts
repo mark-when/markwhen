@@ -1,6 +1,14 @@
 import { DateTime, type DurationUnits } from "luxon";
 import { Weight } from "@/Views/Timeline/Markers/markersStore";
-import { AMERICAN_DATE_FORMAT, EUROPEAN_DATE_FORMAT, type DateFormat, type DateRange, type Event } from "@markwhen/parser/lib/Types";
+import {
+  AMERICAN_DATE_FORMAT,
+  DateRangePart,
+  EUROPEAN_DATE_FORMAT,
+  Event,
+  type DateFormat,
+  type DateRange,
+  type EventSubGroup,
+} from "@markwhen/parser/lib/Types";
 
 export type DisplayScale =
   | "second"
@@ -148,14 +156,33 @@ export const humanDuration = (range: DateRange): string => {
   ];
   const diff = range.toDateTime.diff(range.fromDateTime, units);
   let adjustedUnits = units.filter((u) => diff.get(u) > 0);
-  return range.toDateTime
-    .diff(range.fromDateTime, adjustedUnits)
-    .toHuman();
+  return adjustedUnits.length
+    ? range.toDateTime.diff(range.fromDateTime, adjustedUnits).toHuman()
+    : "instant";
 };
 
 export const eventHumanDuration = (e: Event): string =>
   humanDuration(e.ranges.date);
 
+export const scaleForDuration = (dateRange: DateRangePart): DisplayScale => {
+  const diff = dateRange.toDateTime.diff(dateRange.fromDateTime).as("seconds");
+  if (diff < 60) {
+    return "second";
+  }
+  if (diff < 60 * 60) {
+    return "minute";
+  }
+  if (diff < 60 * 60 * 24) {
+    return "hour";
+  }
+  if (diff < 60 * 60 * 24 * 30) {
+    return "day";
+  }
+  if (diff < 60 * 60 * 24 * 30 * 12) {
+    return "month";
+  }
+  return "year";
+};
 
 function isAtLeastDaySpecificDate(
   dateTime: DateTime,
@@ -196,7 +223,10 @@ export function dateRangeToString(
       false,
       dateFormat
     );
-    if (fromAsString === toAsString) {
+    if (
+      fromAsString === toAsString ||
+      range.fromDateTime === range.toDateTime
+    ) {
       return `${fromAsString}`;
     }
     return dateFormat
@@ -205,6 +235,28 @@ export function dateRangeToString(
   }
   return `${asIso(range.fromDateTime)} - ${asIso(range.toDateTime)}`;
 }
+
+export const eventMidpoint = (
+  e: Event | EventSubGroup
+): DateTime | undefined => {
+  if (e instanceof Event) {
+    return dateMidpoint(e.ranges.date);
+  } else {
+    if (!e.range?.min || !e.range?.max) {
+      return undefined;
+    }
+    return dateMidpoint({
+      fromDateTime: e.range.min,
+      toDateTime: e.range.max,
+    });
+  }
+};
+
+export const dateMidpoint = (range: DateRange): DateTime => {
+  return range.fromDateTime.plus({
+    seconds: range.toDateTime.diff(range.fromDateTime).as("seconds") / 2,
+  });
+};
 
 function isMinuteStartOrEnd(dateTime: DateTime, scale: DisplayScale) {
   if (!["day", "hour", "minute", "second"].includes(scale)) {

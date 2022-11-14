@@ -26,7 +26,7 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
     const pageIndex = pageStore.pageIndex;
     if (pageState[pageIndex] === undefined) {
       // If we do not have state for this page, give it the default
-      pageState[pageIndex] = defaultPageState();
+        pageState[pageIndex] = defaultPageState();
     }
   });
 
@@ -85,6 +85,15 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
         break;
     }
   });
+
+  watch(
+    () => pageStore.pageIndex,
+    (index) => {
+      if (pageState[index] === undefined) {
+        pageState[pageStore.pageIndex] = defaultPageState();
+      }
+    }
+  );
 
   return computed({
     get: () => pageState[pageStore.pageIndex],

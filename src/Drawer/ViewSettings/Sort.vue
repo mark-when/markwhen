@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
-import { storeToRefs } from "pinia";
 import { computed } from "vue";
 
 const transformStore = useTransformStore();
@@ -19,7 +18,7 @@ const click = () => transformStore.toggleSort();
 </script>
 
 <template>
-  <button @click="click" class="mx-2 print-hidden" :title="buttonTitle">
+  <button @click="click" class="mx-1 print-hidden" :title="buttonTitle">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"

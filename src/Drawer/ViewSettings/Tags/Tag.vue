@@ -5,20 +5,25 @@ import { useTagColor } from "./composables/useTagColor";
 
 const transformStore = useTransformStore();
 
-const props = defineProps<{ tag: string; selected: boolean; muted: boolean }>();
+const props = defineProps<{ tag: string; selected: boolean }>();
 const emit = defineEmits<{ (event: "click"): void }>();
 
-const { color } = useTagColor(props.tag);
+const color = useTagColor(props.tag);
 </script>
 
 <template>
   <button
     role="button"
     :title="selected ? `Filtering by ${tag}` : `Filter by ${tag}`"
-    :class="{ 'dark:border-gray-900': !selected, 'border-2': !muted }"
-    :style="{ borderColor: selected && !muted ? `rgba(${color})` : '' }"
-    class="flex flex-row items-center mr-2 md:px-2 md:py-0 px-1 rounded bg-slate-50 hover:bg-zinc-100 transition dark:bg-gray-800 tagButton font-bold text-sm lg:text-base dark:hover:bg-gray-900"
+    class="flex border flex-row items-center mr-2 md:px-2 md:py-0 px-1 rounded bg-white transition dark:bg-gray-800 tagButton font-bold text-sm lg:text-base"
     @click="emit('click')"
+    :class="{
+      'border-transparent': !selected,
+    }"
+    :style="{
+      backgroundColor: selected ? `rgba(${color}, 0.2)` : '',
+      borderColor: selected ? `rgba(${color}, 1)` : '',
+    }"
   >
     <div
       class="h-4 w-4 rounded"
@@ -42,4 +47,8 @@ const { color } = useTagColor(props.tag);
   </button>
 </template>
 
-<style scoped></style>
+<style scoped>
+button:hover {
+  background-color: rgba(v-bind(color), 0.1);
+}
+</style>

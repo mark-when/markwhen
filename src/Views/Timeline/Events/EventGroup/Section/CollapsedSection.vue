@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
-import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "@vue/reactivity";
 import { useEventColor } from "../../composables/useEventColor";
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const props = defineProps<{ group: EventSubGroup }>();
 
 const hovering = ref(false);
 const titleHtml = computed(() =>
-  EventDescription.toInnerHtml(props.group.title || "")
+  toInnerHtml(props.group.title || "")
 );
 
 const { color } = useEventColor(props.group);

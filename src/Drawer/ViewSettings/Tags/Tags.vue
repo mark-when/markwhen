@@ -12,6 +12,9 @@ const toggleFilterUntagged = () => transformStore.toggleFilterUntagged();
 const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
 
 const filterTag = (tag: string) => transformStore.filterTag(tag);
+const tags = computed(() => {
+  return Object.keys(pageStore.tags)
+});
 </script>
 
 <template>
@@ -20,16 +23,31 @@ const filterTag = (tag: string) => transformStore.filterTag(tag);
       <!-- Spacer for timelines that have no tags to ensure the drawer header is a consistent height -->
     </div>
     <button
-      class="mr-2 text-sm lg:text-base rounded bg-white hover:bg-zinc-100 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:bg-gray-800 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold border-2 print-hidden"
+      class="mr-2 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
       @click="clearFilters"
     >
-      <span>Show all</span>
+      <span
+        ><svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.965 4.904l9.131 9.131a6.5 6.5 0 00-9.131-9.131zm8.07 10.192L4.904 5.965a6.5 6.5 0 009.131 9.131zM4.343 4.343a8 8 0 1111.314 11.314A8 8 0 014.343 4.343z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </span>
+      <span class="ml-2">Clear filters</span>
     </button>
     <button
       :class="{
         'dark:border-zinc-100 border-gray-900': isUntaggedFiltered,
+        'border-transparent': !isUntaggedFiltered
       }"
-      class="mr-2 text-sm lg:text-base rounded bg-white hover:bg-zinc-100 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:bg-gray-800 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold border-2 print-hidden"
+      class="mr-2 text-sm lg:text-base rounded border bg-white hover:bg-zinc-100 transition dark:hover:bg-gray-900 dark:bg-gray-800 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
       @click="toggleFilterUntagged"
     >
       <div
@@ -42,7 +60,7 @@ const filterTag = (tag: string) => transformStore.filterTag(tag);
       <span class="ml-2">Untagged</span>
     </button>
     <tag
-      v-for="tag in Object.keys(pageStore.tags)"
+      v-for="tag in tags"
       :key="tag"
       :tag="tag"
       :muted="false"

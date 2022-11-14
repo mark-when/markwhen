@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import EventMarkdown from "../../Views/Timeline/Events/Event/EventMarkdown.vue";
+import EventMarkdown from "../Views/Timeline/Events/Event/EventMarkdown.vue";
 import type { Event } from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{ event: Event }>();
@@ -12,7 +12,7 @@ const matchedListItems = computed(
 </script>
 
 <template>
-  <div class="px-3">
+  <div class="px-3 overflow-scroll">
     <EventMarkdown
       :supplemental="supplemental"
       :matched-list-items="matchedListItems"

@@ -11,7 +11,7 @@ const ev = computed(() => eventDetailStore.detailEvent);
 
 <template>
   <div class="flex flex-row">
-    <MiniEventBar :event="ev" v-if="ev" />
+    <!-- <MiniEventBar :event="ev" v-if="ev" /> -->
   </div>
 </template>
 

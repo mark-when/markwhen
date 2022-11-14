@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick, onActivated, computed } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
@@ -10,13 +10,23 @@ import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useResizeObserver } from "@vueuse/core";
-import { useSidebarStore } from "@/Sidebar/sidebarStore";
+import { useIsActive } from "@/utilities/composables/useIsActive";
+import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
+import { useRouteWatcherStore } from "@/router/useRouteWatcherStore";
+import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
+import { Event, type DateRangePart } from "@markwhen/parser/lib/Types";
+import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
+import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
-const sidebarStore = useSidebarStore();
+const panelStore = usePanelStore();
+const routeWatcherStore = useRouteWatcherStore();
 
 const timelineElement = ref<HTMLDivElement | null>(null);
+const { isActive } = useIsActive();
+const finder = useEventFinder();
+
 const getViewport = (): Viewport => {
   if (!timelineElement.value) {
     return { left: 0, width: 0, top: 0 };
@@ -39,7 +49,10 @@ const setViewport = (v: Viewport) => {
 // This needs to be separate from the watch below, for some reason
 watch(
   () => timelineStore.pageSettings,
-  (settings) => nextTick(() => setViewport(settings.viewport))
+  (settings) => {
+    const vp = { ...settings.viewport };
+    nextTick(() => setViewport(vp));
+  }
 );
 
 const widthChangeStartScrollLeft = ref<number | null>(null);
@@ -47,9 +60,12 @@ const widthChangeStartYearWidth = ref<number | null>(null);
 watch(
   () => timelineStore.startedWidthChange,
   (started) => {
-    widthChangeStartScrollLeft.value = started
-      ? timelineElement.value?.scrollLeft ?? null
-      : null;
+    // console.log(
+    //   timelineElement.value?.offsetLeft,
+    //   timelineElement.value?.scrollLeft
+    // );
+    const scrollLeft = timelineElement.value?.scrollLeft || 0;
+    widthChangeStartScrollLeft.value = started ? scrollLeft ?? null : null;
     widthChangeStartYearWidth.value = timelineStore.pageSettings.scale;
   }
 );
@@ -68,54 +84,153 @@ watch(
   { deep: true }
 );
 watch(
-  () => pageStore.pageIndex,
-  () => nextTick(setViewportDateInterval)
+  [
+    () => pageStore.pageIndex,
+    () => pageStore.pageTimelineMetadata.earliestTime,
+    () => pageStore.pageTimelineMetadata.latestTime,
+    () => panelStore.visualizationPanelState,
+  ],
+  () => {
+    if (isActive.value) {
+      nextTick(setViewportDateInterval);
+    }
+  }
 );
-watch(
-  () => sidebarStore.isLeft,
-  () => nextTick(setViewportDateInterval)
-);
-useResizeObserver(timelineElement, (entries) =>
-  nextTick(setViewportDateInterval)
-);
+useResizeObserver(timelineElement, (entries) => {
+  if (isActive.value) {
+    nextTick(setViewportDateInterval);
+  }
+});
 
-const setViewportDateInterval = () => timelineStore.setViewport(getViewport());
+const setViewportDateInterval = () => {
+  timelineStore.setViewport(getViewport());
+};
 
-const { trigger } = useHoveringMarker();
+const { trigger } = useHoveringMarker(timelineElement);
 const scroll = () => {
   setViewportDateInterval();
   trigger();
 };
 
 const { isPanning } = usePanning(timelineElement);
-useGestures(timelineElement, () => setViewportDateInterval());
+useGestures(timelineElement, () => {
+  setViewportDateInterval();
+});
 
-const scrollToDate = (dateTime: DateTime) => {
+const scrollToDate = (dateTime: DateTime, force: boolean = false) => {
   const el = timelineElement.value;
   if (el) {
     const fromLeft = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
     const { left, width } = getViewport();
 
     // If it isn't already within view
-    if (fromLeft < left || fromLeft > left + width) {
-      el.scrollLeft = fromLeft - width / 2;
+    if (force || fromLeft < left || fromLeft > left + width) {
+      el.scrollTo({
+        top: el.scrollTop,
+        left: fromLeft - width / 2,
+        behavior: "smooth",
+      });
     }
   }
 };
-const scrollToNow = () => scrollToDate(DateTime.now());
+
+const scrollToDateRange = (dateRange?: DateRangePart) => {
+  if (!dateRange) {
+    return;
+  }
+  if (timelineStore.shouldZoomWhenScrolling) {
+    const { width } = getViewport();
+    // We still want to be zoomed out a bit
+    const scale = timelineStore.scaleToGetDistance(width, dateRange) / 3;
+    timelineStore.setPageScale(scale);
+    nextTick(() => {
+      scrollToDate(dateMidpoint(dateRange));
+      setViewportDateInterval();
+    });
+  } else {
+    scrollToDate(dateMidpoint(dateRange), true);
+  }
+};
+
+watch(
+  () => timelineStore.scrollToPath,
+  (path) => {
+    if (!timelineStore.shouldZoomWhenScrolling) {
+      return;
+    }
+
+    const event = finder(path);
+    if (!event) {
+      return;
+    }
+
+    const range =
+      event instanceof Event
+        ? event.ranges.date
+        : event.range?.min && event.range.max
+        ? { fromDateTime: event.range?.min, toDateTime: event.range?.max }
+        : undefined;
+
+    if (!range) {
+      return;
+    }
+
+    const { width } = getViewport();
+    // We still want to be zoomed out a bit
+    const scale = timelineStore.scaleToGetDistance(width, range) / 3;
+    timelineStore.setPageScale(scale);
+    const midpoint = eventMidpoint(event);
+    if (midpoint) {
+      nextTick(() => {
+        scrollToDate(midpoint);
+        setViewportDateInterval();
+      });
+    }
+  }
+);
+
+watch(
+  () => timelineStore.jumpToRange,
+  (range) => range && scrollToDateRange(range)
+);
+
+const scrollToNow = () => scrollToDate(DateTime.now(), true);
 watch(
   () => timelineStore.hideNowLine,
-  (hide) => !hide && scrollToNow()
+  (hide) => scrollToNow()
 );
+
+const viewport = computed(() => timelineStore.pageSettings.viewport);
+onActivated(() => {
+  const viewportWithOffset = {
+    left: viewport.value.left + (timelineElement.value?.offsetLeft || 0),
+    top: viewport.value.top - (timelineElement.value?.offsetTop || 0),
+    width: viewport.value.width,
+  };
+  nextTick(() => setViewport(viewportWithOffset));
+});
+
 onMounted(() => {
   setViewportDateInterval();
+  panelStore.setPanelElement(PanelVisualization, timelineElement.value!);
+});
+
+const loading = computed(() => routeWatcherStore.watchState === "loading");
+
+const showJumpToRange = computed({
+  get() {
+    return timelineStore.showingJumpToRange;
+  },
+  set(val) {
+    timelineStore.setShowingJumpToRange(val);
+  },
 });
 </script>
 
 <template>
   <div
     id="timeline"
-    class="relative h-full overflow-auto w-full"
+    class="relative h-full overflow-auto w-full noScrollBar"
     ref="timelineElement"
     @scroll="scroll"
     :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
@@ -123,7 +238,15 @@ onMounted(() => {
     <TimeMarkersBack />
     <Events />
     <TimeMarkersFront />
+    <div
+      class="fixed inset-0 h-full flex items-center justify-center animate-pulse transition pointer-events-none"
+      :class="{
+        'bg-indigo-500/50 duration-500': loading,
+        'duration-100': !loading,
+      }"
+    ></div>
   </div>
+  <JumpToRangeDialog v-model="showJumpToRange" />
 </template>
 
 <style scoped></style>

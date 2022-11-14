@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import {
-  type Block,
-  EventDescription,
-  type Range,
-} from "@markwhen/parser/lib/Types";
+import type { Block, Range } from "@markwhen/parser/lib/Types";
+import { toInnerHtml } from "../../utilities/innerHtml";
 
 const props = defineProps<{
   supplemental: Block[];
@@ -32,7 +29,7 @@ const onChange = (index: number, checked: boolean) => {};
           :id="`checkbox_${index}_${item.raw}`"
         />
         <label
-          v-html="EventDescription.toInnerHtml(item.raw)"
+          v-html="toInnerHtml(item.raw)"
           class="ml-2 pointer-events-auto"
           :for="`checkbox_${index}_${item.raw}`"
         ></label>
@@ -44,11 +41,7 @@ const onChange = (index: number, checked: boolean) => {};
       >
         <li v-html="item.raw"></li>
       </ul>
-      <p
-        v-else
-        :key="'p' + item.raw"
-        v-html="EventDescription.toInnerHtml(item.raw)"
-      ></p>
+      <p v-else :key="'p' + item.raw" v-html="toInnerHtml(item.raw)"></p>
     </template>
   </div>
 </template>

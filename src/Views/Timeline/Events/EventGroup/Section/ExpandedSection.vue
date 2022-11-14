@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { EventPath } from "@/Markwhen/transformStore";
+import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
-import { EventDescription } from "@markwhen/parser/lib/Types";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useEventColor } from "../../composables/useEventColor";
 import EventRow from "../../Event/EventRow.vue";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const { distanceBetweenDates } = useTimelineStore();
 
@@ -24,9 +24,7 @@ const fullWidth = computed(() => {
   }
   return distanceBetweenDates(props.group.range.min, props.group.range.latest);
 });
-const titleHtml = computed(() =>
-  EventDescription.toInnerHtml(props.group.title || "")
-);
+const titleHtml = computed(() => toInnerHtml(props.group.title || ""));
 </script>
 
 <template>
@@ -47,8 +45,11 @@ const titleHtml = computed(() =>
     ></div>
     <EventRow
       v-for="(event, i) in group"
-      :path="[path[0], i]"
-      :key="event.eventString.substring(0, 30)"
+      :path="{ type: props.path.type, path: [props.path.path[0]!, i] }"
+      :key="
+        event.eventString +
+        event.event.supplemental.reduce((prev, curr) => prev + curr.raw, '')
+      "
       :event="event"
     />
     <div

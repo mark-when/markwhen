@@ -23,7 +23,7 @@ const dateRight = computed(
     viewportLeftMarginPixels
 );
 const hoveredInEditor = computed(() =>
-  editorOrchestrator.isEventHoveredInEditor(props.event)
+  false // editorOrchestrator.isEventHoveredInEditor(props.event)
 );
 
 const hover = ref(false);

@@ -9,7 +9,7 @@ const toggleHideNowLine = () => {
 </script>
 
 <template>
-  <button class="pl-1" title="Toggle now line" @click="toggleHideNowLine">
+  <button class="px-1" title="Toggle now line" @click="toggleHideNowLine">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 2 17 12" class="h-5 w-5">
       <path
         d="m 2 3 a 1 1 0 0 0 0 2 h 11 a 1 1 0 1 0 0 -2 h -11 z m 1 4 a 1 1 0 0 0 0 2 h 11 a 1 1 0 0 0 0 -2 h -11 z m 1 4 a 1 1 0 1 0 0 2 h 11 a 1 1 0 1 0 0 -2 h -11 z"

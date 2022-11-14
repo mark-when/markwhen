@@ -103,7 +103,7 @@ export const useResize = (
     document.addEventListener("touchend", upListener);
     document.addEventListener("keydown", escapeListener);
 
-    appStore.setGlobalClass("pointer-events-none cursor-ew-resize");
+    appStore.setGlobalClass("cursor-ew-resize");
   };
 
   const dragHandleListenerRight = (e: MouseEvent | TouchEvent) => {
@@ -113,7 +113,7 @@ export const useResize = (
     document.addEventListener("touchend", upListener);
     document.addEventListener("keydown", escapeListener);
 
-    appStore.setGlobalClass("pointer-events-none cursor-ew-resize");
+    appStore.setGlobalClass("cursor-ew-resize");
   };
 
   const moveListener = (e: MouseEvent | TouchEvent) => {

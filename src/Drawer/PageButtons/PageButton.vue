@@ -7,6 +7,7 @@ import { isEditable } from "@/injectionKeys";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { usePageButtonMove } from "./composables/usePageButtonMove";
 
 const { isTouchscreen, canHover } = useIsTouchscreen();
 const { deletePage } = useEditorOrchestratorStore();
@@ -26,13 +27,13 @@ const emit = defineEmits<{
 }>();
 
 const hovering = ref(false);
-const startX = ref<number | undefined>(undefined);
-const translateX = ref(0);
 const pageTitle = computed(
   () => markwhenStore.timelines[props.pageIndex].metadata.title
 );
 const button = ref<HTMLButtonElement>();
-
+const { moveListener, translateX } = usePageButtonMove(button, () =>
+  emit("doneMoving")
+);
 const computedStyle = computed(() => {
   if (translateX.value !== 0) {
     return { transform: `translateX(${translateX.value}px)`, zIndex: 20 };
@@ -44,7 +45,7 @@ const computedStyle = computed(() => {
   return { transform: `translateX(0px)` };
 });
 
-watch(translateX, (val) => emit("moving", val));
+watch(translateX, (val) => emit("moving", val || 0));
 
 const click = () => {
   pageStore.setPageIndex(props.pageIndex);
@@ -58,71 +59,7 @@ const mouseLeave = () => {
   hovering.value = false;
 };
 
-const moveListener = (e: MouseEvent | TouchEvent) => {
-  // Since we're moving, cancel any hover timer we had
-  if (hovering.value) {
-    hovering.value = false;
-  }
-  if (!button.value) {
-    return;
-  }
-
-  // We shouldn't go any further than the start of the parent element
-  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
-  const diff = clientX - startX.value!;
-  const parentOffsetLeft = button.value.parentElement?.offsetLeft || 0;
-  const addPageButtonWidth = 20;
-  const maxRight =
-    button.value.parentElement!.scrollWidth -
-    button.value.offsetLeft -
-    button.value.clientWidth -
-    addPageButtonWidth;
-  translateX.value = Math.min(
-    Math.max(-button.value.offsetLeft + parentOffsetLeft, diff),
-    maxRight
-  );
-};
-
-const stopMoving = () => {
-  startX.value = undefined;
-  translateX.value = 0;
-  document.removeEventListener("mousemove", moveListener);
-  document.removeEventListener("touchmove", moveListener);
-  document.removeEventListener("mouseup", endMoveListener);
-  document.removeEventListener("touchend", endMoveListener);
-  document.removeEventListener("keydown", escapeListener);
-};
-
-const endMoveListener = (e: MouseEvent | TouchEvent) => {
-  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
-  if (Math.abs(clientX - startX.value!) > 2) {
-    document.addEventListener("click", captureClick, true);
-  }
-  emit("doneMoving");
-  stopMoving();
-};
-
-const captureClick = (e: MouseEvent) => {
-  e.stopPropagation();
-  document.removeEventListener("click", captureClick, true);
-};
-
-const escapeListener = (e: KeyboardEvent) => {
-  if (e.key === "Escape") {
-    stopMoving();
-  }
-};
-
 const editable = inject(isEditable, false);
-const startMoving = (e: MouseEvent | TouchEvent) => {
-  e.preventDefault();
-  startX.value = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
-  document.addEventListener("touchmove", moveListener);
-  document.addEventListener("mousemove", moveListener);
-  document.addEventListener("touchend", endMoveListener);
-  document.addEventListener("mouseup", endMoveListener);
-  document.addEventListener("keydown", escapeListener);
-};
 const del = () => deletePage(props.pageIndex);
 
 const events = computed(() => {
@@ -130,7 +67,7 @@ const events = computed(() => {
     return {};
   }
 
-  const e = { mousedown: startMoving, touchdown: startMoving } as any;
+  const e = { mousedown: moveListener, touchdown: moveListener } as any;
   if (canHover.value) {
     e["mouseover"] = mouseOver;
     e["mouseleave"] = mouseLeave;
@@ -141,14 +78,14 @@ const events = computed(() => {
 
 <template>
   <button
-    class="h-10 border flex items-center justify-center flex-shrink-0 relative p-1"
+    class="h-8 flex items-center justify-center flex-shrink-0 relative py-1 px-2 font-bold"
     :style="computedStyle"
     v-on="events"
     @click="click"
     :class="{
-      'border-slate-200 dark:border-slate-600 border-t-0 bg-slate-50 dark:bg-slate-800 ':
+      'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-800':
         pageIndex === pageStore.pageIndex,
-      'border-white border-t-slate-200 dark:border-t-slate-600 border-x-0 border-b-0 bg-white hover:bg-slate-50 border-blue-100 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600':
+      'bg-white hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-300':
         pageIndex !== pageStore.pageIndex,
       'w-10': !pageTitle,
       'shadow-sm': shadowed,
@@ -156,27 +93,24 @@ const events = computed(() => {
     ref="button"
   >
     <button
-      class="absolute right-0 top-0 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 dark:bg-slate-700 bg-slate-100 z-30 rounded-full"
+      class="absolute right-0 top-0 text-slate-300 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-300 dark:bg-slate-700 bg-slate-100 z-30 p-px"
       @click.prevent.stop="del"
       v-if="editable && markwhenStore.timelines.length > 1 && hovering"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
+        class="h-3 w-3"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
         <path
           fill-rule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
           clip-rule="evenodd"
-        />
+        ></path>
       </svg>
     </button>
-    <h3
-      v-if="pageTitle"
-      class="px-2 text-sm lg:text-base font-bold text-gray-500 dark:text-gray-300"
-    >
+    <h3 v-if="pageTitle" class="px-2 text-sm lg:text-base">
       {{ pageTitle }}
     </h3>
   </button>

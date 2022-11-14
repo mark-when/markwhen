@@ -1,19 +1,23 @@
 <script setup lang="ts">
+import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
+import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
-import { EventDescription } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 import { useEventColor } from "../../composables/useEventColor";
-
-const props = defineProps<{ group: EventSubGroup; left: number }>();
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+const eventDetailStore = useEventDetailStore();
+const props = defineProps<{
+  group: EventSubGroup;
+  left: number;
+  path: EventPath;
+}>();
 
 const { distanceBetweenDates } = useTimelineStore();
 
 const hovering = ref(false);
 const { color } = useEventColor(props.group);
-const titleHtml = computed(() =>
-  EventDescription.toInnerHtml(props.group.title || "")
-);
+const titleHtml = computed(() => toInnerHtml(props.group.title || ""));
 const fullWidth = computed(() => {
   if (!props.group || !props.group.range) {
     return 100;
@@ -21,6 +25,7 @@ const fullWidth = computed(() => {
   const { min, latest } = props.group.range;
   return distanceBetweenDates(min, latest);
 });
+const isDetail = computed(() => eventDetailStore.isDetailEventPath(props.path));
 </script>
 
 <template>

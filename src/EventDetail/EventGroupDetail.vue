@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EventSubGroup } from "@markwhen/parser/lib/Types";
-import { EventDescription } from "@markwhen/parser/lib/Types";
+import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const props = defineProps<{ eventGroup: EventSubGroup }>();
 </script>
@@ -12,7 +12,7 @@ const props = defineProps<{ eventGroup: EventSubGroup }>();
         class="font-bold text-xl px-3"
         v-html="
           eventGroup.title
-            ? EventDescription.toInnerHtml(eventGroup.title)
+            ? toInnerHtml(eventGroup.title)
             : eventGroup.style === 'group'
             ? '(Group)'
             : '(Section)'

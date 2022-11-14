@@ -13,6 +13,7 @@ const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 
 const editable = inject(isEditable);
+const type = "pageFiltered" as "pageFiltered";
 </script>
 
 <template>
@@ -27,7 +28,7 @@ const editable = inject(isEditable);
       <template v-if="Array.isArray(event)">
         <event-group
           v-if="event.style === 'group'"
-          :path="[i]"
+          :path="{ type, path: [i] }"
           :eventGroup="event"
           :key="
             event.reduce(
@@ -38,7 +39,7 @@ const editable = inject(isEditable);
         />
         <event-section
           v-else
-          :path="[i]"
+          :path="{ type, path: [i] }"
           :eventGroup="event"
           :key="
             event.reduce(
@@ -50,13 +51,13 @@ const editable = inject(isEditable);
       </template>
       <event-row
         v-else
-        :path="[i]"
-        :key="event.eventString.substring(0, 50)"
+        :path="{ type, path: [i] }"
+        :key="event.eventString"
         :event="event"
       />
     </template>
     <new-event v-if="editable" />
-    <div style="height: 90vh"></div>
+    <div style="height: 85vh"></div>
   </div>
 </template>
 

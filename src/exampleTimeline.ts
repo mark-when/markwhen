@@ -1,5 +1,45 @@
 
 export const exampleTimeline = `title: Project planning example
+
+#Project1: #d336b1
+
+group Project 1 #Project1
+// Supports ISO8601
+2022-01/2022-03: Sub task #John
+2022-03/2022-06: Sub task 2 #Michelle
+More info about sub task 2
+
+- [ ] We need to get this done
+- [x] And this
+- [ ] This one is extra
+
+2022-07: Yearly planning
+
+group Project 2 #Project2
+2022-04/4 months: Larger sub task #Danielle
+
+// Supports American date formats
+03/2022 - 1 year: Longer ongoing task #Michelle
+
+- [x] Sub task 1
+- [x] Sub task 2
+- [ ] Sub task 3
+- [ ] Sub task 4
+- [ ] so many checkboxes omg
+
+10/2022 - 2 months: Holiday season
+
+group Project 3
+01/2023: Project kickoff
+02/2023-04/2023: Other stuff
+
+section Overall
+
+2022: Year of the something
+2023: Year of something else
+
+_-_-_break_-_-_
+
 title: Life timeline example
 description: Start editing to make it your own 🫡
 
@@ -10,7 +50,7 @@ description: Start editing to make it your own 🫡
 #Work: pink
 #Education: #f42
 
-section Education I 
+section Education I #Education
 08/2008-05/2012: Psych degree #Education
 02/2010-06/2012: Dispatcher #Work
 
@@ -19,15 +59,9 @@ section Education I
 06/2011-08/2011: Westover Air Reserve Base https://photos.app.goo.gl/NZ5rnGS7vZTXHe7aA #Work
 endSection
 
-_-_-_break_-_-_
-title: second part
-
 // 2013
 03/15/2013-04/2015: China https://photos.app.goo.gl/4UEkw3EbUkUuNzKGA #Work
 
-- [ ] task 1
-- [ ] task 2
-- [x] completed
 // 2014
 07/2014: 4th of July in DC https://photos.app.goo.gl/d418j6GSkCD5LGmY8
 
@@ -41,7 +75,6 @@ section Education II #Education
 
 endSection
 
-group
 // 2016
 05/22/2016-08/12/2016: Cardinal Health #Work
 08/16/2016-08/27/2016: Italy
@@ -57,21 +90,19 @@ group Unemployed Travel #Travel
 08/04/2018-08/14/2018: Mexico City
 09/05/2018-09/11/2018: Hong Kong and Macau
 09/19/2018-09/22/2018: Road trip to Seattle
+endGroup
 
 10/01/2018-01/2021: [Google](https://www.google.com) #Work
 12/28/2018-12/29/2018: Nemacolin and Fallingwater
 
 // 2019
-group 2019 group
 06/08/2019: Paula's wedding
-- [] task
-- [x] finished task
 07/04/2019: 4th of July in Seattle with siblings
 08/23/2019-08/27/2019: SF and Bishop's Ranch
 09/2019: Hawaii with Google
 12/20/2019-12/22/2019: Train from Seattle to Chicago
 12/2019: Christmas at home, Dad to hospital
-endGroup 
+
 // 2020
 02/29/2020: Molly and Kaitlyn to Seattle (thus starting covid)
 03/28/2020: James to Austin
@@ -98,21 +129,9 @@ endGroup
 02/18/2022-02/21/2022: Road trip to LA
 #Travel
 
-some text here for the people
-[linky time](www.google.com)
-- [] and another line
-
 [Eugene, Oregon](location)
 [Mt Shasta](location)
 [Los Angeles](location)
 
 03/2022 - now: [Reddit](https://www.reddit.com) #Work
-
-_-_-_break_-_-_
-
-title: uh oh third page
-
-2023: oh boy
-moer text 
-- []: wut
 `;
