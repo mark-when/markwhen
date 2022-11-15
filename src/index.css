@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 html, body {
+  padding: 0;
   height: 100%;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,4 +25,10 @@ button {
 
 .safeBottomPadding {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+.eventTitle {
+  font-family: system-ui;
+  white-space: nowrap;
+  font-weight: 600;
 }

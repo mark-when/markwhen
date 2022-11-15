@@ -34,7 +34,7 @@ export const usePageEffects = () => {
   watchEffect(() => {
     const numPages = markwhenStore.timelines.length;
     if (pageStore.pageIndex >= numPages) {
-      pageStore.setPageIndex(pageStore.pageIndex - 1);
+      pageStore.setPageIndex(markwhenStore.timelines.length - 1);
     }
   });
 };

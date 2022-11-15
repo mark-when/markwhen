@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="px-3 overflow-scroll">
+  <div class="px-3 overflow-scroll text-base">
     <EventMarkdown
       :supplemental="markdownBlocks"
       :matched-list-items="matchedListItems"

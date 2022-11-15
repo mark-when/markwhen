@@ -4,10 +4,9 @@ import { defineStore } from "pinia";
 import { computed, reactive, ref, shallowReactive, type Ref } from "vue";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useParserWorker } from "./composables/useParserWorker";
-import { exampleTimeline } from "@/exampleTimeline";
 
 export const useMarkwhenStore = defineStore("markwhen", () => {
-  const rawTimelineString = ref<string>(exampleTimeline);
+  const rawTimelineString = ref<string>(``);
 
   // const cache = reactive(new Cache());
   // const timelines = computed(
