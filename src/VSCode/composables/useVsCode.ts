@@ -65,6 +65,10 @@ export const useVsCode = () => {
     vscodeApi.postMessage(message);
   };
 
+  const updateText = (text: string) => {
+    postRequest("update", { text })
+  }
+
   useEventListener("message", (event) => {
     const message = event.data;
     console.log(message);
@@ -121,19 +125,7 @@ export const useVsCode = () => {
     } else {
       throw new Error("Not a request or response");
     }
-    // switch (message.type) {
-    //   case "update":
-    //     const text = message.text;
-    //     markwhenStore.setRawTimelineString(text);
-    //     break;
-    //   case "hoverEvent":
-    //     const index = message.index as number;
-    //     const indexType = message.indexType as "page" | "whole";
-    //     if (!indexType || indexType === "whole") {
-    //       editorOrchestrator.setHoveringEvent(index - rangeOffset.value);
-    //     } else {
-    //       editorOrchestrator.setHoveringEvent(index);
-    //     }
-    // }
   });
+
+  return { updateText }
 };
