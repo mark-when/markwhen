@@ -32,7 +32,6 @@ const locations = computed(() =>
           style="max-width: min(90vw, 600px)"
         >
           <event-markdown
-            style="font-size: 80%"
             :supplemental="supplemental"
             :matchedListItems="matchedListItems"
           />
