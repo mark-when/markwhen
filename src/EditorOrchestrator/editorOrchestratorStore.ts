@@ -41,13 +41,13 @@ export const useEditorOrchestratorStore = defineStore(
     const choosingColor = ref(false);
 
     const setText = (text: string) => {
-      markwhenStore.setRawTimelineString(text)
-      console.log("posting new text")
+      markwhenStore.setRawTimelineString(text);
+      console.log("posting new text");
       vscodeApi.postMessage({
         type: "update",
-        text
-      })
-    }
+        text,
+      });
+    };
 
     const addPage = () => {
       const newString = markwhenStore.rawTimelineString
