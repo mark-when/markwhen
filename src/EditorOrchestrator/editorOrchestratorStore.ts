@@ -28,16 +28,16 @@ export const useEditorOrchestratorStore = defineStore(
     const hoveringEventPaths = ref<EventPaths | null>(null);
     const choosingColor = ref(false);
 
-    const setText  = (text: string) => {
+    const setText = (text: string) => {
       markwhenStore.setRawTimelineString(text);
-    }
+    };
 
     const addPage = () => {
       const newString = markwhenStore.rawTimelineString
         .concat(PAGE_BREAK)
         .concat(`title: Page ${markwhenStore.timelines.length + 1}`);
 
-        setText(newString);
+      setText(newString);
     };
 
     const movePages = (from: number, to: number) => {
@@ -65,7 +65,7 @@ export const useEditorOrchestratorStore = defineStore(
         })
         .join(PAGE_BREAK);
 
-        setText(newString);
+      setText(newString);
     };
 
     const setPageTimelineString = (newString: string) => {
@@ -105,7 +105,7 @@ export const useEditorOrchestratorStore = defineStore(
         currentTimelineString.substring(0, startIndex) +
         currentTimelineString.substring(endIndex);
 
-        setText(newString);
+      setText(newString);
     };
 
     const editEventDateRange = (
@@ -129,7 +129,7 @@ export const useEditorOrchestratorStore = defineStore(
         `${dateRangeToString(range, scale, preferredInterpolationFormat)}:` +
         post;
 
-        setText(newString);
+      setText(newString);
     };
 
     const clearHoveringEvent = () => {
@@ -172,7 +172,7 @@ export const useEditorOrchestratorStore = defineStore(
         `\n${dateRangeString}: Event\n` +
         es.slice(lastIndexOfLastEvent);
 
-        setText(newString);
+      setText(newString);
     };
 
     const indexInString = (e: Event | EventSubGroup) => {
@@ -187,9 +187,7 @@ export const useEditorOrchestratorStore = defineStore(
       return "whole" in e || "pageFiltered" in e || "page" in e;
     };
 
-    const showInEditor = (e: Event | EventSubGroup | EventPaths) => {
-     
-    };
+    const showInEditor = (e: Event | EventSubGroup | EventPaths) => {};
 
     return {
       // state
