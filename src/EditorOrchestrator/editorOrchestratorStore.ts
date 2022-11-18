@@ -5,7 +5,6 @@ import {
   Event,
   type DateFormat,
   type DateRange,
-  type EventSubGroup,
   type Timeline,
 } from "@markwhen/parser/lib/Types";
 import { ref } from "vue";
@@ -140,7 +139,7 @@ export const useEditorOrchestratorStore = defineStore(
       hoveringEventPaths.value = paths;
     };
 
-    const setHoveringEvent = (e: Event | EventSubGroup | number) => {
+    const setHoveringEvent = (e: Event | number) => {
       hoveringEventPaths.value = eventMapStore.getAllPaths(e);
     };
 
@@ -161,7 +160,8 @@ export const useEditorOrchestratorStore = defineStore(
         scale,
         preferredInterpolationFormat
       );
-      const events = pageStore.pageTimeline.events.flat();
+      // events-reference
+      const events = pageStore.pageTimeline.events.flat().map(n => n.eventValue());
       const lastIndexOfLastEvent = events.length
         ? events[events.length - 1].ranges.event.to
         : pageStore.pageTimeline.metadata.endStringIndex;
@@ -175,19 +175,7 @@ export const useEditorOrchestratorStore = defineStore(
       setText(newString);
     };
 
-    const indexInString = (e: Event | EventSubGroup) => {
-      if (e instanceof Event) {
-        return e.ranges.event.from + 1;
-      } else {
-        return e.rangeInText!.from + 1;
-      }
-    };
-
-    const isEventPaths = (e: any): e is EventPaths => {
-      return "whole" in e || "pageFiltered" in e || "page" in e;
-    };
-
-    const showInEditor = (e: Event | EventSubGroup | EventPaths) => {};
+    const showInEditor = (e: Event | EventPaths) => {};
 
     return {
       // state

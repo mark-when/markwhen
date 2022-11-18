@@ -3,7 +3,7 @@ import {
   type EventPath,
 } from "@/Markwhen/composables/useEventFinder";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { type EventSubGroup, Event } from "@markwhen/parser/lib/Types";
+import { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
 export const usePageAdjustedRanges = () => {
@@ -25,7 +25,7 @@ export const usePageAdjustedRanges = () => {
     return !!arg.type && !!arg.path;
   };
   const rangeInTextWithOffset = computed(
-    () => (e: Event | EventSubGroup | EventPath) => {
+    () => (e: Event | EventPath) => {
       let event;
       if (isEventPath(e)) {
         event = eventFinder(e);

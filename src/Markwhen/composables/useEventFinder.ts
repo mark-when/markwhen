@@ -6,7 +6,7 @@ import { useTransformStore } from "../transformStore";
 
 export interface EventPath {
   type: "whole" | "page" | "pageFiltered";
-  path: [number, number] | [number] | [];
+  path: number[];
 }
 
 export const eqPath = (ep: EventPath, eps: EventPaths): boolean => {

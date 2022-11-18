@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { inject, ref, computed, watch } from "vue";
-import { useMediaQuery } from "@vueuse/core";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { isEditable } from "@/injectionKeys";
@@ -9,7 +8,7 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
 import { usePageButtonMove } from "./composables/usePageButtonMove";
 
-const { isTouchscreen, canHover } = useIsTouchscreen();
+const { canHover } = useIsTouchscreen();
 const { deletePage } = useEditorOrchestratorStore();
 const markwhenStore = useMarkwhenStore();
 const pageStore = usePageStore();

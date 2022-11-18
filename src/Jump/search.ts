@@ -37,21 +37,23 @@ export const useSearch = () => {
   });
 
   const mappedEvents = computed(() =>
-    pageStore.pageTimeline.events.flatMap((event) => {
-      if (event instanceof Event) {
-        return [eventToDocument(event, mapStore.getAllPaths(event)!)];
-      } else {
-        return [
-          {
-            path: JSON.stringify(mapStore.getAllPaths(event)),
-            dateTime: event.range?.min.toLocaleString(DateTime.DATETIME_HUGE),
-            supplemental: "",
-            description: event.title || "",
-            tags: (event.tags || []).join(" "),
-          },
-          ...event.map((e) => eventToDocument(e, mapStore.getAllPaths(e)!)),
-        ];
-      }
+    // events-reference
+    pageStore.pageTimeline.events.flat().map((node) => {
+      const event = node.eventValue();
+      // if (event instanceof Event) {
+      return eventToDocument(event, mapStore.getAllPaths(event)!);
+      // } else {
+      // return [
+      //   {
+      //     path: JSON.stringify(mapStore.getAllPaths(event)),
+      //     dateTime: event.range?.min.toLocaleString(DateTime.DATETIME_HUGE),
+      //     supplemental: "",
+      //     description: event.title || "",
+      //     tags: (event.tags || []).join(" "),
+      //   },
+      //   ...event.map((e) => eventToDocument(e, mapStore.getAllPaths(e)!)),
+      // ];
+      // }
     })
   );
 

@@ -3,13 +3,10 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import {
   dateRangeToString,
-  scaleForDuration,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import {
-  DateRangePart,
   Event,
   type DateFormat,
-  type EventSubGroup,
 } from "@markwhen/parser/lib/Types";
 import type lunr from "lunr";
 import {

@@ -34,12 +34,12 @@ export const useTransformStore = defineStore("transform", () => {
   const toggleFilterUntagged = () =>
     (filterUntagged.value = !filterUntagged.value);
 
-  const events = computed(() => [...pageStore.pageTimeline.events]);
+  // const events = computed(() => [...pageStore.pageTimeline.events]);
 
   // TODO: optimize/memoize this or something. It does not need
   // to be recomputed on page change, we should save it
   const transformedEvents = computed(() =>
-    transform(events.value, sort.value, filter.value, filterUntagged.value)
+    transform(pageStore.pageTimeline.events, filter.value, filterUntagged.value)
   );
 
   return {

@@ -1,18 +1,9 @@
 <script setup lang="ts">
 import PageButtons from "./PageButtons/PageButtons.vue";
-import Sort from "./ViewSettings/Sort.vue";
-import ViewSettings from "./ViewSettings/ViewSettings.vue";
 import { useViewStore } from "@/Views/viewStore";
-import { usePageStore } from "@/Markwhen/pageStore";
-import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import Tags from "./ViewSettings/Tags/Tags.vue";
-import { computed, watch } from "vue";
+import { computed } from "vue";
 
-const pageStore = usePageStore();
 const viewStore = useViewStore();
-const editorOrchestratorStore = useEditorOrchestratorStore();
-
-const description = computed(() => pageStore.pageTimelineMetadata.description);
 
 const useTopBorder = computed(() => {
   const { uses } = viewStore.currentView;
