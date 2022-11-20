@@ -2,18 +2,27 @@
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { useTransformStore } from "@/Markwhen/transformStore";
-import EventSection from "@/Views/Timeline/Events/EventGroup/Section/EventSection.vue";
+import EventSection from "@/Views/Timeline/Events/EventGroup/Section/Section.vue";
 import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
 import NowLine from "../Events/NowLine.vue";
 import { isEditable } from "@/injectionKeys";
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import NewEvent from "./NewEvent/NewEvent.vue";
+import NodeRow from "./NodeRow.vue";
+import type { Node } from "@markwhen/parser/lib/Node";
+import { usePageStore } from "@/Markwhen/pageStore";
+import Section from "@/Views/Timeline/Events/EventGroup/Section/Section.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 
 const editable = inject(isEditable);
 const type = "pageFiltered" as "pageFiltered";
+
+// top level is always an array
+const nodes = computed(
+  () => usePageStore().pageTimeline.events.value as Array<Node>
+);
 </script>
 
 <template>
@@ -24,39 +33,13 @@ const type = "pageFiltered" as "pageFiltered";
   >
     <div class="h-24"></div>
     <now-line />
-    <template v-for="(event, i) in transformStore.transformedEvents">
-      <template v-if="Array.isArray(event)">
-        <event-group
-          v-if="event.style === 'group'"
-          :path="{ type, path: [i] }"
-          :eventGroup="event"
-          :key="
-            event.reduce(
-              (prev, curr) => prev + curr.eventString,
-              'group' + event.title + (event.tags || []).join(',')
-            )
-          "
-        />
-        <event-section
-          v-else
-          :path="{ type, path: [i] }"
-          :eventGroup="event"
-          :key="
-            event.reduce(
-              (prev, curr) => prev + curr.eventString,
-              'section' + event.title + (event.tags || []).join(',')
-            )
-          "
-        />
-      </template>
-      <event-row
-        v-else
-        :path="{ type, path: [i] }"
-        :key="event.eventString"
-        :event="event"
-      />
-    </template>
-    <new-event v-if="editable" />
+    <NodeRow
+      v-for="(node, i) in nodes"
+      :node="node"
+      :path="[i]"
+      :can-have-sections="true"
+    ></NodeRow>
+    <!-- <new-event v-if="editable" /> -->
     <div style="height: 85vh"></div>
   </div>
 </template>

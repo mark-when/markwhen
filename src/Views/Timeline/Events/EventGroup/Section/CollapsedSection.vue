@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "@vue/reactivity";
 import { useEventColor } from "../../composables/useEventColor";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import type { Node } from "@markwhen/parser/lib/Node";
 
-const props = defineProps<{ group: EventSubGroup }>();
+const props = defineProps<{ node: Node }>();
 
 const hovering = ref(false);
-const titleHtml = computed(() =>
-  toInnerHtml(props.group.title || "")
-);
+const titleHtml = computed(() => toInnerHtml(props.node.title || ""));
 
-const { color } = useEventColor(props.group);
+const { color } = useEventColor(props.node);
 const hasDefinedColor = computed(() => !!color.value);
 </script>
 
 <template>
   <div
-    class="dark:border-gray-600 eventTitle transition bg-opacity-10 dark:bg-opacity-20 hover:bg-opacity-30 hover:dark:bg-opacity-40 cursor-pointer"
+    class="dark:border-gray-600 eventTitle transition bg-opacity-10 dark:bg-opacity-20 hover:bg-opacity-30 hover:dark:bg-opacity-40 cursor-pointer z-10"
     :class="{
       'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 v-gray-400/25':
         !hasDefinedColor,
@@ -37,7 +35,7 @@ const hasDefinedColor = computed(() => !!color.value);
     <div class="flex">
       <div class="sticky left-4 px-1 mt-px">
         <span class="" v-if="titleHtml" v-html="titleHtml"></span>
-        ({{ group.length }})
+        ({{ (node.value as Array<Node>).length }})
       </div>
     </div>
   </div>

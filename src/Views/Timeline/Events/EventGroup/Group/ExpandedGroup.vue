@@ -7,6 +7,7 @@ import { useEventColor } from "../../composables/useEventColor";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import type UpCaret from "../UpCaret.vue";
 
 const timelineStore = useTimelineStore();
 const eventDetailStore = useEventDetailStore();
@@ -22,9 +23,7 @@ const props = defineProps<{
 
 const button = ref<HTMLButtonElement | null>(null);
 
-const titleHtml = computed(() =>
-  toInnerHtml(props.eventGroup.title || "")
-);
+const titleHtml = computed(() => toInnerHtml(props.eventGroup.title || ""));
 const { color } = useEventColor(props.eventGroup);
 
 const left = computed(() => {
@@ -119,18 +118,7 @@ const isDetail = computed(() => eventDetailStore.isDetailEventPath(props.path));
           <span class="eventTitle" v-if="eventGroup.title" v-html="titleHtml">
           </span>
         </div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 ml-auto"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <UpCaret />
       </button>
     </div>
   </div>

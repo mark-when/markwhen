@@ -1,16 +1,22 @@
 import { usePageStore } from "@/Markwhen/pageStore";
-import type { Event, EventSubGroup } from "@markwhen/parser/lib/Types";
+import type { Node } from "@markwhen/parser/lib/Node";
+import { Event } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import { ref, unref, watchEffect } from "vue";
 
-export const useEventColor = (eventRef: MaybeRef<Event | EventSubGroup>) => {
-  const color = ref<string | null>(null);
+export const useEventColor = (eventRef: MaybeRef<Node | Event>) => {
+  const color = ref<string>();
   const pageStore = usePageStore();
 
   watchEffect(() => {
-    const event = unref(eventRef);
-    const ourTags = Array.isArray(event) ? event.tags : event.event.tags;
-    color.value = ourTags ? pageStore.tags[ourTags[0]] : null;
+    const node = unref(eventRef);
+    let ourTags: string[] | undefined;
+    if (node instanceof Event) {
+      ourTags = node.event.tags;
+    } else {
+      ourTags = node.isEventNode() ? node.eventValue().event.tags : node.tags;
+    }
+    color.value = ourTags ? pageStore.tags[ourTags[0]] : undefined;
   });
 
   return { color };

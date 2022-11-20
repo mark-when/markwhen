@@ -19,6 +19,7 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import Spinner from "../../../../utilities/Spinner.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import type { Node } from "@markwhen/parser/lib/Node";
 
 const props = defineProps<{ event: Event; path: EventPath }>();
 
