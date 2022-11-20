@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GroupStyle, Path } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
-import UpCaret from "../UpCaret.vue";
+import UpCaret from "./UpCaret.vue";
 const props = defineProps<{
   color?: string;
   titleHtml: string;

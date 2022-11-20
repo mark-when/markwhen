@@ -3,7 +3,7 @@ import type { Node } from "@markwhen/parser/lib/Node";
 import type { Path } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import EventRow from "./Event/EventRow.vue";
-import Section from "./EventGroup/Section/Section.vue";
+import Section from "./Section/Section.vue";
 
 const props = defineProps<{
   node: Node;

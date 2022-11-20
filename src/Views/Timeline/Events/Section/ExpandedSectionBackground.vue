@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { COLORS } from "@/utilities/colorUtils";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { Node } from "@markwhen/parser/lib/Node";
 import { computed } from "@vue/reactivity";
-import { watchEffect } from "vue";
 
 const props = defineProps<{
   hovering: boolean;
@@ -14,10 +11,6 @@ const props = defineProps<{
   left: number;
   fullWidth: number;
 }>();
-
-const timelineStore = useTimelineStore();
-const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
-  timelineStore;
 
 const isGroupStyle = computed(() => props.style === "group");
 

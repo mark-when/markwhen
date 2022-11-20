@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { Node } from "@markwhen/parser/lib/Node";
-import { useEventColor } from "../../composables/useEventColor";
+import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
@@ -21,7 +21,7 @@ const hovering = ref(false);
 const canCalculateButton = ref(false);
 
 const toggle = (e: MouseEvent) => {
-  console.log('toggle')
+  console.log("toggle");
   if (e.target instanceof HTMLAnchorElement) {
     return;
   }
