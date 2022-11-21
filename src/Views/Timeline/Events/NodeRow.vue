@@ -13,6 +13,17 @@ const props = defineProps<{
 
 const isEventRow = computed(() => props.node.isEventNode());
 const type = "pageFiltered" as "pageFiltered";
+
+const nodeKey = (n: Node) => {
+  if (n.isEventNode()) {
+    const event = n.eventValue().event;
+    return (
+      event.eventDescription + event.supplemental.map((b) => b.raw).join(" ")
+    );
+  } else {
+    return n.title;
+  }
+};
 </script>
 
 <template>
@@ -31,6 +42,7 @@ const type = "pageFiltered" as "pageFiltered";
       v-for="(node, i) in (props.node.value as Array<Node>)"
       :path="[...path, i]"
       :node="node"
+      :key="nodeKey(node)"
       :can-have-sections="props.node.style === 'section'"
     ></NodeRow>
   </Section>

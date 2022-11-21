@@ -49,12 +49,12 @@ watch(expanded, (val) => {
 const { color } = useEventColor(props.node);
 
 const fullWidth = computed(() => {
-  if (!props.node || !props.node.range) {
+  if (!props.node || !props.node.ranges()) {
     return 100;
   }
   return distanceBetweenDates(
-    props.node.range.fromDateTime,
-    props.node.range.toDateTime
+    props.node.ranges()!.fromDateTime,
+    props.node.ranges()!.toDateTime
   );
 });
 const titleHtml = computed(() => toInnerHtml(props.node.title || ""));

@@ -21,7 +21,7 @@ const styleObject = computed(() => {
       props.hovering ? "0.09" : "0.05"
     }`;
     obj.border = `1px solid rgba(${props.color}, ${
-      props.hovering ? "0.35" : "0.12"
+      props.hovering ? "0.75" : "0.12"
     })`;
   }
   if (isGroupStyle.value) {

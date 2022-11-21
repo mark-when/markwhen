@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import EventRow from "@/Views/Timeline/Events/Event/EventRow.vue";
 import { useTransformStore } from "@/Markwhen/transformStore";
-import EventSection from "@/Views/Timeline/Events/EventGroup/Section/Section.vue";
-import EventGroup from "@/Views/Timeline/Events/EventGroup/Group/EventGroup.vue";
 import NowLine from "../Events/NowLine.vue";
 import { isEditable } from "@/injectionKeys";
 import { computed, inject } from "vue";
@@ -11,7 +8,6 @@ import NewEvent from "./NewEvent/NewEvent.vue";
 import NodeRow from "./NodeRow.vue";
 import type { Node } from "@markwhen/parser/lib/Node";
 import { usePageStore } from "@/Markwhen/pageStore";
-import Section from "@/Views/Timeline/Events/EventGroup/Section/Section.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
@@ -21,8 +17,19 @@ const type = "pageFiltered" as "pageFiltered";
 
 // top level is always an array
 const nodes = computed(
-  () => usePageStore().pageTimeline.events.value as Array<Node>
+  () => transformStore.transformedEvents?.value as Array<Node>
 );
+
+const nodeKey = (n: Node) => {
+  if (n.isEventNode()) {
+    const event = n.eventValue().event;
+    return (
+      event.eventDescription + event.supplemental.map((b) => b.raw).join(" ")
+    );
+  } else {
+    return n.title;
+  }
+};
 </script>
 
 <template>
@@ -35,6 +42,7 @@ const nodes = computed(
     <now-line />
     <NodeRow
       v-for="(node, i) in nodes"
+      :key="nodeKey(node)"
       :node="node"
       :path="[i]"
       :can-have-sections="true"

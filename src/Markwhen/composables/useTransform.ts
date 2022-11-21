@@ -1,36 +1,70 @@
-import { Node } from "@markwhen/parser/lib/Node";
+import type { Node } from "@markwhen/parser/lib/Node";
 // import type { Sort } from "@markwhen/parser/lib/Sort";
-import { Event } from "@markwhen/parser/lib/Types";
+
+// This is particularly for the 'untagged' filter case, because the root node
+// isn't going to have any tags
+export const transformRoot = (node: Node, filter: string[], filterUntagged: boolean) => {
+  const cloned = node.blankClone();
+  cloned.value = (node.value as Array<Node>).flatMap((n) => {
+    const transformed = transform(n, filter, filterUntagged);
+    return transformed ? [transformed] : [];
+  });
+  return cloned.value.length ? cloned : undefined;
+}
 
 export const transform = (
-  events: Node,
-  // sort: Sort,
+  node: Node,
   filter: string[],
   filterUntagged: boolean
-) => {
-  const filterFunction = (node: Node): boolean => {
-    const tags = node.isEventNode() ? node.eventValue().event.tags : node.tags;
+): Node | undefined => {
+  if (!node.value) {
+    return undefined;
+  }
+  if (node.isEventNode()) {
+    const tags = node.eventValue().event.tags;
     if (filterUntagged) {
-      if (tags?.length === 0) {
-        return true;
+      if (tags.length === 0) {
+        return node;
       }
       if (filter.length) {
-        return tags?.some((tag) => filter.includes(tag)) || false;
+        return tags.some((tag) => filter.includes(tag)) ? node : undefined;
       }
-      return false;
+      return undefined;
     }
     if (!filter.length) {
-      return true;
+      return node;
     }
-    return tags?.some((tag) => filter.includes(tag)) || false;
-  };
-
-  let filtered = new Node([]);
-  for (const { node } of events) {
-    if (filterFunction(node)) {
-      filtered.push(node.blankClone());
-    }
+    return tags.some((tag) => filter.includes(tag)) ? node : undefined;
   }
-  // filtered = sortEvents(filtered, sort);
-  return filtered;
+
+  const tags = node.tags;
+  if (filterUntagged) {
+    if (!tags || tags?.length === 0) {
+      return node;
+    }
+    if (filter.length) {
+      if (tags?.some((tag) => filter.includes(tag))) {
+        return node;
+      }
+      const cloned = node.blankClone();
+      cloned.value = (node.value as Array<Node>).flatMap((n) => {
+        const transformed = transform(n, filter, filterUntagged);
+        return transformed ? [transformed] : [];
+      });
+      return cloned.value.length ? cloned : undefined;
+    }
+    return undefined;
+  }
+  if (!filter.length) {
+    return node;
+  }
+  if (tags?.some((tag) => filter.includes(tag))) {
+    return node;
+  }
+  const cloned = node.blankClone();
+  cloned.value = (node.value as Array<Node>).flatMap((n) => {
+    const transformed = transform(n, filter, filterUntagged);
+    return transformed ? [transformed] : [];
+  });
+  return cloned.value.length ? cloned : undefined;
 };
