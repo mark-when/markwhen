@@ -6,7 +6,7 @@ import { isEditable } from "@/injectionKeys";
 import { computed, inject } from "vue";
 import NewEvent from "./NewEvent/NewEvent.vue";
 import NodeRow from "./NodeRow.vue";
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
 import { usePageStore } from "@/Markwhen/pageStore";
 
 const transformStore = useTransformStore();
@@ -17,10 +17,10 @@ const type = "pageFiltered" as "pageFiltered";
 
 // top level is always an array
 const nodes = computed(
-  () => transformStore.transformedEvents?.value as Array<Node>
+  () => transformStore.transformedEvents?.value as NodeArray
 );
 
-const nodeKey = (n: Node) => {
+const nodeKey = (n: Node<NodeValue>) => {
   if (n.isEventNode()) {
     const event = n.eventValue().event;
     return (

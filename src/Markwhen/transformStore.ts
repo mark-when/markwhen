@@ -1,10 +1,11 @@
-import { sorts } from "@markwhen/parser";
-import type { Sort } from "@markwhen/parser/lib/Sort";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 import { usePageEffect } from "./composables/usePageEffect";
 import { transformRoot } from "./composables/useTransform";
 import { usePageStore } from "./pageStore";
+
+export const sorts = ["none", "down", "up"] as Sort[];
+export type Sort = "none" | "down" | "up";
 
 export const useTransformStore = defineStore("transform", () => {
   const pageStore = usePageStore();
@@ -41,7 +42,8 @@ export const useTransformStore = defineStore("transform", () => {
     transformRoot(
       pageStore.pageTimeline.events,
       filter.value,
-      filterUntagged.value
+      filterUntagged.value,
+      sort.value
     )
   );
 
