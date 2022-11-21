@@ -7,7 +7,7 @@ import {
   type EventPath,
 } from "@/Markwhen/composables/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
-import type { Node, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 
 export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
   if (!p1 || !p2 || p1.type !== p2.type) {
@@ -63,8 +63,8 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     }
   };
 
-  watchEffect(() => {
-    const eventOrGroupFromPath = eventFinder(detailEventPath.value);
+  watch(detailEventPath, (path) => {
+    const eventOrGroupFromPath = eventFinder(path);
     if (eventOrGroupFromPath) {
       detailEvent.value = eventOrGroupFromPath;
     } else {
