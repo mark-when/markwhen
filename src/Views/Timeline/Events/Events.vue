@@ -20,7 +20,7 @@ const nodes = computed(
   () => transformStore.transformedEvents?.value as NodeArray
 );
 
-const nodeKey = (n: Node<NodeValue>) => {
+const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
     const event = n.eventValue().event;
     return (

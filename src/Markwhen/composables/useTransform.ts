@@ -21,11 +21,11 @@ export const transformRoot = (
 };
 
 export const transform = (
-  node: Node<NodeValue>,
+  node: SomeNode,
   filter: string[],
   filterUntagged: boolean,
   sort: Sort
-): Node<NodeValue> | undefined => {
+): SomeNode | undefined => {
   if (!node.value) {
     return undefined;
   }
@@ -112,7 +112,7 @@ const sortNodeArray = (node: Node<NodeArray> | undefined, sort: Sort) => {
       return [];
     })
     .sort((left, right) => {
-      const fromDateTime = (n: Node<NodeValue>) =>
+      const fromDateTime = (n: SomeNode) =>
         n.isEventNode()
           ? n.eventValue().ranges.date.fromDateTime
           : n.ranges()?.fromDateTime;

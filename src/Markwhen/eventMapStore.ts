@@ -10,7 +10,7 @@ type EventPathMap = [number[], Map<number, EventPath>];
 export type EventPaths = { [pathType in EventPath["type"]]?: EventPath };
 
 const buildMap = (
-  events: Node<NodeValue> | undefined,
+  events: SomeNode | undefined,
   type: EventPath["type"]
 ): EventPathMap => {
   const keys = [] as number[];

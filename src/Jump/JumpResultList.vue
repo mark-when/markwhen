@@ -42,7 +42,7 @@ const eventFinder: EventFinder = useEventFinder();
 
 const matchedEventOrGroup: (
   sr: lunr.Index.Result
-) => Node<NodeValue> | undefined = (sr: lunr.Index.Result) =>
+) => SomeNode | undefined = (sr: lunr.Index.Result) =>
   eventFinder(JSON.parse(sr.ref) as EventPaths);
 
 const titleForListItem = (item: ParseResult | lunr.Index.Result) => {

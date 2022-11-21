@@ -1,5 +1,4 @@
-import type { Node, NodeValue } from "@markwhen/parser/lib/Node";
-import type { Event } from "@markwhen/parser/lib/Types";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "vue";
 import type { EventPaths } from "../eventMapStore";
 import { usePageStore } from "../pageStore";
@@ -25,7 +24,7 @@ export const eqPath = (ep: EventPath, eps: EventPaths): boolean => {
 
 export type EventFinder = (
   eventPath?: EventPath | EventPaths | null
-) => Node<NodeValue> | undefined;
+) => SomeNode | undefined;
 
 export const useEventFinder = () => {
   const transformStore = useTransformStore();
@@ -38,13 +37,13 @@ export const useEventFinder = () => {
 
   const eventOrGroupFromPath = (
     eventPath?: EventPath | EventPaths | null
-  ): Node<NodeValue> | undefined => {
+  ): SomeNode | undefined => {
     if (!eventPath) {
       return;
     }
     if (isEventPath(eventPath)) {
       const path = eventPath.path;
-      let node: Node<NodeValue> | undefined;
+      let node: SomeNode | undefined;
       if (eventPath.type === "pageFiltered") {
         node = transformedEvents.value;
       } else if (eventPath.type === "page") {

@@ -1,12 +1,13 @@
 import { ref, computed, watchEffect, watch } from "vue";
 import { defineStore } from "pinia";
-import { Event, type EventSubGroup } from "@markwhen/parser/lib/Types";
+import type { Path } from "@markwhen/parser/lib/Types";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import {
   useEventFinder,
   type EventPath,
 } from "@/Markwhen/composables/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
+import type { Node, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
 
 export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
   if (!p1 || !p2 || p1.type !== p2.type) {
@@ -30,7 +31,7 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
   const detailEventPath = usePageEffect(
     () => undefined as EventPath | undefined
   );
-  const detailEvent = ref<Event | EventSubGroup>();
+  const detailEvent = ref<SomeNode>();
   const shouldOpenDetailWhenJumping = ref(false);
 
   const setShouldOpenDetailWhenJumping = (should: boolean) => {
@@ -82,65 +83,90 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
       return;
     }
     const { path, type } = detailEventPath.value;
-    if (path.length === 1 && path[0] > 0) {
-      const prevPath: EventPath = {
-        type,
-        path: [path[0] - 1],
-      };
-      const possibleGroup = eventFinder(prevPath);
-      if (!possibleGroup) {
-        return;
-      }
-      if (possibleGroup instanceof Event || !possibleGroup.length) {
-        return prevPath;
+    if (!path.length) {
+      return undefined;
+    }
+
+    let tempPath = path;
+    const last = () => tempPath[tempPath.length - 1];
+    do {
+      if (last() > 0) {
+        tempPath = [...tempPath.slice(0, -1), last() - 1];
       } else {
+        tempPath = [...tempPath.slice(0, -1)];
+      }
+      const possibleNode = eventFinder({
+        type,
+        path: tempPath,
+      });
+      if (possibleNode) {
         return {
           type,
-          path: [prevPath.path[0], possibleGroup.length - 1],
-        } as EventPath;
+          path: tempPath,
+        };
       }
-    }
-    if (path.length === 2) {
-      if (path[1] === 0) {
-        const prevPath: EventPath = { type, path: [path[0]] };
-        const possibleGroup = eventFinder(prevPath);
-        if (possibleGroup) {
-          return prevPath;
-        }
-      } else {
-        const prevPath: EventPath = { type, path: [path[0], path[1] - 1] };
-        const possibleGroup = eventFinder(prevPath);
-        if (possibleGroup) {
-          return prevPath;
-        }
-      }
-    }
+    } while (tempPath.length);
   });
 
-  const next = computed(() => {
+  const next = computed<EventPath | undefined>(() => {
     if (!detailEventPath.value) {
       return;
     }
     const { path, type } = detailEventPath.value;
-    if (path.length === 1) {
-      const subEvent: EventPath = { type, path: [path[0], 0] };
-      if (eventFinder(subEvent)) {
-        return subEvent;
-      }
-      const nextPath: EventPath = { type, path: [path[0] + 1] };
-      if (eventFinder(nextPath)) {
-        return nextPath;
-      }
-    } else {
-      const nextInGroup: EventPath = { type, path: [path[0]!, path[1]! + 1] };
-      if (eventFinder(nextInGroup)) {
-        return nextInGroup;
-      }
-      const next: EventPath = { type, path: [path[0]! + 1] };
-      if (eventFinder(next)) {
-        return next;
-      }
+    if (!path.length) {
+      return undefined;
     }
+    // [0, 3, 6, 1, 0]
+    let tempPath = path;
+    let pathAttempt = [...tempPath, 0];
+    let possibleNode = eventFinder({
+      type,
+      // next nested group
+      path: pathAttempt,
+    });
+    if (possibleNode) {
+      return {
+        type,
+        path: pathAttempt,
+      };
+    }
+    do {
+      pathAttempt = [
+        ...tempPath.slice(0, -1),
+        tempPath[tempPath.length - 1] + 1,
+      ];
+      possibleNode = eventFinder({
+        type,
+        // next sibling
+        path: pathAttempt,
+      });
+      if (possibleNode) {
+        return {
+          type,
+          path: pathAttempt,
+        };
+      }
+      if (tempPath.length > 1) {
+        // only try this is we're at the right level
+        pathAttempt = [
+          ...tempPath.slice(0, -2),
+          tempPath[tempPath.length - 2] + 1,
+        ];
+        possibleNode = eventFinder({
+          type,
+          // next uncle
+          path: pathAttempt,
+        });
+        if (possibleNode) {
+          return {
+            type,
+            path: pathAttempt,
+          };
+        }
+      }
+      // go up one and continue
+      tempPath = tempPath.slice(0, -1);
+    } while (tempPath.length);
   });
 
   return {

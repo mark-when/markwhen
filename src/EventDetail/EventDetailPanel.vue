@@ -2,7 +2,7 @@
 import { useEventDetailStore } from "./eventDetailStore";
 import EventDetail from "./EventDetail.vue";
 import EventGroupDetail from "./EventGroupDetail.vue";
-import { Event, type EventSubGroup } from "@markwhen/parser/lib/Types";
+import { Event } from "@markwhen/parser/lib/Types";
 import { computed, onMounted, ref, watch } from "vue";
 import EventDetailPaneTop from "./EventDetailPaneTop.vue";
 import { usePanelResize } from "@/Sidebar/composables/usePanelResize";
@@ -32,7 +32,7 @@ const { resizeMouseDown, tempWidth } = usePanelResize(
   (width) => panelStore.setWidth(PanelDetail, width)
 );
 
-const isEvent = computed(() => eventDetailStore.detailEvent instanceof Event);
+const isEvent = computed(() => eventDetailStore.detailEvent?.isEventNode());
 const panelState = computed(() => panelStore.detailPanelState);
 
 const computedOrder = computed(() => {
@@ -115,11 +115,11 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
         <EventDetail
           v-if="isEvent"
           :hide-parent-group="false"
-          :event="(eventDetailStore.detailEvent as Event)"
+          :event="(eventDetailStore.detailEvent.eventValue() as Event)"
         />
         <EventGroupDetail
           v-else
-          :eventGroup="(eventDetailStore.detailEvent as EventSubGroup)"
+          :eventGroup="(eventDetailStore.detailEvent)"
         />
       </template>
       <div

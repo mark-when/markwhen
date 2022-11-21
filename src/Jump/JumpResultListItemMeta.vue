@@ -4,7 +4,7 @@ import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
-const props = defineProps<{ node: Node<NodeValue> }>();
+const props = defineProps<{ node: SomeNode }>();
 const tags = computed(() =>
   props.node.isEventNode()
     ? props.node.eventValue().event.tags
