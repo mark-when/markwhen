@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { useTagColor } from "@/Drawer/ViewSettings/Tags/composables/useTagColor";
-import type { EventSubGroup, Event } from "@markwhen/parser/lib/Types";
+import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
+import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
-const isEvent = (e: Event | EventSubGroup): e is Event => !Array.isArray(e);
-
-const props = defineProps<{ eventOrGroup: Event | EventSubGroup }>();
+const props = defineProps<{ node: Node<NodeValue> }>();
 const tags = computed(() =>
-  isEvent(props.eventOrGroup)
-    ? props.eventOrGroup.event.tags
-    : props.eventOrGroup.tags || []
+  props.node.isEventNode()
+    ? props.node.eventValue().event.tags
+    : props.node.tags || []
 );
 </script>
 
@@ -17,9 +16,11 @@ const tags = computed(() =>
   <div class="flex flex-row gap-1">
     <div
       class="text-xs text-gray-400"
-      v-if="isEvent(eventOrGroup) && eventOrGroup?.ranges?.date?.originalString"
+      v-if="
+        node.isEventNode() && node.eventValue().ranges?.date?.originalString
+      "
     >
-      {{ eventOrGroup.ranges.date.originalString }}
+      {{ node.eventValue().ranges.date.originalString }}
     </div>
     <div class="flex flex-row gap-[2px] items-center">
       <div

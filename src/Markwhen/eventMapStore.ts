@@ -1,4 +1,4 @@
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { Node, NodeValue } from "@markwhen/parser/lib/Node";
 import { Event } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
 import { computed } from "vue";
@@ -9,9 +9,16 @@ import { useTransformStore } from "./transformStore";
 type EventPathMap = [number[], Map<number, EventPath>];
 export type EventPaths = { [pathType in EventPath["type"]]?: EventPath };
 
-const buildMap = (events: Node, type: EventPath["type"]): EventPathMap => {
+const buildMap = (
+  events: Node<NodeValue> | undefined,
+  type: EventPath["type"]
+): EventPathMap => {
   const keys = [] as number[];
   const map = new Map<number, EventPath>();
+
+  if (!events) {
+    return [keys, map];
+  }
 
   // TODO: this doesn't need to run as often, or make it more efficient/smarter
   for (const { path, node } of events) {
@@ -23,26 +30,6 @@ const buildMap = (events: Node, type: EventPath["type"]): EventPathMap => {
       map.set(stringIndex, { type, path });
     }
   }
-  // for (let i = 0; i < events.length; i++) {
-  //   const eventOrEvents = events[i];
-  //   if (eventOrEvents instanceof Event) {
-  //     const stringIndex = eventOrEvents.ranges.event.from;
-  //     keys.push(stringIndex);
-  //     map.set(stringIndex, { type, path: [i] });
-  //   } else {
-  //     const stringIndex = eventOrEvents.rangeInText?.from;
-  //     if (stringIndex !== undefined) {
-  //       keys.push(stringIndex);
-  //       map.set(stringIndex, { type, path: [i] });
-  //     }
-  //     for (let j = 0; j < eventOrEvents.length; j++) {
-  //       const event = eventOrEvents[j];
-  //       const stringIndex = event.ranges.event.from;
-  //       keys.push(stringIndex);
-  //       map.set(stringIndex, { type, path: [i, j] });
-  //     }
-  //   }
-  // }
 
   if (keys.length !== map.size) {
     throw new Error("Mismatched keys and map size");
@@ -73,12 +60,7 @@ const indexFromEventOrIndex = (eventOrStartIndex: number | Event): number => {
   if (typeof eventOrStartIndex === "number") {
     return eventOrStartIndex;
   }
-  // else if (eventOrStartIndex instanceof Event) {
   return eventOrStartIndex.ranges.event.from;
-  // }
-  //  else {
-  //   return eventOrStartIndex.rangeInText!.from;
-  // }
 };
 
 export const useEventMapStore = defineStore("eventMap", () => {

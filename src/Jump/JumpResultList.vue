@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
-import {
-  dateRangeToString,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
-import {
-  Event,
-  type DateFormat,
-} from "@markwhen/parser/lib/Types";
+import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
+import { Event, type DateFormat } from "@markwhen/parser/lib/Types";
+import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
   useJumpStore,
@@ -16,10 +12,14 @@ import {
   type ParseResult,
 } from "./jumpStore";
 import JumpResultListItem from "./JumpResultListItem.vue";
-import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import {
+  useEventFinder,
+  type EventFinder,
+} from "@/Markwhen/composables/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";
+import type { EventPaths } from "@/Markwhen/eventMapStore";
 
 const props = defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{
@@ -38,24 +38,27 @@ const dateRangeString = (parseResult: ParseResult) =>
     pageStore.pageTimelineMetadata.dateFormat as DateFormat
   );
 
-const find = useEventFinder();
+const eventFinder: EventFinder = useEventFinder();
 
-const matchedEventOrGroup = (sr: lunr.Index.Result) => find(JSON.parse(sr.ref));
+const matchedEventOrGroup: (
+  sr: lunr.Index.Result
+) => Node<NodeValue> | undefined = (sr: lunr.Index.Result) =>
+  eventFinder(JSON.parse(sr.ref) as EventPaths);
 
 const titleForListItem = (item: ParseResult | lunr.Index.Result) => {
   if (isParseResult(item)) {
     return dateRangeString(item);
   } else {
-    const event = matchedEventOrGroup(item);
-    if (event instanceof Event) {
-      return toInnerHtml(event.event.eventDescription);
-    } else if (!!event) {
+    const node = matchedEventOrGroup(item);
+    if (node?.isEventNode()) {
+      return toInnerHtml(node.eventValue().event.eventDescription);
+    } else if (!!node) {
       return (
-        (event.title
-          ? toInnerHtml(event.title)
-          : event.style === "group"
+        (node.title
+          ? toInnerHtml(node.title)
+          : node.style === "group"
           ? "(Group)"
-          : "(Section)") + ` (${event.length})`
+          : "(Section)") + ` (${(node.value as NodeArray).length})`
       );
     } else {
       return "";
@@ -68,7 +71,7 @@ watch(
   (index, prev) => {
     const el = document.getElementById(`listResult_${index}`);
     // @ts-ignore
-    el?.scrollIntoViewIfNeeded(false)
+    el?.scrollIntoViewIfNeeded(false);
   }
 );
 </script>
@@ -111,7 +114,7 @@ watch(
       <JumpResultListItemMeta
         #bottom
         v-if="!isParseResult(searchResult)"
-        :eventOrGroup="matchedEventOrGroup(searchResult)!"
+        :node="matchedEventOrGroup(searchResult)!"
       ></JumpResultListItemMeta>
     </JumpResultListItem>
   </div>

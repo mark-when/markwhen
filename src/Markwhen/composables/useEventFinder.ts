@@ -1,4 +1,5 @@
-import type { Event, Events, EventSubGroup } from "@markwhen/parser/lib/Types";
+import type { Node, NodeValue } from "@markwhen/parser/lib/Node";
+import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import type { EventPaths } from "../eventMapStore";
 import { usePageStore } from "../pageStore";
@@ -22,6 +23,10 @@ export const eqPath = (ep: EventPath, eps: EventPaths): boolean => {
   return true;
 };
 
+export type EventFinder = (
+  eventPath?: EventPath | EventPaths | null
+) => Node<NodeValue> | undefined;
+
 export const useEventFinder = () => {
   const transformStore = useTransformStore();
   const pageStore = usePageStore();
@@ -33,33 +38,21 @@ export const useEventFinder = () => {
 
   const eventOrGroupFromPath = (
     eventPath?: EventPath | EventPaths | null
-  ): Event | EventSubGroup | undefined => {
+  ): Node<NodeValue> | undefined => {
     if (!eventPath) {
       return;
     }
     if (isEventPath(eventPath)) {
       const path = eventPath.path;
-      let events: Events;
+      let node: Node<NodeValue> | undefined;
       if (eventPath.type === "pageFiltered") {
-        events = transformedEvents.value;
+        node = transformedEvents.value;
       } else if (eventPath.type === "page") {
-        events = pageStore.pageTimeline.events;
+        node = pageStore.pageTimeline.events;
       } else {
         throw new Error("unimplemented");
       }
-
-      if (path.length === 0) {
-        return;
-      }
-      if (path.length === 1) {
-        return events[path[0]];
-      }
-      if (path.length === 2) {
-        const subGroup = events[path[0]] as EventSubGroup;
-        if (subGroup && subGroup.length && path[1] < subGroup.length) {
-          return subGroup[path[1]];
-        }
-      }
+      return node ? node.get(path) : undefined;
     } else {
       const types: EventPath["type"][] = ["page", "pageFiltered", "whole"];
       for (const type of types) {
@@ -71,5 +64,5 @@ export const useEventFinder = () => {
     }
   };
 
-  return eventOrGroupFromPath;
+  return eventOrGroupFromPath as EventFinder;
 };

@@ -2,9 +2,8 @@ import { computed } from "vue";
 import lunr from "lunr";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
-import { DateRangePart, Event } from "@markwhen/parser/lib/Types";
+import type { DateRangePart, Event } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
-import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import {
   floorDateTime,
@@ -36,26 +35,33 @@ export const useSearch = () => {
     tags: e.event.tags.join(" "),
   });
 
-  const mappedEvents = computed(() =>
-    // events-reference
-    pageStore.pageTimeline.events.flat().map((node) => {
-      const event = node.eventValue();
-      // if (event instanceof Event) {
-      return eventToDocument(event, mapStore.getAllPaths(event)!);
-      // } else {
-      // return [
-      //   {
-      //     path: JSON.stringify(mapStore.getAllPaths(event)),
-      //     dateTime: event.range?.min.toLocaleString(DateTime.DATETIME_HUGE),
-      //     supplemental: "",
-      //     description: event.title || "",
-      //     tags: (event.tags || []).join(" "),
-      //   },
-      //   ...event.map((e) => eventToDocument(e, mapStore.getAllPaths(e)!)),
-      // ];
-      // }
-    })
-  );
+  const eventSearchDocuments = computed(() => {
+    const documents = [] as SearchDocument[];
+    for (const { node } of pageStore.pageTimeline.events) {
+      if (node.isEventNode()) {
+        documents.push(
+          eventToDocument(
+            node.eventValue(),
+            mapStore.getAllPaths(node.eventValue())
+          )
+        );
+      } else {
+        console.log(node.title)
+        documents.push({
+          path: node.rangeInText
+            ? JSON.stringify(mapStore.getAllPaths(node.rangeInText?.from))
+            : "",
+          dateTime:
+            node.range?.fromDateTime.toLocaleString(DateTime.DATETIME_HUGE) ||
+            "",
+          supplemental: "",
+          description: node.title || "",
+          tags: (node.tags || []).join(" "),
+        });
+      }
+    }
+    return documents;
+  });
 
   const searchIndex = computed(() => {
     const index = lunr(function () {
@@ -65,7 +71,7 @@ export const useSearch = () => {
       this.field("dateTime");
       this.field("tags");
 
-      mappedEvents.value.forEach((e) => this.add(e));
+      eventSearchDocuments.value.forEach((e) => this.add(e));
     });
     return index;
   });
