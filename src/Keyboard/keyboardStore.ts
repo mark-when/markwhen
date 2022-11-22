@@ -6,6 +6,7 @@ import { usePanelStore } from "@/Panels/panelStore";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
+import { useTransformStore } from "@/Markwhen/transformStore";
 
 export const useKeyboardStore = defineStore("keyboard", () => {
   const sidebarStore = useSidebarStore();
@@ -14,6 +15,7 @@ export const useKeyboardStore = defineStore("keyboard", () => {
   const appStore = useAppStore();
   const timelineStore = useTimelineStore();
   const eventDetailStore = useEventDetailStore();
+  const transformStore = useTransformStore();
 
   const notUsingInput = computed(
     () =>
@@ -44,12 +46,22 @@ export const useKeyboardStore = defineStore("keyboard", () => {
     timelineStore.setShowingJumpToRange(!timelineStore.showingJumpToRange)
   );
   key(comma, () => {
-    if (eventDetailStore.prev) {
+    if (!eventDetailStore.detailEventPath) {
+      const last = transformStore.transformedEvents?.getLast().path;
+      if (last) {
+        eventDetailStore.setDetailEventPath({
+          type: "pageFiltered",
+          path: last,
+        });
+      }
+    } else if (eventDetailStore.prev) {
       eventDetailStore.setDetailEventPath(eventDetailStore.prev);
     }
   });
   key(period, () => {
-    if (eventDetailStore.next) {
+    if (!eventDetailStore.detailEventPath) {
+      eventDetailStore.setDetailEventPath({ type: "pageFiltered", path: [0] });
+    } else if (eventDetailStore.next) {
       eventDetailStore.setDetailEventPath(eventDetailStore.next);
     }
   });
