@@ -2,6 +2,7 @@
 import { computed, inject, nextTick, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
+import type { Node } from "@markwhen/parser/lib/Node";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import TaskCompletion from "./TaskCompletion.vue";
@@ -19,9 +20,8 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import Spinner from "../../../../utilities/Spinner.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
-import type { Node } from "@markwhen/parser/lib/Node";
 
-const props = defineProps<{ event: Event; path: EventPath }>();
+const props = defineProps<{ node: Node<Event>; path: EventPath }>();
 
 const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
@@ -37,9 +37,15 @@ const eventRow = ref();
 const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
-const hasLocations = computed(() => props.event.event.locations.length > 0);
-const hasImages = computed(() => !!props.event.event.googlePhotosLink);
-const hasSupplemental = computed(() => !!props.event.event.supplemental.length);
+const hasLocations = computed(
+  () => props.node.eventValue().event.locations.length > 0
+);
+const hasImages = computed(
+  () => !!props.node.eventValue().event.googlePhotosLink
+);
+const hasSupplemental = computed(
+  () => !!props.node.eventValue().event.supplemental.length
+);
 const hasMeta = computed(
   () => hasLocations.value || hasImages.value || hasSupplemental.value
 );
@@ -53,14 +59,17 @@ const toggleMeta = (e: MouseEvent) => {
 };
 const taskNumerator = computed(
   () =>
-    props.event.event.supplemental.filter(
-      (block) => block.type === "checkbox" && block.value
-    ).length
+    props.node
+      .eventValue()
+      .event.supplemental.filter(
+        (block) => block.type === "checkbox" && block.value
+      ).length
 );
 const taskDenominator = computed(
   () =>
-    props.event.event.supplemental.filter((block) => block.type === "checkbox")
-      .length
+    props.node
+      .eventValue()
+      .event.supplemental.filter((block) => block.type === "checkbox").length
 );
 const imageStatus = ref<"not loaded" | "loaded" | "loading">("not loaded");
 const images = ref([] as string[]);
@@ -86,7 +95,7 @@ const scale = computed(() => markersStore.scaleOfViewportDateInterval);
 
 const moveEnded = () =>
   editEventDateRange(
-    props.event,
+    props.node.eventValue(),
     range.value,
     scale.value,
     preferredInterpolationFormat.value
@@ -98,7 +107,7 @@ const {
   moveHandleListener,
   tempFrom,
   tempTo,
-} = useResize(props.event, moveEnded);
+} = useResize(props.node.eventValue(), moveEnded);
 const elementHover = useElementHover(eventRow);
 const hoveringWidgets = ref(false);
 const isHovering = computed(
@@ -125,7 +134,7 @@ const isDetailEvent = computed(() =>
 
 watch(elementHover, (hovering) => {
   if (hovering) {
-    setHoveringEvent(props.event);
+    setHoveringEvent(props.node.eventValue());
   } else {
     clearHoveringEvent();
   }
@@ -133,28 +142,28 @@ watch(elementHover, (hovering) => {
 
 const range = computed(() => {
   if (!tempFrom.value && !tempTo.value) {
-    return props.event.ranges.date as DateRange;
+    return props.node.eventValue().ranges.date as DateRange;
   } else if (!tempFrom.value) {
-    if (+tempTo.value! > +props.event.ranges.date.fromDateTime) {
+    if (+tempTo.value! > +props.node.eventValue().ranges.date.fromDateTime) {
       return {
-        fromDateTime: props.event.ranges.date.fromDateTime,
+        fromDateTime: props.node.eventValue().ranges.date.fromDateTime,
         toDateTime: tempTo.value!,
       };
     } else {
       return {
         fromDateTime: tempTo.value!,
-        toDateTime: props.event.ranges.date.fromDateTime,
+        toDateTime: props.node.eventValue().ranges.date.fromDateTime,
       };
     }
   } else if (!tempTo.value) {
-    if (+tempFrom.value < +props.event.ranges.date.toDateTime) {
+    if (+tempFrom.value < +props.node.eventValue().ranges.date.toDateTime) {
       return {
         fromDateTime: tempFrom.value,
-        toDateTime: props.event.ranges.date.toDateTime,
+        toDateTime: props.node.eventValue().ranges.date.toDateTime,
       };
     } else {
       return {
-        fromDateTime: props.event.ranges.date.toDateTime,
+        fromDateTime: props.node.eventValue().ranges.date.toDateTime,
         toDateTime: tempFrom.value,
       };
     }
@@ -177,10 +186,12 @@ const barWidth = computed(() => {
   return Math.max(eventHeightPx, distance);
 });
 const locations = computed(() =>
-  props.event.event.locations.map(
-    (l) =>
-      `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
-  )
+  props.node
+    .eventValue()
+    .event.locations.map(
+      (l) =>
+        `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
+    )
 );
 
 const close = () => {
@@ -191,7 +202,7 @@ const eventDetail = () => {
   eventDetailStore.setDetailEventPath(props.path);
 };
 
-const edit = () => editorOrchestratorStore.showInEditor(props.event);
+const edit = () => editorOrchestratorStore.showInEditor(props.node);
 
 watch(
   () => timelineStore.scrollToPath,
@@ -248,7 +259,7 @@ watch(
         ></div>
         <event-bar
           ref="eventBar"
-          :event="event"
+          :event="node.eventValue()"
           :hovering="isHovering"
           :width="barWidth"
           :taskNumerator="taskNumerator"
@@ -257,7 +268,7 @@ watch(
           :drag-handle-listener-right="dragHandleListenerRight"
         />
         <p class="eventDate py-1">
-          {{ event.getDateHtml() }}
+          {{ node.eventValue().getDateHtml() }}
         </p>
         <div class="eventTitle py-1 flex flex-row">
           <div
@@ -330,9 +341,10 @@ watch(
           </div>
           <p class="ml-2">
             <span
-              v-html="toInnerHtml(event.event.eventDescription)"
+              v-html="toInnerHtml(node.eventValue().event.eventDescription)"
               :class="{
-                'pointer-events-auto': event
+                'pointer-events-auto': node
+                  .eventValue()
                   .getInnerHtml()
                   .includes('underline'),
               }"
@@ -345,9 +357,9 @@ watch(
           v-if="canShowMeta"
           :locations="locations"
           :images="images"
-          :supplemental="event.event.supplemental"
-          :matchedListItems="event.event.matchedListItems"
-          :photosLink="event.event.googlePhotosLink"
+          :supplemental="node.eventValue().event.supplemental"
+          :matchedListItems="node.eventValue().event.matchedListItems"
+          :photosLink="node.eventValue().event.googlePhotosLink"
           :left="barWidth"
           @close="close"
         />

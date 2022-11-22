@@ -1,11 +1,11 @@
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { defineStore } from "pinia";
 import { PAGE_BREAK } from "@markwhen/parser/lib/regex";
-import {
+import type {
   Event,
-  type DateFormat,
-  type DateRange,
-  type Timeline,
+  DateFormat,
+  DateRange,
+  Timeline,
 } from "@markwhen/parser/lib/Types";
 import { ref } from "vue";
 import { usePageStore } from "@/Markwhen/pageStore";
@@ -22,7 +22,7 @@ export const useEditorOrchestratorStore = defineStore(
     const pageStore = usePageStore();
     const eventMapStore = useEventMapStore();
 
-    const editable = ref(true);
+    const editable = ref(false);
     const showTagFilterButtons = ref(true);
     const hoveringEventPaths = ref<EventPaths | null>(null);
     const choosingColor = ref(false);

@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { equivalentPaths } from "@/EventDetail/eventDetailStore";
+import { isEditable } from "@/injectionKeys";
+import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "@vue/reactivity";
+import { inject } from "vue";
 import { useEventColor } from "../composables/useEventColor";
 
 const props = defineProps<{
@@ -10,6 +15,7 @@ const props = defineProps<{
   node: SomeNode;
   left: number;
   fullWidth: number;
+  path: EventPath
 }>();
 const { color } = useEventColor(props.node);
 

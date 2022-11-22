@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
-import type { Path } from "@markwhen/parser/lib/Types";
+import type { Path, Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import Section from "./Section/Section.vue";
@@ -24,12 +24,13 @@ const nodeKey = (n: SomeNode) => {
     return n.title;
   }
 };
+
 </script>
 
 <template>
   <EventRow
     v-if="isEventRow"
-    :event="node.eventValue()"
+    :node="node as Node<Event>"
     :path="{ type, path }"
   ></EventRow>
   <Section

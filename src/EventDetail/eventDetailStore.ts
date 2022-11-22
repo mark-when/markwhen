@@ -92,21 +92,35 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     do {
       if (last() > 0) {
         tempPath = [...tempPath.slice(0, -1), last() - 1];
-      } else {
-        tempPath = [...tempPath.slice(0, -1)];
-      }
-      if (!tempPath.length) {
-        return undefined;
-      }
-      const possibleNode = eventFinder({
-        type,
-        path: tempPath,
-      });
-      if (possibleNode) {
-        return {
+        if (!tempPath.length) {
+          return undefined;
+        }
+        const possibleSibling = eventFinder({
           type,
           path: tempPath,
-        };
+        });
+        if (possibleSibling) {
+          const lastOfSibling = possibleSibling.getLast();
+          return {
+            type,
+            path: [...tempPath, ...lastOfSibling.path],
+          };
+        }
+      } else {
+        tempPath = [...tempPath.slice(0, -1)];
+        if (!tempPath.length) {
+          return undefined;
+        }
+        const possibleNode = eventFinder({
+          type,
+          path: tempPath,
+        });
+        if (possibleNode) {
+          return {
+            type,
+            path: tempPath,
+          };
+        }
       }
     } while (tempPath.length);
   });

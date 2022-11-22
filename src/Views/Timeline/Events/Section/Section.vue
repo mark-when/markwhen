@@ -21,7 +21,6 @@ const hovering = ref(false);
 const canCalculateButton = ref(false);
 
 const toggle = (e: MouseEvent) => {
-  console.log("toggle");
   if (e.target instanceof HTMLAnchorElement) {
     return;
   }
@@ -77,6 +76,7 @@ const groupStyle = computed(() =>
       :left="left"
       :full-width="fullWidth"
       :is-detail="false"
+      :path="path"
     />
     <div
       class="sticky top-0 cursor-pointer"
