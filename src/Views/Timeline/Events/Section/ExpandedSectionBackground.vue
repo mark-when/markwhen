@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { equivalentPaths } from "@/EventDetail/eventDetailStore";
-import { isEditable } from "@/injectionKeys";
+import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "@vue/reactivity";
-import { inject } from "vue";
 import { useEventColor } from "../composables/useEventColor";
 
 const props = defineProps<{
@@ -15,11 +12,16 @@ const props = defineProps<{
   node: SomeNode;
   left: number;
   fullWidth: number;
-  path: EventPath
+  path: EventPath;
 }>();
 const { color } = useEventColor(props.node);
+const eventDetailStore = useEventDetailStore();
 
 const isGroupStyle = computed(() => props.style === "group");
+
+const isDetailEvent = computed(() =>
+  eventDetailStore.isDetailEventPath(props.path)
+);
 
 const styleObject = computed(() => {
   const obj = {} as any;
@@ -28,7 +30,7 @@ const styleObject = computed(() => {
       props.hovering ? "0.09" : "0.05"
     }`;
     obj.border = `1px solid rgba(${color.value}, ${
-      props.hovering ? "0.75" : "0.12"
+      isDetailEvent.value ? "0.95" : props.hovering ? "0.75" : "0.12"
     })`;
   }
   if (isGroupStyle.value) {
