@@ -1,4 +1,4 @@
-import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
+import type { Node, NodeArray, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
 import type { Sort } from "../transformStore";
 
 // This is particularly for the 'untagged' filter case, because the root node

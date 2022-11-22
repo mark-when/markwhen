@@ -2,12 +2,13 @@
 import { useEventDetailStore } from "./eventDetailStore";
 import EventDetail from "./EventDetail.vue";
 import EventGroupDetail from "./EventGroupDetail.vue";
-import { Event } from "@markwhen/parser/lib/Types";
+import type { Event } from "@markwhen/parser/lib/Types";
 import { computed, onMounted, ref, watch } from "vue";
 import EventDetailPaneTop from "./EventDetailPaneTop.vue";
 import { usePanelResize } from "@/Sidebar/composables/usePanelResize";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 import { usePanelMove } from "@/Panels/composables/usePanelMove";
+import type { NodeArray, Node } from "@markwhen/parser/lib/Node";
 
 const panelStore = usePanelStore();
 const eventDetailStore = useEventDetailStore();
@@ -119,7 +120,7 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
         />
         <EventGroupDetail
           v-else
-          :eventGroup="(eventDetailStore.detailEvent)"
+          :eventGroup="(eventDetailStore.detailEvent as Node<NodeArray>)"
         />
       </template>
       <div

@@ -2,8 +2,8 @@
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import { Event, type DateFormat } from "@markwhen/parser/lib/Types";
-import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
+import type { DateFormat } from "@markwhen/parser/lib/Types";
+import type { Node, NodeArray, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
   useJumpStore,
@@ -40,10 +40,9 @@ const dateRangeString = (parseResult: ParseResult) =>
 
 const eventFinder: EventFinder = useEventFinder();
 
-const matchedEventOrGroup: (
+const matchedEventOrGroup: (sr: lunr.Index.Result) => SomeNode | undefined = (
   sr: lunr.Index.Result
-) => SomeNode | undefined = (sr: lunr.Index.Result) =>
-  eventFinder(JSON.parse(sr.ref) as EventPaths);
+) => eventFinder(JSON.parse(sr.ref) as EventPaths);
 
 const titleForListItem = (item: ParseResult | lunr.Index.Result) => {
   if (isParseResult(item)) {

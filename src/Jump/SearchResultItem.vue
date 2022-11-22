@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
-import { Event, type EventSubGroup } from "@markwhen/parser/lib/Types";
+import { Event } from "@markwhen/parser/lib/Types";
 import type lunr from "lunr";
 import { computed } from "vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
@@ -20,7 +20,7 @@ const matchedEventOrGroup = computed(() =>
 const event = computed(
   () => matchedEventOrGroup.value instanceof Event && matchedEventOrGroup.value
 );
-const group = computed(() => matchedEventOrGroup.value as EventSubGroup);
+const group = computed(() => matchedEventOrGroup.value);
 </script>
 
 <template>

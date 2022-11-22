@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useTagColor } from "@/Drawer/ViewSettings/Tags/composables/useTagColor";
-import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
-import type { Event } from "@markwhen/parser/lib/Types";
+import type {  SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "vue";
 
 const props = defineProps<{ node: SomeNode }>();

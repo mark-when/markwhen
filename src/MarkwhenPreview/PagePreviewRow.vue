@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-  DateRange,
-  EventSubGroup,
-  Timeline,
-} from "@markwhen/parser/lib/Types";
+import type { DateRange, Timeline } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
 const props = defineProps<{ page: Timeline; range: DateRange }>();
@@ -23,12 +19,7 @@ const left = computed(() => {
   return (diff / wholeDuration.value) * 100;
 });
 
-const flattenedEvents = computed(() =>
-  // @ts-ignore
-  props.page.events.flatMap((e: Event | EventSubGroup) =>
-    Array.isArray(e) ? e : [e]
-  )
-);
+const flattenedEvents = computed(() => props.page.events.flat());
 
 const pageDisplayTitle = computed(() => {
   const t = props.page.metadata.title;

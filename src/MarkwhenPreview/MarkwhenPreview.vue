@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useUserStore } from "@/Menu/Account/userStore";
 import {
   ceilDateTime,
   floorDateTime,
@@ -14,10 +13,6 @@ const props = withDefaults(
   {
     showPermissions: false,
   }
-);
-const userStore = useUserStore();
-const hasSubscription = computed(
-  () => userStore.user?.subscriptionStatus === "active"
 );
 const range: DateRange = props.markwhen.timelines.reduce(
   (prev, curr) => {
@@ -41,16 +36,6 @@ const range: DateRange = props.markwhen.timelines.reduce(
 );
 
 const viewersString = computed(() => {
-  if (userStore.user?.subscriptionStatus !== "active") {
-    return "Public";
-  }
-  if (!props.markwhen.timelines.length) {
-    return "Public";
-  }
-  const viewers = props.markwhen.timelines[0].metadata.view;
-  if (viewers.length) {
-    return viewers.join(", ");
-  }
   return "Public";
 });
 </script>

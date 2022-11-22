@@ -13,7 +13,7 @@ import { useResizeObserver } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
-import { Event, type DateRangePart } from "@markwhen/parser/lib/Types";
+import type { DateRangePart } from "@markwhen/parser/lib/Types";
 import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 
@@ -163,10 +163,10 @@ watch(
     }
 
     const range =
-      event instanceof Event
-        ? event.ranges.date
-        : event.range?.min && event.range.max
-        ? { fromDateTime: event.range?.min, toDateTime: event.range?.max }
+      event.isEventNode()
+        ? event.eventValue().ranges.date
+        : event.range?.fromDateTime && event.range.toDateTime
+        ? event.range
         : undefined;
 
     if (!range) {

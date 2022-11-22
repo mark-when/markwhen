@@ -1,10 +1,10 @@
 import { usePageStore } from "@/Markwhen/pageStore";
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { Event } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import { ref, unref, watchEffect } from "vue";
 
-export const useEventColor = (eventRef: MaybeRef<Node | Event>) => {
+export const useEventColor = (eventRef: MaybeRef<SomeNode | Event>) => {
   const color = ref<string>();
   const pageStore = usePageStore();
 

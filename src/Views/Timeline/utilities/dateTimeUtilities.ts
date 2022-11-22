@@ -7,8 +7,8 @@ import {
   Event,
   type DateFormat,
   type DateRange,
-  type EventSubGroup,
 } from "@markwhen/parser/lib/Types";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 
 export type DisplayScale =
   | "second"
@@ -236,20 +236,14 @@ export function dateRangeToString(
   return `${asIso(range.fromDateTime)} - ${asIso(range.toDateTime)}`;
 }
 
-export const eventMidpoint = (
-  e: Event | EventSubGroup
-): DateTime | undefined => {
-  if (e instanceof Event) {
-    return dateMidpoint(e.ranges.date);
+export const eventMidpoint = (node: SomeNode): DateTime | undefined => {
+  if (node.isEventNode()) {
+    return dateMidpoint(node.eventValue().ranges.date);
   } else {
-    if (!e.range?.min || !e.range?.max) {
+    if (!node.range || !node.range.fromDateTime || !node.range.toDateTime)
       return undefined;
-    }
-    return dateMidpoint({
-      fromDateTime: e.range.min,
-      toDateTime: e.range.max,
-    });
   }
+  return dateMidpoint(node.range);
 };
 
 export const dateMidpoint = (range: DateRange): DateTime => {

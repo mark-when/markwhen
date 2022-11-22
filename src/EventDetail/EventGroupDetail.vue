@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { EventSubGroup } from "@markwhen/parser/lib/Types";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import type { Node, NodeArray } from "@markwhen/parser/lib/Node";
 
-const props = defineProps<{ eventGroup: EventSubGroup }>();
+defineProps<{ eventGroup: Node<NodeArray> }>();
 </script>
 
 <template>

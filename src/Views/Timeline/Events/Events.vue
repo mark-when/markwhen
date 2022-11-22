@@ -2,18 +2,12 @@
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import NowLine from "../Events/NowLine.vue";
-import { isEditable } from "@/injectionKeys";
-import { computed, inject } from "vue";
-import NewEvent from "./NewEvent/NewEvent.vue";
+import { computed } from "vue";
 import NodeRow from "./NodeRow.vue";
-import type { Node, NodeArray, NodeValue } from "@markwhen/parser/lib/Node";
-import { usePageStore } from "@/Markwhen/pageStore";
+import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
-
-const editable = inject(isEditable);
-const type = "pageFiltered" as "pageFiltered";
 
 // top level is always an array
 const nodes = computed(

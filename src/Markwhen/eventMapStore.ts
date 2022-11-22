@@ -1,5 +1,5 @@
-import type { Node, NodeValue } from "@markwhen/parser/lib/Node";
-import { Event } from "@markwhen/parser/lib/Types";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
+import type { Event } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 import type { EventPath } from "./composables/useEventFinder";

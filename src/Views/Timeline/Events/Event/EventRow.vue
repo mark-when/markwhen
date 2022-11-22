@@ -202,8 +202,6 @@ const eventDetail = () => {
   eventDetailStore.setDetailEventPath(props.path);
 };
 
-const edit = () => editorOrchestratorStore.showInEditor(props.node);
-
 watch(
   () => timelineStore.scrollToPath,
   (path) => {
@@ -241,7 +239,6 @@ watch(
         :move="moveHandleListener"
         @mouseenter="hoveringWidgets = true"
         @mouseleave="hoveringWidgets = false"
-        @edit="edit"
       />
     </template>
     <div class="flex flex-row eventContent items-center">

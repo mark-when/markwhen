@@ -4,7 +4,7 @@ import { computed } from "vue";
 import EventDetailTags from "./EventDetailTags.vue";
 import EventDetailWhen from "./EventDetailWhen.vue";
 import EventDetailMarkdown from "./EventDetailMarkdown.vue";
-import type { Event, EventSubGroup } from "@markwhen/parser/lib/Types";
+import type { Event } from "@markwhen/parser/lib/Types";
 import {
   useEventFinder,
   type EventPath,
@@ -18,10 +18,10 @@ const eventFinder = useEventFinder();
 
 const detailEventPath = computed(() => eventDetailStore.detailEventPath);
 const parentPath = computed(() => {
-  if (detailEventPath.value && detailEventPath.value.path.length === 2) {
+  if (detailEventPath.value && detailEventPath.value.path.length > 1) {
     return {
       type: detailEventPath.value.type,
-      path: [detailEventPath.value.path[0]],
+      path: detailEventPath.value.path.slice(0, -1),
     } as EventPath;
   }
 });
@@ -29,7 +29,7 @@ const parentGroup = computed(() => {
   if (props.hideParentGroup || !parentPath.value) {
     return;
   }
-  return eventFinder(parentPath.value) as EventSubGroup;
+  return eventFinder(parentPath.value);
 });
 
 const selectParent = () =>
@@ -39,7 +39,10 @@ const selectParent = () =>
 <template>
   <div class="py-2 flex flex-col overflow-hidden">
     <div class="flex flex-col pb-3">
-      <div class="font-bold text-xl px-3" v-html="event && toInnerHtml(event.event.eventDescription)"></div>
+      <div
+        class="font-bold text-xl px-3"
+        v-html="event && toInnerHtml(event.event.eventDescription)"
+      ></div>
       <div class="flex flex-row px-3">
         <button
           class="font-bold text-sm dark:text-gray-400 text-gray-500 flex flex-row items-center"
