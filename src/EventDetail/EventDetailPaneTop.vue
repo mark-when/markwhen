@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useEventDetailStore } from "./eventDetailStore";
 import PanelViewButtons from "../Panels/PanelViewButtons.vue";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
+import ShortcutKey from "@/Drawer/ShortcutKey.vue";
 
 const eventDetailStore = useEventDetailStore();
 const panelStore = usePanelStore();
@@ -44,25 +45,33 @@ const selectNext = () =>
         'order-2': !left,
       }"
     >
-      <div class="flex flex-row md:mt-1">
+      <div class="flex flex-row items-center md:mt-1">
         <button
           :disabled="!hasPrev"
           class="uppercase font-bold text-xs enabled:hover:bg-slate-200 enabled:dark:hover:bg-slate-700 flex flex-row items-center p-1 disabled:dark:text-gray-500 disabled:text-gray-400"
           style="line-height: initial"
           @click="selectPrev"
         >
-          <span
-            ><svg
-              class="w-3 h-3"
-              focusable="false"
-              aria-hidden="true"
-              viewBox="0 1 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M14.71 6.71a.9959.9959 0 0 0-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"
-              ></path></svg></span
-          ><span>Prev</span>
+          <div class="flex flex-row items-center">
+            <span
+              ><svg
+                class="w-3 h-3"
+                focusable="false"
+                aria-hidden="true"
+                viewBox="0 1 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M14.71 6.71a.9959.9959 0 0 0-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"
+                ></path></svg></span
+            ><span>Prev</span>
+          </div>
+          <div
+            class="h-3 w-3 rounded flex bg-gray-200 flex ml-1"
+            style="justify-content: center; align-items: end"
+          >
+            <span>,</span>
+          </div>
         </button>
         <div class="w-px"></div>
         <button
@@ -71,6 +80,12 @@ const selectNext = () =>
           style="line-height: initial"
           @click="selectNext"
         >
+          <div
+            class="h-3 w-3 rounded flex bg-gray-200 flex mr-1"
+            style="justify-content: center; align-items: end"
+          >
+            <span>.</span>
+          </div>
           <span>next</span
           ><span
             ><svg

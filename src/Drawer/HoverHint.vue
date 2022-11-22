@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ShortcutKey from "./ShortcutKey.vue";
+
 export type HoverPosition = "right" | "top";
 
 const props = withDefaults(
@@ -24,16 +26,8 @@ const props = withDefaults(
       v-if="hovering && hoverPosition === 'right'"
     >
       <div class="z-10">{{ title }}</div>
-      <div
-        class="ml-2 z-10 flex flex-row items-center justify-center mb-px"
-        v-if="shortcut"
-      >
-        <div
-          class="bg-indigo-100 dark:bg-indigo-900 rounded px-1 text-sm text-indigo-900 dark:text-indigo-50 key relative"
-        >
-          {{ shortcut }}
-        </div>
-      </div>
+      <ShortcutKey :keyboardKey="shortcut" v-if="shortcut" />
+
       <div
         class="absolute top-0 bottom-0 -left-[2px] rotate-45 bg-indigo-600 h-1/2 aspect-square translate-y-2/4 rounded shadow-sm"
       ></div>
@@ -47,16 +41,7 @@ const props = withDefaults(
       v-else-if="hovering && hoverPosition === 'top'"
     >
       <div class="z-10">{{ title }}</div>
-      <div
-        class="ml-2 z-10 flex flex-row items-center justify-center mb-px"
-        v-if="shortcut"
-      >
-        <div
-          class="bg-indigo-100 dark:bg-indigo-900 rounded px-1 text-sm text-indigo-900 dark:text-indigo-50 key relative"
-        >
-          {{ shortcut }}
-        </div>
-      </div>
+      <ShortcutKey :keyboardKey="shortcut" v-if="shortcut" />
       <div
         class="absolute left-0 -bottom-[2px] rotate-45 bg-indigo-600 h-1/2 aspect-square translate-x-2/4 rounded shadow-sm"
       ></div>
