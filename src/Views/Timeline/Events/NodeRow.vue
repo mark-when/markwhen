@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import type { Path } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import Section from "./Section/Section.vue";
 
 const props = defineProps<{
-  node: Node;
+  node: SomeNode;
   path: Path;
   canHaveSections: boolean;
 }>();
@@ -14,7 +14,7 @@ const props = defineProps<{
 const isEventRow = computed(() => props.node.isEventNode());
 const type = "pageFiltered" as "pageFiltered";
 
-const nodeKey = (n: Node) => {
+const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
     const event = n.eventValue().event;
     return (
@@ -39,7 +39,7 @@ const nodeKey = (n: Node) => {
     v-else
   >
     <NodeRow
-      v-for="(node, i) in (props.node.value as Array<Node>)"
+      v-for="(node, i) in (props.node.value as NodeArray)"
       :path="[...path, i]"
       :node="node"
       :key="nodeKey(node)"

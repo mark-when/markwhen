@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
@@ -11,7 +11,7 @@ const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
   useTimelineStore();
 
 const props = defineProps<{
-  node: Node;
+  node: SomeNode;
   path: EventPath;
   canHaveSections: boolean;
 }>();
@@ -72,7 +72,6 @@ const groupStyle = computed(() =>
   <div class="relative flex flex-col">
     <ExpandedSectionBackground
       :hovering="hovering"
-      :color="color"
       :style="groupStyle"
       :node="node"
       :left="left"
@@ -99,7 +98,7 @@ const groupStyle = computed(() =>
       :expanded="expanded"
       :titleHtml="titleHtml"
       :color="color"
-      :num-children="(node.value as Array<Node>).length"
+      :num-children="(node.value as NodeArray).length"
       :group-style="groupStyle"
       :left="left"
       :full-width="fullWidth"

@@ -1,26 +1,27 @@
 <script setup lang="ts">
-import type { Node } from "@markwhen/parser/lib/Node";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "@vue/reactivity";
+import { useEventColor } from "../composables/useEventColor";
 
 const props = defineProps<{
   hovering: boolean;
-  color?: string;
   style: "group" | "section";
   isDetail: boolean;
-  node: Node;
+  node: SomeNode;
   left: number;
   fullWidth: number;
 }>();
+const { color } = useEventColor(props.node);
 
 const isGroupStyle = computed(() => props.style === "group");
 
 const styleObject = computed(() => {
   const obj = {} as any;
-  if (props.color) {
-    obj.backgroundColor = `rgba(${props.color}, ${
+  if (color.value) {
+    obj.backgroundColor = `rgba(${color.value}, ${
       props.hovering ? "0.09" : "0.05"
     }`;
-    obj.border = `1px solid rgba(${props.color}, ${
+    obj.border = `1px solid rgba(${color.value}, ${
       props.hovering ? "0.75" : "0.12"
     })`;
   }
