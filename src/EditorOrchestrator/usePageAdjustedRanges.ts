@@ -3,6 +3,7 @@ import {
   type EventPath,
 } from "@/Markwhen/composables/useEventFinder";
 import { usePageStore } from "@/Markwhen/pageStore";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
@@ -24,35 +25,36 @@ export const usePageAdjustedRanges = () => {
   const isEventPath = (arg: any): arg is EventPath => {
     return !!arg.type && !!arg.path;
   };
-  const rangeInTextWithOffset = computed(
-    () => (e: Event | EventPath) => {
-      let event;
-      if (isEventPath(e)) {
-        event = eventFinder(e);
-      } else {
-        event = e;
-      }
-
-      if (!event) {
-        return;
-      }
-
-      let from, to;
-      if (event instanceof Event) {
-        from = event.ranges.event.from;
-        to = event.ranges.event.to;
-      } else {
-        from = event.rangeInText!.from;
-        to = event[event.length - 1]
-          ? event[event.length - 1].ranges.event.to
-          : event.rangeInText!.to;
-      }
-      return {
-        from: from - rangeOffset.value,
-        to: to - rangeOffset.value,
-      };
+  const rangeInTextWithOffset = computed(() => (e: SomeNode | EventPath) => {
+    let node;
+    if (isEventPath(e)) {
+      node = eventFinder(e);
+    } else {
+      node = e;
     }
-  );
+
+    if (!node) {
+      return;
+    }
+
+    let from, to;
+    if (node.isEventNode()) {
+      from = node.eventValue().ranges.event.from;
+      to = node.eventValue().ranges.event.to;
+    } else {
+      from = node.rangeInText!.from;
+
+      const lastOfGroup = node.getLast();
+      to = lastOfGroup.isEventNode()
+        ? lastOfGroup.eventValue().ranges.event.to
+        : lastOfGroup.rangeInText?.to;
+      to = to ?? node.rangeInText!.to;
+    }
+    return {
+      from: from - rangeOffset.value,
+      to: to - rangeOffset.value,
+    };
+  });
 
   return { rangeOffset, adjustedRanges, rangeInTextWithOffset };
 };
