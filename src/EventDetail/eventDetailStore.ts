@@ -95,6 +95,9 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
       } else {
         tempPath = [...tempPath.slice(0, -1)];
       }
+      if (!tempPath.length) {
+        return undefined;
+      }
       const possibleNode = eventFinder({
         type,
         path: tempPath,
