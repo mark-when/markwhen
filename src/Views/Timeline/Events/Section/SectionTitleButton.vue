@@ -55,7 +55,6 @@ const click = (e: MouseEvent) => emit("click", e);
 <style scoped>
 .eventTitle {
   font-family: system-ui;
-  font-size: 80%;
   white-space: nowrap;
   font-weight: 600;
 }

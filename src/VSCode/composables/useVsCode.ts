@@ -66,12 +66,12 @@ export const useVsCode = () => {
   };
 
   const updateText = (text: string) => {
-    postRequest("update", { text })
-  }
+    postRequest("update", { text });
+  };
 
   useEventListener("message", (event) => {
     const message = event.data;
-    console.log(message);
+    console.log("markwhen received message", message);
     if (!message.id) {
       throw new Error("No id");
     }
@@ -97,9 +97,9 @@ export const useVsCode = () => {
           );
           let from: number | undefined, to: number | undefined;
           if (hoveringEvent) {
-            if (hoveringEvent instanceof Event) {
-              from = hoveringEvent.ranges.event.from;
-              to = hoveringEvent.ranges.event.to;
+            if (hoveringEvent.isEventNode()) {
+              from = hoveringEvent.eventValue().ranges.event.from;
+              to = hoveringEvent.eventValue().ranges.event.to;
             } else {
               from = hoveringEvent.rangeInText?.from;
               to = hoveringEvent.rangeInText?.to;
@@ -127,5 +127,5 @@ export const useVsCode = () => {
     }
   });
 
-  return { updateText }
+  return { updateText };
 };

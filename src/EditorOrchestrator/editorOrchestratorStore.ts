@@ -36,7 +36,7 @@ export const useEditorOrchestratorStore = defineStore(
     const eventMapStore = useEventMapStore();
     const { updateText } = useVsCode()
 
-    const editable = ref(false);
+    const editable = ref(true);
     const showTagFilterButtons = ref(true);
     const hoveringEventPaths = ref<EventPaths>();
     const choosingColor = ref(false);
