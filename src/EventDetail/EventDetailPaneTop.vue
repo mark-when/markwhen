@@ -67,7 +67,7 @@ const selectNext = () =>
             ><span>Prev</span>
           </div>
           <div
-            class="h-3 w-3 rounded flex bg-gray-200 flex ml-1"
+            class="h-3 w-3 rounded flex bg-gray-200 dark:bg-gray-600 flex ml-1"
             style="justify-content: center; align-items: end"
           >
             <span>,</span>
@@ -81,7 +81,7 @@ const selectNext = () =>
           @click="selectNext"
         >
           <div
-            class="h-3 w-3 rounded flex bg-gray-200 flex mr-1"
+            class="h-3 w-3 rounded flex bg-gray-200 flex mr-1 dark:bg-gray-600"
             style="justify-content: center; align-items: end"
           >
             <span>.</span>
