@@ -2,9 +2,11 @@
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import NowLine from "../Events/NowLine.vue";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import NodeRow from "./NodeRow.vue";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
+import { isEditable } from "@/injectionKeys";
+import NewEvent from "./NewEvent/NewEvent.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
@@ -13,6 +15,8 @@ const timelineStore = useTimelineStore();
 const nodes = computed(
   () => transformStore.transformedEvents?.value as NodeArray
 );
+
+const editable = inject(isEditable);
 
 const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
@@ -41,7 +45,7 @@ const nodeKey = (n: SomeNode) => {
       :path="[i]"
       :can-have-sections="true"
     ></NodeRow>
-    <!-- <new-event v-if="editable" /> -->
+    <new-event v-if="editable" />
     <div style="height: 85vh"></div>
   </div>
 </template>
