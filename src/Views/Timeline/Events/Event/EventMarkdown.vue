@@ -51,7 +51,7 @@ const onChange = (index: number, checked: boolean) => {};
         :key="'p' + (item as Block).raw"
         v-html="toInnerHtml((item as Block).raw)"
       ></p>
-      <img v-else :src="(item as Image).link" />
+      <img v-else :src="(item as Image).link" class="py-4" />
     </template>
   </div>
 </template>

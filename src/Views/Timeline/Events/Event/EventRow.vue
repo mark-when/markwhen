@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
-import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
+import type {
+  Block,
+  DateFormat,
+  DateRange,
+  Event,
+} from "@markwhen/parser/lib/Types";
 import type { Node } from "@markwhen/parser/lib/Node";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
@@ -41,7 +46,8 @@ const hasLocations = computed(
   () => props.node.eventValue().event.locations.length > 0
 );
 const hasImages = computed(
-  () => !!props.node.eventValue().event.googlePhotosLink
+  () =>
+    !!props.node.eventValue().event.supplemental.some((s) => s.type === "image")
 );
 const hasSupplemental = computed(
   () => !!props.node.eventValue().event.supplemental.length
@@ -62,7 +68,7 @@ const taskNumerator = computed(
     props.node
       .eventValue()
       .event.supplemental.filter(
-        (block) => block.type === "checkbox" && block.value
+        (block) => block.type === "checkbox" && (block as Block).value
       ).length
 );
 const taskDenominator = computed(
@@ -267,6 +273,7 @@ watch(
         <p class="eventDate py-1">
           {{ node.eventValue().getDateHtml() }}
         </p>
+        <!-- <div class="eventDescription"> -->
         <div class="eventTitle py-1 flex flex-row">
           <div
             class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
@@ -356,11 +363,11 @@ watch(
           :images="images"
           :supplemental="node.eventValue().event.supplemental"
           :matchedListItems="node.eventValue().event.matchedListItems"
-          :photosLink="node.eventValue().event.googlePhotosLink"
           :left="barWidth"
           @close="close"
         />
       </div>
+      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -392,8 +399,15 @@ watch(
   grid-row: 1;
   grid-column: 3;
 }
+
+/* .eventDescription {
+  grid-row: 1 / -1;
+  grid-column: 3 / -1;
+} */
+
 .eventBarAndTitle {
   grid-row: 1;
+  /* grid-column: 1 / -1; */
   grid-column: 1 / 4;
 }
 .eventDate {

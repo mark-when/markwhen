@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { Block, Range } from "@markwhen/parser/lib/Types";
+import type { Block, MarkdownBlock, Range } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import EventMarkdown from "./EventMarkdown.vue";
 
 const props = defineProps<{
   locations: string[];
-  images: string[];
-  supplemental: Block[];
+  supplemental: MarkdownBlock[];
   photosLink?: string;
   matchedListItems: Range[];
   left: number;
@@ -14,12 +13,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (event: "close"): void }>();
 
-const hasImages = computed(() => !!props.images && !!props.images.length);
 const hasLocations = computed(() => props.locations.length > 0);
 </script>
 
 <template>
-  <div class="flex flex-row eventMeta ml-2">
+  <div class="eventMeta flex flex-row ml-2">
     <div class="flex flex-col items-start">
       <div class="flex flex-row cursor-default" v-if="supplemental.length">
         <div
@@ -36,12 +34,12 @@ const hasLocations = computed(() => props.locations.length > 0);
       <div
         class="dark:bg-gray-900 bg-white rounded p-2 -mx-2 inline-flex mt-px relative shadow-lg border border-indigo-500/75"
         style="max-width: 100vw"
-        v-if="hasLocations || hasImages"
+        v-if="hasLocations"
       >
         <div class="flex flex-row overflow-x-scroll items-center rounded">
           <template v-if="hasLocations">
             <iframe
-              :class="{ 'mr-2': index !== locations.length - 1 || hasImages }"
+              :class="{ 'mr-2': index !== locations.length - 1 }"
               class="rounded flex-shrink-0"
               v-for="(location, index) in locations"
               :key="location"
@@ -51,17 +49,6 @@ const hasLocations = computed(() => props.locations.length > 0);
               width="600"
               height="450"
             ></iframe>
-          </template>
-          <template v-if="hasImages">
-            <a
-              :href="photosLink"
-              v-for="(image, index) in images"
-              :key="image"
-              :class="{ 'mr-2': index !== images.length - 1 }"
-              target="_blank"
-            >
-              <img :src="image" class="rounded max-w-none z-30"
-            /></a>
           </template>
         </div>
       </div>
