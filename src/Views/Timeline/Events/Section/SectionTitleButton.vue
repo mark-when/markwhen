@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { GroupStyle, Path } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
+import DepthIndicator from "./DepthIndicator.vue";
 import UpCaret from "./UpCaret.vue";
 const props = defineProps<{
   color?: string;
@@ -56,22 +57,7 @@ const click = (e: MouseEvent) => emit("click", e);
     @mouseover="emit('hovering', true)"
     @mouseleave="emit('hovering', false)"
   >
-    <svg
-      v-for="i in path.slice(1)"
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-1 h-1 mr-[2px]"
-      width="40"
-      height="40"
-      viewBox="0 0 24 24"
-      stroke-width="2"
-      stroke="currentColor"
-      fill="none"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
-    </svg>
+    <DepthIndicator :depth="path.length" />
     <div class="flex flex-row flex-grow items-center justify-center">
       <span class="eventTitle" v-if="titleHtml" v-html="titleHtml"> </span>
       <span class="eventTitle ml-1" v-if="!expanded">({{ numChildren }})</span>
