@@ -7,6 +7,7 @@ import NodeRow from "./NodeRow.vue";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";
+import type { Block } from "@markwhen/parser/lib/Types";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
@@ -22,7 +23,11 @@ const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
     const event = n.eventValue().event;
     return (
-      event.eventDescription + event.supplemental.map((b) => b.raw).join(" ")
+      event.eventDescription +
+      event.supplemental
+        .filter((b) => b.type !== "image")
+        .map((b) => (b as Block).raw)
+        .join(" ")
     );
   } else {
     return n.title;

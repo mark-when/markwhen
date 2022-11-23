@@ -2,7 +2,12 @@ import { computed } from "vue";
 import lunr from "lunr";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
-import type { DateRangePart, Event } from "@markwhen/parser/lib/Types";
+import type {
+  Block,
+  DateRangePart,
+  Event,
+  Image,
+} from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import {
@@ -30,7 +35,15 @@ export const useSearch = () => {
   const eventToDocument = (e: Event, path: EventPaths): SearchDocument => ({
     path: JSON.stringify(path),
     dateTime: e.ranges.date.fromDateTime.toLocaleString(DateTime.DATETIME_HUGE),
-    supplemental: e.event.supplemental.map((s) => s.raw).join(" "),
+    supplemental: e.event.supplemental
+      .map((s) => {
+        if (s.type === "image") {
+          return (s as Image).altText + " " + (s as Image).link;
+        } else {
+          return (s as Block).raw;
+        }
+      })
+      .join(" "),
     description: e.event.eventDescription,
     tags: e.event.tags.join(" "),
   });
@@ -46,7 +59,7 @@ export const useSearch = () => {
           )
         );
       } else {
-        console.log(node.title)
+        console.log(node.title);
         documents.push({
           path: node.rangeInText
             ? JSON.stringify(mapStore.getAllPaths(node.rangeInText?.from))

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
-import type { Path, Event } from "@markwhen/parser/lib/Types";
+import type { Path, Event, Block } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import Section from "./Section/Section.vue";
@@ -18,13 +18,16 @@ const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
     const event = n.eventValue().event;
     return (
-      event.eventDescription + event.supplemental.map((b) => b.raw).join(" ")
+      event.eventDescription +
+      event.supplemental
+        .filter((b) => b.type !== "image")
+        .map((b) => (b as Block).raw)
+        .join(" ")
     );
   } else {
     return n.title;
   }
 };
-
 </script>
 
 <template>
