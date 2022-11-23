@@ -22,13 +22,15 @@ const isGroupStyle = computed(() => props.style === "group");
 const isDetailEvent = computed(() =>
   eventDetailStore.isDetailEventPath(props.path)
 );
-
+const isDeep = computed(() => props.path.path.length > 4);
 const styleObject = computed(() => {
   const obj = {} as any;
   if (color.value) {
-    obj.backgroundColor = `rgba(${color.value}, ${
-      props.hovering ? "0.09" : "0.05"
-    }`;
+    if (props.hovering) {
+      obj.backgroundColor = `rgba(${color.value}, 0.1`;
+    } else if (!isDeep.value) {
+      obj.backgroundColor = `rgba(${color.value}, 0.05)`;
+    }
     obj.border = `1px solid rgba(${color.value}, ${
       isDetailEvent.value ? "0.95" : props.hovering ? "0.75" : "0.12"
     })`;
@@ -39,6 +41,23 @@ const styleObject = computed(() => {
   }
   return obj;
 });
+
+// const obj = {} as any;
+//   if (color.value) {
+//     if (props.hovering) {
+//       obj.backgroundColor = `rgba(${color.value}, 0.1`;
+//     } else if (!isDeep.value) {
+//       obj.backgroundColor = `rgba(${color.value}, 0.05)`;
+//     }
+//     obj.border = `1px solid rgba(${color.value}, ${
+//       isDetailEvent.value ? "0.95" : props.hovering ? "0.75" : "0.12"
+//     })`;
+//   }
+//   if (isGroupStyle.value) {
+//     obj.marginLeft = `${props.left - 8}px`;
+//     obj.width = `max(64px, ${props.fullWidth + 16}px)`;
+//   }
+//   return obj;
 </script>
 
 <template>
@@ -46,9 +65,11 @@ const styleObject = computed(() => {
     class="absolute h-full flex flex-row items-center dark:text-gray-400 transition"
     :class="{
       'dark:bg-opacity-30 bg-opacity-20': hovering,
-      'dark:bg-opacity-20 bg-opacity-10': !hovering,
-      'bg-gray-400 dark:bg-gray-800 border border-1 dark:border-gray-900/25 border-gray-400/25':
-        !color,
+      'dark:bg-opacity-20 bg-opacity-10': !hovering && !isDeep,
+      border: !color,
+      'dark:border-gray-900/25 border-gray-400/25': !color && isDeep,
+      'bg-gray-400 dark:bg-gray-800 dark:border-gray-900/25 border-gray-400/25':
+        (!color && !isDeep) || (!color && hovering),
       'ml-0 w-full': !isGroupStyle,
       'rounded-[12px]': isGroupStyle,
     }"
