@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import type { Block, Range } from "@markwhen/parser/lib/Types";
+import type {
+  Block,
+  Image,
+  MarkdownBlock,
+  Range,
+} from "@markwhen/parser/lib/Types";
 import { toInnerHtml } from "../../utilities/innerHtml";
 
 const props = defineProps<{
-  supplemental: Block[];
+  supplemental: MarkdownBlock[];
   matchedListItems: Range[];
 }>();
 
@@ -24,24 +29,29 @@ const onChange = (index: number, checked: boolean) => {};
         <input
           type="checkbox"
           :disabled="!editorOrchestratorStore.editable"
-          :checked="item.value"
-          @change="onChange(index, !item.value)"
-          :id="`checkbox_${index}_${item.raw}`"
+          :checked="(item as Block).value"
+          @change="onChange(index, !(item as Block).value)"
+          :id="`checkbox_${index}_${(item as Block).raw}`"
         />
         <label
-          v-html="toInnerHtml(item.raw)"
+          v-html="toInnerHtml((item as Block).raw)"
           class="ml-2 pointer-events-auto"
-          :for="`checkbox_${index}_${item.raw}`"
+          :for="`checkbox_${index}_${(item as Block).raw}`"
         ></label>
       </div>
       <ul
         v-else-if="item.type === 'listItem'"
-        :key="item.raw"
+        :key="(item as Block).raw"
         class="list-inside list-disc ml-1"
       >
-        <li v-html="item.raw"></li>
+        <li v-html="(item as Block).raw"></li>
       </ul>
-      <p v-else :key="'p' + item.raw" v-html="toInnerHtml(item.raw)"></p>
+      <p
+        v-else-if="item.type === 'text'"
+        :key="'p' + (item as Block).raw"
+        v-html="toInnerHtml((item as Block).raw)"
+      ></p>
+      <img v-else :src="(item as Image).link" />
     </template>
   </div>
 </template>
