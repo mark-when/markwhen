@@ -50,21 +50,6 @@ const props = withDefaults(
 </template>
 
 <style scoped>
-.key {
-  line-height: 1.05rem;
-  min-width: 16px;
-}
-.key::before {
-  @apply bg-indigo-400 dark:bg-indigo-700 rounded shadow;
-  content: "";
-  position: absolute;
-  bottom: calc(1px * -1.5);
-  left: 0px;
-  right: 0px;
-  height: calc(100% + 1px);
-  z-index: -1;
-}
-
 .hintRight.v-enter-active,
 .hintRight.v-leave-active {
   transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;

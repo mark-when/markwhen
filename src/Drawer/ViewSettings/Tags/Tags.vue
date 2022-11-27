@@ -3,6 +3,7 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { computed } from "vue";
 import Tag from "./Tag.vue";
+import Filter from "./Filter.vue";
 
 const transformStore = useTransformStore();
 const pageStore = usePageStore();
@@ -13,11 +14,12 @@ const isUntaggedFiltered = computed(() => transformStore.filterUntagged);
 
 const filterTag = (tag: string) => transformStore.filterTag(tag);
 const tags = computed(() => {
-  return Object.keys(pageStore.tags)
+  return Object.keys(pageStore.tags);
 });
 </script>
 
 <template>
+  <Filter />
   <div class="flex flex-row noScrollBar pl-2 overflow-scroll">
     <div class="hidden md:block" style="height: 28px">
       <!-- Spacer for timelines that have no tags to ensure the drawer header is a consistent height -->
@@ -40,12 +42,12 @@ const tags = computed(() => {
           />
         </svg>
       </span>
-      <span class="ml-2">Clear filters</span>
+      <span class="ml-1">Clear filters</span>
     </button>
     <button
       :class="{
         'dark:border-zinc-100 border-gray-900': isUntaggedFiltered,
-        'border-transparent': !isUntaggedFiltered
+        'border-transparent': !isUntaggedFiltered,
       }"
       class="mr-2 text-sm lg:text-base rounded border bg-white hover:bg-zinc-100 transition dark:hover:bg-gray-900 dark:bg-gray-800 dark:hover:text-gray-100 md:px-2 md:py-0 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
       @click="toggleFilterUntagged"

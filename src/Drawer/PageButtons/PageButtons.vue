@@ -86,12 +86,10 @@ const moving = (pageIndex: number, translationAmount: number) => {
 
 <template>
   <div
-    class="flex flex-row overflow-x-scroll noScrollBar w-full"
+    class="flex flex-row overflow-x-scroll noScrollBar flex-grow"
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
-    <div
-      class=" dark:bg-slate-700 px-2 items-center justify-center flex"
-    >
+    <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
       <ToggleSidebarButton />
     </div>
     <PageButton
@@ -107,7 +105,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
     />
     <button
       v-if="editable"
-      class="w-8 h-8  flex items-center justify-center transition bg-white hover:bg-indigo-50 text-gray-500 dark:text-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
+      class="w-8 h-8 flex items-center justify-center transition bg-white hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
       :class="shadowed ? 'shadow' : ''"
       @click="addPage"
     >
@@ -124,11 +122,8 @@ const moving = (pageIndex: number, translationAmount: number) => {
         />
       </svg>
     </button>
-    <div
-      class="flex-grow bg-white dark:bg-slate-700"
-    ></div>
+    <div class="flex-grow bg-white dark:bg-slate-700"></div>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

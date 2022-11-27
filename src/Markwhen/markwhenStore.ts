@@ -72,8 +72,6 @@ endSection
 12/20/2019-12/22/2019: Train from Seattle to Chicago
 12/2019: Christmas at home, Dad to hospital
 
-_-_-_break_-_-_
-
 // 2020
 02/29/2020: Molly and Kaitlyn to Seattle (thus starting covid)
 03/28/2020: James to Austin
@@ -106,11 +104,6 @@ section More travel #Travel
 [Los Angeles](location)
 
 03/2022 - now: [Reddit](https://www.reddit.com) #Work
-  
-_-_-_break_-_-_
-
-  title: page 2
-
   `);
 
   const timelines = computed(() => parse(rawTimelineString.value).timelines);
