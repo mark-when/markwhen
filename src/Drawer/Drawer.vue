@@ -4,8 +4,8 @@ import { useViewStore } from "@/Views/viewStore";
 import { computed } from "vue";
 import Sort from "../Drawer/ViewSettings/Sort.vue";
 import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
-import Tags from "../Drawer/ViewSettings/Tags/Tags.vue";
 import VerticalSpacer from "./VerticalSpacer.vue";
+import Filter from "./ViewSettings/Tags/Filter.vue";
 
 const viewStore = useViewStore();
 
@@ -38,7 +38,7 @@ const useTopBorder = computed(() => {
         >
           <Sort v-if="viewStore.currentView.uses?.sort" />
           <ViewSettings />
-          <Tags v-if="viewStore.currentView.uses?.tags" />
+          <Filter v-if="viewStore.currentView.uses?.tags" />
         </div>
       </div>
     </div>

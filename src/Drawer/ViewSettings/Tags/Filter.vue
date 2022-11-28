@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import { usePageStore } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
-import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarker";
 import { computed, ref } from "vue";
 import { useTagColor } from "./composables/useTagColor";
-import TagChip from "./TagChip.vue";
+import FilterDialog from "./FilterDialog.vue";
 
-const pageStore = usePageStore();
 const transformStore = useTransformStore();
 
 const hovering = ref(false);
 const filtered = computed(() => transformStore.filter);
-
-const tags = computed(() => {
-  return Object.keys(pageStore.tags);
-});
 
 const colorForTag = (tag: string) => {
   return useTagColor(tag);
@@ -36,30 +29,16 @@ const mouseover = () => {
 const mouseleave = () => {
   hovering.value = false;
 };
+
+const showFilters = () => {
+  transformStore.setFilterDialogShowing(true);
+  hovering.value = false;
+};
 </script>
 
 <template>
   <button
-    class="mr-2 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
-    @click="showFilters"
-  >
-    <span
-      ><svg
-        class="h-4 w-4"
-        focusable="false"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path
-          d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39c.51-.66.04-1.61-.79-1.61H5.04c-.83 0-1.3.95-.79 1.61z"
-        ></path>
-      </svg>
-    </span>
-    <span class="ml-1">Tags</span>
-  </button>
-  <button
-    class="mr-2 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
+    class="mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
     @click="clear"
     v-if="filtered.length"
     @mouseover="mouseover"
@@ -92,12 +71,34 @@ const mouseleave = () => {
       <div
         class="w-4 h-4"
         :style="{
-          marginRight: `${2 + filtered.length * 5}px`,
+          marginRight: `${2 + filtered.slice(0, 3).length * 5}px`,
         }"
       ></div>
     </div>
-    <span class="ml-1">{{ clearFilterTitle }}</span>
+    <span class="ml-1" :class="hovering ? 'line-through' : ''">{{
+      clearFilterTitle
+    }}</span>
   </button>
+  <button
+    class="mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
+    @click="showFilters"
+  >
+    <span
+      ><svg
+        class="h-4 w-4"
+        focusable="false"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39c.51-.66.04-1.61-.79-1.61H5.04c-.83 0-1.3.95-.79 1.61z"
+        ></path>
+      </svg>
+    </span>
+    <span class="ml-1">Filter</span>
+  </button>
+  <FilterDialog />
 </template>
 
 <style scoped></style>

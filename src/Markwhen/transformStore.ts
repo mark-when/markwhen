@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { usePageEffect } from "./composables/usePageEffect";
 import { transformRoot } from "./composables/useTransform";
 import { usePageStore } from "./pageStore";
@@ -13,6 +13,7 @@ export const useTransformStore = defineStore("transform", () => {
   const sort = usePageEffect(() => "none" as Sort);
   const filter = usePageEffect(() => [] as string[]);
   const filterUntagged = usePageEffect(() => false);
+  const filterDialogShowing = ref(false)
 
   const setSort = (s: Sort) => (sort.value = s);
   const clear = () => {
@@ -34,6 +35,10 @@ export const useTransformStore = defineStore("transform", () => {
   const toggleFilterUntagged = () =>
     (filterUntagged.value = !filterUntagged.value);
 
+  const setFilterDialogShowing = (showing: boolean) => {
+    filterDialogShowing.value = showing
+  }
+
   // const events = computed(() => [...pageStore.pageTimeline.events]);
 
   // TODO: optimize/memoize this or something. It does not need
@@ -52,6 +57,7 @@ export const useTransformStore = defineStore("transform", () => {
     sort,
     filter,
     filterUntagged,
+    filterDialogShowing,
 
     // actions
     setSort,
@@ -59,6 +65,7 @@ export const useTransformStore = defineStore("transform", () => {
     toggleSort,
     filterTag,
     toggleFilterUntagged,
+    setFilterDialogShowing,
 
     // getters
     transformedEvents,
