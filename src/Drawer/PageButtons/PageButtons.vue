@@ -86,7 +86,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
 
 <template>
   <div
-    class="flex flex-row overflow-x-scroll noScrollBar flex-grow"
+    class="flex flex-row overflow-x-scroll noScrollBar flex-grow order-2 lg:order-1"
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
     <div class="dark:bg-slate-700 px-2 items-center justify-center flex">

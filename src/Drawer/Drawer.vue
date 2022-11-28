@@ -20,26 +20,26 @@ const useTopBorder = computed(() => {
     class="drawerHeader bg-slate-50 dark:bg-slate-800 border-t-slate-200 dark:border-t-slate-600 text-gray-500 dark:text-gray-300 z-10"
     :class="{ 'border-t': useTopBorder }"
   >
-    <div class="flex flex-col">
+    <div
+      class="flex lg:flex-row flex-col pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding items-start lg:items-center"
+    >
+      <PageButtons v-if="viewStore.currentView.uses?.pages" />
       <div
-        class="flex pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding items-center"
+        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mx-2 lg:block hidden order-2"
+      ></div>
+      <div
+        class="flex flex-row items-center overflow-auto overflow-visible justify-end order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0"
+        style="width: fit-content"
+        v-if="
+          viewStore.currentView.uses?.tags ||
+          viewStore.currentView.uses?.sort ||
+          (viewStore.currentView.settings &&
+            viewStore.currentView.settings.length)
+        "
       >
-        <PageButtons v-if="viewStore.currentView.uses?.pages" />
-        <VerticalSpacer />
-        <div
-          class="flex flex-row items-center overflow-auto overflow-visible justify-end"
-          style="width: fit-content"
-          v-if="
-            viewStore.currentView.uses?.tags ||
-            viewStore.currentView.uses?.sort ||
-            (viewStore.currentView.settings &&
-              viewStore.currentView.settings.length)
-          "
-        >
-          <Sort v-if="viewStore.currentView.uses?.sort" />
-          <ViewSettings />
-          <Filter v-if="viewStore.currentView.uses?.tags" />
-        </div>
+        <Sort v-if="viewStore.currentView.uses?.sort" />
+        <ViewSettings />
+        <Filter v-if="viewStore.currentView.uses?.tags" />
       </div>
     </div>
   </div>
