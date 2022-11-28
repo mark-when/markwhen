@@ -16,6 +16,12 @@ const colorForTag = (tag: string) => {
 const clear = () => transformStore.clear();
 
 const clearFilterTitle = computed(() => {
+  if (transformStore.filterUntagged) {
+    if (!filtered.value.length) {
+      return "Untagged";
+    }
+    return "Untagged + " + filtered.value.length;
+  }
   if (filtered.value.length === 1) {
     return filtered.value[0];
   }
@@ -34,22 +40,41 @@ const showFilters = () => {
   transformStore.setFilterDialogShowing(true);
   hovering.value = false;
 };
+
+const displayTags = computed(() => {
+  const tags = [];
+  if (transformStore.filterUntagged) {
+    tags.push({
+      name: "Untagged",
+      color: "black",
+    });
+  }
+  const filters = [...transformStore.filter];
+  while (tags.length < 3 && filters.length) {
+    const f = filters.pop()!;
+    tags.push({
+      name: f,
+      color: `rgb(${colorForTag(f).value})`,
+    });
+  }
+  return tags;
+});
 </script>
 
 <template>
   <button
     class="mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
     @click="clear"
-    v-if="filtered.length"
+    v-if="displayTags.length"
     @mouseover="mouseover"
     @mouseleave="mouseleave"
   >
     <div class="relative">
       <div
-        v-for="(tag, i) in filtered.slice(0, 3)"
+        v-for="(tag, i) in displayTags"
         class="w-4 h-4 rounded absolute"
         :style="{
-          backgroundColor: `rgb(${colorForTag(tag).value})`,
+          backgroundColor: tag.color,
           left: `${5 * i}px`,
           zIndex: filtered.length - i,
         }"
