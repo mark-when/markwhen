@@ -46,6 +46,7 @@ const styleObject = computed(() => {
   const obj = {
     order: -9999,
     top: `${3 + props.path.slice(1).length * 1.2}rem`,
+    zIndex: 1,
   } as any;
   if (props.groupStyle === "group") {
     (obj.width = `${props.fullWidth}px`), (obj.marginLeft = `${props.left}px`);
@@ -58,7 +59,7 @@ const click = (e: MouseEvent) => emit("toggle", e);
 
 <template>
   <div
-    class="sticky flex items-center cursor-pointer"
+    class="flex items-center cursor-pointer"
     :style="styleObject"
     v-on="events"
   >
