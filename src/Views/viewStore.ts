@@ -6,7 +6,7 @@ import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
 
 export const useViewStore = defineStore("views", () => {
-  const selectedViewIndex = ref(0);
+  const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
   const views = computed(() =>
@@ -18,9 +18,12 @@ export const useViewStore = defineStore("views", () => {
 
   watchEffect(() => {
     if (selectedViewIndex.value >= views.value.length) {
-      selectedViewIndex.value = 0
+      selectedViewIndex.value = 0;
+    } else if (selectedViewIndex.value < 0) {
+      // Set initial view to timeline
+      selectedViewIndex.value = 1;
     }
-  })
+  });
 
   const setSelectedViewIndex = (i: number) => {
     selectedViewIndex.value = i;

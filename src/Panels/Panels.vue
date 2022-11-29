@@ -32,13 +32,28 @@ const visualizationStyle = computed(() => {
     };
   }
 });
+
+const currentComponent = computed(() => currentView.value.component());
+const framedComponents = computed(() =>
+  viewStore.views.filter((v) => typeof v.component() === "string")
+);
 </script>
 
 <template>
   <div class="flex flex-row w-full h-full overflow-auto">
     <div class="w-full h-full overflow-auto" :style="visualizationStyle">
+      <iframe
+        v-for="component in framedComponents"
+        class="w-full h-full"
+        v-show="currentComponent === component.component()"
+        :src="component.component()"
+        :id="`view_${currentView.name}`"
+      ></iframe>
       <keep-alive>
-        <component :is="currentView.component()" />
+        <component
+          :is="currentComponent"
+          v-if="typeof currentComponent !== 'string'"
+        />
       </keep-alive>
     </div>
     <EventDetailPanel v-if="detailVisible && !viewStore.isMobile" />
