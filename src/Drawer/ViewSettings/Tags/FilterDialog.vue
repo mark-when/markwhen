@@ -56,7 +56,7 @@ const clearFilters = () => {
             />
           </svg>
         </span>
-        <span class="ml-1">Clear filters</span>
+        <span class="ml-2">Clear filters</span>
       </button>
       <button
         :class="{
