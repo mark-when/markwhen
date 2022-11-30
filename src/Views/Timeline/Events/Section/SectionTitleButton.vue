@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { GroupStyle, Path } from "@markwhen/parser/lib/Types";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import DepthIndicator from "./DepthIndicator.vue";
 import UpCaret from "./UpCaret.vue";
 const props = defineProps<{
@@ -9,38 +9,20 @@ const props = defineProps<{
   expanded: boolean;
   numChildren: number;
   groupStyle: GroupStyle;
-  path: Path;
+  path: string;
 }>();
 
 const button = ref();
-
-const canCalculateButton = ref(false);
-onMounted(() => {
-  canCalculateButton.value = true
-})
-const buttonWidth = computed(() => {
-  // This needs to be here because we want
-  // buttonWidth to be recalculated when the title changes
-  const title = props.titleHtml;
-  if (canCalculateButton.value) {
-    return button.value?.clientWidth;
-  }
-  return 0;
-});
 
 const emit = defineEmits<{
   (event: "click", e: MouseEvent): void;
   (event: "hovering", isHovering: boolean): void;
 }>();
-const isGroupStyle = computed(() => props.groupStyle === "group");
 
 const styleObject = computed(() => {
   const obj = {
     backgroundColor: `rgba(${props.color}, 0.5)`,
   } as any;
-  if (isGroupStyle.value) {
-    obj.left = `calc(50% - ${buttonWidth.value / 2}px)`;
-  }
   return obj;
 });
 
@@ -60,7 +42,7 @@ const click = (e: MouseEvent) => emit("click", e);
     @mouseover="emit('hovering', true)"
     @mouseleave="emit('hovering', false)"
   >
-    <DepthIndicator :depth="path.length" />
+    <DepthIndicator :depth="path.split(',').length" />
     <div class="flex flex-row flex-grow items-center justify-center">
       <span class="eventTitle" v-if="titleHtml" v-html="titleHtml"> </span>
       <span class="eventTitle ml-1" v-if="!expanded">({{ numChildren }})</span>

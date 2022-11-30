@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import SectionTitleButton from "./SectionTitleButton.vue";
 
 const props = defineProps<{
-  path: Path;
+  path: string;
   expanded: boolean;
   titleHtml: string;
   color?: string;

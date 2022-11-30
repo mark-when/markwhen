@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onRenderTriggered,
+  onUpdated,
+  ref,
+  watch,
+} from "vue";
 import { useElementHover } from "@vueuse/core";
 import type {
   Block,
@@ -10,23 +17,23 @@ import type {
 import type { Node } from "@markwhen/parser/lib/Node";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
-import TaskCompletion from "./TaskCompletion.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
-import {
-  equivalentPaths,
-  useEventDetailStore,
-} from "@/EventDetail/eventDetailStore";
+import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
-import Spinner from "../../../../utilities/Spinner.vue";
+import EventTitle from "./EventTitle.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
-const props = defineProps<{ node: Node<Event>; path: EventPath }>();
+const props = defineProps<{
+  node: Node<Event>;
+  path: EventPath;
+  hovering: boolean;
+}>();
 
 const {
   scalelessDistanceFromBaselineLeftmostDate,
@@ -67,6 +74,7 @@ const toggleMeta = (e: MouseEvent) => {
   e.preventDefault();
   showingMeta.value = !showingMeta.value;
 };
+
 const taskNumerator = computed(
   () =>
     props.node
@@ -120,30 +128,13 @@ const {
   tempFrom,
   tempTo,
 } = useResize(props.node.eventValue(), moveEnded);
-const elementHover = useElementHover(eventRow);
-const hoveringWidgets = ref(false);
-const isHovering = computed(
-  () =>
-    elementHover.value ||
-    !!tempFrom.value ||
-    !!tempTo.value ||
-    hoveringWidgets.value
-);
-const editable = inject(isEditable);
-
-const isHoveredInEditor = computed(
-  () =>
-    editable &&
-    equivalentPaths(
-      editorOrchestratorStore.hoveringEventPaths?.[props.path.type],
-      props.path
-    )
-);
 
 const isDetailEvent = computed(() =>
   eventDetailStore.isDetailEventPath(props.path)
 );
 
+const hoveringWidgets = ref(false);
+const elementHover = useElementHover(eventRow);
 watch(elementHover, (hovering) => {
   if (hovering) {
     setHoveringEvent(props.node.eventValue());
@@ -151,6 +142,15 @@ watch(elementHover, (hovering) => {
     clearHoveringEvent();
   }
 });
+
+const isHovering = computed(
+  () =>
+    elementHover.value ||
+    !!tempFrom.value ||
+    !!tempTo.value ||
+    hoveringWidgets.value ||
+    props.hovering
+);
 
 const range = computed(() => {
   const eventDateRange = props.node.eventValue().dateRange();
@@ -236,6 +236,16 @@ watch(
     }
   }
 );
+const edit = () => editorOrchestratorStore.showInEditor(props.node);
+
+onRenderTriggered((h) => {
+  // console.log(h)
+  console.log("render triggered");
+});
+
+onUpdated(() => {
+  console.log("update eventrow");
+});
 </script>
 
 <template>
@@ -261,8 +271,7 @@ watch(
           :class="{
             'dark:bg-gray-800 bg-white shadow-lg': isHovering && hasMeta,
             'dark:bg-gray-900 bg-white shadow-lg': isDetailEvent,
-            'ring-1 dark:ring-gray-100 ring-black':
-              isHoveredInEditor && !isDetailEvent,
+            'ring-1 dark:ring-gray-100 ring-black': hovering && !isDetailEvent,
             'ring-1 dark:ring-indigo-600 ring-indigo-500': isDetailEvent,
           }"
           @click="eventDetail"
@@ -270,7 +279,7 @@ watch(
         <event-bar
           ref="eventBar"
           :event="node.eventValue()"
-          :hovering="isHovering"
+          :hovering="isHovering || hovering"
           :width="barWidth"
           :taskNumerator="taskNumerator"
           :taskDenominator="taskDenominator"
@@ -280,90 +289,16 @@ watch(
         <p class="eventDate py-1">
           {{ node.eventValue().getDateHtml() }}
         </p>
-        <div class="eventTitle py-1 flex flex-row">
-          <div
-            class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
-          >
-            <button
-              @click="toggleMeta"
-              class="rounded px-px pointer-events-auto border"
-              v-if="hasMeta"
-              :class="{
-                'bg-white dark:bg-gray-900 border-indigo-500/75': showingMeta,
-                shadow: isHovering || showingMeta,
-                'dark:text-gray-300 dark:bg-gray-800 text-gray-500 bg-gray-300 border-transparent':
-                  !showingMeta,
-              }"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                fill="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path
-                  d="M 17 14 l -5 -6 l -5 6 h 10"
-                  :transform="`rotate(${showingMeta ? 0 : 180} 12 12)`"
-                ></path>
-              </svg>
-            </button>
-            <svg
-              v-if="hasImages && imageStatus !== 'loading'"
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <spinner
-              v-else-if="hasImages && imageStatus === 'loading'"
-              class="h-3 w-3"
-            />
-            <svg
-              v-if="hasLocations"
-              class="h-4 w-4"
-              focusable="false"
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-              ></path>
-            </svg>
-            <task-completion
-              v-if="taskDenominator"
-              :taskNumerator="taskNumerator"
-              :taskDenominator="taskDenominator"
-            />
-          </div>
-          <p class="ml-2">
-            <span
-              v-html="
-                toInnerHtml(node.eventValue().eventDescription.eventDescription)
-              "
-              :class="{
-                'pointer-events-auto': node
-                  .eventValue()
-                  .getInnerHtml()
-                  .includes('underline'),
-              }"
-            ></span>
-            <span v-if="hasSupplemental">...</span>
-          </p>
-        </div>
+        <event-title
+          :showing-meta="showingMeta"
+          :is-hovering="isHovering"
+          :has-meta="hasMeta"
+          :has-supplemental="hasSupplemental"
+          :has-locations="hasLocations"
+          :task-denominator="taskDenominator"
+          :task-numerator="taskNumerator"
+          :title-html="toInnerHtml(node.eventValue().eventDescription.eventDescription)"
+        ></event-title>
         <event-meta
           class="pointer-events-auto"
           v-if="canShowMeta"

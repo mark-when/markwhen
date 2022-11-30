@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref,  } from "vue";
+import { computed, onRenderTriggered, onUpdated, ref, watch } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
@@ -7,13 +7,13 @@ import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
-const { scalelessDistanceFromBaselineLeftmostDate, scalelessDistanceBetweenDates } =
-  useTimelineStore();
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import type { Block } from "@markwhen/parser/lib/Types";
+import NodeRow from "../NodeRow.vue";
 
 const props = defineProps<{
   node: SomeNode;
-  path: EventPath;
-  canHaveSections: boolean;
+  path: string;
 }>();
 
 const expanded = ref(!!props.node.startExpanded);
@@ -37,6 +37,7 @@ const left = computed(() => {
 const { color } = useEventColor(props.node);
 
 const fullWidth = computed(() => {
+  console.log('calling fullwidth')
   if (!props.node || !props.node.ranges()) {
     return 100;
   }
@@ -52,13 +53,40 @@ const hover = (isHovering: boolean) => {
 };
 
 const groupStyle = computed(() =>
-  props.canHaveSections && props.node.style === "section" ? "section" : "group"
+  props.node.style === "section" ? "section" : "group"
 );
+
+const nodeKey = (n: SomeNode) => {
+  if (n.isEventNode()) {
+    const event = n.eventValue().event;
+    return (
+      event.eventDescription +
+      event.supplemental
+        .filter((b) => b.type !== "image")
+        .map((b) => (b as Block).raw)
+        .join(" ")
+    );
+  } else {
+    return n.title;
+  }
+};
+
+onRenderTriggered((h) => {
+  console.log(props.path, h);
+});
+
+watch(props, (p) => {
+  console.log(p)
+})
+
+onUpdated(() => {
+  console.log('section updated')
+})
 </script>
 
 <template>
   <div class="relative flex flex-col">
-    <ExpandedSectionBackground
+    <!-- <ExpandedSectionBackground
       :hovering="hovering"
       :style="groupStyle"
       :node="node"
@@ -66,22 +94,24 @@ const groupStyle = computed(() =>
       :full-width="fullWidth"
       :is-detail="false"
       :path="path"
-    />
+    /> -->
     <div
       class="sticky top-0 cursor-pointer"
       :style="{
         marginLeft: `calc(var(--timelines-scale-by-24) * ${left}px)`,
         width: `calc(var(--timeline-scale-by-24) * ${fullWidth}px)`,
       }"
-      @click="toggle"
-      @mouseover="hover(true)"
-      @mouseleave="hover(false)"
     ></div>
     <div v-show="expanded">
-      <slot></slot>
+      <NodeRow
+        v-for="(node, i) in (props.node.value as NodeArray)"
+        :path="[...path.split(','), i].join(',')"
+        :node="node"
+        :key="[...path.split(','), i].join(',')"
+      ></NodeRow>
     </div>
-    <SectionHeader
-      :path="path.path"
+    <!-- <SectionHeader
+      :path="path"
       @toggle="toggle"
       @hover="hover"
       :expanded="expanded"
@@ -91,7 +121,7 @@ const groupStyle = computed(() =>
       :group-style="groupStyle"
       :left="left"
       :full-width="fullWidth"
-    ></SectionHeader>
+    ></SectionHeader> -->
   </div>
 </template>
 
