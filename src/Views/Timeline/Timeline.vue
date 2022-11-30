@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick, onActivated, computed } from "vue";
+import {
+  onMounted,
+  ref,
+  watch,
+  nextTick,
+  onActivated,
+  computed,
+  watchEffect,
+} from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
@@ -67,6 +75,19 @@ watch(
     widthChangeStartYearWidth.value = timelineStore.pageSettings.scale;
   }
 );
+
+const setScaleVariable = (s: number) => {
+  document
+    .getElementById("timeline")
+    ?.style.setProperty("--timeline-scale", `${s}`);
+  document
+    .getElementById("timeline")
+    ?.style.setProperty("--timeline-scale-by-24", `${s / 24}`);
+};
+const scale = computed(() => timelineStore.pageScale);
+watch(scale, setScaleVariable);
+onMounted(() => setScaleVariable(scale.value));
+
 watch(
   () => timelineStore.pageSettings,
   (settings) => {
@@ -162,12 +183,11 @@ watch(
       return;
     }
 
-    const range =
-      event.isEventNode()
-        ? event.eventValue().ranges.date
-        : event.range?.fromDateTime && event.range.toDateTime
-        ? event.range
-        : undefined;
+    const range = event.isEventNode()
+      ? event.eventValue().ranges.date
+      : event.range?.fromDateTime && event.range.toDateTime
+      ? event.range
+      : undefined;
 
     if (!range) {
       return;
@@ -238,4 +258,4 @@ const showJumpToRange = computed({
   <JumpToRangeDialog v-model="showJumpToRange" />
 </template>
 
-<style scoped></style>
+<style></style>

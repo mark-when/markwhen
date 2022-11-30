@@ -41,7 +41,7 @@ const percent = computed(() => {
             !tagColor,
         }"
         :style="{
-          width: `${width}px`,
+          width: `max(10px, calc(var(--timeline-scale-by-24) * ${width}px))`,
           backgroundColor: tagColor ? `rgba(${tagColor}, 0.3)` : '',
           border: tagColor ? `1px solid rgba(${tagColor}, 0.3)` : '',
           height: `10px`,

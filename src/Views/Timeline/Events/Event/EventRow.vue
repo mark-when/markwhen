@@ -28,7 +28,7 @@ import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const props = defineProps<{ node: Node<Event>; path: EventPath }>();
 
-const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
+const { scalelessDistanceFromBaselineLeftmostDate, scalelessDistanceBetweenDates } =
   useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
@@ -182,10 +182,10 @@ const range = computed(() => {
 });
 
 const marginLeft = computed(() =>
-  distanceFromBaselineLeftmostDate(range.value.fromDateTime)
+  scalelessDistanceFromBaselineLeftmostDate(range.value.fromDateTime)
 );
 const barWidth = computed(() => {
-  const distance = distanceBetweenDates(
+  const distance = scalelessDistanceBetweenDates(
     range.value.fromDateTime,
     range.value.toDateTime
   );
@@ -235,7 +235,7 @@ watch(
   <div
     class="eventRow relative"
     :style="{
-      marginLeft: `${marginLeft}px`,
+      marginLeft: `calc(var(--timeline-scale-by-24) * ${marginLeft}px)`,
     }"
     ref="eventRow"
   >

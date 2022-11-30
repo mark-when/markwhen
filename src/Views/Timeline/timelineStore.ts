@@ -102,6 +102,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => (a: DateTime, b: DateTime) =>
       (b.diff(a).as(diffScale) * pageScale.value) / 24
   );
+  const scalelessDistanceFromBaselineLeftmostDate = computed(() => (a: DateTime) => a.diff(baselineLeftmostDate.value).as(diffScale))
   const distanceFromBaselineLeftmostDate = computed(
     () => (a: DateTime) =>
       (a.diff(baselineLeftmostDate.value).as(diffScale) * pageScale.value) / 24
@@ -189,6 +190,7 @@ export const useTimelineStore = defineStore("timeline", () => {
       offset: number
     ) => DateTime,
     scaleToGetDistance,
+    scalelessDistanceFromBaselineLeftmostDate,
 
     // actions
     setViewport,
