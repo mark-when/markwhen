@@ -46,7 +46,7 @@ const styleObject = computed(() => {
   const obj = {
     order: -9999,
     top: `${3 + props.path.slice(1).length * 1.2}rem`,
-    zIndex: 1,
+    zIndex: 0,
   } as any;
   if (props.groupStyle === "group") {
     (obj.width = `${props.fullWidth}px`), (obj.marginLeft = `${props.left}px`);
