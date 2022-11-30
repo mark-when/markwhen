@@ -6,7 +6,8 @@ import { useEventColor } from "../composables/useEventColor";
 import DragHandle from "@/Views/Timeline/Events/Event/Edit/DragHandle.vue";
 
 const props = defineProps<{
-  event: Event;
+  percent: number,
+  tagColor?: string,
   hovering: boolean;
   width: number;
   taskNumerator: number;
@@ -16,19 +17,6 @@ const props = defineProps<{
 }>();
 
 const editable = inject(isEditable);
-
-const { color: tagColor } = useEventColor(props.event);
-
-const percent = computed(() => {
-  const p = props.event.eventDescription.percent as number;
-  if (!isNaN(p)) {
-    return p;
-  }
-  if (!isNaN(props.taskNumerator) && props.taskDenominator > 0) {
-    return (props.taskNumerator / props.taskDenominator) * 100;
-  }
-  return 100;
-});
 </script>
 
 <template>

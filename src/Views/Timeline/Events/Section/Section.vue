@@ -37,7 +37,7 @@ const left = computed(() => {
 const { color } = useEventColor(props.node);
 
 const fullWidth = computed(() => {
-  console.log('calling fullwidth')
+  // console.log('calling fullwidth')
   if (!props.node || !props.node.ranges()) {
     return 100;
   }
@@ -71,17 +71,17 @@ const nodeKey = (n: SomeNode) => {
   }
 };
 
-onRenderTriggered((h) => {
-  console.log(props.path, h);
-});
+// onRenderTriggered((h) => {
+//   console.log(props.path, h);
+// });
 
-watch(props, (p) => {
-  console.log(p)
-})
+// watch(props, (p) => {
+//   console.log(p)
+// })
 
-onUpdated(() => {
-  console.log('section updated')
-})
+// onUpdated(() => {
+//   console.log('section updated')
+// })
 </script>
 
 <template>

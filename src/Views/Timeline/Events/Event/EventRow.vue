@@ -14,7 +14,6 @@ import type {
   DateRange,
   Event,
 } from "@markwhen/parser/lib/Types";
-import type { Node } from "@markwhen/parser/lib/Node";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
@@ -28,9 +27,10 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { useEventColor } from "../composables/useEventColor";
 
 const props = defineProps<{
-  node: Node<Event>;
+  event: Event;
   path: EventPath;
   hovering: boolean;
 }>();
@@ -51,18 +51,11 @@ const eventRow = ref();
 const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
-const hasLocations = computed(
-  () => props.node.eventValue().eventDescription.locations.length > 0
-);
+const hasLocations = computed(() => props.event.eventDescription.locations.length > 0);
 const hasImages = computed(
-  () =>
-    !!props.node
-      .eventValue()
-      .eventDescription.supplemental.some((s) => s.type === "image")
+  () => !!props.event.eventDescription.supplemental.some((s) => s.type === "image")
 );
-const hasSupplemental = computed(
-  () => !!props.node.eventValue().eventDescription.supplemental.length
-);
+const hasSupplemental = computed(() => !!props.event.eventDescription.supplemental.length);
 const hasMeta = computed(
   () => hasLocations.value || hasImages.value || hasSupplemental.value
 );
@@ -77,19 +70,14 @@ const toggleMeta = (e: MouseEvent) => {
 
 const taskNumerator = computed(
   () =>
-    props.node
-      .eventValue()
-      .eventDescription.supplemental.filter(
-        (block) => block.type === "checkbox" && (block as Block).value
-      ).length
+    props.event.eventDescription.supplemental.filter(
+      (block) => block.type === "checkbox" && (block as Block).value
+    ).length
 );
 const taskDenominator = computed(
   () =>
-    props.node
-      .eventValue()
-      .eventDescription.supplemental.filter(
-        (block) => block.type === "checkbox"
-      ).length
+    props.event.eventDescription.supplemental.filter((block) => block.type === "checkbox")
+      .length
 );
 const imageStatus = ref<"not loaded" | "loaded" | "loading">("not loaded");
 const images = ref([] as string[]);
@@ -115,7 +103,7 @@ const scale = computed(() => markersStore.scaleOfViewportDateInterval);
 
 const moveEnded = () =>
   editEventDateRange(
-    props.node.eventValue(),
+    props.event,
     range.value,
     scale.value,
     preferredInterpolationFormat.value
@@ -127,7 +115,7 @@ const {
   moveHandleListener,
   tempFrom,
   tempTo,
-} = useResize(props.node.eventValue(), moveEnded);
+} = useResize(props.event, moveEnded);
 
 const isDetailEvent = computed(() =>
   eventDetailStore.isDetailEventPath(props.path)
@@ -137,7 +125,7 @@ const hoveringWidgets = ref(false);
 const elementHover = useElementHover(eventRow);
 watch(elementHover, (hovering) => {
   if (hovering) {
-    setHoveringEvent(props.node.eventValue());
+    setHoveringEvent(props.event);
   } else {
     clearHoveringEvent();
   }
@@ -153,30 +141,31 @@ const isHovering = computed(
 );
 
 const range = computed(() => {
-  const eventDateRange = props.node.eventValue().dateRange();
+  console.log("computing range")
+  const eventRange = props.event.dateRange()
   if (!tempFrom.value && !tempTo.value) {
-    return props.node.eventValue().dateRange() as DateRange;
+    return eventRange
   } else if (!tempFrom.value) {
-    if (+tempTo.value! > +eventDateRange.fromDateTime) {
+    if (+tempTo.value! > +eventRange.fromDateTime) {
       return {
-        fromDateTime: eventDateRange.fromDateTime,
+        fromDateTime: eventRange.fromDateTime,
         toDateTime: tempTo.value!,
       };
     } else {
       return {
         fromDateTime: tempTo.value!,
-        toDateTime: eventDateRange.fromDateTime,
+        toDateTime: eventRange.fromDateTime,
       };
     }
   } else if (!tempTo.value) {
-    if (+tempFrom.value < +eventDateRange.toDateTime) {
+    if (+tempFrom.value < +eventRange.toDateTime) {
       return {
         fromDateTime: tempFrom.value,
-        toDateTime: eventDateRange.toDateTime,
+        toDateTime: eventRange.toDateTime,
       };
     } else {
       return {
-        fromDateTime: eventDateRange.toDateTime,
+        fromDateTime: eventRange.toDateTime,
         toDateTime: tempFrom.value,
       };
     }
@@ -192,6 +181,7 @@ const marginLeft = computed(() =>
   scalelessDistanceFromBaselineLeftmostDate(range.value.fromDateTime)
 );
 const barWidth = computed(() => {
+  console.log('computing bar width')
   const distance = scalelessDistanceBetweenDates(
     range.value.fromDateTime,
     range.value.toDateTime
@@ -199,12 +189,10 @@ const barWidth = computed(() => {
   return Math.max(eventHeightPx, distance);
 });
 const locations = computed(() =>
-  props.node
-    .eventValue()
-    .eventDescription.locations.map(
-      (l) =>
-        `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
-    )
+  props.event.eventDescription.locations.map(
+    (l) =>
+      `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
+  )
 );
 
 const close = () => {
@@ -236,15 +224,35 @@ watch(
     }
   }
 );
-const edit = () => editorOrchestratorStore.showInEditor(props.node);
-
-onRenderTriggered((h) => {
-  // console.log(h)
-  console.log("render triggered");
-});
+const edit = () =>
+  editorOrchestratorStore.showInEditor({ pageFiltered: props.path });
 
 onUpdated(() => {
   console.log("update eventrow");
+});
+
+onRenderTriggered((h) => {
+  console.log(h)
+})
+
+watch(
+  () => props.path,
+  () => {
+    console.log("props path updated");
+  }
+);
+
+const { color: tagColor } = useEventColor(props.event);
+
+const percent = computed(() => {
+  const p = props.event.eventDescription.percent as number;
+  if (!isNaN(p)) {
+    return p;
+  }
+  if (!isNaN(taskNumerator.value) && taskDenominator.value > 0) {
+    return (taskNumerator.value / taskDenominator.value) * 100;
+  }
+  return 100;
 });
 </script>
 
@@ -278,7 +286,9 @@ onUpdated(() => {
         ></div>
         <event-bar
           ref="eventBar"
-          :event="node.eventValue()"
+          :tagColor="tagColor"
+          :percent="percent"
+          :event="event"
           :hovering="isHovering || hovering"
           :width="barWidth"
           :taskNumerator="taskNumerator"
@@ -287,7 +297,7 @@ onUpdated(() => {
           :drag-handle-listener-right="dragHandleListenerRight"
         />
         <p class="eventDate py-1">
-          {{ node.eventValue().getDateHtml() }}
+          {{ event.getDateHtml() }}
         </p>
         <event-title
           :showing-meta="showingMeta"
@@ -297,17 +307,15 @@ onUpdated(() => {
           :has-locations="hasLocations"
           :task-denominator="taskDenominator"
           :task-numerator="taskNumerator"
-          :title-html="toInnerHtml(node.eventValue().eventDescription.eventDescription)"
+          :title-html="toInnerHtml(event.eventDescription.eventDescription)"
         ></event-title>
         <event-meta
           class="pointer-events-auto"
           v-if="canShowMeta"
           :locations="locations"
           :images="images"
-          :supplemental="node.eventValue().eventDescription.supplemental"
-          :matchedListItems="
-            node.eventValue().eventDescription.matchedListItems
-          "
+          :supplemental="event.eventDescription.supplemental"
+          :matchedListItems="event.eventDescription.matchedListItems"
           :left="barWidth"
           @close="close"
         />
