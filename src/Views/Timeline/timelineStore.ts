@@ -55,8 +55,8 @@ export const useTimelineStore = defineStore("timeline", () => {
   const pageScale = computed(() => pageSettings.value.scale);
   const baselineLeftmostDate = computed(() => {
     const md = pageTimelineMetadata.value;
-    const earliestTime = md.earliestTime;
-    const days = md.maxDuration.as("days");
+    const earliestTime = DateTime.fromISO(md.earliestTime);
+    const days = md.maxDurationDays;
 
     if (days < 0.1) {
       return floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
@@ -74,7 +74,9 @@ export const useTimelineStore = defineStore("timeline", () => {
   });
   const baselineRightmostDate = computed(() =>
     floorDateTime(
-      pageTimelineMetadata.value.latestTime.plus({ years: 30 }),
+      DateTime.fromISO(pageTimelineMetadata.value.latestTime).plus({
+        years: 30,
+      }),
       "year"
     )
   );
@@ -102,7 +104,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => (a: DateTime, b: DateTime) =>
       (b.diff(a).as(diffScale) * pageScale.value) / 24
   );
-  const scalelessDistanceFromBaselineLeftmostDate = computed(() => (a: DateTime) => a.diff(baselineLeftmostDate.value).as(diffScale))
+  const scalelessDistanceFromBaselineLeftmostDate = computed(
+    () => (a: DateTime) => a.diff(baselineLeftmostDate.value).as(diffScale)
+  );
   const distanceFromBaselineLeftmostDate = computed(
     () => (a: DateTime) =>
       (a.diff(baselineLeftmostDate.value).as(diffScale) * pageScale.value) / 24

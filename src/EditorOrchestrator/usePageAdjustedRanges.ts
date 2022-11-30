@@ -39,14 +39,14 @@ export const usePageAdjustedRanges = () => {
 
     let from, to;
     if (node.isEventNode()) {
-      from = node.eventValue().ranges.event.from;
-      to = node.eventValue().ranges.event.to;
+      from = node.eventValue().rangeInText.from;
+      to = node.eventValue().rangeInText.to;
     } else {
-      from = node.rangeInText!.from;
+    from = node.rangeInText!.from;
 
       const lastOfGroup = node.getLast().node;
       to = lastOfGroup.isEventNode()
-        ? lastOfGroup.eventValue().ranges.event.to
+        ? lastOfGroup.eventValue().rangeInText.to
         : lastOfGroup.rangeInText?.to;
       to = to ?? node.rangeInText!.to;
     }

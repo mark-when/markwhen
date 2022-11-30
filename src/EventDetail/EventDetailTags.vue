@@ -8,7 +8,7 @@ const props = defineProps<{ event: Event }>();
 const pageStore = usePageStore();
 
 const allTags = computed(() => Object.keys(pageStore.pageTimeline.tags));
-const ourTags = computed(() => props.event.event.tags || []);
+const ourTags = computed(() => props.event.eventDescription.tags || []);
 const notOurTags = computed(() =>
   allTags.value.filter((t) => !ourTags.value.includes(t))
 );

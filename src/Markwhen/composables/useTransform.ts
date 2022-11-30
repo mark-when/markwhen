@@ -1,4 +1,9 @@
-import type { Node, NodeArray, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
+import type {
+  Node,
+  NodeArray,
+  NodeValue,
+  SomeNode,
+} from "@markwhen/parser/lib/Node";
 import type { Sort } from "../transformStore";
 
 // This is particularly for the 'untagged' filter case, because the root node
@@ -30,7 +35,7 @@ export const transform = (
     return undefined;
   }
   if (node.isEventNode()) {
-    const tags = node.eventValue().event.tags;
+    const tags = node.eventValue().eventDescription.tags;
     if (filterUntagged) {
       if (tags.length === 0) {
         return node;
@@ -114,7 +119,7 @@ const sortNodeArray = (node: Node<NodeArray> | undefined, sort: Sort) => {
     .sort((left, right) => {
       const fromDateTime = (n: SomeNode) =>
         n.isEventNode()
-          ? n.eventValue().ranges.date.fromDateTime
+          ? n.eventValue().dateRange().fromDateTime
           : n.ranges()?.fromDateTime;
 
       const leftDateTime = fromDateTime(left);

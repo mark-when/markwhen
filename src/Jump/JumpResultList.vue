@@ -50,7 +50,7 @@ const titleForListItem = (item: ParseResult | lunr.Index.Result) => {
   } else {
     const node = matchedEventOrGroup(item);
     if (node?.isEventNode()) {
-      return toInnerHtml(node.eventValue().event.eventDescription);
+      return toInnerHtml(node.eventValue().eventDescription.eventDescription);
     } else if (!!node) {
       return (
         (node.title

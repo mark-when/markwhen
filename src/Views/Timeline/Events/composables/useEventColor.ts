@@ -12,9 +12,11 @@ export const useEventColor = (eventRef: MaybeRef<SomeNode | Event>) => {
     const node = unref(eventRef);
     let ourTags: string[] | undefined;
     if (node instanceof Event) {
-      ourTags = node.event.tags;
+      ourTags = node.eventDescription.tags;
     } else {
-      ourTags = node.isEventNode() ? node.eventValue().event.tags : node.tags;
+      ourTags = node.isEventNode()
+        ? node.eventValue().eventDescription.tags
+        : node.tags;
     }
     color.value = ourTags ? pageStore.tags[ourTags[0]] : undefined;
   });

@@ -28,8 +28,10 @@ import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 
 const props = defineProps<{ node: Node<Event>; path: EventPath }>();
 
-const { scalelessDistanceFromBaselineLeftmostDate, scalelessDistanceBetweenDates } =
-  useTimelineStore();
+const {
+  scalelessDistanceFromBaselineLeftmostDate,
+  scalelessDistanceBetweenDates,
+} = useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const pageStore = usePageStore();
@@ -43,14 +45,16 @@ const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
 const hasLocations = computed(
-  () => props.node.eventValue().event.locations.length > 0
+  () => props.node.eventValue().eventDescription.locations.length > 0
 );
 const hasImages = computed(
   () =>
-    !!props.node.eventValue().event.supplemental.some((s) => s.type === "image")
+    !!props.node
+      .eventValue()
+      .eventDescription.supplemental.some((s) => s.type === "image")
 );
 const hasSupplemental = computed(
-  () => !!props.node.eventValue().event.supplemental.length
+  () => !!props.node.eventValue().eventDescription.supplemental.length
 );
 const hasMeta = computed(
   () => hasLocations.value || hasImages.value || hasSupplemental.value
@@ -67,7 +71,7 @@ const taskNumerator = computed(
   () =>
     props.node
       .eventValue()
-      .event.supplemental.filter(
+      .eventDescription.supplemental.filter(
         (block) => block.type === "checkbox" && (block as Block).value
       ).length
 );
@@ -75,7 +79,9 @@ const taskDenominator = computed(
   () =>
     props.node
       .eventValue()
-      .event.supplemental.filter((block) => block.type === "checkbox").length
+      .eventDescription.supplemental.filter(
+        (block) => block.type === "checkbox"
+      ).length
 );
 const imageStatus = ref<"not loaded" | "loaded" | "loading">("not loaded");
 const images = ref([] as string[]);
@@ -147,29 +153,30 @@ watch(elementHover, (hovering) => {
 });
 
 const range = computed(() => {
+  const eventDateRange = props.node.eventValue().dateRange();
   if (!tempFrom.value && !tempTo.value) {
-    return props.node.eventValue().ranges.date as DateRange;
+    return props.node.eventValue().dateRange() as DateRange;
   } else if (!tempFrom.value) {
-    if (+tempTo.value! > +props.node.eventValue().ranges.date.fromDateTime) {
+    if (+tempTo.value! > +eventDateRange.fromDateTime) {
       return {
-        fromDateTime: props.node.eventValue().ranges.date.fromDateTime,
+        fromDateTime: eventDateRange.fromDateTime,
         toDateTime: tempTo.value!,
       };
     } else {
       return {
         fromDateTime: tempTo.value!,
-        toDateTime: props.node.eventValue().ranges.date.fromDateTime,
+        toDateTime: eventDateRange.fromDateTime,
       };
     }
   } else if (!tempTo.value) {
-    if (+tempFrom.value < +props.node.eventValue().ranges.date.toDateTime) {
+    if (+tempFrom.value < +eventDateRange.toDateTime) {
       return {
         fromDateTime: tempFrom.value,
-        toDateTime: props.node.eventValue().ranges.date.toDateTime,
+        toDateTime: eventDateRange.toDateTime,
       };
     } else {
       return {
-        fromDateTime: props.node.eventValue().ranges.date.toDateTime,
+        fromDateTime: eventDateRange.toDateTime,
         toDateTime: tempFrom.value,
       };
     }
@@ -194,7 +201,7 @@ const barWidth = computed(() => {
 const locations = computed(() =>
   props.node
     .eventValue()
-    .event.locations.map(
+    .eventDescription.locations.map(
       (l) =>
         `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
     )
@@ -344,7 +351,9 @@ watch(
           </div>
           <p class="ml-2">
             <span
-              v-html="toInnerHtml(node.eventValue().event.eventDescription)"
+              v-html="
+                toInnerHtml(node.eventValue().eventDescription.eventDescription)
+              "
               :class="{
                 'pointer-events-auto': node
                   .eventValue()
@@ -360,8 +369,10 @@ watch(
           v-if="canShowMeta"
           :locations="locations"
           :images="images"
-          :supplemental="node.eventValue().event.supplemental"
-          :matchedListItems="node.eventValue().event.matchedListItems"
+          :supplemental="node.eventValue().eventDescription.supplemental"
+          :matchedListItems="
+            node.eventValue().eventDescription.matchedListItems
+          "
           :left="barWidth"
           @close="close"
         />

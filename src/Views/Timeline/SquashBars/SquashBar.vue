@@ -14,16 +14,16 @@ const { distanceFromViewportLeftDate } = useTimelineStore();
 
 const dateLeft = computed(
   () =>
-    distanceFromViewportLeftDate(props.event.ranges.date.fromDateTime) -
+    distanceFromViewportLeftDate(props.event.dateRange().fromDateTime) -
     viewportLeftMarginPixels
 );
 const dateRight = computed(
   () =>
-    distanceFromViewportLeftDate(props.event.ranges.date.toDateTime) -
+    distanceFromViewportLeftDate(props.event.dateRange().toDateTime) -
     viewportLeftMarginPixels
 );
-const hoveredInEditor = computed(() =>
-  false // editorOrchestrator.isEventHoveredInEditor(props.event)
+const hoveredInEditor = computed(
+  () => false // editorOrchestrator.isEventHoveredInEditor(props.event)
 );
 
 const hover = ref(false);

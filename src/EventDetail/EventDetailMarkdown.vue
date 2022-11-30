@@ -5,9 +5,11 @@ import type { Event } from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{ event: Event }>();
 
-const supplemental = computed(() => props.event.event.supplemental || []);
+const supplemental = computed(
+  () => props.event.eventDescription.supplemental || []
+);
 const matchedListItems = computed(
-  () => props.event.event.matchedListItems || []
+  () => props.event.eventDescription.matchedListItems || []
 );
 </script>
 

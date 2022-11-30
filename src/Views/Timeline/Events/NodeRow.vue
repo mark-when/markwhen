@@ -18,7 +18,7 @@ const type = "pageFiltered" as "pageFiltered";
 
 const nodeKey = (n: SomeNode) => {
   if (n.isEventNode()) {
-    const event = n.eventValue().event;
+    const event = n.eventValue().eventDescription;
     return (
       event.eventDescription +
       event.supplemental

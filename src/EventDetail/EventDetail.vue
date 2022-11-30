@@ -41,7 +41,7 @@ const selectParent = () =>
     <div class="flex flex-col pb-3">
       <div
         class="font-bold text-xl px-3"
-        v-html="event && toInnerHtml(event.event.eventDescription)"
+        v-html="event && toInnerHtml(event.eventDescription.eventDescription)"
       ></div>
       <div class="flex flex-row px-3">
         <button

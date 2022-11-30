@@ -113,13 +113,13 @@ export const useEditorOrchestratorStore = defineStore(
       scale: DisplayScale,
       preferredInterpolationFormat: DateFormat | undefined
     ) => {
-      if (equivalentRanges(event.ranges.date, range)) {
+      if (equivalentRanges(event.dateRange(), range)) {
         return;
       }
       const timelineString = markwhenStore.rawTimelineString;
 
-      const inTextFrom = event.ranges.date.dateRangeInText.from;
-      const inTextTo = event.ranges.date.dateRangeInText.to;
+      const inTextFrom = event.dateRangeInText.from;
+      const inTextTo = event.dateRangeInText.to;
       const pre = timelineString.slice(0, inTextFrom);
       const post = timelineString.slice(inTextTo);
 
@@ -161,9 +161,11 @@ export const useEditorOrchestratorStore = defineStore(
         preferredInterpolationFormat
       );
       // events-reference
-      const events = pageStore.pageTimeline.events.flat().map(n => n.eventValue());
+      const events = pageStore.pageTimeline.events
+        .flat()
+        .map((n) => n.eventValue());
       const lastIndexOfLastEvent = events.length
-        ? events[events.length - 1].ranges.event.to
+        ? events[events.length - 1].rangeInText.to
         : pageStore.pageTimeline.metadata.endStringIndex;
 
       const es = markwhenStore.rawTimelineString;

@@ -144,8 +144,8 @@ export const useResize = (
   };
 
   const moveHandleListener = (e: MouseEvent | TouchEvent) => {
-    tempFrom.value = unref(event).ranges.date.fromDateTime;
-    tempTo.value = unref(event).ranges.date.toDateTime;
+    tempFrom.value = unref(event).dateRange().fromDateTime;
+    tempTo.value = unref(event).dateRange().toDateTime;
     diff.value = tempTo.value.diff(tempFrom.value).as(diffScale);
 
     document.addEventListener("mousemove", moveListener);

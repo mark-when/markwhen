@@ -34,8 +34,8 @@ export const useSearch = () => {
 
   const eventToDocument = (e: Event, path: EventPaths): SearchDocument => ({
     path: JSON.stringify(path),
-    dateTime: e.ranges.date.fromDateTime.toLocaleString(DateTime.DATETIME_HUGE),
-    supplemental: e.event.supplemental
+    dateTime: e.dateRange().fromDateTime.toLocaleString(DateTime.DATETIME_HUGE),
+    supplemental: e.eventDescription.supplemental
       .map((s) => {
         if (s.type === "image") {
           return (s as Image).altText + " " + (s as Image).link;
@@ -44,8 +44,8 @@ export const useSearch = () => {
         }
       })
       .join(" "),
-    description: e.event.eventDescription,
-    tags: e.event.tags.join(" "),
+    description: e.eventDescription.eventDescription,
+    tags: e.eventDescription.tags.join(" "),
   });
 
   const eventSearchDocuments = computed(() => {

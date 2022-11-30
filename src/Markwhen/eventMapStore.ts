@@ -23,7 +23,7 @@ const buildMap = (
   // TODO: this doesn't need to run as often, or make it more efficient/smarter
   for (const { path, node } of events) {
     const stringIndex = node.isEventNode()
-      ? node.eventValue().ranges.event.from
+      ? node.eventValue().rangeInText.from
       : node.rangeInText?.from;
     if (stringIndex !== undefined) {
       keys.push(stringIndex);
@@ -60,7 +60,7 @@ const indexFromEventOrIndex = (eventOrStartIndex: number | Event): number => {
   if (typeof eventOrStartIndex === "number") {
     return eventOrStartIndex;
   }
-  return eventOrStartIndex.ranges.event.from;
+  return eventOrStartIndex.rangeInText.from;
 };
 
 export const useEventMapStore = defineStore("eventMap", () => {

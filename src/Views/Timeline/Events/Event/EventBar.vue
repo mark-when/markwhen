@@ -20,7 +20,7 @@ const editable = inject(isEditable);
 const { color: tagColor } = useEventColor(props.event);
 
 const percent = computed(() => {
-  const p = props.event.event.percent as number;
+  const p = props.event.eventDescription.percent as number;
   if (!isNaN(p)) {
     return p;
   }

@@ -162,7 +162,7 @@ export const humanDuration = (range: DateRange): string => {
 };
 
 export const eventHumanDuration = (e: Event): string =>
-  humanDuration(e.ranges.date);
+  humanDuration(e.dateRange());
 
 export const scaleForDuration = (dateRange: DateRangePart): DisplayScale => {
   const diff = dateRange.toDateTime.diff(dateRange.fromDateTime).as("seconds");
@@ -238,7 +238,7 @@ export function dateRangeToString(
 
 export const eventMidpoint = (node: SomeNode): DateTime | undefined => {
   if (node.isEventNode()) {
-    return dateMidpoint(node.eventValue().ranges.date);
+    return dateMidpoint(node.eventValue().dateRange());
   } else {
     if (!node.range || !node.range.fromDateTime || !node.range.toDateTime)
       return undefined;

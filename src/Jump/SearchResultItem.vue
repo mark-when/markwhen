@@ -34,7 +34,7 @@ const group = computed(() => matchedEventOrGroup.value);
     <div
       class="font-bold"
       v-if="event"
-      v-html="toInnerHtml(event.event.eventDescription)"
+      v-html="toInnerHtml(event.eventDescription.eventDescription)"
     ></div>
     <div
       class=""

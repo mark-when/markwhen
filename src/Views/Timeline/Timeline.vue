@@ -184,7 +184,7 @@ watch(
     }
 
     const range = event.isEventNode()
-      ? event.eventValue().ranges.date
+      ? event.eventValue().dateRangeIso
       : event.range?.fromDateTime && event.range.toDateTime
       ? event.range
       : undefined;
@@ -193,17 +193,17 @@ watch(
       return;
     }
 
-    const { width } = getViewport();
-    // We still want to be zoomed out a bit
-    const scale = timelineStore.scaleToGetDistance(width, range) / 3;
-    timelineStore.setPageScale(scale);
-    const midpoint = eventMidpoint(event);
-    if (midpoint) {
-      nextTick(() => {
-        scrollToDate(midpoint);
-        setViewportDateInterval();
-      });
-    }
+    // const { width } = getViewport();
+    // // We still want to be zoomed out a bit
+    // const scale = timelineStore.scaleToGetDistance(width, range) / 3;
+    // timelineStore.setPageScale(scale);
+    // const midpoint = eventMidpoint(event);
+    // if (midpoint) {
+    //   nextTick(() => {
+    //     scrollToDate(midpoint);
+    //     setViewportDateInterval();
+    //   });
+    // }
   }
 );
 

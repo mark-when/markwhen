@@ -17,13 +17,15 @@ const props = withDefaults(
 const range: DateRange = props.markwhen.timelines.reduce(
   (prev, curr) => {
     let min: DateTime, max: DateTime;
-    if (curr.metadata.earliestTime < prev.fromDateTime) {
-      min = curr.metadata.earliestTime;
+    const earliest = DateTime.fromISO(curr.metadata.earliestTime);
+    if (earliest < prev.fromDateTime) {
+      min = earliest;
     } else {
       min = prev.fromDateTime;
     }
-    if (curr.metadata.latestTime > prev.toDateTime) {
-      max = curr.metadata.latestTime;
+    const latest = DateTime.fromISO(curr.metadata.latestTime);
+    if (latest > prev.toDateTime) {
+      max = latest;
     } else {
       max = prev.toDateTime;
     }

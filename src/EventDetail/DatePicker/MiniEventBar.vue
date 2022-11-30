@@ -15,7 +15,7 @@ const dr = (from: DateTime, to: DateTime): DateRange => ({
 });
 
 const bounds = computed(() => {
-  const { fromDateTime, toDateTime } = props.event.ranges.date;
+  const { fromDateTime, toDateTime } = props.event.dateRange();
   if (toDateTime.year - fromDateTime.year > 5) {
     return dr(
       floorDateTime(fromDateTime.minus({ years: 5 }), "year"),
