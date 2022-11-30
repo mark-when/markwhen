@@ -61,7 +61,7 @@ const borderColor = computed(() => (tm: TimeMarker) => {
           class="h-full flex-shrink-0"
           :style="{
             backgroundColor: backgroundColor(timeMarker),
-            width: `${timeMarker.size}px`,
+            width: `calc(var(--timeline-scale-by-24) * ${timeMarker.size}px)`,
             borderLeft: `1px ${
               hovering(timeMarker) ? 'solid' : 'dashed'
             } ${borderColor(timeMarker)}`,

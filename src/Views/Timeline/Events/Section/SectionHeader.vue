@@ -19,21 +19,6 @@ const emit = defineEmits<{
   (event: "hover", hovering: boolean): void;
 }>();
 
-const canCalculateButton = ref(false);
-
-onMounted(() => {
-  canCalculateButton.value = props.expanded;
-});
-
-watch(
-  () => props.expanded,
-  (expanded) => {
-    nextTick(() => {
-      canCalculateButton.value = expanded;
-    });
-  }
-);
-
 const events = computed(() => {
   return {
     click: (e: MouseEvent) => emit("toggle", e),
@@ -49,7 +34,8 @@ const styleObject = computed(() => {
     zIndex: 0,
   } as any;
   if (props.groupStyle === "group") {
-    (obj.width = `${props.fullWidth}px`), (obj.marginLeft = `${props.left}px`);
+    obj.width = `calc(var(--timeline-scale-by-24) * ${props.fullWidth}px)`;
+    obj.marginLeft = `calc(var(--timeline-scale-by-24) * ${props.left}px)`;
   }
   return obj;
 });
@@ -65,7 +51,6 @@ const click = (e: MouseEvent) => emit("toggle", e);
   >
     <div class="sticky flex items-center" :style="{ left: `1rem` }">
       <SectionTitleButton
-        :can-calculate-button="canCalculateButton"
         :title-html="titleHtml"
         :color="color"
         :num-children="numChildren"

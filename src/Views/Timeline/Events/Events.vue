@@ -47,7 +47,7 @@ const nodeKey = (n: SomeNode) => {
       v-for="(node, i) in nodes"
       :key="nodeKey(node)"
       :node="node"
-      :path="[i]"
+      :path="`${i}`"
       :can-have-sections="true"
     ></NodeRow>
     <new-event v-if="editable" />

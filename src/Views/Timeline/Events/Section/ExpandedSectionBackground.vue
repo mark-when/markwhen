@@ -36,28 +36,11 @@ const styleObject = computed(() => {
     })`;
   }
   if (isGroupStyle.value) {
-    obj.marginLeft = `${props.left - 8}px`;
-    obj.width = `max(64px, ${props.fullWidth + 16}px)`;
+    obj.marginLeft = `calc(calc(var(--timeline-scale-by-24) * ${props.left}px) - 8px)`;
+    obj.width = `max(64px, calc(calc(var(--timeline-scale-by-24) * ${props.fullWidth}px) + 16px))`;
   }
   return obj;
 });
-
-// const obj = {} as any;
-//   if (color.value) {
-//     if (props.hovering) {
-//       obj.backgroundColor = `rgba(${color.value}, 0.1`;
-//     } else if (!isDeep.value) {
-//       obj.backgroundColor = `rgba(${color.value}, 0.05)`;
-//     }
-//     obj.border = `1px solid rgba(${color.value}, ${
-//       isDetailEvent.value ? "0.95" : props.hovering ? "0.75" : "0.12"
-//     })`;
-//   }
-//   if (isGroupStyle.value) {
-//     obj.marginLeft = `${props.left - 8}px`;
-//     obj.width = `max(64px, ${props.fullWidth + 16}px)`;
-//   }
-//   return obj;
 </script>
 
 <template>

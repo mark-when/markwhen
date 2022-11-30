@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { GroupStyle, Path } from "@markwhen/parser/lib/Types";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import DepthIndicator from "./DepthIndicator.vue";
 import UpCaret from "./UpCaret.vue";
 const props = defineProps<{
@@ -9,17 +9,20 @@ const props = defineProps<{
   expanded: boolean;
   numChildren: number;
   groupStyle: GroupStyle;
-  canCalculateButton: boolean;
   path: Path;
 }>();
 
 const button = ref();
 
+const canCalculateButton = ref(false);
+onMounted(() => {
+  canCalculateButton.value = true
+})
 const buttonWidth = computed(() => {
   // This needs to be here because we want
   // buttonWidth to be recalculated when the title changes
   const title = props.titleHtml;
-  if (props.canCalculateButton) {
+  if (canCalculateButton.value) {
     return button.value?.clientWidth;
   }
   return 0;
@@ -36,7 +39,7 @@ const styleObject = computed(() => {
     backgroundColor: `rgba(${props.color}, 0.5)`,
   } as any;
   if (isGroupStyle.value) {
-    obj.left = `calc(50% - ${buttonWidth.value! / 2}px)`;
+    obj.left = `calc(50% - ${buttonWidth.value / 2}px)`;
   }
   return obj;
 });

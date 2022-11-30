@@ -83,7 +83,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
           :key="timeMarker.ts"
           class="flex-shrink-0"
           :style="{
-            width: `${timeMarker.size}px`,
+            width: `calc(var(--timeline-scale-by-24) * ${timeMarker.size}px)`,
           }"
         >
           <h6

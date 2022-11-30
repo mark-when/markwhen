@@ -39,7 +39,6 @@ export interface TimeMarker {
   ts: number;
   dateTime: DateTime;
   size: number;
-  left: number;
 }
 
 export type TimeMarkerWeights = [
@@ -82,8 +81,7 @@ export const useMarkersStore = defineStore({
 
       markers.push({
         dateTime: leftViewportDate,
-        size: timelineStore.distanceBetweenDates(leftViewportDate, nextLeft),
-        left: timelineStore.distanceBetweenDates(leftViewportDate, nextLeft),
+        size: timelineStore.scalelessDistanceBetweenDates(leftViewportDate, nextLeft),
         ts: leftViewportDate.toMillis(),
       });
 
@@ -93,7 +91,6 @@ export const useMarkersStore = defineStore({
           dateTime: nextLeft,
           size: 0,
           ts: nextLeft.toMillis(),
-          left: timelineStore.distanceBetweenDates(leftViewportDate, nextLeft),
         });
         if (scale === "decade") {
           nextLeft = nextLeft.plus({ years: 10 });
@@ -104,14 +101,14 @@ export const useMarkersStore = defineStore({
         } else {
           nextLeft = nextLeft.plus({ [scale]: 1 });
         }
-        markers[markers.length - 1].size = timelineStore.distanceBetweenDates(
+        markers[markers.length - 1].size = timelineStore.scalelessDistanceBetweenDates(
           markers[markers.length - 1].dateTime,
           nextLeft
         );
       }
 
       // Get the last one
-      markers[markers.length - 1].size = timelineStore.distanceBetweenDates(
+      markers[markers.length - 1].size = timelineStore.scalelessDistanceBetweenDates(
         markers[markers.length - 1].dateTime,
         rightmost
       );

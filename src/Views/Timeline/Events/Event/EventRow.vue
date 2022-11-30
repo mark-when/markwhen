@@ -273,7 +273,6 @@ watch(
         <p class="eventDate py-1">
           {{ node.eventValue().getDateHtml() }}
         </p>
-        <!-- <div class="eventDescription"> -->
         <div class="eventTitle py-1 flex flex-row">
           <div
             class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
@@ -367,7 +366,6 @@ watch(
           @close="close"
         />
       </div>
-      <!-- </div> -->
     </div>
   </div>
 </template>

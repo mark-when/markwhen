@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, ref,  } from "vue";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
@@ -7,7 +7,7 @@ import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
-const { distanceFromBaselineLeftmostDate, distanceBetweenDates } =
+const { scalelessDistanceFromBaselineLeftmostDate, scalelessDistanceBetweenDates } =
   useTimelineStore();
 
 const props = defineProps<{
@@ -18,7 +18,6 @@ const props = defineProps<{
 
 const expanded = ref(!!props.node.startExpanded);
 const hovering = ref(false);
-const canCalculateButton = ref(false);
 
 const toggle = (e: MouseEvent) => {
   if (e.target instanceof HTMLAnchorElement) {
@@ -32,17 +31,7 @@ const left = computed(() => {
   if (!props.node || !props.node.ranges()) {
     return 10;
   }
-  return distanceFromBaselineLeftmostDate(props.node.ranges()!.fromDateTime);
-});
-
-onMounted(() => {
-  canCalculateButton.value = expanded.value;
-});
-
-watch(expanded, (val) => {
-  nextTick(() => {
-    canCalculateButton.value = val;
-  });
+  return scalelessDistanceFromBaselineLeftmostDate(props.node.ranges()!.fromDateTime);
 });
 
 const { color } = useEventColor(props.node);
@@ -51,7 +40,7 @@ const fullWidth = computed(() => {
   if (!props.node || !props.node.ranges()) {
     return 100;
   }
-  return distanceBetweenDates(
+  return scalelessDistanceBetweenDates(
     props.node.ranges()!.fromDateTime,
     props.node.ranges()!.toDateTime
   );
@@ -81,8 +70,8 @@ const groupStyle = computed(() =>
     <div
       class="sticky top-0 cursor-pointer"
       :style="{
-        marginLeft: `${left}px`,
-        width: `${fullWidth}px`,
+        marginLeft: `calc(var(--timelines-scale-by-24) * ${left}px)`,
+        width: `calc(var(--timeline-scale-by-24) * ${fullWidth}px)`,
       }"
       @click="toggle"
       @mouseover="hover(true)"
