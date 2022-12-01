@@ -6,17 +6,24 @@ import {
   floorDateTime,
   roundDateTime,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import type { Event } from "@markwhen/parser/lib/Types";
+import type { DateRangeIso, DateTimeIso } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
-import type { DateTime } from "luxon";
-import { ref, unref } from "vue";
+import { DateTime } from "luxon";
+import { computed, ref, unref } from "vue";
 
 export const useResize = (
-  event: MaybeRef<Event>,
+  rangeFrom: MaybeRef<DateTimeIso>,
+  rangeTo: MaybeRef<DateTimeIso>,
   done?: (tempFrom: DateTime | undefined, tempTo: DateTime | undefined) => void
 ) => {
-  const tempFrom = ref<DateTime>();
-  const tempTo = ref<DateTime>();
+  const tempFromIso = ref<string>();
+  const tempFrom = computed<DateTime | undefined>(() => {
+    if (!!tempFromIso.value) return DateTime.fromISO(tempFromIso.value);
+  });
+  const tempToIso = ref<string>();
+  const tempTo = computed<DateTime | undefined>(() => {
+    if (!!tempToIso.value) return DateTime.fromISO(tempToIso.value);
+  });
   const diff = ref<number>();
 
   const markersStore = useMarkersStore();
@@ -24,8 +31,8 @@ export const useResize = (
   const appStore = useAppStore();
 
   const stop = () => {
-    tempFrom.value = undefined;
-    tempTo.value = undefined;
+    tempFromIso.value = undefined;
+    tempToIso.value = undefined;
 
     document.removeEventListener("mousemove", moveListenerLeft);
     document.removeEventListener("mousemove", moveListenerRight);
@@ -76,7 +83,7 @@ export const useResize = (
       markersStore.nextMostGranularScaleOfViewportDateInterval
     );
 
-    tempFrom.value = floored;
+    tempFromIso.value = floored.toISO();
   };
 
   const moveListenerRight = (e: MouseEvent | TouchEvent) => {
@@ -93,7 +100,7 @@ export const useResize = (
       markersStore.nextMostGranularScaleOfViewportDateInterval
     );
 
-    tempTo.value = floored;
+    tempToIso.value = floored.toISO();
   };
 
   const dragHandleListenerLeft = (e: MouseEvent | TouchEvent) => {
@@ -130,8 +137,8 @@ export const useResize = (
       date,
       markersStore.nextMostGranularScaleOfViewportDateInterval
     );
-    tempFrom.value = rounded;
-    tempTo.value = rounded.plus({ [diffScale]: diff.value });
+    tempFromIso.value = rounded.toISO();
+    tempToIso.value = rounded.plus({ [diffScale]: diff.value }).toISO();
   };
 
   const moveEnd = (e: MouseEvent | TouchEvent) => {
@@ -144,9 +151,9 @@ export const useResize = (
   };
 
   const moveHandleListener = (e: MouseEvent | TouchEvent) => {
-    tempFrom.value = unref(event).dateRange().fromDateTime;
-    tempTo.value = unref(event).dateRange().toDateTime;
-    diff.value = tempTo.value.diff(tempFrom.value).as(diffScale);
+    tempFromIso.value = unref(rangeFrom);
+    tempToIso.value = unref(rangeTo);
+    diff.value = tempTo.value?.diff(tempFrom.value!).as(diffScale);
 
     document.addEventListener("mousemove", moveListener);
     document.addEventListener("touchmove", moveListener);

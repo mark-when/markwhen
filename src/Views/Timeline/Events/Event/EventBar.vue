@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { isEditable } from "@/injectionKeys";
-import type { Event } from "@markwhen/parser/lib/Types";
-import { computed, inject } from "vue";
-import { useEventColor } from "../composables/useEventColor";
+import { inject } from "vue";
 import DragHandle from "@/Views/Timeline/Events/Event/Edit/DragHandle.vue";
 
 const props = defineProps<{
