@@ -8,7 +8,7 @@ import {
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import type { EventPaths } from "@/Markwhen/eventMapStore";
 import type { DateRange, DateRangePart } from "@markwhen/parser/lib/Types";
 
@@ -53,24 +53,33 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => usePageStore().pageTimelineMetadata
   );
   const pageScale = computed(() => pageSettings.value.scale);
-  const baselineLeftmostDate = computed(() => {
-    const md = pageTimelineMetadata.value;
-    const earliestTime = DateTime.fromISO(md.earliestTime);
-    const days = md.maxDurationDays;
-
+  const earliest = computed(() =>
+    DateTime.fromISO(pageTimelineMetadata.value.earliestTime)
+  );
+  const maxDurationDays = computed(
+    () => pageTimelineMetadata.value.maxDurationDays
+  );
+  const baselineLeftmostDate = ref();
+  watchEffect(() => {
+    const earliestTime = earliest.value;
+    const days = maxDurationDays.value;
+    let newValue: DateTime;
     if (days < 0.1) {
-      return floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
+      newValue = floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
     }
     if (days < 1) {
-      return floorDateTime(earliestTime.minus({ days: 1 }), "day");
+      newValue = floorDateTime(earliestTime.minus({ days: 1 }), "day");
     }
     if (days < 30) {
-      return floorDateTime(earliestTime.minus({ months: 4 }), "year");
+      newValue = floorDateTime(earliestTime.minus({ months: 4 }), "year");
     }
     if (days < 180) {
-      return floorDateTime(earliestTime.minus({ months: 3 }), "year");
+      newValue = floorDateTime(earliestTime.minus({ months: 3 }), "year");
     }
-    return floorDateTime(earliestTime.minus({ months: 6 }), "year");
+    newValue = floorDateTime(earliestTime.minus({ months: 6 }), "year");
+    if (+newValue !== +baselineLeftmostDate.value) {
+      baselineLeftmostDate.value = newValue;
+    }
   });
   const baselineRightmostDate = computed(() =>
     floorDateTime(
