@@ -2,6 +2,7 @@
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { Path } from "@markwhen/parser/lib/Types";
 import { computed } from "@vue/reactivity";
 import { useEventColor } from "../composables/useEventColor";
 
@@ -12,17 +13,25 @@ const props = defineProps<{
   node: SomeNode;
   left: number;
   fullWidth: number;
-  path: EventPath;
+  path: string;
 }>();
 const { color } = useEventColor(props.node);
 const eventDetailStore = useEventDetailStore();
 
 const isGroupStyle = computed(() => props.style === "group");
 
-const isDetailEvent = computed(() =>
-  eventDetailStore.isDetailEventPath(props.path)
+const computedPath = computed(() =>
+  props.path.split(",").map((i) => parseInt(i))
 );
-const isDeep = computed(() => props.path.path.length > 4);
+
+const isDetailEvent = computed(() =>
+  eventDetailStore.isDetailEventPath({
+    type: "pageFiltered",
+    path: computedPath.value,
+  })
+);
+const isDeep = computed(() => computedPath.value.length > 4);
+
 const styleObject = computed(() => {
   const obj = {} as any;
   if (color.value) {

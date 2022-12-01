@@ -56,37 +56,11 @@ const groupStyle = computed(() =>
   props.node.style === "section" ? "section" : "group"
 );
 
-const nodeKey = (n: SomeNode) => {
-  if (n.isEventNode()) {
-    const event = n.eventValue().event;
-    return (
-      event.eventDescription +
-      event.supplemental
-        .filter((b) => b.type !== "image")
-        .map((b) => (b as Block).raw)
-        .join(" ")
-    );
-  } else {
-    return n.title;
-  }
-};
-
-// onRenderTriggered((h) => {
-//   console.log(props.path, h);
-// });
-
-// watch(props, (p) => {
-//   console.log(p)
-// })
-
-// onUpdated(() => {
-//   console.log('section updated')
-// })
 </script>
 
 <template>
   <div class="relative flex flex-col">
-    <!-- <ExpandedSectionBackground
+    <ExpandedSectionBackground
       :hovering="hovering"
       :style="groupStyle"
       :node="node"
@@ -94,7 +68,7 @@ const nodeKey = (n: SomeNode) => {
       :full-width="fullWidth"
       :is-detail="false"
       :path="path"
-    /> -->
+    />
     <div
       class="sticky top-0 cursor-pointer"
       :style="{
@@ -110,7 +84,7 @@ const nodeKey = (n: SomeNode) => {
         :key="[...path.split(','), i].join(',')"
       ></NodeRow>
     </div>
-    <!-- <SectionHeader
+    <SectionHeader
       :path="path"
       @toggle="toggle"
       @hover="hover"
@@ -121,7 +95,7 @@ const nodeKey = (n: SomeNode) => {
       :group-style="groupStyle"
       :left="left"
       :full-width="fullWidth"
-    ></SectionHeader> -->
+    ></SectionHeader>
   </div>
 </template>
 

@@ -8,11 +8,13 @@ import {
   watch,
 } from "vue";
 import { useElementHover } from "@vueuse/core";
-import type {
-  Block,
-  DateFormat,
-  DateRange,
-  Event,
+import {
+  toDateRange,
+  toDateRangeIso,
+  type Block,
+  type DateFormat,
+  type DateTimeIso,
+  type MarkdownBlock,
 } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
@@ -26,19 +28,23 @@ import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
-import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
-import { useEventColor } from "../composables/useEventColor";
+import type { Range } from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{
-  event: Event;
   path: EventPath;
+  eventLocations: string[];
+  tags: string[];
+  dateText: string;
+  supplemental: MarkdownBlock[];
+  matchedListItems: Range[];
   hovering: boolean;
+  percent?: number;
+  rangeFrom: DateTimeIso;
+  rangeTo: DateTimeIso;
+  titleHtml: string;
+  color?: string;
 }>();
 
-const {
-  scalelessDistanceFromBaselineLeftmostDate,
-  scalelessDistanceBetweenDates,
-} = useTimelineStore();
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const pageStore = usePageStore();
@@ -51,13 +57,9 @@ const eventRow = ref();
 const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
-const hasLocations = computed(() => props.event.eventDescription.locations.length > 0);
-const hasImages = computed(
-  () => !!props.event.eventDescription.supplemental.some((s) => s.type === "image")
-);
-const hasSupplemental = computed(() => !!props.event.eventDescription.supplemental.length);
+const hasLocations = computed(() => props.eventLocations.length > 0);
 const hasMeta = computed(
-  () => hasLocations.value || hasImages.value || hasSupplemental.value
+  () => !!hasLocations.value || !!props.supplemental.length
 );
 
 const toggleMeta = (e: MouseEvent) => {
@@ -70,23 +72,15 @@ const toggleMeta = (e: MouseEvent) => {
 
 const taskNumerator = computed(
   () =>
-    props.event.eventDescription.supplemental.filter(
+    props.supplemental.filter(
       (block) => block.type === "checkbox" && (block as Block).value
     ).length
 );
 const taskDenominator = computed(
-  () =>
-    props.event.eventDescription.supplemental.filter((block) => block.type === "checkbox")
-      .length
+  () => props.supplemental.filter((block) => block.type === "checkbox").length
 );
-const imageStatus = ref<"not loaded" | "loaded" | "loading">("not loaded");
-const images = ref([] as string[]);
-
 const canShowMeta = computed(() => {
-  if (images.value.length > 0) {
-    return showingMeta.value && imageStatus.value === "loaded";
-  }
-  if (hasLocations.value || hasSupplemental.value) {
+  if (hasLocations.value || props.supplemental.length) {
     return showingMeta.value;
   }
   return false;
@@ -115,7 +109,7 @@ const {
   moveHandleListener,
   tempFrom,
   tempTo,
-} = useResize(props.event, moveEnded);
+} = useResize(props.rangeFrom, props.rangeTo, moveEnded);
 
 const isDetailEvent = computed(() =>
   eventDetailStore.isDetailEventPath(props.path)
@@ -141,10 +135,12 @@ const isHovering = computed(
 );
 
 const range = computed(() => {
-  console.log("computing range")
-  const eventRange = props.event.dateRange()
+  const eventRange = toDateRange({
+    fromDateTimeIso: props.rangeFrom,
+    toDateTimeIso: props.rangeTo,
+  });
   if (!tempFrom.value && !tempTo.value) {
-    return eventRange
+    return eventRange;
   } else if (!tempFrom.value) {
     if (+tempTo.value! > +eventRange.fromDateTime) {
       return {
@@ -177,23 +173,28 @@ const range = computed(() => {
   };
 });
 
-const marginLeft = computed(() =>
-  scalelessDistanceFromBaselineLeftmostDate(range.value.fromDateTime)
+const rangeIso = computed(() => toDateRangeIso(range.value));
+const marginLeft = computed(
+  () => {
+    console.log("margin left");
+    return timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+      toDateRange(rangeIso.value).fromDateTime
+    );
+  },
+  {
+    onTrigger(h) {
+      console.log("marginleft trigger", h);
+    },
+  }
 );
 const barWidth = computed(() => {
-  console.log('computing bar width')
-  const distance = scalelessDistanceBetweenDates(
-    range.value.fromDateTime,
-    range.value.toDateTime
+  console.log("computing bar width");
+  const distance = timelineStore.scalelessDistanceBetweenDates(
+    toDateRange(rangeIso.value).fromDateTime,
+    toDateRange(rangeIso.value).toDateTime
   );
   return Math.max(eventHeightPx, distance);
 });
-const locations = computed(() =>
-  props.event.eventDescription.locations.map(
-    (l) =>
-      `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
-  )
-);
 
 const close = () => {
   showingMeta.value = false;
@@ -227,25 +228,9 @@ watch(
 const edit = () =>
   editorOrchestratorStore.showInEditor({ pageFiltered: props.path });
 
-onUpdated(() => {
-  console.log("update eventrow");
-});
-
-onRenderTriggered((h) => {
-  console.log(h)
-})
-
-watch(
-  () => props.path,
-  () => {
-    console.log("props path updated");
-  }
-);
-
-const { color: tagColor } = useEventColor(props.event);
 
 const percent = computed(() => {
-  const p = props.event.eventDescription.percent as number;
+  const p = props.percent as number;
   if (!isNaN(p)) {
     return p;
   }
@@ -286,9 +271,8 @@ const percent = computed(() => {
         ></div>
         <event-bar
           ref="eventBar"
-          :tagColor="tagColor"
+          :tagColor="color"
           :percent="percent"
-          :event="event"
           :hovering="isHovering || hovering"
           :width="barWidth"
           :taskNumerator="taskNumerator"
@@ -297,25 +281,24 @@ const percent = computed(() => {
           :drag-handle-listener-right="dragHandleListenerRight"
         />
         <p class="eventDate py-1">
-          {{ event.getDateHtml() }}
+          {{ dateText }}
         </p>
         <event-title
           :showing-meta="showingMeta"
           :is-hovering="isHovering"
           :has-meta="hasMeta"
-          :has-supplemental="hasSupplemental"
+          :has-supplemental="!!supplemental.length"
           :has-locations="hasLocations"
           :task-denominator="taskDenominator"
           :task-numerator="taskNumerator"
-          :title-html="toInnerHtml(event.eventDescription.eventDescription)"
+          :title-html="titleHtml"
         ></event-title>
         <event-meta
           class="pointer-events-auto"
           v-if="canShowMeta"
-          :locations="locations"
-          :images="images"
-          :supplemental="event.eventDescription.supplemental"
-          :matchedListItems="event.eventDescription.matchedListItems"
+          :locations="eventLocations"
+          :supplemental="supplemental"
+          :matchedListItems="matchedListItems"
           :left="barWidth"
           @close="close"
         />
