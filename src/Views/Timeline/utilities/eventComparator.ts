@@ -11,13 +11,13 @@ import {
 
 export const rangeComparator = (a: Range, b: Range) =>
   a.type === b.type &&
-    (a.content === b.content) &&
-    a.from === b.from &&
-    a.lineFrom.index === b.lineFrom.index &&
-    b.lineFrom.line === b.lineFrom.line &&
-    a.lineTo.index === b.lineTo.index &&
-    a.lineTo.line === b.lineTo.line &&
-    a.to === b.to;
+  a.content === b.content &&
+  a.from === b.from &&
+  a.lineFrom.index === b.lineFrom.index &&
+  b.lineFrom.line === b.lineFrom.line &&
+  a.lineTo.index === b.lineTo.index &&
+  a.lineTo.line === b.lineTo.line &&
+  a.to === b.to;
 
 export const dateRangeIsoComparator = (a: DateRangeIso, b: DateRangeIso) =>
   dateTimeIsoComparator(a.fromDateTimeIso, b.fromDateTimeIso) &&
@@ -61,5 +61,8 @@ export const markdownBlockComparator = (a: MarkdownBlock, b: MarkdownBlock) => {
       (a as Image).link === (b as Image).link
     );
   }
-  return (a as Block).raw === (b as Block).raw;
+  return (
+    (a as Block).raw === (b as Block).raw &&
+    (a as Block).value === (b as Block).value
+  );
 };

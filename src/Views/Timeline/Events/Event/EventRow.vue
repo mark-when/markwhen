@@ -5,7 +5,6 @@ import {
   toDateRange,
   toDateRangeIso,
   type Block,
-  type DateFormat,
   type DateRange,
   type DateTimeIso,
   type MarkdownBlock,
@@ -18,8 +17,6 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
-import { usePageStore } from "@/Markwhen/pageStore";
-import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
@@ -46,13 +43,13 @@ const emit = defineEmits<{
 
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
-const { setHoveringEventPaths, clearHoveringEvent } = editorOrchestratorStore;
 const timelineStore = useTimelineStore();
 
 const eventRow = ref();
 const eventBar = ref();
 const eventHeightPx = 10;
 const showingMeta = ref(false);
+watch(showingMeta, console.log);
 const hasLocations = computed(() => props.eventLocations.length > 0);
 const hasMeta = computed(
   () => !!hasLocations.value || !!props.supplemental.length
@@ -193,8 +190,7 @@ watch(
     }
   }
 );
-const edit = () =>
-  editorOrchestratorStore.showInEditor({ pageFiltered: props.path });
+const edit = () => editorOrchestratorStore.showInEditor(props.path);
 
 const percent = computed(() => {
   const p = props.percent as number;
@@ -259,6 +255,7 @@ const percent = computed(() => {
           :task-denominator="taskDenominator"
           :task-numerator="taskNumerator"
           :title-html="titleHtml"
+          @toggle-meta="toggleMeta"
         ></event-title>
         <event-meta
           class="pointer-events-auto"

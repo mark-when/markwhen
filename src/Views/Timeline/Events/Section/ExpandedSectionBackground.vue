@@ -35,7 +35,7 @@ const isDeep = computed(() => computedPath.value.length > 4);
 const styleObject = computed(() => {
   const obj = {} as any;
   if (color.value) {
-    if (props.hovering) {
+    if (props.hovering || isHoveredInEditor.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.1`;
     } else if (!isDeep.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.05)`;

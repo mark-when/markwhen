@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Block, MarkdownBlock, Range } from "@markwhen/parser/lib/Types";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import EventMarkdown from "./EventMarkdown.vue";
 
 const props = defineProps<{
@@ -14,6 +14,13 @@ const props = defineProps<{
 const emit = defineEmits<{ (event: "close"): void }>();
 
 const hasLocations = computed(() => props.locations.length > 0);
+
+const locations = computed(() =>
+  props.locations.map(
+    (l) =>
+      `https://www.google.com/maps/embed/v1/place?key=AIzaSyCWzyvdh_bxpqGgmNTjTZ833Dta4_XzKeU&q=${l}`
+  )
+);
 </script>
 
 <template>
@@ -53,27 +60,6 @@ const hasLocations = computed(() => props.locations.length > 0);
         </div>
       </div>
     </div>
-    <!-- <div class="ml-3 flex flex-col">
-      <button
-        class="dark:bg-gray-800 bg-white rounded mt-1 p-1 shadow-lg"
-        @click="emit('close')"
-      >
-        <svg
-          class="h-4 w-4"
-          focusable="false"
-          aria-hidden="true"
-          viewBox="0 0 14 14"
-          data-testid="CloseRoundedIcon"
-          tabindex="-1"
-          title="CloseRounded"
-          fill="currentColor"
-        >
-          <path
-            d="M 10.29 3.7 A 0.9959 0.9959 0 0 0 8.88 3.7 L 7 5.59 L 5.11 3.7 A 0.9959 0.9959 0 0 0 3.7 3.7 C 3.31 4.09 3.31 4.72 3.7 5.11 L 5.59 7 L 3.7 8.89 C 3.31 9.28 3.31 9.91 3.7 10.3 C 4.09 10.69 4.72 10.69 5.11 10.3 L 7 8.41 L 8.89 10.3 C 9.28 10.69 9.91 10.69 10.3 10.3 C 10.69 9.91 10.69 9.28 10.3 8.89 L 8.41 7 L 10.3 5.11 C 10.68 4.73 10.68 4.09 10.29 3.7 Z"
-          ></path>
-        </svg>
-      </button>
-    </div> -->
   </div>
 </template>
 

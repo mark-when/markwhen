@@ -2,7 +2,7 @@
 import { onUpdated } from "vue";
 import TaskCompletion from "./TaskCompletion.vue";
 
-const emits = defineEmits<{ (event: "toggleMeta"): void }>();
+const emits = defineEmits<{ (event: "toggleMeta", e: MouseEvent): void }>();
 const props = defineProps<{
   showingMeta: boolean;
   isHovering: boolean;
@@ -21,7 +21,7 @@ const props = defineProps<{
       class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
     >
       <button
-        @click="emits('toggleMeta')"
+        @click="emits('toggleMeta', $event)"
         class="rounded px-px pointer-events-auto border"
         v-if="hasMeta"
         :class="{
