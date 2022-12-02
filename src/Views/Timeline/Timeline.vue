@@ -24,6 +24,7 @@ import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
 import type { DateRangePart } from "@markwhen/parser/lib/Types";
 import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import MiniMap from "./MiniMap.vue/MiniMap.vue";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
@@ -254,6 +255,7 @@ const showJumpToRange = computed({
     <TimeMarkersBack />
     <Events />
     <TimeMarkersFront />
+    <!-- <MiniMap /> -->
   </div>
   <JumpToRangeDialog v-model="showJumpToRange" />
 </template>
