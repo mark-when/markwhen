@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
-import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
-import { Path } from "@markwhen/parser/lib/Types";
 import { computed } from "@vue/reactivity";
 import { useEventColor } from "../composables/useEventColor";
 
@@ -35,7 +33,7 @@ const isDeep = computed(() => computedPath.value.length > 4);
 const styleObject = computed(() => {
   const obj = {} as any;
   if (color.value) {
-    if (props.hovering || isHoveredInEditor.value) {
+    if (props.hovering) {
       obj.backgroundColor = `rgba(${color.value}, 0.1`;
     } else if (!isDeep.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.05)`;

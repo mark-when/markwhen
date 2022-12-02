@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { computed, onRenderTriggered, onUpdated, ref, watch } from "vue";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import type { EventPath } from "@/Markwhen/composables/useEventFinder";
-import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
+import { computed, ref } from "vue";
+import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
-import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import type { Block } from "@markwhen/parser/lib/Types";
 import NodeRow from "../NodeRow.vue";
+import { useTimelineStore } from "../../timelineStore";
 
 const props = defineProps<{
   node: SomeNode;
   path: string;
 }>();
+
+const {
+  scalelessDistanceBetweenDates,
+  scalelessDistanceFromBaselineLeftmostDate,
+} = useTimelineStore();
 
 const expanded = ref(!!props.node.startExpanded);
 const hovering = ref(false);
@@ -31,7 +33,9 @@ const left = computed(() => {
   if (!props.node || !props.node.ranges()) {
     return 10;
   }
-  return scalelessDistanceFromBaselineLeftmostDate(props.node.ranges()!.fromDateTime);
+  return scalelessDistanceFromBaselineLeftmostDate(
+    props.node.ranges()!.fromDateTime
+  );
 });
 
 const { color } = useEventColor(props.node);
@@ -55,7 +59,6 @@ const hover = (isHovering: boolean) => {
 const groupStyle = computed(() =>
   props.node.style === "section" ? "section" : "group"
 );
-
 </script>
 
 <template>

@@ -190,7 +190,6 @@ watch(
     }
   }
 );
-const edit = () => editorOrchestratorStore.showInEditor(props.path);
 
 const percent = computed(() => {
   const p = props.percent as number;
