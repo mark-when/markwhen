@@ -1,6 +1,6 @@
 import { usePageStore } from "@/Markwhen/pageStore";
-import type { Event } from "@markwhen/parser/lib/Types";
-import { ref, watchEffect, type Ref } from "vue";
+import { Event } from "@markwhen/parser/lib/Types";
+import { ref, watchEffect, type Ref, watch } from "vue";
 import {
   dateRangeIsoComparator,
   stringArrayComparator,
@@ -100,7 +100,7 @@ export const useEventRefs = (
 
   const titleHtml = cachedEventComputed(
     () =>
-      event.value?.eventDescription.eventDescription
+      event.value?.eventDescription?.eventDescription
         ? toInnerHtml(event.value.eventDescription.eventDescription)
         : undefined,
     (a, b) => a === b

@@ -7,13 +7,12 @@ import { useEventColor } from "../composables/useEventColor";
 const props = defineProps<{
   hovering: boolean;
   style: "group" | "section";
-  isDetail: boolean;
   node: SomeNode;
   left: number;
   fullWidth: number;
   path: string;
 }>();
-const { color } = useEventColor(props.node);
+const { color } = useEventColor(computed(() => props.node));
 const eventDetailStore = useEventDetailStore();
 
 const isGroupStyle = computed(() => props.style === "group");
@@ -33,7 +32,7 @@ const isDeep = computed(() => computedPath.value.length > 4);
 const styleObject = computed(() => {
   const obj = {} as any;
   if (color.value) {
-    if (props.hovering) {
+    if (props.hovering || isDetailEvent.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.1`;
     } else if (!isDeep.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.05)`;

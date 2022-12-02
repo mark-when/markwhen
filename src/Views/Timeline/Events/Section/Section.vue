@@ -69,7 +69,6 @@ const groupStyle = computed(() =>
       :node="node"
       :left="left"
       :full-width="fullWidth"
-      :is-detail="false"
       :path="path"
     />
     <div

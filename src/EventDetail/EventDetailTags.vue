@@ -2,13 +2,12 @@
 import { usePageStore } from "@/Markwhen/pageStore";
 import { computed } from "vue";
 import Tag from "../Drawer/ViewSettings/Tags/Tag.vue";
-import type { Event } from "@markwhen/parser/lib/Types";
 
-const props = defineProps<{ event: Event }>();
+const props = defineProps<{ tags: string[] }>();
 const pageStore = usePageStore();
 
 const allTags = computed(() => Object.keys(pageStore.pageTimeline.tags));
-const ourTags = computed(() => props.event.eventDescription.tags || []);
+const ourTags = computed(() => props.tags);
 const notOurTags = computed(() =>
   allTags.value.filter((t) => !ourTags.value.includes(t))
 );

@@ -31,7 +31,7 @@ const panelStore = usePanelStore();
 
 const timelineElement = ref<HTMLDivElement | null>(null);
 const { isActive } = useIsActive();
-const finder = useEventFinder();
+const finder = useEventFinder;
 
 const getViewport = (): Viewport => {
   if (!timelineElement.value) {
@@ -178,7 +178,7 @@ watch(
       return;
     }
 
-    const event = finder(path);
+    const event = finder(path).value;
     if (!event) {
       return;
     }

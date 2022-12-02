@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import EventMarkdown from "../Views/Timeline/Events/Event/EventMarkdown.vue";
-import type { Event } from "@markwhen/parser/lib/Types";
+import type { MarkdownBlock, Range } from "@markwhen/parser/lib/Types";
 
-const props = defineProps<{ event: Event }>();
-
-const supplemental = computed(
-  () => props.event.eventDescription.supplemental || []
-);
-const matchedListItems = computed(
-  () => props.event.eventDescription.matchedListItems || []
-);
+const props = defineProps<{
+  markdownBlocks: MarkdownBlock[];
+  matchedListItems: Range[];
+}>();
 </script>
 
 <template>
   <div class="px-3 overflow-scroll">
     <EventMarkdown
-      :supplemental="supplemental"
+      :supplemental="markdownBlocks"
       :matched-list-items="matchedListItems"
     />
   </div>

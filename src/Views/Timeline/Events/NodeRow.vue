@@ -4,7 +4,10 @@ import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed, watch } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import Section from "./Section/Section.vue";
-import { equivalentPaths } from "@/EventDetail/eventDetailStore";
+import {
+  equivalentPaths,
+  useEventDetailStore,
+} from "@/EventDetail/eventDetailStore";
 import { useEventRefs } from "./useEventRefs";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { DateFormat, DateRange } from "@markwhen/parser/lib/Types";
@@ -19,7 +22,9 @@ const props = defineProps<{
 const editorOrchestrator = useEditorOrchestratorStore();
 const markersStore = useMarkersStore();
 const pageStore = usePageStore();
+const eventDetailStore = useEventDetailStore();
 const { editEventDateRange } = editorOrchestrator;
+
 // We have to do this otherwise props will be 'changed', causing an unnecessary patch
 const pathArray = computed(() => props.path.split(",").map((i) => parseInt(i)));
 const isEventRow = computed(() => props.node.isEventNode());
@@ -65,24 +70,29 @@ const hover = (hovering: boolean) => {
     editorOrchestrator.clearHoveringEvent();
   }
 };
+
+const isDetailEvent = computed(() =>
+  eventDetailStore.isDetailEventPath(eventPath.value)
+);
 </script>
 
 <template>
   <EventRow
     v-if="isEventRow"
-    :event-locations="eventLocations"
-    :supplemental="supplemental"
-    :matched-list-items="matchedListItems"
+    :event-locations="eventLocations || []"
+    :supplemental="supplemental || []"
+    :matched-list-items="matchedListItems || []"
     :rangeFrom="eventRange!.fromDateTimeIso"
     :rangeTo="eventRange!.toDateTimeIso"
-    :tags="tags"
+    :tags="tags || []"
     :color="color"
     :path="eventPath"
     :percent="percent"
-    :dateText="dateText"
-    :titleHtml="titleHtml"
+    :dateText="dateText || ''"
+    :titleHtml="titleHtml || ''"
     @edit-date-range="editDateRange"
     @hover="hover"
+    :is-detail-event="isDetailEvent"
     :hovering="equivalentPaths(hoveringPath?.pageFiltered, eventPath)"
   ></EventRow>
   <Section :node="node" :path="path" v-else> </Section>

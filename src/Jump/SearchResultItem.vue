@@ -11,11 +11,7 @@ const props = defineProps<{
   last: boolean;
 }>();
 
-const find = useEventFinder();
-
-const matchedEventOrGroup = computed(() =>
-  find(JSON.parse(props.searchResult.ref))
-);
+const matchedEventOrGroup = useEventFinder(JSON.parse(props.searchResult.ref));
 
 const event = computed(
   () => matchedEventOrGroup.value instanceof Event && matchedEventOrGroup.value

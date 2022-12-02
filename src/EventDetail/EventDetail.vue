@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { useEventDetailStore } from "./eventDetailStore";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import EventDetailTags from "./EventDetailTags.vue";
 import EventDetailWhen from "./EventDetailWhen.vue";
 import EventDetailMarkdown from "./EventDetailMarkdown.vue";
-import type { Event } from "@markwhen/parser/lib/Types";
+import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 import {
   useEventFinder,
   type EventPath,
 } from "@/Markwhen/composables/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { useEventRefs } from "@/Views/Timeline/Events/useEventRefs";
 
-const props = defineProps<{ event: Event; hideParentGroup: boolean }>();
+const props = defineProps<{ hideParentGroup: boolean }>();
 
 const eventDetailStore = useEventDetailStore();
-const eventFinder = useEventFinder();
 
 const detailEventPath = computed(() => eventDetailStore.detailEventPath);
+const eventNode = useEventFinder(detailEventPath);
+const event = computed(() => eventNode.value?.eventValue());
 const parentPath = computed(() => {
   if (detailEventPath.value && detailEventPath.value.path.length > 1) {
     return {
@@ -25,28 +27,34 @@ const parentPath = computed(() => {
     } as EventPath;
   }
 });
-const parentGroup = computed(() => {
-  if (props.hideParentGroup || !parentPath.value) {
-    return;
-  }
-  return eventFinder(parentPath.value);
-});
+const parentGroup = useEventFinder(parentPath);
 
 const selectParent = () =>
   parentPath.value && eventDetailStore.setDetailEventPath(parentPath.value);
+
+const {
+  eventRange,
+  eventLocations,
+  supplemental,
+  percent,
+  matchedListItems,
+  tags,
+  color,
+  dateText,
+  titleHtml,
+} = useEventRefs(event, () => eventNode.value?.isEventNode() || false);
+
+const range = computed(() => toDateRange(eventRange.value!));
 </script>
 
 <template>
   <div class="py-2 flex flex-col overflow-hidden">
     <div class="flex flex-col pb-3">
-      <div
-        class="font-bold text-xl px-3"
-        v-html="event && toInnerHtml(event.eventDescription.eventDescription)"
-      ></div>
+      <div class="font-bold text-xl px-3" v-html="titleHtml"></div>
       <div class="flex flex-row px-3">
         <button
           class="font-bold text-sm dark:text-gray-400 text-gray-500 flex flex-row items-center"
-          v-if="parentGroup"
+          v-if="parentGroup && !hideParentGroup"
           @click="selectParent"
         >
           {{
@@ -68,9 +76,12 @@ const selectParent = () =>
         </button>
       </div>
     </div>
-    <EventDetailWhen :event="event" />
-    <EventDetailTags :event="event" />
-    <EventDetailMarkdown :event="event" />
+    <EventDetailWhen :date-html="dateText!" :date-range="range" />
+    <EventDetailTags :tags="tags || []" />
+    <EventDetailMarkdown
+      :markdown-blocks="supplemental || []"
+      :matched-list-items="matchedListItems || []"
+    />
   </div>
 </template>
 

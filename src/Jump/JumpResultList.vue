@@ -38,11 +38,11 @@ const dateRangeString = (parseResult: ParseResult) =>
     pageStore.pageTimelineMetadata.dateFormat as DateFormat
   );
 
-const eventFinder: EventFinder = useEventFinder();
+const eventFinder = useEventFinder
 
 const matchedEventOrGroup: (sr: lunr.Index.Result) => SomeNode | undefined = (
   sr: lunr.Index.Result
-) => eventFinder(JSON.parse(sr.ref) as EventPaths);
+) => eventFinder(JSON.parse(sr.ref) as EventPaths).value;
 
 const titleForListItem = (item: ParseResult | lunr.Index.Result) => {
   if (isParseResult(item)) {

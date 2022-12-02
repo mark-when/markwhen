@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onRenderTriggered,
+  onUpdated,
+  ref,
+  watch,
+} from "vue";
 import { useElementHover } from "@vueuse/core";
 import {
   toDateRange,
@@ -14,7 +21,6 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { isEditable } from "@/injectionKeys";
 import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
@@ -34,6 +40,7 @@ const props = defineProps<{
   rangeTo: DateTimeIso;
   titleHtml: string;
   color?: string;
+  isDetailEvent: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -89,10 +96,6 @@ const {
   computed(() => props.rangeFrom),
   computed(() => props.rangeTo),
   () => emit("editDateRange", range.value)
-);
-
-const isDetailEvent = computed(() =>
-  eventDetailStore.isDetailEventPath(props.path)
 );
 
 const hoveringWidgets = ref(false);
