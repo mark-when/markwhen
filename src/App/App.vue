@@ -10,6 +10,7 @@ import { useAppHead } from "./composables/useAppHead";
 import Panels from "../Panels/Panels.vue";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useKeyboardStore } from "@/Keyboard/keyboardStore";
+import QuickEditor from "@/QuickEditor/QuickEditor.vue";
 
 const appStore = useAppStore();
 const sidebarStore = useSidebarStore();
@@ -34,13 +35,14 @@ provide(isEditable, editorOrchestrator.editable);
     style="print-color-adjust: exact"
   >
     <div
-      class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900"
+      class="flex flex-row h-full !bg-vscode-editor-background dark:bg-gray-700 bg-slate-100 dark:text-white text-gray-900 relative"
     >
       <Sidebar v-show="sidebarStore.visible" />
       <div class="flex flex-col overflow-auto w-full">
         <Panels />
         <Drawer />
       </div>
+      <QuickEditor />
     </div>
   </div>
 </template>
