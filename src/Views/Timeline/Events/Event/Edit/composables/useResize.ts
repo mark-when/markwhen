@@ -6,7 +6,7 @@ import {
   floorDateTime,
   roundDateTime,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import type { DateRangeIso, DateTimeIso } from "@markwhen/parser/lib/Types";
+import type { DateTimeIso } from "@markwhen/parser/lib/Types";
 import type { MaybeRef } from "@vueuse/core";
 import { DateTime } from "luxon";
 import { computed, ref, unref } from "vue";

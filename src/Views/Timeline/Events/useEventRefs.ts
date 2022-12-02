@@ -1,12 +1,11 @@
 import { usePageStore } from "@/Markwhen/pageStore";
 import type { Event } from "@markwhen/parser/lib/Types";
-import { computed, ref, watchEffect, type Ref } from "vue";
+import { watch, ref, watchEffect, type Ref } from "vue";
 import {
   dateRangeIsoComparator,
   stringArrayComparator,
   supplementalComparator,
   matchedListItemsComparator,
-  eventDescriptionComparator,
 } from "../utilities/eventComparator";
 import { toInnerHtml } from "../utilities/innerHtml";
 
@@ -87,7 +86,7 @@ export const useEventRefs = (event: Ref<Event>, isEventRow: () => boolean) => {
   );
 
   const titleHtml = cachedEventComputed(
-    () => event.value.eventDescription.eventDescription,
+    () => toInnerHtml(event.value.eventDescription.eventDescription),
     (a, b) => a === b
   );
 

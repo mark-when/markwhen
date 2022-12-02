@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onRenderTriggered,
-  onUpdated,
-  ref,
-  watch,
-} from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useElementHover } from "@vueuse/core";
 import {
   toDateRange,
   toDateRangeIso,
   type Block,
   type DateFormat,
+  type DateRange,
   type DateTimeIso,
   type MarkdownBlock,
+  type Range,
 } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
@@ -28,7 +23,6 @@ import { useMarkersStore } from "../../Markers/markersStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
-import type { Range } from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{
   path: EventPath;
@@ -45,12 +39,14 @@ const props = defineProps<{
   color?: string;
 }>();
 
+const emit = defineEmits<{
+  (event: "editDateRange", range: DateRange): void;
+  (event: "hover", hovering: boolean): void;
+}>();
+
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
-const pageStore = usePageStore();
-const markersStore = useMarkersStore();
-const { editEventDateRange, setHoveringEvent, clearHoveringEvent } =
-  editorOrchestratorStore;
+const { setHoveringEventPaths, clearHoveringEvent } = editorOrchestratorStore;
 const timelineStore = useTimelineStore();
 
 const eventRow = ref();
@@ -86,30 +82,17 @@ const canShowMeta = computed(() => {
   return false;
 });
 
-const preferredInterpolationFormat = computed(
-  () =>
-    pageStore.pageTimelineMetadata.preferredInterpolationFormat as
-      | DateFormat
-      | undefined
-);
-
-const scale = computed(() => markersStore.scaleOfViewportDateInterval);
-
-const moveEnded = () =>
-  editEventDateRange(
-    props.event,
-    range.value,
-    scale.value,
-    preferredInterpolationFormat.value
-  );
-
 const {
   dragHandleListenerLeft,
   dragHandleListenerRight,
   moveHandleListener,
   tempFrom,
   tempTo,
-} = useResize(props.rangeFrom, props.rangeTo, moveEnded);
+} = useResize(
+  computed(() => props.rangeFrom),
+  computed(() => props.rangeTo),
+  () => emit("editDateRange", range.value)
+);
 
 const isDetailEvent = computed(() =>
   eventDetailStore.isDetailEventPath(props.path)
@@ -117,13 +100,7 @@ const isDetailEvent = computed(() =>
 
 const hoveringWidgets = ref(false);
 const elementHover = useElementHover(eventRow);
-watch(elementHover, (hovering) => {
-  if (hovering) {
-    setHoveringEvent(props.event);
-  } else {
-    clearHoveringEvent();
-  }
-});
+watch(elementHover, (hovering) => emit("hover", hovering));
 
 const isHovering = computed(
   () =>
@@ -174,21 +151,12 @@ const range = computed(() => {
 });
 
 const rangeIso = computed(() => toDateRangeIso(range.value));
-const marginLeft = computed(
-  () => {
-    console.log("margin left");
-    return timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-      toDateRange(rangeIso.value).fromDateTime
-    );
-  },
-  {
-    onTrigger(h) {
-      console.log("marginleft trigger", h);
-    },
-  }
+const marginLeft = computed(() =>
+  timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+    toDateRange(rangeIso.value).fromDateTime
+  )
 );
 const barWidth = computed(() => {
-  console.log("computing bar width");
   const distance = timelineStore.scalelessDistanceBetweenDates(
     toDateRange(rangeIso.value).fromDateTime,
     toDateRange(rangeIso.value).toDateTime
@@ -227,7 +195,6 @@ watch(
 );
 const edit = () =>
   editorOrchestratorStore.showInEditor({ pageFiltered: props.path });
-
 
 const percent = computed(() => {
   const p = props.percent as number;
