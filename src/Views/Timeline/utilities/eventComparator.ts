@@ -9,6 +9,19 @@ import {
   type Range,
 } from "@markwhen/parser/lib/Types";
 
+export const bothDefined = <T>(a: T | undefined, b: T | undefined) => {
+  if (typeof a === "undefined" && typeof b === "undefined") {
+    return true;
+  }
+  if (typeof a === "undefined") {
+    return false;
+  }
+  if (typeof b === "undefined") {
+    return false;
+  }
+  return true
+};
+
 export const rangeComparator = (a: Range, b: Range) =>
   a.type === b.type &&
   a.content === b.content &&

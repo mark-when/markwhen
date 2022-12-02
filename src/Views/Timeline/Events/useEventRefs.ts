@@ -1,69 +1,82 @@
 import { usePageStore } from "@/Markwhen/pageStore";
 import type { Event } from "@markwhen/parser/lib/Types";
-import { watch, ref, watchEffect, type Ref } from "vue";
+import { ref, watchEffect, type Ref } from "vue";
 import {
   dateRangeIsoComparator,
   stringArrayComparator,
   supplementalComparator,
   matchedListItemsComparator,
+  bothDefined,
 } from "../utilities/eventComparator";
 import { toInnerHtml } from "../utilities/innerHtml";
 
 const cachedComputed = <T>(
-  val: () => T,
-  comparator: (a: T, b: T) => boolean,
+  val: () => T | undefined,
+  comparator: (a: T | undefined, b: T | undefined) => boolean,
   condition: () => boolean,
   defaultValue?: T
 ) => {
   // @ts-ignore
-  const r = ref<T>(defaultValue);
+  const r: Ref<T | undefined> = ref(defaultValue ? defaultValue : undefined);
   watchEffect(() => {
     if (!condition()) {
       return;
     }
-    if (!r.value || !comparator(r.value, val())) {
-      r.value = val();
+    const value = val();
+    if (typeof value === "undefined") {
+      r.value = undefined;
+    } else if (!r.value || !comparator(r.value, value)) {
+      r.value = value;
     }
   });
   return r;
 };
 
-export const useEventRefs = (event: Ref<Event>, isEventRow: () => boolean) => {
+export const useEventRefs = (
+  event: Ref<Event | undefined>,
+  isEventRow: () => boolean = () => true
+) => {
   const pageStore = usePageStore();
 
   const cachedEventComputed = <T>(
-    val: () => T,
+    val: () => T | undefined,
     comparator: (a: T, b: T) => boolean,
     defaultValue?: T
-  ) => cachedComputed(val, comparator, isEventRow, defaultValue);
+  ) =>
+    cachedComputed(
+      val,
+      (a, b) => bothDefined(a, b) && comparator(a!, b!),
+      isEventRow,
+      defaultValue
+    );
 
   const eventRange = cachedEventComputed(
-    () => event.value.dateRangeIso,
+    () => event.value?.dateRangeIso,
     dateRangeIsoComparator
   );
 
   const eventLocations = cachedEventComputed(
-    () => event.value.eventDescription.locations,
+    () => event.value?.eventDescription?.locations,
     stringArrayComparator
   );
 
   const supplemental = cachedEventComputed(
-    () => event.value.eventDescription.supplemental,
+    () => event.value?.eventDescription?.supplemental,
     supplementalComparator
   );
 
   const percent = cachedEventComputed(
-    () => event.value.eventDescription.percent,
+    () => event.value?.eventDescription?.percent,
     (a, b) => a === b
   );
 
   const matchedListItems = cachedEventComputed(
-    () => event.value.eventDescription.matchedListItems,
+    () => event.value?.eventDescription?.matchedListItems,
     matchedListItemsComparator
   );
 
   const tags = cachedEventComputed(
-    () => event.value.eventDescription.tags,
+    () => event.value?.eventDescription?.tags,
     stringArrayComparator
   );
 
@@ -72,7 +85,7 @@ export const useEventRefs = (event: Ref<Event>, isEventRow: () => boolean) => {
     if (!isEventRow()) {
       return;
     }
-    const eventColor = tags.value.length
+    const eventColor = tags.value?.length
       ? pageStore.tags[tags.value[0]]
       : undefined;
     if (color.value !== eventColor) {
@@ -81,12 +94,15 @@ export const useEventRefs = (event: Ref<Event>, isEventRow: () => boolean) => {
   });
 
   const dateText = cachedEventComputed(
-    () => event.value.getDateHtml(),
+    () => event.value?.getDateHtml(),
     (a, b) => a === b
   );
 
   const titleHtml = cachedEventComputed(
-    () => toInnerHtml(event.value.eventDescription.eventDescription),
+    () =>
+      event.value?.eventDescription.eventDescription
+        ? toInnerHtml(event.value.eventDescription.eventDescription)
+        : undefined,
     (a, b) => a === b
   );
 

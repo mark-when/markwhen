@@ -116,7 +116,6 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
         <EventDetail
           v-if="isEvent"
           :hide-parent-group="false"
-          :event="(eventDetailStore.detailEvent.eventValue() as Event)"
         />
         <EventGroupDetail
           v-else

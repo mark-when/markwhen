@@ -25,14 +25,13 @@ export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
 };
 
 export const useEventDetailStore = defineStore("eventDetail", () => {
-  const eventFinder = useEventFinder();
   const panelStore = usePanelStore();
 
   const detailEventPath = usePageEffect(
     () => undefined as EventPath | undefined
   );
-  const detailEvent = ref<SomeNode>();
   const shouldOpenDetailWhenJumping = ref(false);
+  const detailEvent = useEventFinder(detailEventPath);
 
   const setShouldOpenDetailWhenJumping = (should: boolean) => {
     shouldOpenDetailWhenJumping.value = should;
@@ -63,16 +62,6 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     }
   };
 
-  watch(detailEventPath, (path) => {
-    const eventOrGroupFromPath = eventFinder(path);
-    if (eventOrGroupFromPath) {
-      detailEvent.value = eventOrGroupFromPath;
-    } else {
-      detailEvent.value = undefined;
-      detailEventPath.value = undefined;
-    }
-  });
-
   const isDetailEventPath = computed(
     () => (path: EventPath | undefined) =>
       !!path && equivalentPaths(path, detailEventPath.value)
@@ -95,12 +84,9 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
         if (!tempPath.length) {
           return undefined;
         }
-        const possibleSibling = eventFinder({
-          type,
-          path: tempPath,
-        });
-        if (possibleSibling) {
-          const lastOfSibling = possibleSibling.getLast();
+        const possibleSibling = useEventFinder({ type, path: tempPath });
+        if (possibleSibling.value) {
+          const lastOfSibling = possibleSibling.value.getLast();
           return {
             type,
             path: [...tempPath, ...lastOfSibling.path],
@@ -111,11 +97,11 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
         if (!tempPath.length) {
           return undefined;
         }
-        const possibleNode = eventFinder({
+        const possibleNode = useEventFinder({
           type,
           path: tempPath,
         });
-        if (possibleNode) {
+        if (possibleNode.value) {
           return {
             type,
             path: tempPath,
@@ -136,12 +122,12 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     // [0, 3, 6, 1, 0]
     let tempPath = path;
     let pathAttempt = [...tempPath, 0];
-    let possibleNode = eventFinder({
+    let possibleNode = useEventFinder({
       type,
       // next nested group
       path: pathAttempt,
     });
-    if (possibleNode) {
+    if (possibleNode.value) {
       return {
         type,
         path: pathAttempt,
@@ -152,12 +138,12 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
         ...tempPath.slice(0, -1),
         tempPath[tempPath.length - 1] + 1,
       ];
-      possibleNode = eventFinder({
+      possibleNode = useEventFinder({
         type,
         // next sibling
         path: pathAttempt,
       });
-      if (possibleNode) {
+      if (possibleNode.value) {
         return {
           type,
           path: pathAttempt,
@@ -169,12 +155,12 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
           ...tempPath.slice(0, -2),
           tempPath[tempPath.length - 2] + 1,
         ];
-        possibleNode = eventFinder({
+        possibleNode = useEventFinder({
           type,
           // next uncle
           path: pathAttempt,
         });
-        if (possibleNode) {
+        if (possibleNode.value) {
           return {
             type,
             path: pathAttempt,

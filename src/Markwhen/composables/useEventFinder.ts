@@ -1,5 +1,6 @@
 import type { SomeNode } from "@markwhen/parser/lib/Node";
-import { computed } from "vue";
+import type { MaybeRef } from "@vueuse/core";
+import { computed, ref, unref, watchEffect } from "vue";
 import type { EventPaths } from "../eventMapStore";
 import { usePageStore } from "../pageStore";
 import { useTransformStore } from "../transformStore";
@@ -26,7 +27,9 @@ export type EventFinder = (
   eventPath?: EventPath | EventPaths | null
 ) => SomeNode | undefined;
 
-export const useEventFinder = () => {
+export const useEventFinder = (
+  path?: MaybeRef<EventPath | EventPaths | undefined>
+) => {
   const transformStore = useTransformStore();
   const pageStore = usePageStore();
   const transformedEvents = computed(() => transformStore.transformedEvents);
@@ -35,10 +38,16 @@ export const useEventFinder = () => {
     return (e as EventPath).path && Array.isArray((e as EventPath).path);
   };
 
-  const eventOrGroupFromPath = (
-    eventPath?: EventPath | EventPaths | null
-  ): SomeNode | undefined => {
+  const event = ref<SomeNode>();
+
+  watchEffect(() => {
+    if (!path) {
+      event.value = undefined;
+      return;
+    }
+    const eventPath = unref(path);
     if (!eventPath) {
+      event.value = undefined;
       return;
     }
     if (isEventPath(eventPath)) {
@@ -49,19 +58,32 @@ export const useEventFinder = () => {
       } else if (eventPath.type === "page") {
         node = pageStore.pageTimeline.events;
       } else {
+        event.value = undefined;
         throw new Error("unimplemented");
       }
-      return node ? node.get(path) : undefined;
+      event.value = node ? node.get(eventPath.path) : undefined;
+      return;
     } else {
       const types: EventPath["type"][] = ["page", "pageFiltered", "whole"];
       for (const type of types) {
-        const event = eventOrGroupFromPath(eventPath[type]);
-        if (event) {
-          return event;
+        if (!eventPath[type]) {
+          event.value = undefined;
+          continue;
+        }
+        let root: SomeNode | undefined;
+        if (type === "pageFiltered") {
+          root = transformedEvents.value;
+        } else if (type === "page") {
+          root = pageStore.pageTimeline.events;
+        }
+        if (root) {
+          event.value = root.get(eventPath[type]!.path);
+          return;
         }
       }
     }
-  };
+    event.value = undefined;
+  });
 
-  return eventOrGroupFromPath as EventFinder;
+  return event;
 };

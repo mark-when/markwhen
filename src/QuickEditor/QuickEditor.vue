@@ -22,7 +22,7 @@ const toggle = () => {
 
 <template>
   <div class="shadow flex flex-col absolute bottom-12 left-12 z-40">
-    <div class="font-bold text-sm ml-auto dark:bg-slate-900 px-1">
+    <div class="font-bold text-sm ml-auto dark:bg-slate-900 bg-white px-1">
       <button class="flex items-center justify-center p-1" @click="toggle">
         <svg
           v-if="showing"
