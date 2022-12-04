@@ -14,6 +14,12 @@ import {
   type DisplayScale,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
+import {
+  eventValue,
+  flat,
+  getLast,
+  isEventNode,
+} from "@markwhen/parser/lib/Noder";
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -161,18 +167,20 @@ export const useEditorOrchestratorStore = defineStore(
         preferredInterpolationFormat
       );
       // events-reference
-      const events = pageStore.pageTimeline.events
-        .flat()
-        .map((n) => n.eventValue());
-      const lastIndexOfLastEvent = events.length
-        ? events[events.length - 1].rangeInText.to
-        : pageStore.pageTimeline.metadata.endStringIndex;
-
+      const { node } = getLast(pageStore.pageTimeline.events);
+      let index: number;
+      if (isEventNode(node)) {
+        index = node.value.rangeInText.to;
+      } else {
+        index =
+          node.rangeInText?.to ||
+          pageStore.pageTimeline.metadata.endStringIndex;
+      }
       const es = markwhenStore.rawTimelineString;
       const newString =
-        es.slice(0, lastIndexOfLastEvent) +
+        es.slice(0, index) +
         `\n${dateRangeString}: Event\n` +
-        es.slice(lastIndexOfLastEvent);
+        es.slice(index);
 
       setText(newString);
     };

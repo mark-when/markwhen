@@ -7,6 +7,7 @@ import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
+import { getLast } from "@markwhen/parser/lib/Noder";
 
 export const useKeyboardStore = defineStore("keyboard", () => {
   const sidebarStore = useSidebarStore();
@@ -47,7 +48,9 @@ export const useKeyboardStore = defineStore("keyboard", () => {
   );
   key(comma, () => {
     if (!eventDetailStore.detailEventPath) {
-      const last = transformStore.transformedEvents?.getLast().path;
+      const last =
+        transformStore.transformedEvents &&
+        getLast(transformStore.transformedEvents).path;
       if (last) {
         eventDetailStore.setDetailEventPath({
           type: "pageFiltered",

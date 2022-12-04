@@ -1,5 +1,5 @@
 import { usePageStore } from "@/Markwhen/pageStore";
-import { Event } from "@markwhen/parser/lib/Types";
+import type { Event } from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch } from "vue";
 import {
   dateRangeIsoComparator,

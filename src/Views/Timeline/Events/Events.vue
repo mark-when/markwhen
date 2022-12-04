@@ -4,10 +4,11 @@ import { useTransformStore } from "@/Markwhen/transformStore";
 import NowLine from "../Events/NowLine.vue";
 import { computed, inject } from "vue";
 import NodeRow from "./NodeRow.vue";
-import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
+import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";
-import type { Block } from "@markwhen/parser/lib/Types";
+import type { Block, Event } from "@markwhen/parser/lib/Types";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
@@ -20,8 +21,8 @@ const nodes = computed(
 const editable = inject(isEditable);
 
 const nodeKey = (n: SomeNode) => {
-  if (n.isEventNode()) {
-    const event = n.eventValue().eventDescription;
+  if (isEventNode(n)) {
+    const event = eventValue(n).eventDescription;
     return (
       event.eventDescription +
       event.supplemental

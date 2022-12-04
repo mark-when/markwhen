@@ -9,6 +9,7 @@ import { usePanelResize } from "@/Sidebar/composables/usePanelResize";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 import { usePanelMove } from "@/Panels/composables/usePanelMove";
 import type { NodeArray, Node } from "@markwhen/parser/lib/Node";
+import { isEventNode } from "@markwhen/parser/lib/Noder";
 
 const panelStore = usePanelStore();
 const eventDetailStore = useEventDetailStore();
@@ -33,7 +34,10 @@ const { resizeMouseDown, tempWidth } = usePanelResize(
   (width) => panelStore.setWidth(PanelDetail, width)
 );
 
-const isEvent = computed(() => eventDetailStore.detailEvent?.isEventNode());
+const isEvent = computed(
+  () =>
+    eventDetailStore.detailEvent && isEventNode(eventDetailStore.detailEvent)
+);
 const panelState = computed(() => panelStore.detailPanelState);
 
 const computedOrder = computed(() => {
@@ -113,10 +117,7 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
     >
       <EventDetailPaneTop :moveListener="moveListener" :left="isLeft" />
       <template v-if="eventDetailStore.detailEvent">
-        <EventDetail
-          v-if="isEvent"
-          :hide-parent-group="false"
-        />
+        <EventDetail v-if="isEvent" :hide-parent-group="false" />
         <EventGroupDetail
           v-else
           :eventGroup="(eventDetailStore.detailEvent as Node<NodeArray>)"

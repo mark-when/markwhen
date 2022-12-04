@@ -9,6 +9,7 @@ import {
   type DateRange,
 } from "@markwhen/parser/lib/Types";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { isEventNode, eventValue } from "@markwhen/parser/lib/Noder";
 
 export type DisplayScale =
   | "second"
@@ -237,8 +238,8 @@ export function dateRangeToString(
 }
 
 export const eventMidpoint = (node: SomeNode): DateTime | undefined => {
-  if (node.isEventNode()) {
-    return dateMidpoint(node.eventValue().dateRange());
+  if (isEventNode(node)) {
+    return dateMidpoint(eventValue(node).dateRange());
   } else {
     if (!node.range || !node.range.fromDateTime || !node.range.toDateTime)
       return undefined;

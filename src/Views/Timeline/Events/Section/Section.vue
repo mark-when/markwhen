@@ -7,6 +7,7 @@ import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
 import NodeRow from "../NodeRow.vue";
 import { useTimelineStore } from "../../timelineStore";
+import { iterate, ranges } from "@markwhen/parser/lib/Noder";
 
 const props = defineProps<{
   node: SomeNode;
@@ -29,12 +30,14 @@ const toggle = (e: MouseEvent) => {
   expanded.value = !expanded.value;
 };
 
+const sectionRange = computed(() => ranges(props.node));
+
 const left = computed(() => {
-  if (!props.node || !props.node.ranges()) {
+  if (!props.node || !sectionRange.value) {
     return 10;
   }
   return scalelessDistanceFromBaselineLeftmostDate(
-    props.node.ranges()!.fromDateTime
+    sectionRange.value.fromDateTime
   );
 });
 
@@ -42,12 +45,12 @@ const { color } = useEventColor(props.node);
 
 const fullWidth = computed(() => {
   // console.log('calling fullwidth')
-  if (!props.node || !props.node.ranges()) {
+  if (!props.node || !sectionRange.value) {
     return 100;
   }
   return scalelessDistanceBetweenDates(
-    props.node.ranges()!.fromDateTime,
-    props.node.ranges()!.toDateTime
+    sectionRange.value.fromDateTime,
+    sectionRange.value.toDateTime
   );
 });
 const titleHtml = computed(() => toInnerHtml(props.node.title || ""));

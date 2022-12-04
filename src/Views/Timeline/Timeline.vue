@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import {
-  onMounted,
-  ref,
-  watch,
-  nextTick,
-  onActivated,
-  computed,
-  watchEffect,
-} from "vue";
+import { onMounted, ref, watch, nextTick, onActivated, computed } from "vue";
 import { useTimelineStore, type Viewport } from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
@@ -25,6 +17,7 @@ import type { DateRangePart } from "@markwhen/parser/lib/Types";
 import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import MiniMap from "./MiniMap.vue/MiniMap.vue";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
@@ -184,8 +177,8 @@ watch(
       return;
     }
 
-    const range = event.isEventNode()
-      ? event.eventValue().dateRangeIso
+    const range = isEventNode(event)
+      ? eventValue(event).dateRangeIso
       : event.range?.fromDateTime && event.range.toDateTime
       ? event.range
       : undefined;

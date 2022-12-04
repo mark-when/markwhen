@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import type { SomeNode } from "@markwhen/parser/lib/Node";
+import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
 import { computed, watch } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import Section from "./Section/Section.vue";
@@ -10,9 +10,10 @@ import {
 } from "@/EventDetail/eventDetailStore";
 import { useEventRefs } from "./useEventRefs";
 import type { EventPath } from "@/Markwhen/composables/useEventFinder";
-import type { DateFormat, DateRange } from "@markwhen/parser/lib/Types";
+import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useMarkersStore } from "../Markers/markersStore";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 
 const props = defineProps<{
   node: SomeNode;
@@ -27,12 +28,12 @@ const { editEventDateRange } = editorOrchestrator;
 
 // We have to do this otherwise props will be 'changed', causing an unnecessary patch
 const pathArray = computed(() => props.path.split(",").map((i) => parseInt(i)));
-const isEventRow = computed(() => props.node.isEventNode());
+const isEventRow = computed(() => isEventNode(props.node));
 const type = "pageFiltered" as "pageFiltered";
 
 const hoveringPath = computed(() => editorOrchestrator.hoveringEventPaths);
 
-const eventValue = computed(() => props.node.eventValue());
+const event = computed(() => eventValue(props.node as Node<Event>));
 
 const {
   eventRange,
@@ -44,7 +45,7 @@ const {
   color,
   dateText,
   titleHtml,
-} = useEventRefs(eventValue, () => isEventRow.value);
+} = useEventRefs(event, () => isEventRow.value);
 
 const eventPath = computed(() => ({ type, path: pathArray.value }));
 const scale = computed(() => markersStore.scaleOfViewportDateInterval);
@@ -57,7 +58,7 @@ const preferredInterpolationFormat = computed(
 );
 const editDateRange = (range: DateRange) =>
   editEventDateRange(
-    eventValue.value,
+    event.value,
     range,
     scale.value,
     preferredInterpolationFormat.value
@@ -65,7 +66,7 @@ const editDateRange = (range: DateRange) =>
 
 const hover = (hovering: boolean) => {
   if (hovering) {
-    editorOrchestrator.setHoveringEvent(eventValue.value.dateRangeInText.from);
+    editorOrchestrator.setHoveringEvent(event.value.dateRangeInText.from);
   } else {
     editorOrchestrator.clearHoveringEvent();
   }

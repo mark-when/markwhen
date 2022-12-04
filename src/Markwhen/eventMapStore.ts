@@ -1,4 +1,5 @@
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
 import { computed } from "vue";
@@ -21,9 +22,9 @@ const buildMap = (
   }
 
   // TODO: this doesn't need to run as often, or make it more efficient/smarter
-  for (const { path, node } of events) {
-    const stringIndex = node.isEventNode()
-      ? node.eventValue().rangeInText.from
+  for (const { path, node } of iterate(events)) {
+    const stringIndex = isEventNode(node)
+      ? eventValue(node).rangeInText.from
       : node.rangeInText?.from;
     if (stringIndex !== undefined) {
       keys.push(stringIndex);

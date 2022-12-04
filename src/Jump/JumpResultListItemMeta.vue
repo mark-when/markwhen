@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useTagColor } from "@/Drawer/ViewSettings/Tags/composables/useTagColor";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { isEventNode, eventValue } from "@markwhen/parser/lib/Noder";
 import { computed } from "vue";
 
 const props = defineProps<{ node: SomeNode }>();
 const tags = computed(() =>
-  props.node.isEventNode()
-    ? props.node.eventValue().eventDescription.tags
+  isEventNode(props.node)
+    ? eventValue(props.node).eventDescription.tags
     : props.node.tags || []
 );
 </script>
@@ -15,9 +16,9 @@ const tags = computed(() =>
   <div class="flex flex-row gap-1">
     <div
       class="text-xs text-gray-400"
-      v-if="node.isEventNode() && node.eventValue().dateText"
+      v-if="isEventNode(node) && eventValue(node).dateText"
     >
-      {{ node.eventValue().dateText }}
+      {{ eventValue(node).dateText }}
     </div>
     <div class="flex flex-row gap-[2px] items-center">
       <div

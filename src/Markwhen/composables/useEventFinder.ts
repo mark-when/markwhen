@@ -1,4 +1,5 @@
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { get } from "@markwhen/parser/lib/Noder";
 import type { MaybeRef } from "@vueuse/core";
 import { computed, ref, unref, watchEffect } from "vue";
 import type { EventPaths } from "../eventMapStore";
@@ -61,7 +62,7 @@ export const useEventFinder = (
         event.value = undefined;
         throw new Error("unimplemented");
       }
-      event.value = node ? node.get(eventPath.path) : undefined;
+      event.value = node ? get(node, eventPath.path) : undefined;
       return;
     } else {
       const types: EventPath["type"][] = ["page", "pageFiltered", "whole"];
@@ -77,7 +78,7 @@ export const useEventFinder = (
           root = pageStore.pageTimeline.events;
         }
         if (root) {
-          event.value = root.get(eventPath[type]!.path);
+          event.value = get(root, eventPath[type]!.path);
           return;
         }
       }

@@ -11,6 +11,7 @@ import {
 } from "@/Markwhen/composables/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import { useEventRefs } from "@/Views/Timeline/Events/useEventRefs";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 
 const props = defineProps<{ hideParentGroup: boolean }>();
 
@@ -18,7 +19,13 @@ const eventDetailStore = useEventDetailStore();
 
 const detailEventPath = computed(() => eventDetailStore.detailEventPath);
 const eventNode = useEventFinder(detailEventPath);
-const event = computed(() => eventNode.value?.eventValue());
+const event = computed<Event | undefined>(
+  () =>
+    (eventNode.value &&
+      isEventNode(eventNode.value) &&
+      eventValue(eventNode.value)) ||
+    undefined
+);
 const parentPath = computed(() => {
   if (detailEventPath.value && detailEventPath.value.path.length > 1) {
     return {
@@ -42,7 +49,10 @@ const {
   color,
   dateText,
   titleHtml,
-} = useEventRefs(event, () => eventNode.value?.isEventNode() || false);
+} = useEventRefs(
+  event,
+  () => (eventNode.value && isEventNode(eventNode.value)) || false
+);
 
 const range = computed(() => toDateRange(eventRange.value!));
 </script>

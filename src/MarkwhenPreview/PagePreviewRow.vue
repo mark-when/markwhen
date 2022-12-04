@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { flat } from "@markwhen/parser/lib/Noder";
 import type { DateRange, Timeline } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
@@ -19,7 +20,7 @@ const left = computed(() => {
   return (diff / wholeDuration.value) * 100;
 });
 
-const flattenedEvents = computed(() => props.page.events.flat());
+const flattenedEvents = computed(() => flat(props.page.events));
 
 const pageDisplayTitle = computed(() => {
   const t = props.page.metadata.title;

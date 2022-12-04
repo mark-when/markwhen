@@ -3,7 +3,12 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import type { DateFormat } from "@markwhen/parser/lib/Types";
-import type { Node, NodeArray, NodeValue, SomeNode } from "@markwhen/parser/lib/Node";
+import type {
+  Node,
+  NodeArray,
+  NodeValue,
+  SomeNode,
+} from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
   useJumpStore,
@@ -20,6 +25,7 @@ import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";
 import type { EventPaths } from "@/Markwhen/eventMapStore";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 
 const props = defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{
@@ -38,7 +44,7 @@ const dateRangeString = (parseResult: ParseResult) =>
     pageStore.pageTimelineMetadata.dateFormat as DateFormat
   );
 
-const eventFinder = useEventFinder
+const eventFinder = useEventFinder;
 
 const matchedEventOrGroup: (sr: lunr.Index.Result) => SomeNode | undefined = (
   sr: lunr.Index.Result
@@ -49,8 +55,8 @@ const titleForListItem = (item: ParseResult | lunr.Index.Result) => {
     return dateRangeString(item);
   } else {
     const node = matchedEventOrGroup(item);
-    if (node?.isEventNode()) {
-      return toInnerHtml(node.eventValue().eventDescription.eventDescription);
+    if (node && isEventNode(node)) {
+      return toInnerHtml(eventValue(node).eventDescription.eventDescription);
     } else if (!!node) {
       return (
         (node.title

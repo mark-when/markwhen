@@ -18,6 +18,7 @@ import {
 import { parseDateRange } from "@markwhen/parser";
 import type { JumpResults } from "./jumpStore";
 import * as chrono from "chrono-node";
+import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 
 export type SearchState = "ready" | "indexing" | "uninitialized";
 interface SearchDocument {
@@ -50,12 +51,12 @@ export const useSearch = () => {
 
   const eventSearchDocuments = computed(() => {
     const documents = [] as SearchDocument[];
-    for (const { node } of pageStore.pageTimeline.events) {
-      if (node.isEventNode()) {
+    for (const { node } of iterate(pageStore.pageTimeline.events)) {
+      if (isEventNode(node)) {
         documents.push(
           eventToDocument(
-            node.eventValue(),
-            mapStore.getAllPaths(node.eventValue())
+            eventValue(node),
+            mapStore.getAllPaths(eventValue(node))
           )
         );
       } else {

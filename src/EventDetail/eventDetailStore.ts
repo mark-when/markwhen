@@ -8,6 +8,7 @@ import {
 } from "@/Markwhen/composables/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { getLast } from "@markwhen/parser/lib/Noder";
 
 export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
   if (!p1 || !p2 || p1.type !== p2.type) {
@@ -86,7 +87,7 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
         }
         const possibleSibling = useEventFinder({ type, path: tempPath });
         if (possibleSibling.value) {
-          const lastOfSibling = possibleSibling.value.getLast();
+          const lastOfSibling = getLast(possibleSibling.value);
           return {
             type,
             path: [...tempPath, ...lastOfSibling.path],

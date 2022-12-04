@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
 import type { Node } from "@markwhen/parser/lib/Node";
+import { isEventNode, iterate, eventValue } from "@markwhen/parser/lib/Noder";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 import SquashBar from "./SquashBar.vue";
@@ -13,8 +14,8 @@ const flat = computed(() => {
   if (!transformed) {
     return eventsOnly;
   }
-  for (const { node } of transformed) {
-    if (node.isEventNode()) {
+  for (const { node } of iterate(transformed)) {
+    if (isEventNode(node)) {
       eventsOnly.push(node as Node<Event>);
     }
   }
@@ -28,8 +29,8 @@ const flat = computed(() => {
   >
     <SquashBar
       v-for="e in flat"
-      :key="e.eventValue().eventString"
-      :event="e.eventValue()"
+      :key="eventValue(e).eventString"
+      :event="eventValue(e)"
     />
   </div>
 </template>

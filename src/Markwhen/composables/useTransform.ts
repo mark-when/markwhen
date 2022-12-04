@@ -4,6 +4,14 @@ import type {
   NodeValue,
   SomeNode,
 } from "@markwhen/parser/lib/Node";
+import {
+  blankClone,
+  eventValue,
+  isEventNode,
+  ranges,
+} from "@markwhen/parser/lib/Noder";
+import type { Event } from "@markwhen/parser/lib/Types";
+
 import type { Sort } from "../transformStore";
 
 // This is particularly for the 'untagged' filter case, because the root node
@@ -14,7 +22,7 @@ export const transformRoot = (
   filterUntagged: boolean,
   sort: Sort
 ) => {
-  const cloned = node.blankClone();
+  const cloned = blankClone(node);
   cloned.value = (node.value as NodeArray).flatMap((n) => {
     const transformed = transform(n, filter, filterUntagged, sort);
     return transformed ? [transformed] : [];
@@ -34,8 +42,8 @@ export const transform = (
   if (!node.value) {
     return undefined;
   }
-  if (node.isEventNode()) {
-    const tags = node.eventValue().eventDescription.tags;
+  if (isEventNode(node)) {
+    const tags = eventValue(node).eventDescription.tags;
     if (filterUntagged) {
       if (tags.length === 0) {
         return node;
@@ -82,7 +90,7 @@ const filterNodeArray = (
   filterUntagged: boolean,
   sort: Sort
 ) => {
-  const cloned = node.blankClone();
+  const cloned = blankClone(node);
   cloned.value = node.value.flatMap((n) => {
     const transformed = transform(n, filter, filterUntagged, sort);
     return transformed ? [transformed] : [];
@@ -93,7 +101,10 @@ const filterNodeArray = (
   return cloned;
 };
 
-const sortNodeArray = (node: Node<NodeArray> | undefined, sort: Sort) => {
+const sortNodeArray = (
+  node: Node<NodeArray> | undefined,
+  sort: Sort
+): Node<NodeArray> | undefined => {
   // debugger
   if (!node) {
     return undefined;
@@ -101,13 +112,13 @@ const sortNodeArray = (node: Node<NodeArray> | undefined, sort: Sort) => {
   if (sort === "none") {
     return node;
   }
-  const cloned = node.blankClone();
+  const cloned = blankClone(node);
   cloned.value = node.value
-    .flatMap((n) => {
+    .flatMap((n: SomeNode | undefined): (Node<Event> | Node<NodeArray>)[] => {
       if (!n) {
         return [];
       }
-      if (n.isEventNode()) {
+      if (isEventNode(n)) {
         return [n];
       }
       const sorted = sortNodeArray(n as Node<NodeArray>, sort);
@@ -118,9 +129,9 @@ const sortNodeArray = (node: Node<NodeArray> | undefined, sort: Sort) => {
     })
     .sort((left, right) => {
       const fromDateTime = (n: SomeNode) =>
-        n.isEventNode()
-          ? n.eventValue().dateRange().fromDateTime
-          : n.ranges()?.fromDateTime;
+        isEventNode(n)
+          ? eventValue(n).dateRange().fromDateTime
+          : ranges(n)?.fromDateTime;
 
       const leftDateTime = fromDateTime(left);
       const rightDateTime = fromDateTime(right);
