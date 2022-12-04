@@ -23,6 +23,7 @@ export interface ViewSetting {
 
 export interface ViewProvider {
   component: () => any,
+  framed: boolean
   name: string,
   iconSvg?: string,
   settings?: (() => ViewSetting | any)[]

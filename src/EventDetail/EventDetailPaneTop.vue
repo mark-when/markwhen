@@ -3,7 +3,6 @@ import { computed } from "vue";
 import { useEventDetailStore } from "./eventDetailStore";
 import PanelViewButtons from "../Panels/PanelViewButtons.vue";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
-import ShortcutKey from "@/Drawer/ShortcutKey.vue";
 
 const eventDetailStore = useEventDetailStore();
 const panelStore = usePanelStore();

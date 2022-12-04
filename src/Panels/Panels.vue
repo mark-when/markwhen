@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref, watchEffect } from "vue";
 import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { usePanelStore } from "./panelStore";
+import { useViewOrchestrator } from "@/Views/ViewOrchestrator/useViewOrchestrator";
 
 const viewStore = useViewStore();
 const panelStore = usePanelStore();
 const currentView = computed(() => viewStore.currentView);
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
+
+const frames = ref<HTMLIFrameElement[]>()
+
+watchEffect(() => {
+  frames.value?.forEach(f => {
+    useViewOrchestrator(ref(f))
+  })
+})
 
 const translateX = computed(
   () => panelStore.visualizationPanelState.translation
@@ -37,12 +46,14 @@ const currentComponent = computed(() => currentView.value.component());
 const framedComponents = computed(() =>
   viewStore.views.filter((v) => typeof v.component() === "string")
 );
+
 </script>
 
 <template>
   <div class="flex flex-row w-full h-full overflow-auto">
     <div class="w-full h-full overflow-auto" :style="visualizationStyle">
       <iframe
+        ref="frames"
         v-for="component in framedComponents"
         class="w-full h-full"
         v-show="currentComponent === component.component()"

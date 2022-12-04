@@ -9,9 +9,10 @@ export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  const views = computed(() =>
+  const views = computed<ViewProvider[]>(() =>
     isMobile.value ? useMobileViewProviders() : useViewProviders()
   );
+  const framedViews = computed(() => views.value.filter((v) => v.framed));
   const currentView = computed<ViewProvider>(
     () => views.value[selectedViewIndex.value]
   );
@@ -37,6 +38,7 @@ export const useViewStore = defineStore("views", () => {
 
     // getters
     currentView,
+    framedViews,
 
     // actions
     setSelectedViewIndex,

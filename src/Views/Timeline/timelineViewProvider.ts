@@ -16,4 +16,5 @@ export const useTimelineProvider: () => ViewProvider = () => ({
   settings: [() => Jump, () => ToggleNowLine, () => TimelineScale],
   capabilities: { edit: true, hoveringEvent: true, jumpToEvent: true },
   uses: { tags: true, drawerDescription: true, sort: true, pages: true },
+  framed: false
 });

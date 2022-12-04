@@ -1,3 +1,4 @@
+import type { ViewProvider } from "@/viewProvider";
 import { useTimelineProvider } from "@/Views/Timeline/timelineViewProvider";
 
 export const useMapProvider = () => ({
@@ -8,8 +9,9 @@ export const useMapProvider = () => ({
   </path></svg>`,
   capabilities: { edit: true, hoveringEvent: true },
   uses: { tags: true, drawerDescription: true, sort: true, pages: true },
+  framed: true,
 });
 
 export const useViewProviders = () => {
-  return [useMapProvider(), useTimelineProvider()];
+  return [useMapProvider(), useTimelineProvider()] as ViewProvider[];
 };
