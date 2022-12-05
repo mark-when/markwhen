@@ -22,7 +22,7 @@ export const useViewStore = defineStore("views", () => {
       selectedViewIndex.value = 0;
     } else if (selectedViewIndex.value < 0) {
       // Set initial view to timeline
-      selectedViewIndex.value = 1;
+      selectedViewIndex.value = 0;
     }
   });
 
