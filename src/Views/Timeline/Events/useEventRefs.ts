@@ -94,7 +94,7 @@ export const useEventRefs = (
   });
 
   const dateText = cachedEventComputed(
-    () => event.value?.getDateHtml(),
+    () => toInnerHtml(event.value?.dateText || ''),
     (a, b) => a === b
   );
 

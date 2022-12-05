@@ -5,6 +5,7 @@ import {
   DateRangePart,
   EUROPEAN_DATE_FORMAT,
   Event,
+  toDateRange,
   type DateFormat,
   type DateRange,
 } from "@markwhen/parser/lib/Types";
@@ -163,7 +164,7 @@ export const humanDuration = (range: DateRange): string => {
 };
 
 export const eventHumanDuration = (e: Event): string =>
-  humanDuration(e.dateRange());
+  humanDuration(toDateRange(e.dateRangeIso));
 
 export const scaleForDuration = (dateRange: DateRangePart): DisplayScale => {
   const diff = dateRange.toDateTime.diff(dateRange.fromDateTime).as("seconds");
@@ -239,7 +240,7 @@ export function dateRangeToString(
 
 export const eventMidpoint = (node: SomeNode): DateTime | undefined => {
   if (isEventNode(node)) {
-    return dateMidpoint(eventValue(node).dateRange());
+    return dateMidpoint(toDateRange(eventValue(node).dateRangeIso));
   } else {
     if (!node.range || !node.range.fromDateTime || !node.range.toDateTime)
       return undefined;

@@ -1,9 +1,10 @@
-
 import type { Ref } from "vue";
-import type { State } from "./useStateSerializer";
+import type { EventPath, State } from "./useStateSerializer";
 
 interface MessageTypes {
   state: State;
+  setHoveringPath: EventPath;
+  setDetailPath: EventPath;
 }
 
 type MessageType = keyof MessageTypes;
@@ -17,6 +18,9 @@ export interface Message<T extends MessageType> {
   params?: MessageParam<T>;
 }
 
+type MessageListeners = {
+  [Property in keyof MessageTypes]?: (event: MessageTypes[Property]) => any;
+};
 export const getNonce = () => {
   let text = "";
   const possible =
@@ -27,7 +31,10 @@ export const getNonce = () => {
   return text;
 };
 
-export const useLpc = (frame: Ref<HTMLIFrameElement>) => {
+export const useLpc = (
+  frame: Ref<HTMLIFrameElement>,
+  listeners: MessageListeners
+) => {
   const calls: Map<
     string,
     {
@@ -76,10 +83,10 @@ export const useLpc = (frame: Ref<HTMLIFrameElement>) => {
         calls.get(data.id)?.resolve(data);
         calls.delete(data.id);
       } else if (data.request) {
-        // const result = listeners?.[data.type]?.(data.params!);
-        // Promise.resolve(result).then((resp) => {
-        //   postResponse(data.id, data.type, resp);
-        // });
+        const result = listeners?.[data.type]?.(data.params!);
+        Promise.resolve(result).then((resp) => {
+          postResponse(data.id, data.type, resp);
+        });
       } else {
         console.error("Not a request or response", data);
       }

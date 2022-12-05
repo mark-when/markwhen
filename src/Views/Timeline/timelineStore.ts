@@ -9,8 +9,8 @@ import {
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { ref, computed, watchEffect } from "vue";
-import type { EventPaths } from "@/Markwhen/eventMapStore";
 import type { DateRange, DateRangePart } from "@markwhen/parser/lib/Types";
+import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
 
 export interface Viewport {
   left: number;

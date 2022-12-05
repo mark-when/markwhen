@@ -9,7 +9,6 @@ import {
   useEventDetailStore,
 } from "@/EventDetail/eventDetailStore";
 import { useEventRefs } from "./useEventRefs";
-import type { EventPath } from "@/Markwhen/composables/useEventFinder";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useMarkersStore } from "../Markers/markersStore";
 import { usePageStore } from "@/Markwhen/pageStore";

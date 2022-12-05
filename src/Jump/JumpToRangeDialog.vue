@@ -6,7 +6,7 @@ import { isParseResult, useJumpStore, type ParseResult } from "./jumpStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type lunr from "lunr";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
-import type { EventPaths } from "@/Markwhen/eventMapStore";
+import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 const input = ref();
 const timelineStore = useTimelineStore();

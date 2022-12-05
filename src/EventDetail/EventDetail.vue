@@ -5,13 +5,11 @@ import EventDetailTags from "./EventDetailTags.vue";
 import EventDetailWhen from "./EventDetailWhen.vue";
 import EventDetailMarkdown from "./EventDetailMarkdown.vue";
 import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
-import {
-  useEventFinder,
-  type EventPath,
-} from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import { useEventRefs } from "@/Views/Timeline/Events/useEventRefs";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
+import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 const props = defineProps<{ hideParentGroup: boolean }>();
 

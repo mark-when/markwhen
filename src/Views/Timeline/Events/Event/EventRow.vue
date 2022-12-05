@@ -24,8 +24,9 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
-import { eqPath, type EventPath } from "@/Markwhen/composables/useEventFinder";
+import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
+import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 const props = defineProps<{
   path: EventPath;

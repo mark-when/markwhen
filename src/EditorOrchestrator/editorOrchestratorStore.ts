@@ -1,11 +1,12 @@
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { defineStore } from "pinia";
 import { PAGE_BREAK } from "@markwhen/parser/lib/regex";
-import type {
-  Event,
-  DateFormat,
-  DateRange,
-  Timeline,
+import {
+  type Event,
+  type DateFormat,
+  type DateRange,
+  type Timeline,
+  toDateRange,
 } from "@markwhen/parser/lib/Types";
 import { ref } from "vue";
 import { usePageStore } from "@/Markwhen/pageStore";
@@ -13,13 +14,17 @@ import {
   dateRangeToString,
   type DisplayScale,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
+import { useEventMapStore } from "@/Markwhen/eventMapStore";
 import {
   eventValue,
   flat,
   getLast,
   isEventNode,
 } from "@markwhen/parser/lib/Noder";
+import type {
+  EventPath,
+  EventPaths,
+} from "@/Views/ViewOrchestrator/useStateSerializer";
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -30,7 +35,7 @@ export const useEditorOrchestratorStore = defineStore(
 
     const editable = ref(false);
     const showTagFilterButtons = ref(true);
-    const hoveringEventPaths = ref<EventPaths | null>(null);
+    const hoveringEventPaths = ref<EventPaths>();
     const choosingColor = ref(false);
 
     const setText = (text: string) => {
@@ -119,7 +124,7 @@ export const useEditorOrchestratorStore = defineStore(
       scale: DisplayScale,
       preferredInterpolationFormat: DateFormat | undefined
     ) => {
-      if (equivalentRanges(event.dateRange(), range)) {
+      if (equivalentRanges(toDateRange(event.dateRangeIso), range)) {
         return;
       }
       const timelineString = markwhenStore.rawTimelineString;
@@ -138,7 +143,11 @@ export const useEditorOrchestratorStore = defineStore(
     };
 
     const clearHoveringEvent = () => {
-      hoveringEventPaths.value = null;
+      hoveringEventPaths.value = undefined;
+    };
+
+    const setHoveringEventPath = (path: EventPath) => {
+      hoveringEventPaths.value = eventMapStore.getAllPaths(path);
     };
 
     const setHoveringEventPaths = (paths: EventPaths) => {
@@ -178,9 +187,7 @@ export const useEditorOrchestratorStore = defineStore(
       }
       const es = markwhenStore.rawTimelineString;
       const newString =
-        es.slice(0, index) +
-        `\n${dateRangeString}: Event\n` +
-        es.slice(index);
+        es.slice(0, index) + `\n${dateRangeString}: Event\n` + es.slice(index);
 
       setText(newString);
     };
@@ -206,6 +213,7 @@ export const useEditorOrchestratorStore = defineStore(
       setChoosingColor,
       setPageTimelineString,
       showInEditor,
+      setHoveringEventPath,
     };
   }
 );

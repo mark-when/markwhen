@@ -24,8 +24,8 @@ import {
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";
-import type { EventPaths } from "@/Markwhen/eventMapStore";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
+import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 const props = defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{

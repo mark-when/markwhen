@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
-import type { DateRange } from "@markwhen/parser/lib/Types";
+import { toDateRange, type DateRange } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { useTimelineStore } from "../timelineStore";
 import { useEventColor } from "../Events/composables/useEventColor";
@@ -44,10 +44,10 @@ const width = (range: DateRange) =>
           fill-rule="evenodd"
           :key="path.join(',')"
           clip-rule="evenodd"
-          :d="`M ${left(eventValue(node).dateRange()) / 1000} ${
+          :d="`M ${left(toDateRange(eventValue(node).dateRangeIso)) / 1000} ${
             2 + index * 6
           } a 1 1 0 0 0 0 4 h ${
-            width(eventValue(node).dateRange()) / 1000
+            width(toDateRange(eventValue(node).dateRangeIso)) / 1000
           } a 1 1 0 1 0 0 -4 H 2 z`"
           :fill="`rgb(${useEventColor(node).color.value})`"
         />

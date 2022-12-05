@@ -1,12 +1,13 @@
 import { computed } from "vue";
 import lunr from "lunr";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useEventMapStore, type EventPaths } from "@/Markwhen/eventMapStore";
-import type {
-  Block,
-  DateRangePart,
-  Event,
-  Image,
+import { useEventMapStore } from "@/Markwhen/eventMapStore";
+import {
+  toDateRange,
+  type Block,
+  type DateRangePart,
+  type Event,
+  type Image,
 } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
@@ -19,6 +20,7 @@ import { parseDateRange } from "@markwhen/parser";
 import type { JumpResults } from "./jumpStore";
 import * as chrono from "chrono-node";
 import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
+import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 export type SearchState = "ready" | "indexing" | "uninitialized";
 interface SearchDocument {
@@ -35,7 +37,9 @@ export const useSearch = () => {
 
   const eventToDocument = (e: Event, path: EventPaths): SearchDocument => ({
     path: JSON.stringify(path),
-    dateTime: e.dateRange().fromDateTime.toLocaleString(DateTime.DATETIME_HUGE),
+    dateTime: toDateRange(e.dateRangeIso).fromDateTime.toLocaleString(
+      DateTime.DATETIME_HUGE
+    ),
     supplemental: e.eventDescription.supplemental
       .map((s) => {
         if (s.type === "image") {

@@ -1,4 +1,4 @@
-import { ref, watchEffect } from "vue";
+import { ref, toRaw, watchEffect } from "vue";
 import type { NodeArray, Node } from "@markwhen/parser/lib/Node";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useAppStore } from "@/App/appStore";
@@ -8,8 +8,17 @@ import { useTransformStore } from "@/Markwhen/transformStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 
+export type EventPaths = { [pathType in EventPath["type"]]?: EventPath };
+
+export interface EventPath {
+  type: "whole" | "page" | "pageFiltered";
+  path: number[];
+}
+
 export interface AppState {
   isDark?: boolean;
+  hoveringPath?: EventPaths;
+  detailPath?: EventPath;
 }
 export interface MarkwhenState {
   rawText?: string;
@@ -40,8 +49,8 @@ export const useStateSerializer = () => {
     state.value = {
       app: {
         isDark: appStore.inferredDarkMode,
-        hovering: editorOrchestrator.hoveringEventPaths,
-        detail: eventDetailStore.detailEventPath?.path,
+        hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
+        detailPath: toRaw(eventDetailStore.detailEventPath),
       },
       markwhen: {
         rawText: markwhenStore.rawTimelineString,

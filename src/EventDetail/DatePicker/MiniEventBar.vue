@@ -3,7 +3,7 @@ import {
   ceilDateTime,
   floorDateTime,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import type { DateRange, Event } from "@markwhen/parser/lib/Types";
+import { toDateRange, type DateRange, type Event } from "@markwhen/parser/lib/Types";
 import type { DateTime } from "luxon";
 import { computed } from "vue";
 
@@ -15,7 +15,7 @@ const dr = (from: DateTime, to: DateTime): DateRange => ({
 });
 
 const bounds = computed(() => {
-  const { fromDateTime, toDateTime } = props.event.dateRange();
+  const { fromDateTime, toDateTime } = toDateRange(props.event.dateRangeIso);
   if (toDateTime.year - fromDateTime.year > 5) {
     return dr(
       floorDateTime(fromDateTime.minus({ years: 5 }), "year"),

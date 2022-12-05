@@ -10,7 +10,7 @@ import {
   isEventNode,
   ranges,
 } from "@markwhen/parser/lib/Noder";
-import type { Event } from "@markwhen/parser/lib/Types";
+import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 
 import type { Sort } from "../transformStore";
 
@@ -130,7 +130,7 @@ const sortNodeArray = (
     .sort((left, right) => {
       const fromDateTime = (n: SomeNode) =>
         isEventNode(n)
-          ? eventValue(n).dateRange().fromDateTime
+          ? toDateRange(eventValue(n).dateRangeIso).fromDateTime
           : ranges(n)?.fromDateTime;
 
       const leftDateTime = fromDateTime(left);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import type { Event } from "@markwhen/parser/lib/Types";
+import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 import { computed } from "@vue/reactivity";
 import { ref } from "vue";
 import { useEventColor } from "../Events/composables/useEventColor";
@@ -14,13 +14,15 @@ const { distanceFromViewportLeftDate } = useTimelineStore();
 
 const dateLeft = computed(
   () =>
-    distanceFromViewportLeftDate(props.event.dateRange().fromDateTime) -
-    viewportLeftMarginPixels
+    distanceFromViewportLeftDate(
+      toDateRange(props.event.dateRangeIso).fromDateTime
+    ) - viewportLeftMarginPixels
 );
 const dateRight = computed(
   () =>
-    distanceFromViewportLeftDate(props.event.dateRange().toDateTime) -
-    viewportLeftMarginPixels
+    distanceFromViewportLeftDate(
+      toDateRange(props.event.dateRangeIso).toDateTime
+    ) - viewportLeftMarginPixels
 );
 const hoveredInEditor = computed(
   () => false // editorOrchestrator.isEventHoveredInEditor(props.event)

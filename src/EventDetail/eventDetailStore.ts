@@ -2,13 +2,11 @@ import { ref, computed, watchEffect, watch } from "vue";
 import { defineStore } from "pinia";
 import type { Path } from "@markwhen/parser/lib/Types";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
-import {
-  useEventFinder,
-  type EventPath,
-} from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { getLast } from "@markwhen/parser/lib/Noder";
+import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
   if (!p1 || !p2 || p1.type !== p2.type) {
@@ -52,6 +50,10 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     if (!show) {
       detailEventPath.value = undefined;
     }
+  };
+
+  const clearDetailEventPath = () => {
+    detailEventPath.value = undefined;
   };
 
   const setDetailEventPath = (path: EventPath) => {
@@ -183,6 +185,7 @@ export const useEventDetailStore = defineStore("eventDetail", () => {
     setDetailEventPath,
     toggle,
     setShouldOpenDetailWhenJumping,
+    clearDetailEventPath,
 
     // getters
     isDetailEventPath,
