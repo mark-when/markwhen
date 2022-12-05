@@ -1,16 +1,9 @@
-import type { NodeArray, Node } from "@markwhen/parser/lib/Node";
-import type { Ref } from "vue";
 
-export interface MarkwhenInit {
-  isDark: boolean;
-  rawText: string;
-  markwhen: Node<NodeArray> | undefined;
-}
+import type { Ref } from "vue";
+import type { State } from "./useStateSerializer";
 
 interface MessageTypes {
-  theme: { isDark: boolean };
-  update: { text: string; parsed: Node<NodeArray> | undefined };
-  init: MarkwhenInit;
+  state: State;
 }
 
 type MessageType = keyof MessageTypes;
