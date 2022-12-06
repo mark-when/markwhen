@@ -17,17 +17,6 @@ const eventDetailStore = useEventDetailStore();
 const isLeft = computed(
   () => panelState.value.order < panelStore.visualizationPanelState.order
 );
-const borderClass = computed(() => {
-  const ourOrder = panelState.value.order;
-  const visOrder = panelStore.visualizationPanelState.order;
-  if (ourOrder === visOrder - 1) {
-    return "border-r";
-  }
-  if (ourOrder === visOrder + 1) {
-    return "border-l";
-  }
-  return "";
-});
 const { resizeMouseDown, tempWidth } = usePanelResize(
   isLeft,
   computed(() => panelStore.detailPanelState.width || 450),
@@ -79,7 +68,7 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
   <div
     ref="panel"
     class="hidden md:h-full lg:flex flex-shrink-0 flex-col md:flex-row border-slate-200 dark:border-slate-600 z-10 pb-4 md:pb-0 bg-slate-50 dark:bg-slate-800 text-zinc-600 dark:text-zinc-200 transition transition-shadow"
-    :class="`${borderClass} ${!!translateX ? 'shadow-xl' : ''}`"
+    :class="`${!!translateX ? 'shadow-xl' : ''}`"
     :style="{
       order: computedOrder,
       ...computedStyle,
