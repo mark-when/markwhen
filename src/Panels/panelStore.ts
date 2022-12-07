@@ -102,8 +102,7 @@ export const usePanelStore = defineStore("panels", () => {
         leftOf = Math.min(leftOf, i);
       }
     }
-    const newIndex =
-      translation < 0 ? Math.max(leftOf, rightOf) : Math.min(leftOf, rightOf);
+    const newIndex = Math.min(leftOf, rightOf);
     moveTo.value = newIndex;
 
     // We only need to change elements that are between `newIndex` and `timelineIndex`

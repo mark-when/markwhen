@@ -1,3 +1,4 @@
+import { useAppStore } from "@/App/appStore";
 import { useThrottleFn, type MaybeRef } from "@vueuse/shared";
 import { ref, unref } from "vue";
 
@@ -8,6 +9,7 @@ export const usePanelMove = (
   const startX = ref<number>();
   const translateX = ref(0);
   const parentScrollWidth = ref(0);
+  const appStore = useAppStore();
 
   const escapeListener = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -23,6 +25,7 @@ export const usePanelMove = (
     document.removeEventListener("mouseup", endMoveListener);
     document.removeEventListener("touchend", endMoveListener);
     document.removeEventListener("keydown", escapeListener);
+    appStore.clearGlobalClass();
   };
 
   const endMoveListener = (e: MouseEvent | TouchEvent) => {
@@ -48,7 +51,7 @@ export const usePanelMove = (
       Math.max(-element.offsetLeft + parentOffsetLeft, diff),
       maxRight
     );
-  }, 10)
+  }, 10);
 
   const startMoving = (e: MouseEvent | TouchEvent) => {
     e.preventDefault();
@@ -60,6 +63,7 @@ export const usePanelMove = (
     document.addEventListener("keydown", escapeListener);
 
     parentScrollWidth.value = unref(panel)!.parentElement!.scrollWidth;
+    appStore.setGlobalClass("resizing");
   };
 
   return { moveListener: startMoving, translateX };

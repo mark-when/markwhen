@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { usePanelStore } from "./panelStore";
@@ -12,11 +12,11 @@ const detailVisible = computed(() => panelStore.detailPanelState.visible);
 
 const frames = ref<HTMLIFrameElement[]>()
 
-watchEffect(() => {
-  frames.value?.forEach(f => {
-    useViewOrchestrator(ref(f))
-  })
-})
+const activeFrame = computed(() =>
+  frames.value?.find((f) => f.id === `view_${currentView.value.name}`)
+);
+
+useViewOrchestrator(activeFrame);
 
 const translateX = computed(
   () => panelStore.visualizationPanelState.translation
@@ -46,7 +46,6 @@ const currentComponent = computed(() => currentView.value.component());
 const framedComponents = computed(() =>
   viewStore.views.filter((v) => typeof v.component() === "string")
 );
-
 </script>
 
 <template>
@@ -58,7 +57,7 @@ const framedComponents = computed(() =>
         class="w-full h-full"
         v-show="currentComponent === component.component()"
         :src="component.component()"
-        :id="`view_${currentView.name}`"
+        :id="`view_${component.name}`"
       ></iframe>
       <keep-alive>
         <component
@@ -66,9 +65,17 @@ const framedComponents = computed(() =>
           v-if="typeof currentComponent !== 'string'"
         />
       </keep-alive>
+      <div class="absolute inset-0 frameCover"></div>
     </div>
     <EventDetailPanel v-if="detailVisible && !viewStore.isMobile" />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.frameCover {
+  pointer-events: none;
+}
+.resizing .frameCover {
+  pointer-events: auto;
+}
+</style>

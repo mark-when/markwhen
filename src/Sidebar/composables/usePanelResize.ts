@@ -1,3 +1,4 @@
+import { useAppStore } from "@/App/appStore";
 import type { MaybeRef } from "@vueuse/shared";
 import { ref, unref } from "vue";
 
@@ -9,6 +10,7 @@ export const usePanelResize = (
   const resizeXStarted = ref(false);
   const resizeStartX = ref(0);
   const tempWidth = ref(0);
+  const appStore = useAppStore();
 
   const pageX = (e: MouseEvent | TouchEvent) =>
     e instanceof MouseEvent ? e.pageX : e.touches[0].pageX;
@@ -19,6 +21,7 @@ export const usePanelResize = (
     document.removeEventListener("mousemove", resizeMouseMove);
     document.removeEventListener("touchmove", resizeMouseMove);
     document.removeEventListener("keydown", escapeListener);
+    appStore.clearGlobalClass();
   };
 
   const escapeListener = (e: KeyboardEvent) => {
@@ -65,6 +68,8 @@ export const usePanelResize = (
     document.addEventListener("touchmove", resizeMouseMove);
     document.addEventListener("touchend", resizeMouseUp);
     document.addEventListener("keydown", escapeListener);
+
+    appStore.setGlobalClass("resizing");
   };
 
   return {

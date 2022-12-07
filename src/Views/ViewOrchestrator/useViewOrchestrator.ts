@@ -1,16 +1,21 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
-import { ref, watchEffect, type Ref, watch, toRaw } from "vue";
+import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
 import { useLpc } from "./useLpc";
 import { useStateSerializer } from "./useStateSerializer";
 
-export const useViewOrchestrator = (frame: Ref<HTMLIFrameElement>) => {
+export const useViewOrchestrator = (
+  frame: Ref<HTMLIFrameElement | undefined>
+) => {
   const stateSerializer = useStateSerializer();
   const eventDetailStore = useEventDetailStore();
   const editorOrchestrator = useEditorOrchestratorStore();
 
-  const frameLoaded = ref(false);
+  const trigger = ref(false);
   const lpc = useLpc(frame, {
+    state: () => {
+      trigger.value = !trigger.value;
+    },
     setDetailPath: (path) => {
       if (path) {
         eventDetailStore.setDetailEventPath(path);
@@ -27,16 +32,9 @@ export const useViewOrchestrator = (frame: Ref<HTMLIFrameElement>) => {
     },
   });
 
-  watchEffect(() => {
-    if (!frame.value) {
-      return;
-    }
-    if (!frameLoaded.value) {
-      frame.value.onload = () => {
-        frameLoaded.value = true;
-      };
-    } else {
-      lpc.postRequest("state", toRaw(stateSerializer.value));
-    }
+  return watchEffect(() => {
+    // we're watching this so the view can request a state update
+    trigger.value;
+    lpc.postRequest("state", toRaw(stateSerializer.value));
   });
 };

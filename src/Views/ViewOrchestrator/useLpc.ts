@@ -32,7 +32,7 @@ export const getNonce = () => {
 };
 
 export const useLpc = (
-  frame: Ref<HTMLIFrameElement>,
+  frame: Ref<HTMLIFrameElement | undefined>,
   listeners: MessageListeners
 ) => {
   const calls: Map<
@@ -47,7 +47,7 @@ export const useLpc = (
     message: Message<T>,
     origin: string = "*"
   ) =>
-    frame.value.contentWindow?.postMessage(message, { targetOrigin: origin });
+    frame.value?.contentWindow?.postMessage(message, { targetOrigin: origin });
 
   const postRequest = <T extends MessageType>(
     type: T,
@@ -85,7 +85,9 @@ export const useLpc = (
       } else if (data.request) {
         const result = listeners?.[data.type]?.(data.params!);
         Promise.resolve(result).then((resp) => {
-          postResponse(data.id, data.type, resp);
+          if (typeof resp !== "undefined") {
+            postResponse(data.id, data.type, resp);
+          }
         });
       } else {
         console.error("Not a request or response", data);
