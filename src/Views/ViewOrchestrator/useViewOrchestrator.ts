@@ -1,5 +1,6 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
+import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
 import { useLpc } from "./useLpc";
 import { useStateSerializer } from "./useStateSerializer";
@@ -25,11 +26,19 @@ export const useViewOrchestrator = (
     },
     setHoveringPath: (path) => {
       if (path) {
-        editorOrchestrator.setHoveringEventPath(path);
+        if (
+          path.path.join(",") !==
+          editorOrchestrator.hoveringEventPaths?.pageFiltered?.path.join(",")
+        )
+          editorOrchestrator.setHoveringEventPath(path);
       } else {
         editorOrchestrator.clearHoveringEvent();
       }
     },
+    showInEditor: (path) => {
+      editorOrchestrator.showInEditor(path);
+    },
+    key(key: string) {},
   });
 
   return watchEffect(() => {

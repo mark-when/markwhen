@@ -5,6 +5,8 @@ interface MessageTypes {
   state: State;
   setHoveringPath: EventPath;
   setDetailPath: EventPath;
+  key: string;
+  showInEditor: EventPath;
 }
 
 type MessageType = keyof MessageTypes;
