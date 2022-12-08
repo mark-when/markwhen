@@ -1,10 +1,10 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageAdjustedRanges } from "@/EditorOrchestrator/usePageAdjustedRanges";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
-import type { EventPaths } from "@/Markwhen/eventMapStore";
+import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import { Event } from "@markwhen/parser/lib/Types";
+import { isEventNode } from "@markwhen/parser/lib/Noder";
 import { useEventListener } from "@vueuse/core";
 import { toRaw } from "vue";
 
@@ -33,7 +33,6 @@ export const useVsCode = () => {
   const markwhenStore = useMarkwhenStore();
   const timelineStore = useTimelineStore();
   const editorOrchestrator = useEditorOrchestratorStore();
-  const eventFinder = useEventFinder();
   const { rangeOffset } = usePageAdjustedRanges();
 
   const calls: Map<
@@ -92,14 +91,14 @@ export const useVsCode = () => {
           } else {
             editorOrchestrator.setHoveringEvent(index);
           }
-          const hoveringEvent = eventFinder(
+          const hoveringEvent = useEventFinder(
             editorOrchestrator.hoveringEventPaths
-          );
+          ).value;
           let from: number | undefined, to: number | undefined;
           if (hoveringEvent) {
-            if (hoveringEvent.isEventNode()) {
-              from = hoveringEvent.eventValue().ranges.event.from;
-              to = hoveringEvent.eventValue().ranges.event.to;
+            if (isEventNode(hoveringEvent)) {
+              from = hoveringEvent.value.dateRangeInText.from;
+              to = hoveringEvent.value.dateRangeInText.to;
             } else {
               from = hoveringEvent.rangeInText?.from;
               to = hoveringEvent.rangeInText?.to;

@@ -1,5 +1,5 @@
-import { useMobileViewProviders } from "@/Views/useMobileViewProviders";
-import { useViewProviders } from "@/Views/useViewProviders";
+import { useMobileViewProviders } from "@/App/composables/useMobileViewProviders";
+import { useViewProviders } from "@/App/composables/useViewProviders";
 import type { ViewProvider } from "@/viewProvider";
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
@@ -11,9 +11,7 @@ export const useViewStore = defineStore("views", () => {
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const timelineStore = useTimelineStore();
 
-  const views = computed<ViewProvider[]>(() =>
-    isMobile.value ? useMobileViewProviders() : useViewProviders()
-  );
+  const views = computed<ViewProvider[]>(() => useViewProviders());
   const framedViews = computed(() => views.value.filter((v) => v.framed));
   const currentView = computed<ViewProvider>(
     () => views.value[selectedViewIndex.value]
@@ -24,7 +22,7 @@ export const useViewStore = defineStore("views", () => {
       selectedViewIndex.value = 0;
     } else if (selectedViewIndex.value < 0) {
       // Set initial view to timeline
-      selectedViewIndex.value = 1;
+      selectedViewIndex.value = 2;
     }
     if (currentView.value.name === "Timeline") {
       timelineStore.setMode("timeline");
