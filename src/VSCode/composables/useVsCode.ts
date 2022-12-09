@@ -7,12 +7,13 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
 import { useEventListener } from "@vueuse/core";
 import { toRaw } from "vue";
+import { useViewStore } from "@/Views/viewStore";
 
 // @ts-ignore
 export const vscodeApi = acquireVsCodeApi();
 
 interface Message {
-  type: "hoverFromEditor" | "update" | "scrollTo";
+  type: "hoverFromEditor" | "update" | "scrollTo" | "canUseSource";
   request?: boolean;
   response?: boolean;
   id: string;
@@ -33,6 +34,7 @@ export const useVsCode = () => {
   const markwhenStore = useMarkwhenStore();
   const timelineStore = useTimelineStore();
   const editorOrchestrator = useEditorOrchestratorStore();
+  const viewStore = useViewStore();
   const { rangeOffset } = usePageAdjustedRanges();
 
   const calls: Map<
@@ -68,9 +70,12 @@ export const useVsCode = () => {
     postRequest("update", { text });
   };
 
+  const allowSource = (text?: string) => {
+    postRequest("canUseSource", { source: text });
+  };
+
   useEventListener("message", (event) => {
     const message = event.data;
-    console.log("markwhen received message", message);
     if (!message.id) {
       throw new Error("No id");
     }
@@ -120,11 +125,14 @@ export const useVsCode = () => {
           const path = message.params.path as EventPaths;
           timelineStore.setScrollToPaths(path);
           break;
+        case "canUseSource":
+          const sources = message.params.sources as string[];
+          viewStore.setAllowedSources(sources);
       }
     } else {
       throw new Error("Not a request or response");
     }
   });
 
-  return { updateText };
+  return { updateText, allowSource };
 };

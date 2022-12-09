@@ -1,4 +1,3 @@
-import { useMobileViewProviders } from "@/App/composables/useMobileViewProviders";
 import { useViewProviders } from "@/App/composables/useViewProviders";
 import type { ViewProvider } from "@/viewProvider";
 import { useMediaQuery } from "@vueuse/core";
@@ -10,6 +9,7 @@ export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const timelineStore = useTimelineStore();
+  const allowedSources = ref<string[]>([]);
 
   const views = computed<ViewProvider[]>(() => useViewProviders());
   const framedViews = computed(() => views.value.filter((v) => v.framed));
@@ -35,11 +35,16 @@ export const useViewStore = defineStore("views", () => {
     selectedViewIndex.value = i;
   };
 
+  const setAllowedSources = (sources: string[]) => {
+    allowedSources.value = sources;
+  };
+
   return {
     // state
     selectedViewIndex,
     views,
     isMobile,
+    allowedSources,
 
     // getters
     currentView,
@@ -47,5 +52,6 @@ export const useViewStore = defineStore("views", () => {
 
     // actions
     setSelectedViewIndex,
+    setAllowedSources,
   };
 });

@@ -38,7 +38,7 @@ export const useViewOrchestrator = (
       }
     },
     showInEditor: (path) => {
-      editorOrchestrator.showInEditor(path);
+      // editorOrchestrator.showInEditor(path);
     },
     newEvent({ dateRangeIso, immediate, granularity }) {
       if (immediate) {
