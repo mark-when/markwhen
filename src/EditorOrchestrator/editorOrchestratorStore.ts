@@ -25,6 +25,7 @@ import type {
   EventPath,
   EventPaths,
 } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { todayRange, type EventCreationParams } from "@/NewEvent/newEventStore";
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -162,10 +163,38 @@ export const useEditorOrchestratorStore = defineStore(
       choosingColor.value = choosing;
     };
 
+    const newEventInsertionIndex = () => {
+      const { node } = getLast(pageStore.pageTimeline.events);
+      if (isEventNode(node)) {
+        return node.value.rangeInText.to;
+      } else {
+        return (
+          node.rangeInText?.to || pageStore.pageTimeline.metadata.endStringIndex
+        );
+      }
+    };
+
+    const createEvent = (params: EventCreationParams) => {
+      if (typeof params.range !== "string") {
+        throw new Error("Range must be preconverted to string at this point");
+      }
+      const index = newEventInsertionIndex();
+      const es = markwhenStore.rawTimelineString;
+      const newString =
+        es.slice(0, index) +
+        `\n${
+          params.range || dateRangeToString(todayRange(), "day", undefined)
+        }: ${params.title || "Event"}${
+          params.description ? "\n" + params.description : ""
+        }` +
+        es.slice(index);
+      setText(newString);
+    };
+
     const createEventFromRange = (
       range: DateRange | undefined,
       scale: DisplayScale,
-      preferredInterpolationFormat: DateFormat | undefined
+      preferredInterpolationFormat?: DateFormat | undefined
     ) => {
       if (!range) {
         return;
@@ -176,15 +205,7 @@ export const useEditorOrchestratorStore = defineStore(
         preferredInterpolationFormat
       );
       // events-reference
-      const { node } = getLast(pageStore.pageTimeline.events);
-      let index: number;
-      if (isEventNode(node)) {
-        index = node.value.rangeInText.to;
-      } else {
-        index =
-          node.rangeInText?.to ||
-          pageStore.pageTimeline.metadata.endStringIndex;
-      }
+      const index = newEventInsertionIndex();
       const es = markwhenStore.rawTimelineString;
       const newString =
         es.slice(0, index) + `\n${dateRangeString}: Event\n` + es.slice(index);
@@ -192,7 +213,7 @@ export const useEditorOrchestratorStore = defineStore(
       setText(newString);
     };
 
-    const showInEditor = (e: Event | EventPaths) => {};
+    const showInEditor = (e: Event | EventPaths | EventPath) => {};
 
     return {
       // state
@@ -214,6 +235,7 @@ export const useEditorOrchestratorStore = defineStore(
       setPageTimelineString,
       showInEditor,
       setHoveringEventPath,
+      createEvent,
     };
   }
 );

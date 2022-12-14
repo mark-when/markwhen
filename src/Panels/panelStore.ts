@@ -18,8 +18,8 @@ interface Panel {
 
 export const usePanelStore = defineStore("panels", () => {
   const panels = ref<Panel[]>([
-    { name: PanelDetail, visible: false, width: 250, translation: 0 },
     { name: PanelVisualization, visible: true, translation: 0 },
+    { name: PanelDetail, visible: false, width: 250, translation: 0 },
   ]);
 
   const elementMap: { [key in PanelName]: HTMLElement | undefined } = {

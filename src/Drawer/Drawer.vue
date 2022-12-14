@@ -4,8 +4,8 @@ import { useViewStore } from "@/Views/viewStore";
 import { computed } from "vue";
 import Sort from "../Drawer/ViewSettings/Sort.vue";
 import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
-import VerticalSpacer from "./VerticalSpacer.vue";
 import Filter from "./ViewSettings/Tags/Filter.vue";
+import NewEvent from "@/NewEvent/NewEvent.vue";
 
 const viewStore = useViewStore();
 
@@ -25,7 +25,7 @@ const useTopBorder = computed(() => {
     >
       <PageButtons v-if="viewStore.currentView.uses?.pages" />
       <div
-        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mx-2 lg:block hidden order-2"
+        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mx-1 lg:block hidden order-2"
       ></div>
       <div
         class="flex flex-row items-center overflow-auto overflow-visible justify-end order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0"
@@ -37,6 +37,7 @@ const useTopBorder = computed(() => {
             viewStore.currentView.settings.length)
         "
       >
+        <NewEvent></NewEvent>
         <Sort v-if="viewStore.currentView.uses?.sort" />
         <ViewSettings />
         <Filter v-if="viewStore.currentView.uses?.tags" />

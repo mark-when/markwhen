@@ -1,3 +1,7 @@
+import type {
+  DateRangeIso,
+  DateTimeGranularity,
+} from "@markwhen/parser/lib/Types";
 import type { Ref } from "vue";
 import type { EventPath, State } from "./useStateSerializer";
 
@@ -7,6 +11,11 @@ interface MessageTypes {
   setDetailPath: EventPath;
   key: string;
   showInEditor: EventPath;
+  newEvent: {
+    dateRangeIso: DateRangeIso;
+    granularity?: DateTimeGranularity;
+    immediate: boolean;
+  };
 }
 
 type MessageType = keyof MessageTypes;

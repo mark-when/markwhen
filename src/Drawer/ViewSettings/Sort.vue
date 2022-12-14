@@ -18,11 +18,15 @@ const click = () => transformStore.toggleSort();
 </script>
 
 <template>
-  <button @click="click" class="mx-1 print-hidden" :title="buttonTitle">
+  <button
+    @click="click"
+    class="h-6 rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1"
+    :title="buttonTitle"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
-      viewBox="1 1 17 14"
+      viewBox="0 0 19 16"
       fill="currentColor"
     >
       <path

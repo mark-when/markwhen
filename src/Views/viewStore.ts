@@ -1,5 +1,5 @@
-import { useMobileViewProviders } from "@/App/composables/useMobileViewProviders";
-import { useViewProviders } from "@/App/composables/useViewProviders";
+import { useMobileViewProviders } from "@/Views/useMobileViewProviders";
+import { useViewProviders } from "@/Views/useViewProviders";
 import type { ViewProvider } from "@/viewProvider";
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";

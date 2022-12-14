@@ -1,6 +1,7 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
-import { eqPath } from "@/Markwhen/composables/useEventFinder";
+import { useNewEventStore } from "@/NewEvent/newEventStore";
+import { toDateRange } from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
 import { useLpc } from "./useLpc";
 import { useStateSerializer } from "./useStateSerializer";
@@ -11,6 +12,7 @@ export const useViewOrchestrator = (
   const stateSerializer = useStateSerializer();
   const eventDetailStore = useEventDetailStore();
   const editorOrchestrator = useEditorOrchestratorStore();
+  const newEventStore = useNewEventStore();
 
   const trigger = ref(false);
   const lpc = useLpc(frame, {
@@ -37,6 +39,22 @@ export const useViewOrchestrator = (
     },
     showInEditor: (path) => {
       editorOrchestrator.showInEditor(path);
+    },
+    newEvent({ dateRangeIso, immediate, granularity }) {
+      if (immediate) {
+        editorOrchestrator.createEventFromRange(
+          toDateRange(dateRangeIso),
+          granularity
+            ? granularity === "instant"
+              ? "minute"
+              : granularity
+            : "day"
+        );
+      } else {
+        newEventStore.prompt({
+          range: dateRangeIso,
+        });
+      }
     },
     key(key: string) {},
   });

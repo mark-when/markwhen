@@ -63,7 +63,7 @@ const displayTags = computed(() => {
 
 <template>
   <button
-    class="mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
+    class="h-6 ml-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
     @click="clear"
     v-if="displayTags.length"
     @mouseover="mouseover"
@@ -100,12 +100,12 @@ const displayTags = computed(() => {
         }"
       ></div>
     </div>
-    <span class="ml-1" :class="hovering ? 'line-through' : ''">{{
+    <span class="" :class="hovering ? 'line-through' : ''">{{
       clearFilterTitle
     }}</span>
   </button>
   <button
-    class="mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-2 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
+    class="h-6 mr-1 text-sm lg:text-base rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1 flex flex-row flex-shrink-0 items-center tagButton font-bold print-hidden"
     @click="showFilters"
   >
     <span

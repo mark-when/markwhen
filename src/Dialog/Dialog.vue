@@ -91,6 +91,9 @@ const keydown = (e: KeyboardEvent) => {
           ></path>
         </svg>
       </button>
+      <div class="p-1 m-2 ml-auto" v-else>
+        <div class="h-5 w-5"></div>
+      </div>
     </header>
     <div
       class="rounded"
