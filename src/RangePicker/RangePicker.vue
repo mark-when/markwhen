@@ -92,6 +92,7 @@ const select = () => {
     model-auto
     partial-range
     week-start="0"
+    :clearable="false"
     range
     :format="previewFormat"
     @open="$emit('isOpen', true)"
