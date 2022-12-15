@@ -20,7 +20,7 @@ const props = defineProps<{
     <div
       class="supplementalIndicators flex flex-row dark:text-gray-300 text-gray-500 gap-1 items-center justify-center pl-2"
     >
-      <button
+      <!-- <button
         @click="emits('toggleMeta', $event)"
         class="rounded px-px pointer-events-auto border"
         v-if="hasMeta"
@@ -49,7 +49,7 @@ const props = defineProps<{
             :transform="`rotate(${showingMeta ? 0 : 180} 12 12)`"
           ></path>
         </svg>
-      </button>
+      </button> -->
       <svg
         v-if="hasLocations"
         class="h-4 w-4"

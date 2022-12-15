@@ -52,24 +52,26 @@ const borderColor = computed(() => (tm: TimeMarker) => {
 
 <template>
   <div class="fixed inset-0">
-    <div class="timeMarkerContainer h-full">
+    <div
+      class="flex flex-row h-full relative"
+      :style="`margin-left: -${leftMargin}px`"
+    >
       <div
-        class="flex flex-row h-full"
-        :style="`margin-left: -${leftMargin}px`"
-      >
-        <div
-          v-for="timeMarker in markersStore.markers"
-          :key="timeMarker.ts"
-          class="h-full flex-shrink-0"
-          :style="{
-            backgroundColor: backgroundColor(timeMarker),
-            width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
-            borderLeft: `1px ${
-              hovering(timeMarker) ? 'solid' : 'dashed'
-            } ${borderColor(timeMarker)}`,
-          }"
-        ></div>
-      </div>
+        v-for="timeMarker in markersStore.markers"
+        :key="timeMarker.ts"
+        class="h-full flex-shrink-0 absolute top-0 bottom-0"
+        :style="{
+          backgroundColor: backgroundColor(timeMarker),
+          width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
+          left: `${
+            timelineStore.pageScaleBy24 *
+            (timeMarker.accumulated - timeMarker.size)
+          }px`,
+          borderLeft: `1px ${
+            hovering(timeMarker) ? 'solid' : 'dashed'
+          } ${borderColor(timeMarker)}`,
+        }"
+      ></div>
     </div>
   </div>
 </template>

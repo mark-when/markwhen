@@ -39,6 +39,7 @@ export interface TimeMarker {
   ts: number;
   dateTime: DateTime;
   size: number;
+  accumulated: number
 }
 
 export type TimeMarkerWeights = [
@@ -79,10 +80,13 @@ export const useMarkersStore = defineStore({
       let nextLeft = ceilDateTime(leftViewportDate, scale);
       let rightmost = ceilDateTime(rightViewportDate, scale);
 
+      let acc = timelineStore.scalelessDistanceBetweenDates(leftViewportDate, nextLeft)
+
       markers.push({
         dateTime: leftViewportDate,
-        size: timelineStore.scalelessDistanceBetweenDates(leftViewportDate, nextLeft),
+        size: acc,
         ts: leftViewportDate.toMillis(),
+        accumulated: acc
       });
 
       // 256 is an arbitrary number
@@ -91,6 +95,7 @@ export const useMarkersStore = defineStore({
           dateTime: nextLeft,
           size: 0,
           ts: nextLeft.toMillis(),
+          accumulated: acc
         });
         if (scale === "decade") {
           nextLeft = nextLeft.plus({ years: 10 });
@@ -101,10 +106,13 @@ export const useMarkersStore = defineStore({
         } else {
           nextLeft = nextLeft.plus({ [scale]: 1 });
         }
-        markers[markers.length - 1].size = timelineStore.scalelessDistanceBetweenDates(
+        const size = timelineStore.scalelessDistanceBetweenDates(
           markers[markers.length - 1].dateTime,
           nextLeft
         );
+        acc += size
+        markers[markers.length - 1].size = size
+        markers[markers.length - 1].accumulated = acc
       }
 
       // Get the last one

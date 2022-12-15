@@ -19,7 +19,7 @@ export const useGestures = (
 
   let mc: Hammer.Manager;
   const setupHammer = () => {
-    el.value?.addEventListener("touchstart", touchStart, { passive: true });
+    el.value?.addEventListener("touchstart", touchStart);
     el.value?.addEventListener("touchend", touchEnd, { passive: true });
 
     mc = new Hammer.Manager(el.value);

@@ -18,13 +18,6 @@ const props = defineProps<{
 }>();
 
 const editable = inject(isEditable);
-const width = computed(() =>
-  Math.max(10, timelineStore.pageScaleBy24 * props.width)
-);
-
-// watch([() => props.width, () => timelineStore.pageScaleBy24], ([w, s]) => {
-//   console.log(w, s);
-// });
 </script>
 
 <template>

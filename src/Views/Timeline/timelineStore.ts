@@ -16,6 +16,7 @@ export interface Viewport {
   left: number;
   width: number;
   top: number;
+  height: number;
 }
 
 export interface Settings {
@@ -106,9 +107,9 @@ export const useTimelineStore = defineStore("timeline", () => {
       return { from: leftDate, to: rightDate };
     };
   });
-  const scalelessDistanceBetweenDates = computed(
-    () => (a: DateTime, b: DateTime) => b.diff(a).as(diffScale)
-  );
+  const scalelessDistanceBetweenDates = (a: DateTime, b: DateTime) =>
+    b.diff(a).as(diffScale);
+
   const distanceBetweenDates = computed(
     () => (a: DateTime, b: DateTime) =>
       (b.diff(a).as(diffScale) * pageScale.value) / 24

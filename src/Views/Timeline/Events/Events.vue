@@ -3,54 +3,50 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import NowLine from "../Events/NowLine.vue";
 import { computed, inject } from "vue";
-import NodeRow from "./NodeRow.vue";
-import type { Node, NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";
-import type { Block, Event } from "@markwhen/parser/lib/Types";
-import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
+import type { Path } from "@markwhen/parser/lib/Types";
+import { toArray } from "@markwhen/parser/lib/Noder";
+import Nodes from "./Nodes.vue";
 
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 
 // top level is always an array
-const nodes = computed(
-  () => transformStore.transformedEvents?.value as NodeArray
+const nodes = computed(() => transformStore.transformedEvents);
+
+const nodeArray = computed(
+  () => toArray(nodes.value) as { path: Path; node: SomeNode }[]
 );
 
 const editable = inject(isEditable);
 
-const nodeKey = (n: SomeNode) => {
-  if (isEventNode(n)) {
-    const event = eventValue(n).eventDescription;
-    return (
-      event.eventDescription +
-      event.supplemental
-        .filter((b) => b.type !== "image")
-        .map((b) => (b as Block).raw)
-        .join(" ")
-    );
+const height = computed(() => {
+  if (nodeArray.value.length) {
+    return `${
+      nodeArray.value[nodeArray.value.length - 1].path.reduce(
+        (p, c) => p + c,
+        0
+      ) *
+        30 +
+      500
+    }px`;
   } else {
-    return n.title;
+    return "100%";
   }
-};
+});
 </script>
 
 <template>
   <div
     id="events"
     class="flex flex-col relative"
-    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px;`"
+    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px; height: ${height}`"
   >
     <div class="h-24"></div>
     <now-line />
-    <NodeRow
-      v-for="(node, i) in nodes"
-      :key="nodeKey(node)"
-      :node="node"
-      :path="`${i}`"
-      :can-have-sections="true"
-    ></NodeRow>
+    <Nodes />
     <new-event v-if="editable" />
     <div style="height: 85vh"></div>
   </div>

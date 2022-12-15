@@ -18,7 +18,7 @@ import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import MiniMap from "./MiniMap.vue/MiniMap.vue";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
-
+import Nodes from "./Events/Nodes.vue";
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const panelStore = usePanelStore();
@@ -29,12 +29,13 @@ const finder = useEventFinder;
 
 const getViewport = (): Viewport => {
   if (!timelineElement.value) {
-    return { left: 0, width: 0, top: 0 };
+    return { left: 0, width: 0, top: 0, height: 0 };
   }
   return {
     left: timelineElement.value.scrollLeft - timelineElement.value.offsetLeft,
     width: timelineElement.value.clientWidth + timelineElement.value.offsetLeft,
     top: timelineElement.value.scrollTop,
+    height: timelineElement.value.clientHeight,
   };
 };
 
@@ -206,6 +207,7 @@ onActivated(() => {
     left: viewport.value.left + (timelineElement.value?.offsetLeft || 0),
     top: viewport.value.top - (timelineElement.value?.offsetTop || 0),
     width: viewport.value.width,
+    height: viewport.value.height,
   };
   nextTick(() => setViewport(viewportWithOffset));
 });

@@ -65,8 +65,10 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
 
 <template>
   <div class="fixed inset-0 pointer-events-none">
-    <div class="timeMarkerContainer h-full">
-      <div class="flex h-full" :style="`margin-left: -${leftMargin}px`">
+      <div
+        class="flex relative"
+        :style="`margin-left: -${leftMargin}px`"
+      >
         <div
           class="timeMarkerShader w-full h-12 fixed top-0"
           :style="{
@@ -82,8 +84,12 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
         <div
           v-for="timeMarker in markerStore.markers"
           :key="timeMarker.ts"
-          class="flex-shrink-0"
+          class="flex-shrink-0 absolute top-0 bottom-0"
           :style="{
+            left: `${
+              timelineStore.pageScaleBy24 *
+              (timeMarker.accumulated - timeMarker.size)
+            }px`,
             width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
           }"
         >
@@ -104,7 +110,6 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
               {{ hoveringText(timeMarker) }}
             </h6>
           </div>
-        </div>
       </div>
     </div>
   </div>

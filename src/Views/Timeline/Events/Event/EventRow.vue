@@ -10,6 +10,7 @@ import {
 } from "vue";
 import { useElementHover } from "@vueuse/core";
 import {
+  Path,
   toDateRange,
   toDateRangeIso,
   type Block,
@@ -28,7 +29,6 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { useIntersectionObserver } from "@vueuse/core";
 
 const props = defineProps<{
   path: EventPath;
@@ -152,8 +152,7 @@ const range = computed(() => {
   };
 });
 
-const rangeIso = computed(() => toDateRangeIso(range.value));
-const marginLeft = computed(
+const left = computed(
   () =>
     timelineStore.pageScaleBy24 *
     timelineStore.scalelessDistanceFromBaselineLeftmostDate(
@@ -168,6 +167,10 @@ const barWidth = computed(() => {
   return distance;
 });
 
+const barScaledWidth = computed(() =>
+  Math.max(10, timelineStore.pageScaleBy24 * barWidth.value)
+);
+
 const close = () => {
   showingMeta.value = false;
 };
@@ -175,6 +178,8 @@ const close = () => {
 const eventDetail = () => {
   eventDetailStore.setDetailEventPath(props.path);
 };
+
+const isScrollToPath = ref(false);
 
 watch(
   () => timelineStore.scrollToPath,
@@ -186,6 +191,7 @@ watch(
         (props.path.path[1] === 0 &&
           eqPath({ type: props.path.type, path: [props.path.path[0]!] }, path))
       ) {
+        isScrollToPath.value = true;
         nextTick(() =>
           (eventBar.value.$el as HTMLDivElement).scrollIntoView({
             block: "center",
@@ -193,7 +199,11 @@ watch(
             behavior: "smooth",
           })
         );
+      } else {
+        isScrollToPath.value = false;
       }
+    } else {
+      isScrollToPath.value = false;
     }
   }
 );
@@ -208,13 +218,39 @@ const percent = computed(() => {
   }
   return 100;
 });
+
+const top = computed(
+  () =>
+    100 +
+    props.path.path.reduce((prev, next) => prev + next, 0) * 30 +
+    props.path.path.length * 30
+);
+
+const display = computed(() => {
+  const vp = timelineStore.pageSettings.viewport;
+  if (isScrollToPath.value) {
+    return "block";
+  }
+  if (top.value < vp.top - 100 || top.value > vp.top + vp.height + 100) {
+    return "none";
+  }
+  if (
+    left.value > vp.left + vp.width + 50 ||
+    vp.left > left.value + barScaledWidth.value + 350
+  ) {
+    return "none";
+  }
+  return "block";
+});
 </script>
 
 <template>
   <div
-    class="eventRow relative"
+    class="eventRow absolute"
     :style="{
-      marginLeft: `${marginLeft}px`,
+      left: `${left}px`,
+      top: `${top}px`,
+      display,
     }"
     @mouseenter.passive="elementHover = true"
     @mouseleave.passive="elementHover = false"
@@ -244,7 +280,7 @@ const percent = computed(() => {
           :tagColor="color"
           :percent="percent"
           :hovering="isHovering || hovering"
-          :width="barWidth"
+          :width="barScaledWidth"
           :taskNumerator="taskNumerator"
           :taskDenominator="taskDenominator"
           :drag-handle-listener-left="dragHandleListenerLeft"
@@ -264,7 +300,7 @@ const percent = computed(() => {
           :title-html="titleHtml"
           @toggle-meta="toggleMeta"
         ></event-title>
-        <event-meta
+        <!-- <event-meta
           class="pointer-events-auto"
           v-if="canShowMeta"
           :locations="eventLocations"
@@ -272,7 +308,7 @@ const percent = computed(() => {
           :matchedListItems="matchedListItems"
           :left="barWidth"
           @close="close"
-        />
+        /> -->
       </div>
     </div>
   </div>
