@@ -3,6 +3,7 @@ import {
   computed,
   nextTick,
   onRenderTriggered,
+  onUnmounted,
   onUpdated,
   ref,
   watch,
@@ -27,6 +28,7 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { useIntersectionObserver } from "@vueuse/core";
 
 const props = defineProps<{
   path: EventPath;
@@ -101,6 +103,7 @@ const {
 
 const hoveringWidgets = ref(false);
 const elementHover = useElementHover(eventRow);
+
 watch(elementHover, (hovering) => emit("hover", hovering));
 
 const isHovering = computed(
@@ -152,10 +155,12 @@ const range = computed(() => {
 });
 
 const rangeIso = computed(() => toDateRangeIso(range.value));
-const marginLeft = computed(() =>
-  timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-    toDateRange(rangeIso.value).fromDateTime
-  )
+const marginLeft = computed(
+  () =>
+    timelineStore.pageScaleBy24 *
+    timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+      toDateRange(rangeIso.value).fromDateTime
+    )
 );
 const barWidth = computed(() => {
   const distance = timelineStore.scalelessDistanceBetweenDates(
@@ -211,7 +216,7 @@ const percent = computed(() => {
   <div
     class="eventRow relative"
     :style="{
-      marginLeft: `calc(var(--timeline-scale-by-24) * ${marginLeft}px)`,
+      marginLeft: `${marginLeft}px`,
     }"
     ref="eventRow"
   >

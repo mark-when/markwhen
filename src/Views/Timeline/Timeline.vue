@@ -70,18 +70,6 @@ watch(
   }
 );
 
-const setScaleVariable = (s: number) => {
-  document
-    .getElementById("timeline")
-    ?.style.setProperty("--timeline-scale", `${s}`);
-  document
-    .getElementById("timeline")
-    ?.style.setProperty("--timeline-scale-by-24", `${s / 24}`);
-};
-const scale = computed(() => timelineStore.pageScale);
-watch(scale, setScaleVariable);
-onMounted(() => setScaleVariable(scale.value));
-
 watch(
   () => timelineStore.pageSettings,
   (settings) => {

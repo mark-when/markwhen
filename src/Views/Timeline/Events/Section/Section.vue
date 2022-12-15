@@ -14,10 +14,11 @@ const props = defineProps<{
   path: string;
 }>();
 
+const timelineStore = useTimelineStore();
 const {
   scalelessDistanceBetweenDates,
   scalelessDistanceFromBaselineLeftmostDate,
-} = useTimelineStore();
+} = timelineStore;
 
 const expanded = ref(!!props.node.startExpanded);
 const hovering = ref(false);
@@ -62,6 +63,13 @@ const hover = (isHovering: boolean) => {
 const groupStyle = computed(() =>
   props.node.style === "section" ? "section" : "group"
 );
+
+const marginLeft = computed(
+  () => `${timelineStore.pageScaleBy24 * left.value}px`
+);
+const width = computed(
+  () => `${timelineStore.pageScaleBy24 * fullWidth.value}px`
+);
 </script>
 
 <template>
@@ -77,8 +85,8 @@ const groupStyle = computed(() =>
     <div
       class="sticky top-0 cursor-pointer"
       :style="{
-        marginLeft: `calc(var(--timelines-scale-by-24) * ${left}px)`,
-        width: `calc(var(--timeline-scale-by-24) * ${fullWidth}px)`,
+        marginLeft,
+        width,
       }"
     ></div>
     <div v-show="expanded">

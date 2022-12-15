@@ -2,6 +2,7 @@
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { computed } from "@vue/reactivity";
+import { useTimelineStore } from "../../timelineStore";
 import { useEventColor } from "../composables/useEventColor";
 
 const props = defineProps<{
@@ -14,6 +15,7 @@ const props = defineProps<{
 }>();
 const { color } = useEventColor(computed(() => props.node));
 const eventDetailStore = useEventDetailStore();
+const timelineStore = useTimelineStore();
 
 const isGroupStyle = computed(() => props.style === "group");
 
@@ -42,8 +44,11 @@ const styleObject = computed(() => {
     })`;
   }
   if (isGroupStyle.value) {
-    obj.marginLeft = `calc(calc(var(--timeline-scale-by-24) * ${props.left}px) - 8px)`;
-    obj.width = `max(64px, calc(calc(var(--timeline-scale-by-24) * ${props.fullWidth}px) + 16px))`;
+    obj.marginLeft = `${timelineStore.pageScaleBy24 * props.left - 8}px`;
+    obj.width = `${Math.max(
+      64,
+      timelineStore.pageScaleBy24 * props.fullWidth + 16
+    )}px`;
   }
   return obj;
 });

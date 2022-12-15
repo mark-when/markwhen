@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { Path, GroupStyle } from "@markwhen/parser/lib/Types";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed } from "vue";
+import { useTimelineStore } from "../../timelineStore";
 import SectionTitleButton from "./SectionTitleButton.vue";
+
+const timelineStore = useTimelineStore();
 
 const props = defineProps<{
   path: string;
@@ -34,8 +37,8 @@ const styleObject = computed(() => {
     zIndex: 0,
   } as any;
   if (props.groupStyle === "group") {
-    obj.width = `calc(var(--timeline-scale-by-24) * ${props.fullWidth}px)`;
-    obj.marginLeft = `calc(var(--timeline-scale-by-24) * ${props.left}px)`;
+    obj.width = `${timelineStore.pageScaleBy24 * props.fullWidth}px`;
+    obj.marginLeft = `${timelineStore.pageScaleBy24 * props.left}px`;
   }
   return obj;
 });

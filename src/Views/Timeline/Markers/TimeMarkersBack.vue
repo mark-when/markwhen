@@ -9,9 +9,11 @@ import {
   type TimeMarker,
 } from "@/Views/Timeline/Markers/markersStore";
 import { useWeekdayCache } from "../utilities/weekdayCache";
+import { useTimelineStore } from "../timelineStore";
 
 const appStore = useAppStore();
 const markersStore = useMarkersStore();
+const timelineStore = useTimelineStore();
 const { getWeekday } = useWeekdayCache();
 const dark = computed(() => appStore.inferredDarkMode);
 
@@ -61,7 +63,7 @@ const borderColor = computed(() => (tm: TimeMarker) => {
           class="h-full flex-shrink-0"
           :style="{
             backgroundColor: backgroundColor(timeMarker),
-            width: `calc(var(--timeline-scale-by-24) * ${timeMarker.size}px)`,
+            width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
             borderLeft: `1px ${
               hovering(timeMarker) ? 'solid' : 'dashed'
             } ${borderColor(timeMarker)}`,

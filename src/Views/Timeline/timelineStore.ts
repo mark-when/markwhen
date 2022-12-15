@@ -187,6 +187,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     // getters
     pageTimelineMetadata,
     pageScale,
+    pageScaleBy24: computed(() => pageScale.value / 24),
     baselineLeftmostDate,
     baselineRightmostDate,
     dateIntervalFromViewport,

@@ -12,11 +12,12 @@ import {
   Weight,
   type TimeMarker,
 } from "./markersStore";
+import { useTimelineStore } from "../timelineStore";
 
 const appStore = useAppStore();
 
 const dark = computed(() => appStore.inferredDarkMode);
-
+const timelineStore = useTimelineStore();
 const markerStore = useMarkersStore();
 
 const leftMargin = viewportLeftMarginPixels;
@@ -83,7 +84,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
           :key="timeMarker.ts"
           class="flex-shrink-0"
           :style="{
-            width: `calc(var(--timeline-scale-by-24) * ${timeMarker.size}px)`,
+            width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
           }"
         >
           <h6
