@@ -39,8 +39,8 @@ const click = (e: MouseEvent) => emit("click", e);
       'px-1': groupStyle !== 'group',
     }"
     :style="styleObject"
-    @mouseover="emit('hovering', true)"
-    @mouseleave="emit('hovering', false)"
+    @mouseover.passive="emit('hovering', true)"
+    @mouseleave.passive="emit('hovering', false)"
   >
     <DepthIndicator :depth="path.split(',').length" />
     <div class="flex flex-row flex-grow items-center justify-center">

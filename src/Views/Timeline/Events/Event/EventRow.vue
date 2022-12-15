@@ -55,9 +55,7 @@ const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const timelineStore = useTimelineStore();
 
-const eventRow = ref();
 const eventBar = ref();
-const eventHeightPx = 10;
 const showingMeta = ref(false);
 watch(showingMeta, console.log);
 const hasLocations = computed(() => props.eventLocations.length > 0);
@@ -102,7 +100,7 @@ const {
 );
 
 const hoveringWidgets = ref(false);
-const elementHover = useElementHover(eventRow);
+const elementHover = ref(false);
 
 watch(elementHover, (hovering) => emit("hover", hovering));
 
@@ -159,15 +157,15 @@ const marginLeft = computed(
   () =>
     timelineStore.pageScaleBy24 *
     timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-      toDateRange(rangeIso.value).fromDateTime
+      range.value.fromDateTime
     )
 );
 const barWidth = computed(() => {
   const distance = timelineStore.scalelessDistanceBetweenDates(
-    toDateRange(rangeIso.value).fromDateTime,
-    toDateRange(rangeIso.value).toDateTime
+    range.value.fromDateTime,
+    range.value.toDateTime
   );
-  return Math.max(eventHeightPx, distance);
+  return distance;
 });
 
 const close = () => {
@@ -218,14 +216,15 @@ const percent = computed(() => {
     :style="{
       marginLeft: `${marginLeft}px`,
     }"
-    ref="eventRow"
+    @mouseenter.passive="elementHover = true"
+    @mouseleave.passive="elementHover = false"
   >
     <template v-if="editorOrchestratorStore.editable">
       <move-widgets
         v-show="isHovering"
         :move="moveHandleListener"
-        @mouseenter="hoveringWidgets = true"
-        @mouseleave="hoveringWidgets = false"
+        @mouseenter.passive="hoveringWidgets = true"
+        @mouseleave.passive="hoveringWidgets = false"
       />
     </template>
     <div class="flex flex-row eventContent items-center">

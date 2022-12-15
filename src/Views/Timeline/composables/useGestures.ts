@@ -19,8 +19,8 @@ export const useGestures = (
 
   let mc: Hammer.Manager;
   const setupHammer = () => {
-    el.value?.addEventListener("touchstart", touchStart);
-    el.value?.addEventListener("touchend", touchEnd);
+    el.value?.addEventListener("touchstart", touchStart, { passive: true });
+    el.value?.addEventListener("touchend", touchEnd, { passive: true });
 
     mc = new Hammer.Manager(el.value);
     mc.add(new Hammer.Pinch({ touchAction: "none" }));
@@ -133,7 +133,7 @@ export const useGestures = (
 
   onMounted(() => {
     endGesture = zoomer(el.value!, gestures);
-    el.value?.addEventListener("touchstart", touchListener);
+    el.value?.addEventListener("touchstart", touchListener, { passive: true });
   });
 
   onUnmounted(() => {

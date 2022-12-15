@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isEditable } from "@/injectionKeys";
-import { computed, inject } from "vue";
+import { computed, inject, watch } from "vue";
 import DragHandle from "@/Views/Timeline/Events/Event/Edit/DragHandle.vue";
 import { useTimelineStore } from "../../timelineStore";
 
@@ -18,9 +18,13 @@ const props = defineProps<{
 }>();
 
 const editable = inject(isEditable);
-const width = computed(() => {
-  return Math.max(10, timelineStore.pageScaleBy24 * props.width);
-});
+const width = computed(() =>
+  Math.max(10, timelineStore.pageScaleBy24 * props.width)
+);
+
+// watch([() => props.width, () => timelineStore.pageScaleBy24], ([w, s]) => {
+//   console.log(w, s);
+// });
 </script>
 
 <template>
