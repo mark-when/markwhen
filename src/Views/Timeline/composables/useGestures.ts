@@ -1,6 +1,6 @@
 import { zoomer, type WheelGesture } from "../utilities/zoomer";
 import { MAX_SCALE, useTimelineStore } from "@/Views/Timeline/timelineStore";
-import { onMounted, onUnmounted, type Ref } from "vue";
+import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 // @ts-ignore
 import Hammer from "@squadette/hammerjs";
 
@@ -11,6 +11,7 @@ export const useGestures = (
   const timelineStore = useTimelineStore();
 
   let endGesture = () => {};
+  const isZooming = ref(false);
   let startingZoom: number | null = null;
   let pinchStartScrollTop: number | null,
     pinchStartScrollLeft: number | null,
@@ -33,6 +34,7 @@ export const useGestures = (
     const offsetLeft = el.value!.offsetLeft;
 
     if (!startingZoom) {
+      isZooming.value = true;
       startingZoom = timelineStore.pageScale;
       pinchStartScrollTop = el.value!.scrollTop;
       pinchStartScrollLeft = el.value!.scrollLeft - offsetLeft;
@@ -61,6 +63,7 @@ export const useGestures = (
 
   const pinchEnd = (e: Event) => {
     e.preventDefault();
+    isZooming.value = false;
     startingZoom = null;
     pinchStartScrollLeft = null;
     pinchStartScrollTop = null;
@@ -69,6 +72,7 @@ export const useGestures = (
   };
 
   const startGesture = (wg: WheelGesture) => {
+    isZooming.value = true;
     if (!startingZoom) {
       startingZoom = timelineStore.pageScale;
 
@@ -83,6 +87,7 @@ export const useGestures = (
     if (startingZoom! * wg.scale > MAX_SCALE) {
       return;
     }
+    isZooming.value = true;
 
     const offsetLeft = (el.value! as HTMLElement).offsetLeft;
     const newScrollLeft =
@@ -103,6 +108,7 @@ export const useGestures = (
     pinchStartCenterX = null;
     pinchStartCenterY = null;
 
+    isZooming.value = false;
     endGesture();
   };
 
@@ -139,4 +145,6 @@ export const useGestures = (
   onUnmounted(() => {
     el.value?.removeEventListener("touchstart", touchListener);
   });
+
+  return isZooming;
 };

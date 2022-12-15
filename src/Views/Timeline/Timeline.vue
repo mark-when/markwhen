@@ -9,7 +9,7 @@ import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarke
 import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useResizeObserver } from "@vueuse/core";
+import { useDebounceFn, useResizeObserver, useThrottleFn } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
@@ -104,8 +104,15 @@ useResizeObserver(timelineElement, (entries) => {
   }
 });
 
+let ticking = false;
 const setViewportDateInterval = () => {
-  timelineStore.setViewport(getViewport());
+  // if (!ticking) {
+  //   requestAnimationFrame(() => {
+      timelineStore.setViewport(getViewport());
+  //     ticking = false;
+  //   });
+  //   ticking = true;
+  // }
 };
 
 const { trigger } = useHoveringMarker(timelineElement);

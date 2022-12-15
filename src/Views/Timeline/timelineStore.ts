@@ -36,7 +36,7 @@ export function blankSettings(): Settings {
       from: DateTime.now().minus({ years: 10 }),
       to: DateTime.now().plus({ years: 10 }),
     },
-    viewport: { left: 0, width: 0, top: 0 },
+    viewport: { left: 0, width: 0, top: 0, height: 0 },
   };
 }
 
@@ -60,7 +60,7 @@ export const useTimelineStore = defineStore("timeline", () => {
   const maxDurationDays = computed(
     () => pageTimelineMetadata.value.maxDurationDays
   );
-  const baselineLeftmostDate = ref();
+  const baselineLeftmostDate = ref<DateTime>(DateTime.now());
   watchEffect(() => {
     const earliestTime = earliest.value;
     const days = maxDurationDays.value;
@@ -132,14 +132,13 @@ export const useTimelineStore = defineStore("timeline", () => {
   const scaleToGetDistance = (distance: number, range: DateRange) =>
     (distance * 24) / range.toDateTime.diff(range.fromDateTime).as(diffScale);
 
-  const dateFromClientLeft = computed(() => (offset: number) => {
-    const leftDate = baselineLeftmostDate.value.plus({
-      [diffScale]: (pageSettings.value.viewport.left / pageScale.value) * 24,
-    });
-    return leftDate.plus({
-      [diffScale]: (offset / pageScale.value) * 24,
-    });
-  });
+  const dateFromClientLeft = computed(
+    () => (offset: number) =>
+      baselineLeftmostDate.value.plus({
+        [diffScale]:
+          ((offset + pageSettings.value.viewport.left) / pageScale.value) * 24,
+      })
+  );
 
   const setViewport = (viewport: Viewport) => {
     pageSettings.value.viewport = viewport;
@@ -191,7 +190,6 @@ export const useTimelineStore = defineStore("timeline", () => {
     pageScaleBy24: computed(() => pageScale.value / 24),
     baselineLeftmostDate,
     baselineRightmostDate,
-    dateIntervalFromViewport,
     scalelessDistanceBetweenDates,
     distanceBetweenDates: distanceBetweenDates as unknown as (
       a: DateTime,

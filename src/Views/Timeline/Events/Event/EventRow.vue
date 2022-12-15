@@ -7,6 +7,7 @@ import {
   onUpdated,
   ref,
   watch,
+  watchEffect,
 } from "vue";
 import { useElementHover } from "@vueuse/core";
 import {
@@ -152,13 +153,24 @@ const range = computed(() => {
   };
 });
 
-const left = computed(
-  () =>
-    timelineStore.pageScaleBy24 *
-    timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-      range.value.fromDateTime
-    )
-);
+const left = computed(() => {
+  return timelineStore.pageScaleBy24 * realLeft.value;
+});
+
+const realLeft = ref();
+watchEffect(() => {
+  realLeft.value = timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+    range.value.fromDateTime
+  );
+});
+
+// const left = computed(
+//   () =>
+//     timelineStore.pageScaleBy24 *
+//     timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+//       range.value.fromDateTime
+//     )
+// );
 const barWidth = computed(() => {
   const distance = timelineStore.scalelessDistanceBetweenDates(
     range.value.fromDateTime,
@@ -231,7 +243,7 @@ const display = computed(() => {
   if (isScrollToPath.value) {
     return "block";
   }
-  if (top.value < vp.top - 100 || top.value > vp.top + vp.height + 100) {
+  if (top.value < vp.top - 200 || top.value > vp.top + vp.height + 200) {
     return "none";
   }
   if (
