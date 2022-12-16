@@ -76,12 +76,17 @@ const numPredecessors = (
   map: Map<string, number>,
   childrenMap: Map<string, number>
 ) => {
+  const ourPathJoined = path.join(",");
+
+  const cache = (numPreds: number) => {
+    map.set(ourPathJoined, numPreds);
+    return numPreds;
+  };
+
   if (!path.length) {
-    map.set(path.join(","), 0);
-    return 0;
+    return cache(0);
   }
 
-  const ourPathJoined = path.join(",");
   const prev = map.get(ourPathJoined);
   if (typeof prev !== "undefined") {
     return prev;
@@ -92,9 +97,8 @@ const numPredecessors = (
   if (prevPath.length === ourPathJoined.length) {
     pred += childrenMap.get(prevPath) || 0;
   }
-  map.set(ourPathJoined, pred);
-  return pred;
-};
+  return cache(pred);
+}; 
 
 const predecessorMap = computed(() => {
   const map = new Map<string, number>();
