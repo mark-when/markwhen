@@ -12,6 +12,7 @@ const props = defineProps<{
   left: number;
   fullWidth: number;
   path: string;
+  height: number;
 }>();
 const { color } = useEventColor(computed(() => props.node));
 const eventDetailStore = useEventDetailStore();
@@ -32,7 +33,9 @@ const isDetailEvent = computed(() =>
 const isDeep = computed(() => computedPath.value.length > 4);
 
 const styleObject = computed(() => {
-  const obj = {} as any;
+  const obj = {
+    height: `${props.height}px`
+  } as any;
   if (color.value) {
     if (props.hovering || isDetailEvent.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.1`;

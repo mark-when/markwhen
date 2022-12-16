@@ -45,6 +45,7 @@ const props = defineProps<{
   titleHtml: string;
   color?: string;
   isDetailEvent: boolean;
+  numAbove: number;
 }>();
 
 const emit = defineEmits<{
@@ -58,7 +59,6 @@ const timelineStore = useTimelineStore();
 
 const eventBar = ref();
 const showingMeta = ref(false);
-watch(showingMeta, console.log);
 const hasLocations = computed(() => props.eventLocations.length > 0);
 const hasMeta = computed(
   () => !!hasLocations.value || !!props.supplemental.length
@@ -231,12 +231,7 @@ const percent = computed(() => {
   return 100;
 });
 
-const top = computed(
-  () =>
-    100 +
-    props.path.path.reduce((prev, next) => prev + next, 0) * 30 +
-    props.path.path.length * 30
-);
+const top = computed(() => 100 + props.numAbove * 30);
 
 const display = computed(() => {
   const vp = timelineStore.pageSettings.viewport;
@@ -248,7 +243,7 @@ const display = computed(() => {
   }
   if (
     left.value > vp.left + vp.width + 50 ||
-    vp.left > left.value + barScaledWidth.value + 350
+    vp.left > left.value + barScaledWidth.value + 550
   ) {
     return "none";
   }

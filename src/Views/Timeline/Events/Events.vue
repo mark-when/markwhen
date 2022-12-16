@@ -24,14 +24,7 @@ const editable = inject(isEditable);
 
 const height = computed(() => {
   if (nodeArray.value.length) {
-    return `${
-      nodeArray.value[nodeArray.value.length - 1].path.reduce(
-        (p, c) => p + c,
-        0
-      ) *
-        30 +
-      500
-    }px`;
+    return `${nodeArray.value.length * 30 + 500}px`;
   } else {
     return "100%";
   }

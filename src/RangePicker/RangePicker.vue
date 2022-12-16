@@ -67,7 +67,6 @@ const previewFormat = (dateOrRange: Date | [Date, Date]) => {
 const appStore = useAppStore();
 const dp = ref<typeof DatePicker>();
 const p = (b: HTMLElement | undefined) => {
-  console.log(b);
   return {
     top: "1px",
     left: `${b!.clientWidth / 2}px`,

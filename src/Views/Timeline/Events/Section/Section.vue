@@ -12,6 +12,8 @@ import { iterate, ranges } from "@markwhen/parser/lib/Noder";
 const props = defineProps<{
   node: SomeNode;
   path: string;
+  numChildren?: number | undefined;
+  numAbove: number;
 }>();
 
 const timelineStore = useTimelineStore();
@@ -64,51 +66,59 @@ const groupStyle = computed(() =>
   props.node.style === "section" ? "section" : "group"
 );
 
-const marginLeft = computed(
-  () => `${timelineStore.pageScaleBy24 * left.value}px`
-);
+// const marginLeft = computed(
+//   () => `${timelineStore.pageScaleBy24 * left.value}px`
+// );
 const width = computed(
   () => `${timelineStore.pageScaleBy24 * fullWidth.value}px`
 );
+
+const top = computed(() => 100 + props.numAbove * 30);
+
+const height = computed(() => 30 + props.numChildren! * 30);
+
+const styleObject = computed(() => ({
+  top: `${top.value}px`,
+  ...(groupStyle.value === "section"
+    ? {
+        left: 0,
+        right: 0,
+      }
+    : {}),
+}));
 </script>
 
 <template>
-  <div class="relative flex flex-col">
-    <ExpandedSectionBackground
-      :hovering="hovering"
-      :style="groupStyle"
-      :node="node"
-      :left="left"
-      :full-width="fullWidth"
-      :path="path"
-    />
-    <div
-      class="sticky top-0 cursor-pointer"
-      :style="{
-        marginLeft,
-        width,
-      }"
-    ></div>
-    <div v-show="expanded">
-      <NodeRow
-        v-for="(node, i) in (props.node.value as NodeArray)"
-        :path="[...path.split(','), i].join(',')"
+  <div class="absolute" :style="styleObject">
+    <div class="relative flex flex-col">
+      <ExpandedSectionBackground
+        :hovering="hovering"
+        :style="groupStyle"
         :node="node"
-        :key="[...path.split(','), i].join(',')"
-      ></NodeRow>
+        :left="left"
+        :height="height"
+        :full-width="fullWidth"
+        :path="path"
+      />
+      <div
+        class="sticky top-0 cursor-pointer"
+        :style="{
+          width,
+        }"
+      ></div>
+      <SectionHeader
+        :path="path"
+        @toggle="toggle"
+        @hover="hover"
+        :expanded="expanded"
+        :titleHtml="titleHtml"
+        :color="color"
+        :num-children="(node.value as NodeArray).length"
+        :group-style="groupStyle"
+        :left="left"
+        :full-width="fullWidth"
+      ></SectionHeader>
     </div>
-    <SectionHeader
-      :path="path"
-      @toggle="toggle"
-      @hover="hover"
-      :expanded="expanded"
-      :titleHtml="titleHtml"
-      :color="color"
-      :num-children="(node.value as NodeArray).length"
-      :group-style="groupStyle"
-      :left="left"
-      :full-width="fullWidth"
-    ></SectionHeader>
   </div>
 </template>
 

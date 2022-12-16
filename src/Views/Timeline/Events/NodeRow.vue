@@ -17,6 +17,8 @@ import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 const props = defineProps<{
   node: SomeNode;
   path: string;
+  numAbove: number;
+  numChildren?: number | undefined;
 }>();
 
 const editorOrchestrator = useEditorOrchestratorStore();
@@ -94,8 +96,16 @@ const isDetailEvent = computed(() =>
     @hover="hover"
     :is-detail-event="isDetailEvent"
     :hovering="equivalentPaths(hoveringPath?.pageFiltered, eventPath)"
+    :numAbove="numAbove"
   ></EventRow>
-  <Section :node="node" :path="path" v-else> </Section>
+  <Section
+    :node="node"
+    :path="path"
+    :numChildren="numChildren"
+    :numAbove="numAbove"
+    v-else-if="path"
+  >
+  </Section>
 </template>
 
 <style scoped></style>
