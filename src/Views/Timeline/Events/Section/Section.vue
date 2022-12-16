@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
@@ -69,9 +69,6 @@ const groupStyle = computed(() =>
   props.node.style === "section" ? "section" : "group"
 );
 
-// const marginLeft = computed(
-//   () => `${timelineStore.pageScaleBy24 * left.value}px`
-// );
 const width = computed(
   () => `${timelineStore.pageScaleBy24 * fullWidth.value}px`
 );

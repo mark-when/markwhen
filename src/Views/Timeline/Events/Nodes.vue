@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
-import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
+import {
+  isEventNode,
+  eventValue,
+  iterate,
+  get,
+} from "@markwhen/parser/lib/Noder";
 import type { Path, Block } from "@markwhen/parser/lib/Types";
 import { computed, watchEffect, type Ref } from "vue";
 import { useTimelineStore } from "../timelineStore";
@@ -49,8 +54,8 @@ const _numChildren = (
   }
 
   const arr = node.value as NodeArray;
-  const children = arr.reduce((prev, curr) => {
-    return prev + 1 + _numChildren(curr, path, childrenMap);
+  const children = arr.reduce((prev, curr, i) => {
+    return prev + 1 + _numChildren(curr, [...path, i], childrenMap);
   }, 0);
   return cache(children);
 };
@@ -94,11 +99,15 @@ const numPredecessors = (
 
   const prevPath = prevSiblingPath(path).join(",");
   let pred = 1 + map.get(prevPath)!;
-  if (prevPath.length === ourPathJoined.length) {
+  if (
+    prevPath.length &&
+    ourPathJoined.length &&
+    prevPath.split(",").length === ourPathJoined.split(",").length
+  ) {
     pred += childrenMap.get(prevPath) || 0;
   }
   return cache(pred);
-}; 
+};
 
 const predecessorMap = computed(() => {
   const map = new Map<string, number>();
