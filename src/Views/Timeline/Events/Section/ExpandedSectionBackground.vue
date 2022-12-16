@@ -68,7 +68,7 @@ const styleObject = computed(() => {
       'bg-gray-400 dark:bg-gray-800 dark:border-gray-900/25 border-gray-400/25':
         (!color && !isDeep) || (!color && hovering),
       'ml-0 w-full': !isGroupStyle,
-      'rounded-[12px]': isGroupStyle,
+      'rounded-[14px]': isGroupStyle,
     }"
     :style="styleObject"
   ></div>

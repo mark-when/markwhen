@@ -35,6 +35,7 @@ const styleObject = computed(() => {
     order: -9999,
     top: `${3 + props.path.slice(1).length * 1.2}rem`,
     zIndex: 0,
+    height: "30px",
   } as any;
   if (props.groupStyle === "group") {
     obj.width = `${timelineStore.pageScaleBy24 * props.fullWidth}px`;
