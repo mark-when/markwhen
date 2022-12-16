@@ -22,7 +22,10 @@ const {
   scalelessDistanceFromBaselineLeftmostDate,
 } = timelineStore;
 
-const expanded = ref(!!props.node.startExpanded);
+const collapsed = computed({
+  get: () => timelineStore.isCollapsed(props.path),
+  set: (val) => timelineStore.setCollapsed(props.path, val),
+});
 const hovering = ref(false);
 
 const toggle = (e: MouseEvent) => {
@@ -30,7 +33,7 @@ const toggle = (e: MouseEvent) => {
     return;
   }
   e.preventDefault();
-  expanded.value = !expanded.value;
+  collapsed.value = !collapsed.value;
 };
 
 const sectionRange = computed(() => ranges(props.node));
@@ -79,6 +82,7 @@ const height = computed(() => 30 + props.numChildren! * 30);
 
 const styleObject = computed(() => ({
   top: `${top.value}px`,
+  display: timelineStore.isCollapsedChild(props.path) ? 'none' : 'block',
   ...(groupStyle.value === "section"
     ? {
         left: 0,
@@ -110,7 +114,7 @@ const styleObject = computed(() => ({
         :path="path"
         @toggle="toggle"
         @hover="hover"
-        :expanded="expanded"
+        :expanded="!collapsed"
         :titleHtml="titleHtml"
         :color="color"
         :num-children="(node.value as NodeArray).length"

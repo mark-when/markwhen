@@ -1,19 +1,7 @@
 <script setup lang="ts">
+import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import {
-  computed,
-  nextTick,
-  onRenderTriggered,
-  onUnmounted,
-  onUpdated,
-  ref,
-  watch,
-  watchEffect,
-} from "vue";
-import { useElementHover } from "@vueuse/core";
-import {
-  Path,
   toDateRange,
-  toDateRangeIso,
   type Block,
   type DateRange,
   type DateTimeIso,
@@ -24,7 +12,6 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import EventMeta from "./EventMeta.vue";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
@@ -235,6 +222,9 @@ const top = computed(() => 100 + props.numAbove * 30);
 
 const display = computed(() => {
   const vp = timelineStore.pageSettings.viewport;
+  if (timelineStore.isCollapsedChild(props.path.path)) {
+    return 'none'
+  }
   if (isScrollToPath.value) {
     return "block";
   }

@@ -8,8 +8,12 @@ import {
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { ref, computed, watchEffect } from "vue";
-import type { DateRange, DateRangePart } from "@markwhen/parser/lib/Types";
+import { ref, computed, watchEffect, reactive } from "vue";
+import type {
+  DateRange,
+  DateRangePart,
+  Path,
+} from "@markwhen/parser/lib/Types";
 import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
 
 export interface Viewport {
@@ -49,6 +53,7 @@ export const useTimelineStore = defineStore("timeline", () => {
   const showingJumpToRange = ref(false);
   const jumpToRange = ref<DateRangePart>();
   const shouldZoomWhenScrolling = ref<boolean>(false);
+  const collapsed = reactive<Set<string>>(new Set());
 
   const pageTimelineMetadata = computed(
     () => usePageStore().pageTimelineMetadata
@@ -174,6 +179,46 @@ export const useTimelineStore = defineStore("timeline", () => {
   const setShouldZoomWhenScrolling = (should: boolean) => {
     shouldZoomWhenScrolling.value = should;
   };
+  const collapse = (path: Path) => {
+    collapsed.add(path.join(","));
+  };
+  const expand = (path: Path) => {
+    collapsed.delete(path.join(","));
+  };
+  const toggleCollapsed = (path: Path) => {
+    const pathJoined = path.join(",");
+    if (collapsed.has(pathJoined)) {
+      collapsed.delete(pathJoined);
+    } else {
+      collapsed.add(pathJoined);
+    }
+  };
+  const setCollapsed = (path: Path | string, shouldCollapse: boolean) => {
+    const pathJoined = typeof path === "string" ? path : path.join(",");
+    if (shouldCollapse) {
+      collapsed.add(pathJoined);
+    } else {
+      collapsed.delete(pathJoined);
+    }
+  };
+  const isCollapsed = (path: Path | string) => {
+    const pathJoined = typeof path === "string" ? path : path.join(",");
+    for (const entry of collapsed.keys()) {
+      if (pathJoined.startsWith(entry)) {
+        return true;
+      }
+    }
+    return false;
+  };
+  const isCollapsedChild = (path: Path | string) => {
+    const pathJoined = typeof path === "string" ? path : path.join(",");
+    for (const entry of collapsed.keys()) {
+      if (pathJoined !== entry && pathJoined.startsWith(entry)) {
+        return true;
+      }
+    }
+    return false;
+  };
   return {
     // state
     pageSettings,
@@ -183,6 +228,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     showingJumpToRange,
     jumpToRange,
     shouldZoomWhenScrolling,
+    collapsed,
 
     // getters
     pageTimelineMetadata,
@@ -204,6 +250,8 @@ export const useTimelineStore = defineStore("timeline", () => {
     ) => DateTime,
     scaleToGetDistance,
     scalelessDistanceFromBaselineLeftmostDate,
+    isCollapsed,
+    isCollapsedChild,
 
     // actions
     setViewport,
@@ -215,5 +263,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     setShowingJumpToRange,
     setJumpToRange,
     setShouldZoomWhenScrolling,
+    collapse,
+    setCollapsed,
+    toggleCollapsed,
+    expand,
   };
 });
