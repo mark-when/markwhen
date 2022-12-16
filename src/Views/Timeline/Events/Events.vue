@@ -16,8 +16,8 @@ const timelineStore = useTimelineStore();
 // top level is always an array
 const nodes = computed(() => transformStore.transformedEvents);
 
-const nodeArray = computed(
-  () => toArray(nodes.value) as { path: Path; node: SomeNode }[]
+const nodeArray = computed(() =>
+  nodes.value ? (toArray(nodes.value) as { path: Path; node: SomeNode }[]) : []
 );
 
 const editable = inject(isEditable);
