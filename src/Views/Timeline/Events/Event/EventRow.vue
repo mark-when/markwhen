@@ -225,18 +225,18 @@ const display = computed(() => {
   if (timelineStore.isCollapsedChild(props.path.path)) {
     return 'none'
   }
-  if (isScrollToPath.value) {
-    return "block";
-  }
-  if (top.value < vp.top - 200 || top.value > vp.top + vp.height + 200) {
-    return "none";
-  }
-  if (
-    left.value > vp.left + vp.width + 50 ||
-    vp.left > left.value + barScaledWidth.value + 550
-  ) {
-    return "none";
-  }
+  // if (isScrollToPath.value) {
+  //   return "block";
+  // }
+  // if (top.value < vp.top - 200 || top.value > vp.top + vp.height + 200) {
+  //   return "none";
+  // }
+  // if (
+  //   left.value > vp.left + vp.width + 50 ||
+  //   vp.left > left.value + barScaledWidth.value + 550
+  // ) {
+  //   return "none";
+  // }
   return "block";
 });
 </script>

@@ -1,6 +1,7 @@
 import { parse } from "@markwhen/parser";
+import { Cache } from "@markwhen/parser/lib/Cache";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
 export const useMarkwhenStore = defineStore("markwhen", () => {
   const rawTimelineString = ref<string>(`
@@ -106,7 +107,10 @@ section More travel #Travel
 03/2022 - now: [Reddit](https://www.reddit.com) #Work
   `);
 
-  const timelines = computed(() => parse(rawTimelineString.value).timelines);
+  const cache = reactive(new Cache());
+  const timelines = computed(
+    () => parse(rawTimelineString.value, cache).timelines
+  );
 
   const setRawTimelineString = (s: string) => {
     rawTimelineString.value = s;
