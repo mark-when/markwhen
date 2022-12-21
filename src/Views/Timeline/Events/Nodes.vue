@@ -67,6 +67,37 @@ const nodeArray = computed(
   () => toArray(nodes.value) as { path: Path; node: SomeNode }[]
 );
 
+const visibleNodes = computed(() => {
+  const visible = [];
+  for (const pathAndNode of nodeArray.value) {
+    if (!timelineStore.isCollapsedChild(pathAndNode.path)) {
+      if (!isEventNode(pathAndNode.node)) {
+        visible.push(pathAndNode);
+      } else if (
+        timelineStore.scrollToPath &&
+        eqPath(
+          {
+            type: "pageFiltered",
+            path: pathAndNode.path,
+          },
+          timelineStore.scrollToPath
+        )
+      ) {
+        visible.push(pathAndNode);
+      } else {
+        const numAbove =
+          predecessorMap.value.get(pathAndNode.path.join(",")) || 0;
+        const top = 100 + numAbove * 30;
+        const vp = timelineStore.pageSettings.viewport;
+        if (top > vp.top - 300 && top < vp.top + vp.height + 300) {
+          visible.push(pathAndNode);
+        }
+      }
+    }
+  }
+  return visible;
+});
+
 const childrenMap = computed(() => {
   const map = new Map<string, number>();
   for (const { path, node } of nodeArray.value) {
