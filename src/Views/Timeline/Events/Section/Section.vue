@@ -5,9 +5,8 @@ import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
-import NodeRow from "../NodeRow.vue";
 import { useTimelineStore } from "../../timelineStore";
-import { iterate, ranges } from "@markwhen/parser/lib/Noder";
+import { ranges } from "@markwhen/parser/lib/Noder";
 
 const props = defineProps<{
   node: SomeNode;

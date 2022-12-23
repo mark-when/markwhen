@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
-import { computed, watch } from "vue";
+import { computed, onMounted } from "vue";
 import EventRow from "./Event/EventRow.vue";
-import Section from "./Section/Section.vue";
 import {
   equivalentPaths,
   useEventDetailStore,
@@ -80,7 +79,6 @@ const isDetailEvent = computed(() =>
 
 <template>
   <EventRow
-    v-if="isEventRow"
     :event-locations="eventLocations || []"
     :supplemental="supplemental || []"
     :matched-list-items="matchedListItems || []"
@@ -98,14 +96,6 @@ const isDetailEvent = computed(() =>
     :hovering="equivalentPaths(hoveringPath?.pageFiltered, eventPath)"
     :numAbove="numAbove"
   ></EventRow>
-  <Section
-    :node="node"
-    :path="path"
-    :numChildren="numChildren"
-    :numAbove="numAbove"
-    v-else-if="path"
-  >
-  </Section>
 </template>
 
 <style scoped></style>
