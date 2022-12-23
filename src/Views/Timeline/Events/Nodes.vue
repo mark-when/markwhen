@@ -162,15 +162,43 @@ const nodeKey = (n: SomeNode) => {
     return n.title;
   }
 };
+
+const styleForItem = (i: number) => {
+  const visibleNode = visibleNodes.value[i];
+  const style = { position: "absolute" } as any;
+  if (visibleNode) {
+    const joinedPath = visibleNode.path.join(",");
+    const numAbove = predecessorMap.value.get(joinedPath);
+    const top = 100 + 30 * (numAbove || 0);
+    style.top = `${top}px`;
+    if (!isEventNode(visibleNode.node)) {
+      const numChildren = childrenMap.value.get(joinedPath);
+      style.height = `${30 + 30 * (numChildren || 0)}px`;
+    } else {
+      style.height = "30px";
+    }
+    return style;
+  } else {
+    style.display = "none";
+    return style;
+  }
+};
 </script>
 
 <template>
-  <template v-for="({ path, node }, i) of nodeArray" :key="nodeKey(node)">
-    <NodeRow
-      :node="node"
-      :path="path.join(',')"
-      :numChildren="childrenMap.get(path.join(','))"
-      :numAbove="predecessorMap.get(path.join(',')) || 0"
-    ></NodeRow>
-  </template>
+  <div
+    v-for="(_, i) of 5"
+    :key="(visibleNodes[i] && nodeKey(visibleNodes[i].node)) || i"
+    :style="styleForItem(i)"
+    class="bg-gray-100/10 w-full"
+  >
+    <EventRow v-bind="refsForEvent(visibleNodes[i].node.value)"></EventRow>
+    <!-- <NodeRow
+      :key="(visibleNodes[i] && nodeKey(visibleNodes[i].node)) || i"
+      :node="visibleNodes[i].node"
+      :path="visibleNodes[i].path.join(',')"
+      :numChildren="childrenMap.get(visibleNodes[i].path.join(','))"
+      :numAbove="predecessorMap.get(visibleNodes[i].path.join(',')) || 0"
+    ></NodeRow> -->
+  </div>
 </template>
