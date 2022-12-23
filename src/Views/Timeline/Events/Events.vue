@@ -1,26 +1,18 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import { useTransformStore } from "@/Markwhen/transformStore";
 import NowLine from "../Events/NowLine.vue";
 import { computed, inject } from "vue";
-import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";
-import type { Path } from "@markwhen/parser/lib/Types";
-import { toArray } from "@markwhen/parser/lib/Noder";
-import Nodes from "./Nodes.vue";
+import { useMaps, nodeKey } from "./composables/useMaps";
+import EventNodeRow from "./EventNodeRow.vue";
+import SectionNodeRow from "./SectionNodeRow.vue";
 
-const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 
-// top level is always an array
-const nodes = computed(() => transformStore.transformedEvents);
-
-const nodeArray = computed(() =>
-  nodes.value ? (toArray(nodes.value) as { path: Path; node: SomeNode }[]) : []
-);
-
 const editable = inject(isEditable);
+
+const { nodeArray, visibleNodes, childrenMap, predecessorMap } = useMaps();
 
 const height = computed(() => {
   if (nodeArray.value.length) {
@@ -29,6 +21,7 @@ const height = computed(() => {
     return "100%";
   }
 });
+
 </script>
 
 <template>
@@ -39,7 +32,22 @@ const height = computed(() => {
   >
     <div class="h-24"></div>
     <now-line />
-    <Nodes />
+    <template v-for="{ path, node } of visibleNodes[1]" :key="path + nodeKey(node)">
+      <SectionNodeRow
+        :node="node"
+        :path="path.join(',')"
+        :numChildren="childrenMap.get(path.join(','))"
+        :numAbove="predecessorMap.get(path.join(',')) || 0"
+      ></SectionNodeRow>
+    </template>
+    <template v-for="{ path, node } of visibleNodes[0]" :key="path + nodeKey(node)">
+      <EventNodeRow
+        :node="node"
+        :path="path.join(',')"
+        :numChildren="childrenMap.get(path.join(','))"
+        :numAbove="predecessorMap.get(path.join(',')) || 0"
+      ></EventNodeRow>
+    </template>
     <new-event v-if="editable" />
     <div style="height: 85vh"></div>
   </div>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SomeNode } from "@markwhen/parser/lib/Node";
-import { onMounted } from "vue";
 import Section from "./Section/Section.vue";
 
 const props = defineProps<{
@@ -9,8 +8,6 @@ const props = defineProps<{
   numAbove: number;
   numChildren?: number | undefined;
 }>();
-
-onMounted(() => console.log("mounted"));
 </script>
 
 <template>

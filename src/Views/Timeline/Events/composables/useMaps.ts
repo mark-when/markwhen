@@ -104,10 +104,10 @@ export const useMaps = () => {
             const vp = timelineStore.pageSettings.viewport;
 
             // if (top + height > vp.top + 200 && top - 200 < vp.top + vp.height) {
-              visibleSections.push({
-                path: pathAndNode.path,
-                node: pathAndNode.node as Node<NodeArray>,
-              });
+            visibleSections.push({
+              path: pathAndNode.path,
+              node: pathAndNode.node as Node<NodeArray>,
+            });
             // }
           }
         } else {
@@ -217,10 +217,11 @@ export const useMaps = () => {
     const children = childrenMap.get(pathJoined);
 
     // get all siblings children count
-    // get parent's sibling 
+    // get parent's sibling
   };
 
   return {
+    nodeArray,
     visibleNodes,
     childrenMap,
     predecessorMap,
