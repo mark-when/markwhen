@@ -6,13 +6,12 @@ import { computed } from "vue";
 import { granularities } from "../utilities/DateTimeDisplay";
 import { dateScale } from "../utilities/dateTimeUtilities";
 import {
-  clamp,
   timeMarkerWeightMinimum,
   useMarkersStore,
   Weight,
   type TimeMarker,
 } from "./markersStore";
-import { useTimelineStore } from "../timelineStore";
+import { clamp, useTimelineStore } from "../timelineStore";
 
 const appStore = useAppStore();
 
@@ -23,8 +22,8 @@ const markerStore = useMarkersStore();
 const leftMargin = viewportLeftMarginPixels;
 
 const currentDateResolution = computed(() => {
-  for (let i = 0; i < markerStore.weights.length; i++) {
-    if (markerStore.weights[i] > timeMarkerWeightMinimum) {
+  for (let i = 0; i < timelineStore.weights.length; i++) {
+    if (timelineStore.weights[i] > timeMarkerWeightMinimum) {
       return i;
     }
   }
@@ -35,7 +34,7 @@ const scaleForThisDate = computed(
 );
 const alpha = computed(
   () => (timeMarker: TimeMarker) =>
-    0.8 * markerStore.weights[scaleForThisDate.value(timeMarker)]
+    0.8 * timelineStore.weights[scaleForThisDate.value(timeMarker)]
 );
 const text = computed(
   () => (timeMarker: TimeMarker) =>

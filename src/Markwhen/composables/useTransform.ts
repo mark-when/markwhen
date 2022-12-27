@@ -105,7 +105,6 @@ const sortNodeArray = (
   node: Node<NodeArray> | undefined,
   sort: Sort
 ): Node<NodeArray> | undefined => {
-  // debugger
   if (!node) {
     return undefined;
   }

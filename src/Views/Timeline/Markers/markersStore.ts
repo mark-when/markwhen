@@ -56,14 +56,6 @@ export type TimeMarkerWeights = [
   number /* decade */
 ];
 
-function roundToTwoDecimalPlaces(n: number): number {
-  return Math.floor(n * 100) / 100;
-}
-
-export function clamp(value: number, min: number = 0, max: number = 1) {
-  return Math.min(max, Math.max(value, min));
-}
-
 export const useMarkersStore = defineStore("markers", () => {
   const timelineStore = useTimelineStore();
 
@@ -72,7 +64,7 @@ export const useMarkersStore = defineStore("markers", () => {
 
   const markers = computed(() => {
     const markers = [] as TimeMarker[];
-    const scale = scaleOfViewportDateInterval.value;
+    const scale = timelineStore.scaleOfViewportDateInterval;
     const { from: leftViewportDate, to: rightViewportDate } = timelineStore
       .pageSettings.viewportDateInterval as DateInterval;
 
@@ -126,47 +118,10 @@ export const useMarkersStore = defineStore("markers", () => {
     return markers;
   });
 
-  const weights = computed(() => {
-    const timelineStore = useTimelineStore();
-    const arbitraryNumber = 2000;
-    const secondsInADay = 86400;
-
-    const to = timelineStore.pageSettings.viewportDateInterval.to;
-    const from = timelineStore.pageSettings.viewportDateInterval.from;
-
-    const rawDiff = to.diff(from).as(diffScale);
-
-    const multiplier = arbitraryNumber * secondsInADay;
-    const diff = rawDiff * (multiplier / 24);
-
-    const width = timelineStore.pageSettings.viewport.width;
-    const denom = diff / width;
-    return [
-      clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),
-      clamp(roundToTwoDecimalPlaces((20 * QUARTER_MINUTE) / denom)),
-      clamp(roundToTwoDecimalPlaces((30 * MINUTE) / denom)),
-      clamp(roundToTwoDecimalPlaces((20 * QUARTER_HOUR) / denom)),
-      clamp(roundToTwoDecimalPlaces((30 * HOUR) / denom)),
-      clamp(roundToTwoDecimalPlaces((40 * DAY) / denom)),
-      clamp(roundToTwoDecimalPlaces((30 * MONTH) / denom)),
-      clamp(roundToTwoDecimalPlaces((25 * YEAR) / denom)),
-      clamp(roundToTwoDecimalPlaces((10 * DECADE) / denom)),
-    ];
-  });
-
-  const scaleOfViewportDateInterval = computed(() => {
-    for (let i = 0; i < weights.value.length; i++) {
-      if (weights.value[i] > timeMarkerWeightMinimum) {
-        return scales[i];
-      }
-    }
-    return "decade";
-  });
-
   const rangeFromOffsetLeft = computed(() => (offset: number) => {
     const offsetDate = timelineStore.dateFromClientLeft(offset);
 
-    const scale = scaleOfViewportDateInterval.value as DisplayScale;
+    const scale = timelineStore.scaleOfViewportDateInterval as DisplayScale;
     const floored = floorDateTime(offsetDate, scale);
     const ceiled = ceilDateTime(offsetDate, scale);
     return [
@@ -182,8 +137,8 @@ export const useMarkersStore = defineStore("markers", () => {
   });
 
   const nextMostGranularScaleOfViewportDateInterval = computed(() => {
-    for (let i = 0; i < weights.value.length; i++) {
-      if (weights.value[i] > 0.05) {
+    for (let i = 0; i < timelineStore.weights.length; i++) {
+      if (timelineStore.weights[i] > 0.05) {
         return scales[i];
       }
     }
@@ -203,8 +158,6 @@ export const useMarkersStore = defineStore("markers", () => {
     range,
 
     markers,
-    weights,
-    scaleOfViewportDateInterval,
     rangeFromOffsetLeft,
     nextMostGranularScaleOfViewportDateInterval,
 

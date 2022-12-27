@@ -20,9 +20,9 @@ const dark = computed(() => appStore.inferredDarkMode);
 const leftMargin = viewportLeftMarginPixels;
 
 const backgroundColor = computed(() => (tm: TimeMarker) => {
-  if (markersStore.weights[Weight.HOUR]) {
+  if (timelineStore.weights[Weight.HOUR]) {
     const weekday = getWeekday(tm.dateTime);
-    const a = markersStore.weights[Weight.DAY] * 0.2;
+    const a = timelineStore.weights[Weight.DAY] * 0.2;
     if (weekday === 6 || weekday === 7) {
       return dark.value
         ? `rgba(30, 30, 30, ${a})`
@@ -41,7 +41,7 @@ const hovering = computed(() => (tm: TimeMarker) => {
 });
 
 const alpha = computed(
-  () => (tm: TimeMarker) => markersStore.weights[dateScale(tm.dateTime)]
+  () => (tm: TimeMarker) => timelineStore.weights[dateScale(tm.dateTime)]
 );
 
 const borderColor = computed(() => (tm: TimeMarker) => {

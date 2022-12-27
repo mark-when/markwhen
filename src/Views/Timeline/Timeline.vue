@@ -9,16 +9,16 @@ import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarke
 import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useDebounceFn, useResizeObserver, useThrottleFn } from "@vueuse/core";
+import { useResizeObserver } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
 import type { DateRangePart } from "@markwhen/parser/lib/Types";
-import { dateMidpoint, eventMidpoint } from "./utilities/dateTimeUtilities";
+import { dateMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
-import MiniMap from "./MiniMap.vue/MiniMap.vue";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
-import Nodes from "./Events/Nodes.vue";
+import DebugView from "./DebugView.vue";
+
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const panelStore = usePanelStore();
@@ -108,7 +108,7 @@ let ticking = false;
 const setViewportDateInterval = () => {
   // if (!ticking) {
   //   requestAnimationFrame(() => {
-      timelineStore.setViewport(getViewport());
+  timelineStore.setViewport(getViewport());
   //     ticking = false;
   //   });
   //   ticking = true;
@@ -246,6 +246,7 @@ const showJumpToRange = computed({
     <Events />
     <TimeMarkersFront />
     <!-- <MiniMap /> -->
+    <DebugView v-if="false" />
   </div>
   <JumpToRangeDialog v-model="showJumpToRange" />
 </template>

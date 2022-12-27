@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import {
   diffScale,
   floorDateTime,
+  scales,
   viewportLeftMarginPixels,
   type DateInterval,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
@@ -15,6 +16,38 @@ import type {
   Path,
 } from "@markwhen/parser/lib/Types";
 import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
+
+export enum Weight {
+  SECOND = 0,
+  QUARTER_MINUTE = 1,
+  MINUTE = 2,
+  QUARTER_HOUR = 3,
+  HOUR = 4,
+  DAY = 5,
+  MONTH = 6,
+  YEAR = 7,
+  DECADE = 8,
+}
+
+const SECOND = 1;
+const QUARTER_MINUTE = 15 * SECOND;
+const MINUTE = 60 * SECOND;
+const QUARTER_HOUR = 15 * MINUTE;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const MONTH = 30 * DAY;
+const YEAR = 12 * MONTH;
+const DECADE = 10 * YEAR;
+
+export const timeMarkerWeightMinimum = 0.25;
+
+function roundToTwoDecimalPlaces(n: number): number {
+  return Math.floor(n * 100) / 100;
+}
+
+export function clamp(value: number, min: number = 0, max: number = 1) {
+  return Math.min(max, Math.max(value, min));
+}
 
 export interface Viewport {
   left: number;
@@ -59,13 +92,17 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => usePageStore().pageTimelineMetadata
   );
   const pageScale = computed(() => pageSettings.value.scale);
+  const bucketedScale = computed(() => Math.floor(pageScale.value));
   const earliest = computed(() =>
     DateTime.fromISO(pageTimelineMetadata.value.earliestTime)
   );
+  
   const maxDurationDays = computed(
     () => pageTimelineMetadata.value.maxDurationDays
   );
+
   const baselineLeftmostDate = ref<DateTime>(DateTime.now());
+
   watchEffect(() => {
     const earliestTime = earliest.value;
     const days = maxDurationDays.value;
@@ -87,6 +124,11 @@ export const useTimelineStore = defineStore("timeline", () => {
       baselineLeftmostDate.value = newValue;
     }
   });
+
+  const blocks = computed(() => {
+
+  })
+
   const baselineRightmostDate = computed(() =>
     floorDateTime(
       DateTime.fromISO(pageTimelineMetadata.value.latestTime).plus({
@@ -219,6 +261,43 @@ export const useTimelineStore = defineStore("timeline", () => {
     }
     return false;
   };
+
+  const weights = computed(() => {
+    const arbitraryNumber = 2000;
+    const secondsInADay = 86400;
+
+    const to = pageSettings.value.viewportDateInterval.to;
+    const from = pageSettings.value.viewportDateInterval.from;
+
+    const rawDiff = to.diff(from).as(diffScale);
+
+    const multiplier = arbitraryNumber * secondsInADay;
+    const diff = rawDiff * (multiplier / 24);
+
+    const width = pageSettings.value.viewport.width;
+    const denom = diff / width;
+    return [
+      clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),
+      clamp(roundToTwoDecimalPlaces((20 * QUARTER_MINUTE) / denom)),
+      clamp(roundToTwoDecimalPlaces((30 * MINUTE) / denom)),
+      clamp(roundToTwoDecimalPlaces((20 * QUARTER_HOUR) / denom)),
+      clamp(roundToTwoDecimalPlaces((30 * HOUR) / denom)),
+      clamp(roundToTwoDecimalPlaces((40 * DAY) / denom)),
+      clamp(roundToTwoDecimalPlaces((30 * MONTH) / denom)),
+      clamp(roundToTwoDecimalPlaces((25 * YEAR) / denom)),
+      clamp(roundToTwoDecimalPlaces((10 * DECADE) / denom)),
+    ];
+  });
+
+  const scaleOfViewportDateInterval = computed(() => {
+    for (let i = 0; i < weights.value.length; i++) {
+      if (weights.value[i] > timeMarkerWeightMinimum) {
+        return scales[i];
+      }
+    }
+    return "decade";
+  });
+
   return {
     // state
     pageSettings,
@@ -252,6 +331,8 @@ export const useTimelineStore = defineStore("timeline", () => {
     scalelessDistanceFromBaselineLeftmostDate,
     isCollapsed,
     isCollapsedChild,
+    scaleOfViewportDateInterval,
+    weights,
 
     // actions
     setViewport,
