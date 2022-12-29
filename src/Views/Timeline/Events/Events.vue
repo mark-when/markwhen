@@ -7,7 +7,6 @@ import NewEvent from "./NewEvent/NewEvent.vue";
 import { useMaps, nodeKey } from "./composables/useMaps";
 import EventNodeRow from "./EventNodeRow.vue";
 import SectionNodeRow from "./SectionNodeRow.vue";
-import { getLast } from "@markwhen/parser/lib/Noder";
 
 const timelineStore = useTimelineStore();
 
@@ -25,13 +24,7 @@ const height = computed(() => {
 });
 
 const eventsHeight = computed(() => {
-  const count =
-    nodeArray.value && nodeArray.value.length
-      ? predecessorMap.value.get(
-          nodeArray.value[nodeArray.value.length - 1].path.join(",")
-        ) || 0
-      : 0;
-  return 30 + count * 30;
+  return nodes.value ? (childrenMap.value.get("") || 0) * 30 + 30 : 30;
 });
 </script>
 
@@ -65,7 +58,7 @@ const eventsHeight = computed(() => {
         :numAbove="predecessorMap.get(path.join(',')) || 0"
       ></EventNodeRow>
     </template>
-    <new-event v-if="editable" :style="{ top: `${eventsHeight}px` }" />
+    <new-event v-if="editable" />
     <div style="height: 85vh"></div>
   </div>
 </template>
