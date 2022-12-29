@@ -4,7 +4,7 @@ import { ranges } from "@/utilities/ranges";
 import type { NodeArray, SomeNode, Node } from "@markwhen/parser/lib/Node";
 import { eventValue, isEventNode, iterate } from "@markwhen/parser/lib/Noder";
 import type { Path, Event, Block } from "@markwhen/parser/lib/Types";
-import { computed } from "vue";
+import { computed, watch, watchEffect } from "vue";
 import { useTimelineStore } from "../../timelineStore";
 
 const prevSiblingPath = (path: Path) => {
@@ -29,16 +29,31 @@ export const nodeKey = (n: SomeNode) => {
   }
 };
 
+export const walk = (
+  node: SomeNode,
+  path: Path,
+  fn: (node: SomeNode, path: Path) => void
+) => {
+  fn(node, path);
+  if (!isEventNode(node)) {
+    const arr = node.value as NodeArray;
+    for (let i = 0; i < arr.length; i++) {
+      walk(arr[i], [...path, i], fn);
+    }
+  }
+};
+
 const toArray = (node: SomeNode | undefined) => {
   if (!node) {
     return [];
   }
-  const array = [] as { path: Path; node: SomeNode; numChildren?: number }[];
-  for (const pathAndNode of iterate(node)) {
-    array.push(pathAndNode);
-  }
+  const array = [] as { path: Path; node: SomeNode }[];
+  walk(node, [], (n, path) => {
+    array.push({ path, node: n });
+  });
   return array;
 };
+
 export type Style = {
   height?: string;
   top?: string;
@@ -91,13 +106,13 @@ export const useMaps = () => {
     () => {
       const visibleEvents: PathAndEventNode[] = [];
       const visibleSections: PathAndSectionNode[] = [];
-      for (const pathAndNode of nodeArray.value) {
-        if (timelineStore.isCollapsedChild(pathAndNode.path)) {
+      for (const { path, node } of nodeArray.value) {
+        if (timelineStore.isCollapsedChild(path)) {
           continue;
         }
-        const joinedPath = pathAndNode.path.join(",");
-        if (!isEventNode(pathAndNode.node)) {
-          if (pathAndNode.path.length > 0) {
+        const joinedPath = path.join(",");
+        if (!isEventNode(node)) {
+          if (path.length > 0) {
             const numAbove = predecessorMap.value.get(joinedPath) || 0;
             const children = childrenMap.value.get(joinedPath) || 0;
             const top = 100 + numAbove * 30;
@@ -106,22 +121,22 @@ export const useMaps = () => {
 
             // if (top + height > vp.top + 200 && top - 200 < vp.top + vp.height) {
             visibleSections.push({
-              path: pathAndNode.path,
-              node: pathAndNode.node as Node<NodeArray>,
+              path: path,
+              node: node as Node<NodeArray>,
             });
             // }
           }
         } else {
           const pAndN = {
-            node: pathAndNode.node as Node<Event>,
-            path: pathAndNode.path,
+            node: node as Node<Event>,
+            path: path,
           };
           if (
             timelineStore.scrollToPath &&
             eqPath(
               {
                 type: "pageFiltered",
-                path: pathAndNode.path,
+                path: path,
               },
               timelineStore.scrollToPath
             )
@@ -235,6 +250,7 @@ export const useMaps = () => {
   };
 
   return {
+    nodes,
     nodeArray,
     visibleNodes,
     childrenMap,
