@@ -28,8 +28,8 @@ export const useViewStore = defineStore("views", () => {
     }
     if (currentView.value.name === "Timeline") {
       timelineStore.setMode("timeline");
-    } else if (currentView.value.name === "Rows") {
-      timelineStore.setMode("rows");
+    } else if (currentView.value.name === "Gantt") {
+      timelineStore.setMode("gantt");
     }
   });
 

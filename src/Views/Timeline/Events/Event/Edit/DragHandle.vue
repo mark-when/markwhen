@@ -1,14 +1,27 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from "vue";
+
+const props = defineProps<{
   isLeft: boolean;
+  left?: number;
   mouseDownTouchStartListener: (e: MouseEvent | TouchEvent) => void;
 }>();
+
+const styleObj = computed(() => {
+  if (props.left) {
+    return { left: `${props.left}px` };
+  }
+  if (props.isLeft) {
+    return { left: "0px" };
+  }
+  return { right: "0px" };
+});
 </script>
 
 <template>
   <div
-    class="absolute flex items-center justify-center cursor-ew-resize touch-none top-0 bottom-0 z-10 "
-    :class="isLeft ? `left-0 ` : `right-0`"
+    class="absolute flex items-center justify-center cursor-ew-resize touch-none top-0 bottom-0 z-10"
+    :style="styleObj"
     @touchstart.passive="mouseDownTouchStartListener"
     @mousedown.prevent.stop="mouseDownTouchStartListener"
   >

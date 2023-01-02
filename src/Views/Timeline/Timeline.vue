@@ -256,7 +256,7 @@ const sidebarScroll = (top: number) => {
 <template>
   <div class="flex flex-row w-full h-full">
     <RowsSidebar
-      v-if="timelineStore.mode === 'rows'"
+      v-if="timelineStore.mode === 'gantt'"
       ref="rowsSidebar"
       @scroll="sidebarScroll"
       :scrollTop="scrollTop"

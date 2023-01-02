@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, watchEffect } from "vue";
+import {
+  computed,
+  nextTick,
+  ref,
+  watch,
+  watchEffect,
+} from "vue";
 import {
   toDateRange,
   type Block,
@@ -240,16 +246,53 @@ const display = computed(() => {
   // }
   return "block";
 });
+const isGantt = computed(() => timelineStore.mode === "gantt");
+
+const styleObj = computed(() => {
+  let obj = {
+    top: `${top.value}px`,
+    display: display.value,
+    height: `30px`,
+  } as any;
+  obj.left = isGantt.value ? "0px" : `${left.value}px`;
+  if (isGantt.value) {
+    obj.right = "0px";
+  }
+  return obj;
+});
+
+const classObj = computed(() => {
+  return isGantt.value
+    ? {
+        "dark:bg-gray-800 bg-white":
+          isHovering.value && hasMeta.value,
+        "dark:bg-gray-900 bg-white": props.isDetailEvent,
+        "ring-1 dark:ring-gray-100 ring-black":
+          props.hovering && !props.isDetailEvent,
+        "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
+      }
+    : {};
+});
+
+const barAndTitleClass = computed(() => {
+  return isGantt.value
+    ? {}
+    : {
+        "dark:bg-gray-800 bg-white shadow-lg":
+          isHovering.value && hasMeta.value,
+        "dark:bg-gray-900 bg-white shadow-lg": props.isDetailEvent,
+        "ring-1 dark:ring-gray-100 ring-black":
+          props.hovering && !props.isDetailEvent,
+        "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
+      };
+});
 </script>
 
 <template>
   <div
     class="eventRow absolute"
-    :style="{
-      left: `${left}px`,
-      top: `${top}px`,
-      display,
-    }"
+    :class="classObj"
+    :style="styleObj"
     @mouseenter.passive="elementHover = true"
     @mouseleave.passive="elementHover = false"
   >
@@ -257,20 +300,16 @@ const display = computed(() => {
       <move-widgets
         v-show="isHovering"
         :move="moveHandleListener"
+        :left="left"
         @mouseenter.passive="hoveringWidgets = true"
         @mouseleave.passive="hoveringWidgets = false"
       />
     </template>
-    <div class="flex flex-row eventContent items-center">
+    <div class="flex flex-row eventContent items-center h-full">
       <div class="eventItem pointer-events-none">
         <div
           class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
-          :class="{
-            'dark:bg-gray-800 bg-white shadow-lg': isHovering && hasMeta,
-            'dark:bg-gray-900 bg-white shadow-lg': isDetailEvent,
-            'ring-1 dark:ring-gray-100 ring-black': hovering && !isDetailEvent,
-            'ring-1 dark:ring-indigo-600 ring-indigo-500': isDetailEvent,
-          }"
+          :class="barAndTitleClass"
           @click="eventDetail"
         ></div>
         <event-bar
@@ -283,43 +322,13 @@ const display = computed(() => {
           :taskDenominator="taskDenominator"
           :drag-handle-listener-left="dragHandleListenerLeft"
           :drag-handle-listener-right="dragHandleListenerRight"
+          :left="left"
         />
         <p class="eventDate py-1">
           {{ dateText }}
         </p>
         <event-title
           v-if="timelineStore.mode === 'timeline'"
-          :showing-meta="showingMeta"
-          :is-hovering="isHovering"
-          :has-meta="hasMeta"
-          :has-supplemental="!!supplemental.length"
-          :has-locations="hasLocations"
-          :task-denominator="taskDenominator"
-          :task-numerator="taskNumerator"
-          :completed="completed"
-          :title-html="titleHtml"
-          @toggle-meta="toggleMeta"
-        ></event-title>
-        <!-- <event-meta
-          class="pointer-events-auto"
-          v-if="canShowMeta"
-          :locations="eventLocations"
-          :supplemental="supplemental"
-          :matchedListItems="matchedListItems"
-          :left="barWidth"
-          @close="close"
-        /> -->
-      </div>
-    </div>
-  </div>
-  <div
-    class="absolute left-0 right-0 h-[30px]"
-    :style="{ top: `${top}px` }"
-    v-if="timelineStore.mode === 'rows'"
-  >
-    <div class="flex">
-      <div class="sticky left-2">
-        <event-title
           :showing-meta="showingMeta"
           :is-hovering="isHovering"
           :has-meta="hasMeta"

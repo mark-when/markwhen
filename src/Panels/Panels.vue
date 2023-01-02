@@ -13,7 +13,7 @@ const detailVisible = computed(() => panelStore.detailPanelState.visible);
 const currentViewComponent = computed(() => {
   if (
     viewStore.currentView.name === "Timeline" ||
-    viewStore.currentView.name === "Rows"
+    viewStore.currentView.name === "Gantt"
   ) {
     return Timeline;
   }
@@ -66,7 +66,7 @@ const visualizationStyle = computed(() => {
       <keep-alive>
         <component
           :is="currentViewComponent"
-          :key="currentView.name === 'Rows' ? 'Timeline' : currentView.name"
+          :key="currentView.name === 'Gantt' ? 'Timeline' : currentView.name"
           v-if="typeof currentViewComponent !== 'string'"
         />
       </keep-alive>

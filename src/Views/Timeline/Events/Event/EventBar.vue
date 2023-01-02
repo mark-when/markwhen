@@ -13,11 +13,46 @@ const props = defineProps<{
   width: number;
   taskNumerator: number;
   taskDenominator: number;
+  left: number;
   dragHandleListenerLeft: (e: MouseEvent | TouchEvent) => void;
   dragHandleListenerRight: (e: MouseEvent | TouchEvent) => void;
 }>();
 
 const editable = inject(isEditable);
+
+const barStyleObj = computed(() => {
+  const isGantt = timelineStore.mode === "gantt";
+  return {
+    marginLeft: isGantt ? `${props.left}px` : "0",
+    width: `${props.width}px`,
+    backgroundColor: props.tagColor ? `rgba(${props.tagColor}, 0.3)` : "",
+    border: props.tagColor ? `1px solid rgba(${props.tagColor}, 0.3)` : "",
+    height: isGantt ? `15px` : `10px`,
+    borderRadius: isGantt ? `0.25rem` : `5px`,
+    flexShrink: 0,
+  };
+});
+
+const isGantt = computed(() => timelineStore.mode === "gantt");
+
+const percentBarStyleObj = computed(() => {
+  const obj = {
+    left: isGantt.value ? `${props.left}px` : "0",
+    minWidth: `10px`,
+    maxWidth: `100%`,
+    backgroundColor: `rgba(${props.tagColor}, 0.8)`,
+  } as any;
+
+  if (isGantt.value) {
+    obj.borderRadius = `0.25rem`;
+    obj.right = `${props.width - props.percent * 0.01 * props.width}px`;
+  } else {
+    obj.width = `${props.percent}%`;
+    obj.borderRadius = `5px`;
+  }
+
+  return obj;
+});
 </script>
 
 <template>
@@ -25,37 +60,26 @@ const editable = inject(isEditable);
     <div class="relative">
       <div
         :class="{
-          'eventBar transition rounded-lg shadow': true,
+          'eventBar transition shadow': true,
           'dark:bg-slate-400 bg-slate-700 opacity-30 border border-solid border-black dark:border-white':
             !tagColor,
         }"
-        :style="{
-          width: `${width}px`,
-          backgroundColor: tagColor ? `rgba(${tagColor}, 0.3)` : '',
-          border: tagColor ? `1px solid rgba(${tagColor}, 0.3)` : '',
-          height: `10px`,
-          borderRadius: `5px`,
-          flexShrink: 0,
-        }"
+        :style="barStyleObj"
       ></div>
       <div
-        class="absolute left-0 top-0 bottom-0 rounded-full percentBar transition"
+        class="absolute top-0 bottom-0 percentBar transition"
         :class="{
           'dark:bg-gray-400 bg-slate-700': !tagColor,
           'opacity-100 shadow-lg': hovering,
           'opacity-60': !hovering,
         }"
-        :style="{
-          minWidth: `10px`,
-          maxWidth: `100%`,
-          backgroundColor: `rgba(${tagColor}, 0.8)`,
-          width: `${percent}%`,
-        }"
+        :style="percentBarStyleObj"
       ></div>
       <drag-handle
         class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="true"
+        :left="isGantt ? left : undefined"
         :mouse-down-touch-start-listener="dragHandleListenerLeft"
       />
       <drag-handle

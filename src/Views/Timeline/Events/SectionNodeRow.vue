@@ -8,7 +8,7 @@ const props = defineProps<{
   numAbove: number;
   numChildren?: number | undefined;
   showTitle: boolean;
-  groupStyle: "group" | "section" | undefined
+  groupStyle?: "group" | "section" | undefined
 }>();
 </script>
 

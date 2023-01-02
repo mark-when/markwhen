@@ -20,7 +20,7 @@ export const useTimelineProvider: () => ViewProvider = () => ({
 });
 
 export const useTimelineRowsProvider: () => ViewProvider = () => ({
-  name: "Rows",
+  name: "Gantt",
   component: () => Timeline,
   iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="h-5 w-5">
       <path 

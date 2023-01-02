@@ -150,7 +150,7 @@ export const useNodeStore = defineStore('nodes', () => {
             const top = 100 + numAbove * 30;
             const vp = timelineStore.pageSettings.viewport;
             if (top > vp.top - 500 && top < vp.top + vp.height + 500) {
-              if (timelineStore.mode === "rows") {
+              if (timelineStore.mode === "gantt") {
                 visibleEvents.push(pAndN);
               } else {
                 const range = ranges(pAndN.node)!;

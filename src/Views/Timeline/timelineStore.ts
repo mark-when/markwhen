@@ -39,7 +39,7 @@ const MONTH = 30 * DAY;
 const YEAR = 12 * MONTH;
 const DECADE = 10 * YEAR;
 
-export type TimelineMode = "timeline" | "rows";
+export type TimelineMode = "timeline" | "gantt";
 export const timeMarkerWeightMinimum = 0.25;
 
 function roundToTwoDecimalPlaces(n: number): number {

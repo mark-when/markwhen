@@ -76,7 +76,7 @@ const hover = (isHovering: boolean) => {
 const groupStyle = computed(() =>
   props.groupStyle
     ? props.groupStyle
-    : timelineStore.mode === "rows"
+    : timelineStore.mode === "gantt"
     ? "section"
     : props.node.style === "section"
     ? "section"
