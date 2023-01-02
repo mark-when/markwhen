@@ -19,7 +19,6 @@ import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import DebugView from "./DebugView.vue";
 import RowsSidebar from "./RowsSidebar.vue";
-import { useScrollSync } from "./composables/useScrollSync";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
