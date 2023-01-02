@@ -4,7 +4,7 @@ import { onMounted, onUnmounted, watch, type Ref, ref } from "vue";
 import { useMarkersStore } from "../Markers/markersStore";
 import { useTimelineStore } from "../timelineStore";
 
-export const useHoveringMarker = (el: Ref<HTMLElement | null>) => {
+export const useHoveringMarker = (el: Ref<HTMLElement | undefined>) => {
   const markersStore = useMarkersStore();
   const timelineStore = useTimelineStore();
 

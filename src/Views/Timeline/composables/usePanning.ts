@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
 
-export const usePanning = (el: Ref<HTMLElement | null>) => {
+export const usePanning = (el: Ref<HTMLElement | undefined>) => {
   // panStartX is a ref as we're using it as a proxy
   // for whether we're currently panning
   let panStartX: Ref<null | number> = ref(null);

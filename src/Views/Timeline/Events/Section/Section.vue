@@ -17,6 +17,7 @@ const props = defineProps<{
   numChildren?: number | undefined;
   numAbove: number;
   showTitle: boolean;
+  groupStyle: "group" | "section" | undefined;
 }>();
 
 const timelineStore = useTimelineStore();
@@ -73,7 +74,13 @@ const hover = (isHovering: boolean) => {
 };
 
 const groupStyle = computed(() =>
-  props.node.style === "section" ? "section" : "group"
+  props.groupStyle
+    ? props.groupStyle
+    : timelineStore.mode === "rows"
+    ? "section"
+    : props.node.style === "section"
+    ? "section"
+    : "group"
 );
 
 const width = computed(

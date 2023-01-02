@@ -7,7 +7,7 @@ const props = defineProps<{
 
 <template>
   <div
-    class="flex items-center justify-center relative transition hover:bg-gray-200 dark:hover:bg-gray-600"
+    class="flex items-center justify-center transition hover:bg-gray-200 dark:hover:bg-gray-600"
     @mousedown.prevent="resizeMouseDown"
     @touchstart.prevent="resizeMouseDown"
     :style="`cursor: ew-resize; order: ${isLeft ? '1' : '-1'}`"

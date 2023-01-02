@@ -5,7 +5,7 @@ import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 import Hammer from "@squadette/hammerjs";
 
 export const useGestures = (
-  el: Ref<HTMLElement | null>,
+  el: Ref<HTMLElement | undefined>,
   onSetScale: () => void = () => {}
 ) => {
   const timelineStore = useTimelineStore();

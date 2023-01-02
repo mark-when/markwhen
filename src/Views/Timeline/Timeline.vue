@@ -19,12 +19,13 @@ import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import DebugView from "./DebugView.vue";
 import RowsSidebar from "./RowsSidebar.vue";
+import { useScrollSync } from "./composables/useScrollSync";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const panelStore = usePanelStore();
 
-const timelineElement = ref<HTMLDivElement | null>(null);
+const timelineElement = ref<HTMLDivElement>();
 const { isActive } = useIsActive();
 const finder = useEventFinder;
 
@@ -117,10 +118,16 @@ const setViewportDateInterval = () => {
 };
 
 const { trigger } = useHoveringMarker(timelineElement);
+
+const scrollTop = ref(0);
 const scroll = () => {
+  scrollTop.value = timelineElement.value!.scrollTop;
   setViewportDateInterval();
   trigger();
 };
+watch(scrollTop, (top) => {
+  timelineElement.value!.scrollTop = top;
+});
 
 const { isPanning } = usePanning(timelineElement);
 useGestures(timelineElement, () => {
@@ -235,14 +242,25 @@ const showJumpToRange = computed({
   },
 });
 
-onMounted(() => {
-  console.log("timeline mounted");
+const rowsSidebar = ref();
+
+watch(scrollTop, (top) => {
+  timelineElement.value && (timelineElement.value.scrollTop = top);
 });
+
+const sidebarScroll = (top: number) => {
+  scrollTop.value = top;
+};
 </script>
 
 <template>
   <div class="flex flex-row w-full h-full">
-    <RowsSidebar v-if="timelineStore.mode === 'rows'" />
+    <RowsSidebar
+      v-if="timelineStore.mode === 'rows'"
+      ref="rowsSidebar"
+      @scroll="sidebarScroll"
+      :scrollTop="scrollTop"
+    />
     <div
       id="timeline"
       class="relative h-full overflow-auto w-full noScrollBar"
