@@ -77,7 +77,8 @@ export const useGestures = (
 
       pinchStartScrollTop = el.value!.scrollTop;
       pinchStartScrollLeft = el.value!.scrollLeft;
-      pinchStartCenterX = wg.origin.x - el.value!.offsetLeft;
+      pinchStartCenterX =
+        wg.origin.x - (el.value!.offsetLeft + timelineStore.leftInsetWidth);
       pinchStartCenterY = wg.origin.y;
     }
   };
@@ -89,7 +90,8 @@ export const useGestures = (
     isZooming.value = true;
 
     if (timelineStore.setPageScale(startingZoom! * wg.scale)) {
-      const offsetLeft = (el.value! as HTMLElement).offsetLeft;
+      const offsetLeft =
+        (el.value! as HTMLElement).offsetLeft + timelineStore.leftInsetWidth;
       const newScrollLeft =
         wg.scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
         (wg.origin.x! - offsetLeft);
