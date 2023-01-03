@@ -65,7 +65,8 @@ const borderColor = computed(() => (tm: TimeMarker) => {
           width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
           left: `${
             timelineStore.pageScaleBy24 *
-            (timeMarker.accumulated - timeMarker.size)
+              (timeMarker.accumulated - timeMarker.size) +
+            timelineStore.leftInsetWidth
           }px`,
           borderLeft: `1px ${
             hovering(timeMarker) ? 'solid' : 'dashed'

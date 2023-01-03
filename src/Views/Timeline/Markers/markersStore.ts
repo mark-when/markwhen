@@ -119,7 +119,9 @@ export const useMarkersStore = defineStore("markers", () => {
   });
 
   const rangeFromOffsetLeft = computed(() => (offset: number) => {
-    const offsetDate = timelineStore.dateFromClientLeft(offset);
+    const offsetDate = timelineStore.dateFromClientLeft(
+      offset - timelineStore.leftInsetWidth
+    );
 
     const scale = timelineStore.scaleOfViewportDateInterval as DisplayScale;
     const floored = floorDateTime(offsetDate, scale);
@@ -127,11 +129,15 @@ export const useMarkersStore = defineStore("markers", () => {
     return [
       {
         dateTime: floored,
-        left: timelineStore.distanceFromBaselineLeftmostDate(floored),
+        left:
+          timelineStore.distanceFromBaselineLeftmostDate(floored) +
+          timelineStore.leftInsetWidth,
       },
       {
         dateTime: ceiled,
-        left: timelineStore.distanceFromBaselineLeftmostDate(ceiled),
+        left:
+          timelineStore.distanceFromBaselineLeftmostDate(ceiled) +
+          timelineStore.leftInsetWidth,
       },
     ] as [DateTimeAndOffset, DateTimeAndOffset];
   });

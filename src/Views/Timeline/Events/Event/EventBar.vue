@@ -68,13 +68,13 @@ const percentBarStyleObj = computed(() => {
       ></div>
       <drag-handle
         class="pointer-events-auto"
-        v-if="editable && hovering"
+        v-show="editable && hovering"
         :is-left="true"
         :mouse-down-touch-start-listener="dragHandleListenerLeft"
       />
       <drag-handle
         class="pointer-events-auto"
-        v-if="editable && hovering"
+        v-show="editable && hovering"
         :is-left="false"
         :mouse-down-touch-start-listener="dragHandleListenerRight"
       />

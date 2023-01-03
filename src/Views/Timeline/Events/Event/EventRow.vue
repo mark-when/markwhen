@@ -142,7 +142,9 @@ const range = computed(() => {
 });
 
 const left = computed(() => {
-  return timelineStore.pageScaleBy24 * realLeft.value;
+  return (
+    timelineStore.pageScaleBy24 * realLeft.value + timelineStore.leftInsetWidth
+  );
 });
 
 const realLeft = ref();
@@ -152,13 +154,6 @@ watchEffect(() => {
   );
 });
 
-// const left = computed(
-//   () =>
-//     timelineStore.pageScaleBy24 *
-//     timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-//       range.value.fromDateTime
-//     )
-// );
 const barWidth = computed(() => {
   const distance = timelineStore.scalelessDistanceBetweenDates(
     range.value.fromDateTime,
@@ -299,11 +294,11 @@ const ganttTitleStyle = computed(() => {
   if (props.color) {
     styleObj.backgroundColor = `rgba(${props.color}, 0.5)`;
   }
-  styleObj.width = `${
+  styleObj.width = `calc(${
     timelineStore.ganttSidebarTempWidth
       ? timelineStore.ganttSidebarTempWidth
       : timelineStore.ganttSidebarWidth
-  }px`;
+  }px - 1rem - 2px)`;
   return styleObj;
 });
 </script>
@@ -368,14 +363,26 @@ const ganttTitleStyle = computed(() => {
   </div>
   <div
     class="absolute left-0 right-0 h-[30px]"
-    :style="{ top: `${top + 1}px` }"
+    :style="{ top: `${top}px` }"
     v-if="timelineStore.mode === 'gantt'"
+    @mouseenter.passive="elementHover = true"
+    @mouseleave.passive="elementHover = false"
   >
     <div class="flex">
-      <div class="sticky left-2 bg-slate-50 dark:bg-slate-700 z-[3]">
+      <div
+        class="sticky left-2 bg-slate-50 dark:bg-slate-700 z-[5] border"
+        :class="hovering ? 'dark:border-gray-400' : 'border-transparent'"
+      >
         <div
-          style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+          style="
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+          "
           :style="ganttTitleStyle"
+          @mousedown.passive="mousedown"
+          @mouseup.passive="mouseup"
         >
           <event-title
             :showing-meta="showingMeta"

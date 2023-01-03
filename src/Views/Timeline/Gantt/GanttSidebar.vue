@@ -29,7 +29,7 @@ const currentWidth = computed(() => {
     <div class="flex w-full h-full">
       <div
         class="sticky dark:bg-slate-700 left-0 relative flex flex-col"
-        :style="`width: calc(${currentWidth}px + 1rem)`"
+        :style="`width: calc(${currentWidth}px)`"
       >
         <div class="h-full w-full">
           <div
@@ -37,7 +37,7 @@ const currentWidth = computed(() => {
             style="cursor: ew-resize"
             :style="`height: ${
               timelineStore.pageSettings.viewport.height
-            }px; left: calc(${currentWidth + 2}px + 1rem)`"
+            }px; left: ${currentWidth}px`"
             @mousedown.prevent="resizeMouseDown"
             @touchstart.prevent="resizeMouseDown"
           >

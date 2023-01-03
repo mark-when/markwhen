@@ -52,7 +52,6 @@ const props = (path: Path, node: SomeNode) => ({
     >
       <SectionNodeRow
         v-bind="props(path, node)"
-        :show-title="true"
       ></SectionNodeRow>
     </template>
     <template

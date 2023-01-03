@@ -60,7 +60,9 @@ export interface Viewport {
 export interface Settings {
   scale: number;
   viewportDateInterval: DateInterval;
+  viewportDateIntervalWithSidebar: DateInterval;
   viewport: Viewport;
+  viewportWithSidebar: Viewport;
 }
 
 export const MIN_SCALE = 0.04;
@@ -68,13 +70,16 @@ export const MAX_SCALE = 30000000;
 const initialScale = 0.3;
 
 export function blankSettings(): Settings {
+  const interval = {
+    from: DateTime.now().minus({ years: 10 }),
+    to: DateTime.now().plus({ years: 10 }),
+  };
   return {
     scale: initialScale,
-    viewportDateInterval: {
-      from: DateTime.now().minus({ years: 10 }),
-      to: DateTime.now().plus({ years: 10 }),
-    },
+    viewportDateInterval: interval,
     viewport: { left: 0, width: 0, top: 0, height: 0 },
+    viewportDateIntervalWithSidebar: interval,
+    viewportWithSidebar: { left: 0, width: 0, top: 0, height: 0 },
   };
 }
 
@@ -91,6 +96,10 @@ export const useTimelineStore = defineStore("timeline", () => {
   const mode = ref<TimelineMode>("timeline");
   const ganttSidebarWidth = ref(150);
   const ganttSidebarTempWidth = ref(0);
+
+  const leftInsetWidth = computed(() =>
+    mode.value === "gantt" ? ganttSidebarWidth.value : 0
+  );
 
   const setGanttSidebarTempWidth = (width: number) => {
     ganttSidebarTempWidth.value = width;
@@ -135,8 +144,6 @@ export const useTimelineStore = defineStore("timeline", () => {
       baselineLeftmostDate.value = newValue;
     }
   });
-
-  const blocks = computed(() => {});
 
   const baselineRightmostDate = computed(() =>
     floorDateTime(
@@ -192,16 +199,23 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => (offset: number) =>
       baselineLeftmostDate.value.plus({
         [diffScale]:
-          ((offset + pageSettings.value.viewport.left) / pageScale.value) * 24,
+          ((offset + pageSettings.value.viewport.left - leftInsetWidth.value) / pageScale.value) * 24,
       })
   );
 
   const setViewport = (viewport: Viewport) => {
     pageSettings.value.viewport = viewport;
+    const withSidebar = {
+      ...viewport,
+      left: viewport.left + ganttSidebarWidth.value,
+    };
+    pageSettings.value.viewportWithSidebar = withSidebar;
     pageSettings.value.viewportDateInterval = dateIntervalFromViewport.value(
       viewport.left,
       viewport.width
     );
+    pageSettings.value.viewportDateIntervalWithSidebar =
+      dateIntervalFromViewport.value(withSidebar.left, withSidebar.width);
   };
   const setMode = (m: TimelineMode) => {
     mode.value = m;
@@ -346,15 +360,14 @@ export const useTimelineStore = defineStore("timeline", () => {
     distanceFromBaselineLeftmostDate:
       distanceFromBaselineLeftmostDate as unknown as (a: DateTime) => number,
     distanceBetweenBaselineDates,
-    dateFromClientLeft: dateFromClientLeft as unknown as (
-      offset: number
-    ) => DateTime,
+    dateFromClientLeft,
     scaleToGetDistance,
     scalelessDistanceFromBaselineLeftmostDate,
     isCollapsed,
     isCollapsedChild,
     scaleOfViewportDateInterval,
     weights,
+    leftInsetWidth,
 
     // actions
     setViewport,

@@ -20,7 +20,7 @@ const styleObj = computed(() => {
 
 <template>
   <div
-    class="absolute flex items-center justify-center cursor-ew-resize touch-none top-0 bottom-0 z-10"
+    class="absolute flex items-center justify-center cursor-ew-resize touch-none top-0 bottom-0 z-[4]"
     :style="styleObj"
     @touchstart.passive="mouseDownTouchStartListener"
     @mousedown.prevent.stop="mouseDownTouchStartListener"

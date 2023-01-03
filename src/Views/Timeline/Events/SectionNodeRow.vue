@@ -7,7 +7,6 @@ const props = defineProps<{
   path: string;
   numAbove: number;
   numChildren?: number | undefined;
-  showTitle: boolean;
   groupStyle?: "group" | "section" | undefined
 }>();
 </script>
@@ -18,7 +17,6 @@ const props = defineProps<{
     :path="path"
     :numChildren="numChildren"
     :numAbove="numAbove"
-    :showTitle="showTitle"
     :groupStyle="groupStyle"
   >
   </Section>

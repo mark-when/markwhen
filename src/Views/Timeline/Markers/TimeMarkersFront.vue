@@ -64,51 +64,49 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
 
 <template>
   <div class="fixed inset-0 pointer-events-none">
+    <div class="flex relative" :style="`margin-left: -${leftMargin}px`">
       <div
-        class="flex relative"
-        :style="`margin-left: -${leftMargin}px`"
+        class="timeMarkerShader w-full h-12 fixed top-0"
+        :style="{
+          marginLeft: `${leftMargin}px`,
+          background: `linear-gradient(${
+            dark
+              ? 'to bottom, rgb(51, 65, 85), 85%, #38404700'
+              : 'to bottom, #f8fafc, 85%, #ffffff00'
+          })`,
+        }"
+      ></div>
+      <!-- <SquashBars /> -->
+      <div
+        v-for="timeMarker in markerStore.markers"
+        :key="timeMarker.ts"
+        class="flex-shrink-0 absolute top-0 bottom-0"
+        :style="{
+          left: `${
+            timelineStore.pageScaleBy24 *
+            (timeMarker.accumulated - timeMarker.size) +
+            timelineStore.leftInsetWidth
+          }px`,
+          width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
+        }"
       >
-        <div
-          class="timeMarkerShader w-full h-12 fixed top-0"
+        <h6
+          :class="{ 'font-bold': isHovering(timeMarker) }"
+          class="timeMarkerTitle text-sm whitespace-nowrap dark:text-white text-black"
           :style="{
-            marginLeft: `${leftMargin}px`,
-            background: `linear-gradient(${
-              dark
-                ? 'to bottom, rgb(51, 65, 85), 85%, #38404700'
-                : 'to bottom, #f8fafc, 85%, #ffffff00'
-            })`,
-          }"
-        ></div>
-        <!-- <SquashBars /> -->
-        <div
-          v-for="timeMarker in markerStore.markers"
-          :key="timeMarker.ts"
-          class="flex-shrink-0 absolute top-0 bottom-0"
-          :style="{
-            left: `${
-              timelineStore.pageScaleBy24 *
-              (timeMarker.accumulated - timeMarker.size)
-            }px`,
-            width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
+            opacity: isHovering(timeMarker) ? 1 : opacity(timeMarker),
           }"
         >
-          <h6
-            :class="{ 'font-bold': isHovering(timeMarker) }"
-            class="timeMarkerTitle text-sm whitespace-nowrap dark:text-white text-black"
-            :style="{
-              opacity: isHovering(timeMarker) ? 1 : opacity(timeMarker),
-            }"
-          >
-            {{ text(timeMarker) }}
+          {{ text(timeMarker) }}
+        </h6>
+        <div
+          v-if="isHovering(timeMarker) && currentDateResolution <= 6"
+          style="padding-left: 8px"
+        >
+          <h6 class="whitespace-nowrap text-xs font-bold">
+            {{ hoveringText(timeMarker) }}
           </h6>
-          <div
-            v-if="isHovering(timeMarker) && currentDateResolution <= 6"
-            style="padding-left: 8px"
-          >
-            <h6 class="whitespace-nowrap text-xs font-bold">
-              {{ hoveringText(timeMarker) }}
-            </h6>
-          </div>
+        </div>
       </div>
     </div>
   </div>
