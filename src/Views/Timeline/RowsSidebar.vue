@@ -6,6 +6,7 @@ import type { Path } from "@markwhen/parser/lib/Types";
 import { ref, computed, watch } from "vue";
 import { useNodeStore, nodeKey } from "./useNodeStore";
 import SectionNodeRow from "./Events/SectionNodeRow.vue";
+import EventSidebarRow from "./EventSidebarRow.vue";
 
 const props = defineProps<{ scrollTop: number }>();
 const emits = defineEmits<{ (event: "scroll", top: number): void }>();
@@ -43,7 +44,7 @@ watch(
   () => props.scrollTop,
   (top) => {
     sidebar.value && (sidebar.value.scrollTop = top);
-  }
+  },
 );
 
 const scroll = () => {
@@ -70,6 +71,11 @@ const scroll = () => {
         groupStyle="section"
         :showTitle="true"
       ></SectionNodeRow>
+      <EventSidebarRow
+        v-for="{ path, node } of nodeStore.visibleNodes[1]"
+        :key="path + nodeKey(node)!"
+        v-bind="rowProps(path, node)"
+      ></EventSidebarRow>
     </div>
     <ResizeBar
       :isLeft="true"

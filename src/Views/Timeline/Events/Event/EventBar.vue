@@ -13,7 +13,6 @@ const props = defineProps<{
   width: number;
   taskNumerator: number;
   taskDenominator: number;
-  left: number;
   dragHandleListenerLeft: (e: MouseEvent | TouchEvent) => void;
   dragHandleListenerRight: (e: MouseEvent | TouchEvent) => void;
 }>();
@@ -23,7 +22,7 @@ const editable = inject(isEditable);
 const barStyleObj = computed(() => {
   const isGantt = timelineStore.mode === "gantt";
   return {
-    marginLeft: isGantt ? `${props.left}px` : "0",
+    marginLeft: 0,
     width: `${props.width}px`,
     backgroundColor: props.tagColor ? `rgba(${props.tagColor}, 0.3)` : "",
     border: props.tagColor ? `1px solid rgba(${props.tagColor}, 0.3)` : "",
@@ -37,20 +36,12 @@ const isGantt = computed(() => timelineStore.mode === "gantt");
 
 const percentBarStyleObj = computed(() => {
   const obj = {
-    left: isGantt.value ? `${props.left}px` : "0",
     minWidth: `10px`,
     maxWidth: `100%`,
     backgroundColor: `rgba(${props.tagColor}, 0.8)`,
   } as any;
-
-  if (isGantt.value) {
-    obj.borderRadius = `0.25rem`;
-    obj.right = `${props.width - props.percent * 0.01 * props.width}px`;
-  } else {
-    obj.width = `${props.percent}%`;
-    obj.borderRadius = `5px`;
-  }
-
+  obj.width = `${props.percent}%`;
+  obj.borderRadius = `5px`;
   return obj;
 });
 </script>
@@ -79,7 +70,6 @@ const percentBarStyleObj = computed(() => {
         class="pointer-events-auto"
         v-if="editable && hovering"
         :is-left="true"
-        :left="isGantt ? left : undefined"
         :mouse-down-touch-start-listener="dragHandleListenerLeft"
       />
       <drag-handle

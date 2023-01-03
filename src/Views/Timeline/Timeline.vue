@@ -9,7 +9,7 @@ import { useHoveringMarker } from "@/Views/Timeline/composables/useHoveringMarke
 import { usePanning } from "./composables/usePanning";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useResizeObserver } from "@vueuse/core";
+import { useResizeObserver, watchThrottled } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
@@ -118,16 +118,10 @@ const setViewportDateInterval = () => {
 
 const { trigger } = useHoveringMarker(timelineElement);
 
-const scrollTop = ref(0);
 const scroll = () => {
-  scrollTop.value = timelineElement.value!.scrollTop;
   setViewportDateInterval();
   trigger();
 };
-watch(scrollTop, (top) => {
-  timelineElement.value!.scrollTop = top;
-});
-
 const { isPanning } = usePanning(timelineElement);
 useGestures(timelineElement, () => {
   setViewportDateInterval();
@@ -240,26 +234,10 @@ const showJumpToRange = computed({
     timelineStore.setShowingJumpToRange(val);
   },
 });
-
-const rowsSidebar = ref();
-
-watch(scrollTop, (top) => {
-  timelineElement.value && (timelineElement.value.scrollTop = top);
-});
-
-const sidebarScroll = (top: number) => {
-  scrollTop.value = top;
-};
 </script>
 
 <template>
   <div class="flex flex-row w-full h-full">
-    <RowsSidebar
-      v-if="timelineStore.mode === 'gantt'"
-      ref="rowsSidebar"
-      @scroll="sidebarScroll"
-      :scrollTop="scrollTop"
-    />
     <div
       id="timeline"
       class="relative h-full overflow-auto w-full noScrollBar"

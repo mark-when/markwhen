@@ -16,8 +16,7 @@ const props = defineProps<{
   path: string;
   numChildren?: number | undefined;
   numAbove: number;
-  showTitle: boolean;
-  groupStyle: "group" | "section" | undefined;
+  groupStyle?: "group" | "section";
 }>();
 
 const timelineStore = useTimelineStore();
@@ -124,7 +123,6 @@ const styleObject = computed(() => ({
         }"
       ></div>
       <SectionHeader
-        :show-title="showTitle"
         :path="path"
         @toggle="toggle"
         @hover="hover"

@@ -89,6 +89,15 @@ export const useTimelineStore = defineStore("timeline", () => {
   const shouldZoomWhenScrolling = ref<boolean>(false);
   const collapsed = reactive<Set<string>>(new Set());
   const mode = ref<TimelineMode>("timeline");
+  const ganttSidebarWidth = ref(150);
+  const ganttSidebarTempWidth = ref(0);
+
+  const setGanttSidebarTempWidth = (width: number) => {
+    ganttSidebarTempWidth.value = width;
+  };
+  const setGanttSidebarWidth = (width: number) => {
+    ganttSidebarWidth.value = width;
+  };
 
   const pageTimelineMetadata = computed(
     () => usePageStore().pageTimelineMetadata
@@ -319,6 +328,8 @@ export const useTimelineStore = defineStore("timeline", () => {
     shouldZoomWhenScrolling,
     collapsed,
     mode,
+    ganttSidebarWidth,
+    ganttSidebarTempWidth,
 
     // getters
     pageTimelineMetadata,
@@ -360,5 +371,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     toggleCollapsed,
     expand,
     setMode,
+    setGanttSidebarWidth,
+    setGanttSidebarTempWidth,
   };
 });

@@ -75,13 +75,3 @@ const borderColor = computed(() => (tm: TimeMarker) => {
     </div>
   </div>
 </template>
-
-<style>
-.timeMarkerContainer {
-  position: sticky;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-}
-</style>

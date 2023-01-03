@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  ref,
-  watch,
-  watchEffect,
-} from "vue";
+import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import {
   toDateRange,
   type Block,
@@ -181,6 +175,7 @@ const close = () => {
   showingMeta.value = false;
 };
 
+const clickStart = ref<{ x: number; y: number }>();
 const eventDetail = () => {
   eventDetailStore.setDetailEventPath(props.path);
 };
@@ -264,10 +259,8 @@ const styleObj = computed(() => {
 const classObj = computed(() => {
   return isGantt.value
     ? {
-        "dark:bg-gray-800 bg-white":
-          isHovering.value && hasMeta.value,
         "dark:bg-gray-900 bg-white": props.isDetailEvent,
-        "ring-1 dark:ring-gray-100 ring-black":
+        "ring-1 dark:ring-gray-400 ring-black":
           props.hovering && !props.isDetailEvent,
         "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
       }
@@ -281,10 +274,37 @@ const barAndTitleClass = computed(() => {
         "dark:bg-gray-800 bg-white shadow-lg":
           isHovering.value && hasMeta.value,
         "dark:bg-gray-900 bg-white shadow-lg": props.isDetailEvent,
-        "ring-1 dark:ring-gray-100 ring-black":
+        "ring-1 dark:ring-gray-400 ring-black":
           props.hovering && !props.isDetailEvent,
         "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
       };
+});
+
+const mousedown = (e: MouseEvent | TouchEvent) => {
+  const x = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  const y = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+  clickStart.value = { x, y };
+};
+
+const mouseup = (e: MouseEvent | TouchEvent) => {
+  const x = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  const y = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+  if (clickStart.value?.x === x && clickStart.value.y === y) {
+    eventDetail();
+  }
+};
+
+const ganttTitleStyle = computed(() => {
+  const styleObj = {} as any;
+  if (props.color) {
+    styleObj.backgroundColor = `rgba(${props.color}, 0.5)`;
+  }
+  styleObj.width = `${
+    timelineStore.ganttSidebarTempWidth
+      ? timelineStore.ganttSidebarTempWidth
+      : timelineStore.ganttSidebarWidth
+  }px`;
+  return styleObj;
 });
 </script>
 
@@ -305,12 +325,16 @@ const barAndTitleClass = computed(() => {
         @mouseleave.passive="hoveringWidgets = false"
       />
     </template>
-    <div class="flex flex-row eventContent items-center h-full">
+    <div
+      class="flex flex-row eventContent items-center h-full"
+      :style="isGantt ? `margin-left: ${left}px` : ''"
+    >
       <div class="eventItem pointer-events-none">
         <div
           class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
           :class="barAndTitleClass"
-          @click="eventDetail"
+          @mousedown="mousedown"
+          @mouseup="mouseup"
         ></div>
         <event-bar
           ref="eventBar"
@@ -322,7 +346,6 @@ const barAndTitleClass = computed(() => {
           :taskDenominator="taskDenominator"
           :drag-handle-listener-left="dragHandleListenerLeft"
           :drag-handle-listener-right="dragHandleListenerRight"
-          :left="left"
         />
         <p class="eventDate py-1">
           {{ dateText }}
@@ -340,6 +363,33 @@ const barAndTitleClass = computed(() => {
           :title-html="titleHtml"
           @toggle-meta="toggleMeta"
         ></event-title>
+      </div>
+    </div>
+  </div>
+  <div
+    class="absolute left-0 right-0 h-[30px]"
+    :style="{ top: `${top + 1}px` }"
+    v-if="timelineStore.mode === 'gantt'"
+  >
+    <div class="flex">
+      <div class="sticky left-2 bg-slate-50 dark:bg-slate-700 z-[3]">
+        <div
+          style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+          :style="ganttTitleStyle"
+        >
+          <event-title
+            :showing-meta="showingMeta"
+            :is-hovering="isHovering"
+            :has-meta="hasMeta"
+            :has-supplemental="!!supplemental.length"
+            :has-locations="hasLocations"
+            :task-denominator="taskDenominator"
+            :task-numerator="taskNumerator"
+            :completed="completed"
+            :title-html="titleHtml"
+            @toggle-meta="toggleMeta"
+          ></event-title>
+        </div>
       </div>
     </div>
   </div>

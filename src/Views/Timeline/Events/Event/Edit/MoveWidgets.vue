@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
 
-const props = defineProps<{ move: (e: MouseEvent | TouchEvent) => void }>();
+const props = defineProps<{
+  move: (e: MouseEvent | TouchEvent) => void;
+  left: number;
+}>();
 const emit = defineEmits<{ (event: "edit"): void }>();
-
-const transformStore = useTransformStore();
 </script>
 
 <template>

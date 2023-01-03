@@ -9,7 +9,6 @@ import {
 } from "@/EventDetail/eventDetailStore";
 import { useEventRefs } from "./useEventRefs";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
-import { useMarkersStore } from "../Markers/markersStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import { useTimelineStore } from "../timelineStore";

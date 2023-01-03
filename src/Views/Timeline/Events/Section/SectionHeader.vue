@@ -15,7 +15,6 @@ const props = defineProps<{
   groupStyle: GroupStyle;
   fullWidth: number;
   left: number;
-  showTitle: boolean
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +34,7 @@ const styleObject = computed(() => {
   const obj = {
     order: -9999,
     top: `${3 + props.path.slice(1).length * 1.2}rem`,
-    zIndex: 0,
+    zIndex: timelineStore.mode === "gantt" ? 3 : 0,
     height: "30px",
   } as any;
   if (props.groupStyle === "group") {
@@ -54,9 +53,8 @@ const click = (e: MouseEvent) => emit("toggle", e);
     :style="styleObject"
     v-on="events"
   >
-    <div class="sticky flex items-center" :style="{ left: `1rem` }">
+    <div class="sticky flex items-center" :style="`left: 1rem;`">
       <SectionTitleButton
-        v-if="showTitle"
         :title-html="titleHtml"
         :color="color"
         :num-children="numChildren"
