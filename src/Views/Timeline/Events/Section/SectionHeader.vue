@@ -46,15 +46,18 @@ const styleObject = computed(() => {
 
 const click = (e: MouseEvent) => emit("toggle", e);
 
-const titleWidth = computed(() =>
-  timelineStore.mode === "gantt"
-    ? `calc(${
-        timelineStore.ganttSidebarTempWidth
-          ? timelineStore.ganttSidebarTempWidth
-          : timelineStore.ganttSidebarWidth
-      }px - 1.5rem)`
-    : "unset"
-);
+const titleStyle = computed(() => {
+  const styleObj = { left: "1rem" } as any;
+  if (timelineStore.mode === "gantt") {
+    styleObj.width = `calc(${
+      timelineStore.ganttSidebarTempWidth
+        ? timelineStore.ganttSidebarTempWidth
+        : timelineStore.ganttSidebarWidth
+    }px - 1.5rem)`;
+    styleObj.overflow = "auto";
+  }
+  return styleObj;
+});
 </script>
 
 <template>
@@ -63,10 +66,7 @@ const titleWidth = computed(() =>
     :style="styleObject"
     v-on="events"
   >
-    <div
-      class="sticky flex items-center overflow-auto"
-      :style="`left: 1rem; width: ${titleWidth}`"
-    >
+    <div class="sticky flex items-center" :style="titleStyle">
       <SectionTitleButton
         :title-html="titleHtml"
         :color="color"
