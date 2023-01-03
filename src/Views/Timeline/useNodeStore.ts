@@ -5,7 +5,7 @@ import type { NodeArray, SomeNode, Node } from "@markwhen/parser/lib/Node";
 import { eventValue, isEventNode, iterate } from "@markwhen/parser/lib/Noder";
 import type { Path, Event, Block } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
-import { computed, watch, watchEffect } from "vue";
+import { computed, reactive, ref, watch, watchEffect } from "vue";
 import { useTimelineStore } from "./timelineStore";
 
 const prevSiblingPath = (path: Path) => {
@@ -67,8 +67,7 @@ export interface PathAndSectionNode extends PathAndNode {
   node: Node<NodeArray>;
 }
 
-export const useNodeStore = defineStore('nodes', () => {
-
+export const useNodeStore = defineStore("nodes", () => {
   const transformStore = useTransformStore();
   const timelineStore = useTimelineStore();
 
@@ -105,80 +104,158 @@ export const useNodeStore = defineStore('nodes', () => {
     return cache(children);
   };
 
-  const visibleNodes = computed<[PathAndEventNode[], PathAndSectionNode[]]>(
-    () => {
-      const visibleEvents: PathAndEventNode[] = [];
-      const visibleSections: PathAndSectionNode[] = [];
-      for (const { path, node } of nodeArray.value) {
-        if (timelineStore.isCollapsedChild(path)) {
-          continue;
-        }
-        const joinedPath = path.join(",");
-        if (!isEventNode(node)) {
-          if (path.length > 0) {
-            const numAbove = predecessorMap.value.get(joinedPath) || 0;
-            const children = childrenMap.value.get(joinedPath) || 0;
-            const top = 100 + numAbove * 30;
-            const height = 30 + children * 30;
-            const vp = timelineStore.pageSettings.viewport;
+  let eventNodeKey = 0;
+  const eventNodeKeyMap = reactive(new Map<string, number>());
+  const assignEventKeys = (
+    nodes: PathAndEventNode[]
+  ): (PathAndEventNode & { key: string })[] => {
+    const visible = nodes.map((p) => p.path.join(","));
+    const newlyAvailableKeys = [] as number[];
 
-            // if (top + height > vp.top + 200 && top - 200 < vp.top + vp.height) {
+    // Go through paths that have keys already
+    // If there are any that are not visible, remove them
+    // and mark those keys as available.
+    for (const hasKey of eventNodeKeyMap.keys()) {
+      if (!visible.includes(hasKey)) {
+        newlyAvailableKeys.push(eventNodeKeyMap.get(hasKey)!);
+        eventNodeKeyMap.delete(hasKey);
+      }
+    }
+
+    // Meanwhile, mark the nodes that don't have any keys
+    // If there is a (newly recycled) key to assign to it,
+    // do that, otherwise, get a new one
+    for (const visibleNode of visible) {
+      if (!eventNodeKeyMap.has(visibleNode)) {
+        const recycledKey = newlyAvailableKeys.pop();
+        if (typeof recycledKey !== "undefined") {
+          eventNodeKeyMap.set(visibleNode, recycledKey);
+        } else {
+          eventNodeKeyMap.set(visibleNode, eventNodeKey++);
+        }
+      }
+    }
+
+    return nodes.map((n) => ({
+      ...n,
+      key: "" + eventNodeKeyMap.get(n.path.join(",")),
+    }));
+  };
+
+  const visibleNodes = computed<
+    [(PathAndEventNode & { key: string })[], PathAndSectionNode[]]
+  >(() => {
+    const visibleEvents: PathAndEventNode[] = [];
+    const visibleSections: PathAndSectionNode[] = [];
+    for (const { path, node } of nodeArray.value) {
+      if (timelineStore.isCollapsedChild(path)) {
+        continue;
+      }
+      const joinedPath = path.join(",");
+      if (!isEventNode(node)) {
+        if (path.length > 0) {
+          const numAbove = predecessorMap.value.get(joinedPath) || 0;
+          const children = childrenMap.value.get(joinedPath) || 0;
+          const top = 100 + numAbove * 30;
+          const height = 30 + children * 30;
+          const vp = timelineStore.pageSettings.viewport;
+
+          const bottomOfSection = top + height;
+          const topOfSection = top;
+          const topOfVp = vp.top - 100;
+          const bottomOfVp = vp.top + vp.height + 100;
+
+          if (topOfSection > bottomOfVp) {
+            continue;
+          } else if (bottomOfSection < topOfVp) {
+            continue;
+          } else {
             visibleSections.push({
               path: path,
               node: node as Node<NodeArray>,
             });
-            // }
           }
+        }
+      } else {
+        const pAndN = {
+          node: node as Node<Event>,
+          path: path,
+        };
+        if (
+          timelineStore.scrollToPath &&
+          eqPath(
+            {
+              type: "pageFiltered",
+              path: path,
+            },
+            timelineStore.scrollToPath
+          )
+        ) {
+          visibleEvents.push(pAndN);
         } else {
-          const pAndN = {
-            node: node as Node<Event>,
-            path: path,
-          };
-          if (
-            timelineStore.scrollToPath &&
-            eqPath(
-              {
-                type: "pageFiltered",
-                path: path,
-              },
-              timelineStore.scrollToPath
-            )
-          ) {
-            visibleEvents.push(pAndN);
-          } else {
-            const numAbove = predecessorMap.value.get(joinedPath) || 0;
-            const top = 100 + numAbove * 30;
-            const vp = timelineStore.pageSettings.viewport;
-            if (top > vp.top - 500 && top < vp.top + vp.height + 500) {
-              if (timelineStore.mode === "gantt") {
+          const numAbove = predecessorMap.value.get(joinedPath) || 0;
+          const top = 100 + numAbove * 30;
+          const vp = timelineStore.pageSettings.viewport;
+          if (top > vp.top - 100 && top < vp.top + vp.height + 100) {
+            if (timelineStore.mode === "gantt") {
+              visibleEvents.push(pAndN);
+            } else {
+              const range = ranges(pAndN.node)!;
+              const left =
+                timelineStore.pageScaleBy24 *
+                timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+                  range.fromDateTime
+                );
+              const width =
+                timelineStore.pageScaleBy24 *
+                timelineStore.scalelessDistanceBetweenDates(
+                  range.fromDateTime,
+                  range.toDateTime
+                );
+              if (
+                left < vp.left + vp.width + 50 ||
+                vp.left < left + width + 50
+              ) {
                 visibleEvents.push(pAndN);
-              } else {
-                const range = ranges(pAndN.node)!;
-                const left =
-                  timelineStore.pageScaleBy24 *
-                  timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-                    range.fromDateTime
-                  );
-                const width =
-                  timelineStore.pageScaleBy24 *
-                  timelineStore.scalelessDistanceBetweenDates(
-                    range.fromDateTime,
-                    range.toDateTime
-                  );
-                if (
-                  left < vp.left + vp.width + 50 ||
-                  vp.left < left + width + 50
-                ) {
-                  visibleEvents.push(pAndN);
-                }
               }
             }
           }
         }
       }
-      return [visibleEvents, visibleSections];
     }
-  );
+    return [assignEventKeys(visibleEvents), visibleSections];
+  });
+
+  const sectionNodeKeyMap = reactive(new Map<string, number>());
+  const sectionKeys = computed(() => {
+    const visible = visibleNodes.value[1].map((p) => p.path.join(","));
+    const newlyAvailableKeys = [] as number[];
+
+    // Go through paths that have keys already
+    // If there are any that are not visible, remove them
+    // and mark those keys as available.
+    for (const hasKey of sectionNodeKeyMap.keys()) {
+      if (!visible.includes(hasKey)) {
+        newlyAvailableKeys.push(sectionNodeKeyMap.get(hasKey)!);
+        sectionNodeKeyMap.delete(hasKey);
+      }
+    }
+
+    // Meanwhile, mark the nodes that don't have any keys
+    // If there is a (newly recycled) key to assign to it,
+    // do that, otherwise, get a new one
+    for (const visibleNode of visible) {
+      if (!sectionNodeKeyMap.has(visibleNode)) {
+        const recycledKey = newlyAvailableKeys.pop();
+        if (typeof recycledKey !== "undefined") {
+          sectionNodeKeyMap.set(visibleNode, recycledKey);
+        } else {
+          sectionNodeKeyMap.set(visibleNode, eventNodeKey++);
+        }
+      }
+    }
+    return sectionNodeKeyMap;
+  });
 
   const childrenMap = computed(() => {
     const map = new Map<string, number>();
@@ -266,5 +343,6 @@ export const useNodeStore = defineStore('nodes', () => {
     visibleNodes,
     childrenMap,
     predecessorMap,
+    sectionKeys,
   };
 });
