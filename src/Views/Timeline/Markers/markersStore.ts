@@ -120,7 +120,7 @@ export const useMarkersStore = defineStore("markers", () => {
 
   const rangeFromOffsetLeft = computed(() => (offset: number) => {
     const offsetDate = timelineStore.dateFromClientLeft(
-      offset - timelineStore.leftInsetWidth
+      offset
     );
 
     const scale = timelineStore.scaleOfViewportDateInterval as DisplayScale;

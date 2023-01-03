@@ -24,8 +24,8 @@ const barStyleObj = computed(() => {
   return {
     marginLeft: 0,
     width: `${props.width}px`,
-    backgroundColor: props.tagColor ? `rgba(${props.tagColor}, 0.3)` : "",
-    border: props.tagColor ? `1px solid rgba(${props.tagColor}, 0.3)` : "",
+    backgroundColor: color.value ? `rgba(${color.value}, 0.3)` : "",
+    border: color.value ? `1px solid rgba(${color.value}, 0.3)` : "",
     height: isGantt ? `15px` : `10px`,
     borderRadius: isGantt ? `0.25rem` : `5px`,
     flexShrink: 0,
@@ -38,11 +38,15 @@ const percentBarStyleObj = computed(() => {
   const obj = {
     minWidth: `10px`,
     maxWidth: `100%`,
-    backgroundColor: `rgba(${props.tagColor}, 0.8)`,
+    ...(color.value ? { backgroundColor: `rgba(${color.value}, 0.8)` } : {}),
   } as any;
   obj.width = `${props.percent}%`;
   obj.borderRadius = `5px`;
   return obj;
+});
+
+const color = computed(() => {
+  return props.tagColor || null;
 });
 </script>
 
@@ -52,15 +56,15 @@ const percentBarStyleObj = computed(() => {
       <div
         :class="{
           'eventBar transition shadow': true,
-          'dark:bg-slate-400 bg-slate-700 opacity-30 border border-solid border-black dark:border-white':
-            !tagColor,
+          'dark:bg-slate-400 bg-slate-700 opacity-30': !color,
         }"
         :style="barStyleObj"
       ></div>
       <div
         class="absolute top-0 bottom-0 percentBar transition"
         :class="{
-          'dark:bg-gray-400 bg-slate-700': !tagColor,
+          'dark:bg-gray-400 bg-slate-700 border border-gray-800 dark:border-gray-300':
+            !color,
           'opacity-100 shadow-lg': hovering,
           'opacity-60': !hovering,
         }"
