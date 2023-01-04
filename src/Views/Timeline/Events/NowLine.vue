@@ -12,7 +12,7 @@ const now = DateTime.now();
     class="absolute dark:bg-slate-400 bg-blue-300"
     :style="`width: 1px; left: ${timelineStore.distanceFromBaselineLeftmostDate(
       now
-    )}px; height: max(100vh, 100%);`"
+    ) + timelineStore.leftInsetWidth}px; height: max(100vh, 100%);`"
   ></div>
 </template>
 
