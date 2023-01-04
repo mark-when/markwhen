@@ -308,7 +308,7 @@ const ganttTitleStyle = computed(() => {
 
 <template>
   <div
-    class="eventRow absolute z-10"
+    class="eventRow absolute"
     :class="classObj"
     :style="styleObj"
     @mouseenter.passive="elementHover = true"

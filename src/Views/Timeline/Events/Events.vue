@@ -49,15 +49,14 @@ const currentWidth = computed(() => {
   <div
     id="events"
     class="flex flex-col relative"
-    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px; height: ${height}`"
+    :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px; height: max(${height}, 100vh)`"
   >
     <now-line />
-    <div class="flex w-full h-full z-[2]" v-if="timelineStore.mode === 'gantt'">
-      <div
-        class="sticky left-0 relative flex flex-col bg-slate-50 dark:bg-slate-700 top-0"
-        :style="`width: calc(${currentWidth}px)`"
-      ></div>
-    </div>
+    <div
+      v-if="timelineStore.mode === 'gantt'"
+      class="sticky left-0 relative flex flex-col bg-slate-50 dark:bg-slate-700 top-0 bottom-0 z-[2] h-full"
+      :style="`width: calc(${currentWidth}px);`"
+    ></div>
     <template
       v-for="{ path, node } in nodeStore.visibleNodes[1]"
       :key="nodeStore.sectionKeys.get(path.join(','))"
