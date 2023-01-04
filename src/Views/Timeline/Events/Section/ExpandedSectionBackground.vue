@@ -74,6 +74,7 @@ const styleObject = computed(() => {
       'dark:bg-opacity-30 bg-opacity-20': hovering || (!color && isDetailEvent),
       'dark:bg-opacity-20 bg-opacity-10': !hovering && !isDeep,
       'border-t border-b': !color,
+      'border-l border-r': isGroupStyle,
       'dark:border-gray-900/25 border-gray-400/25': !color && isDeep,
       'bg-gray-400 dark:bg-gray-600': !color && !isDeep,
       'dark:border-gray-400/25 border-gray-400/25': !color && !hovering,
@@ -83,8 +84,7 @@ const styleObject = computed(() => {
       'rounded-[14px]': isGroupStyle,
     }"
     :style="styleObject"
-  >
-  </div>
+  ></div>
 </template>
 
 <style scoped></style>
