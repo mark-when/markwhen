@@ -36,6 +36,13 @@ const props = (path: Path, node: SomeNode) => ({
   numChildren: nodeStore.childrenMap.get(path.join(",")),
   numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
 });
+
+const currentWidth = computed(() => {
+  if (timelineStore.ganttSidebarTempWidth) {
+    return timelineStore.ganttSidebarTempWidth;
+  }
+  return timelineStore.ganttSidebarWidth;
+});
 </script>
 
 <template>
@@ -44,15 +51,18 @@ const props = (path: Path, node: SomeNode) => ({
     class="flex flex-col relative"
     :style="`min-width: ${timelineStore.distanceBetweenBaselineDates}px; height: ${height}`"
   >
-    <div class="h-24"></div>
     <now-line />
+    <div class="flex w-full h-full z-[2]" v-if="timelineStore.mode === 'gantt'">
+      <div
+        class="sticky left-0 relative flex flex-col bg-slate-50 dark:bg-slate-700 top-0"
+        :style="`width: calc(${currentWidth}px)`"
+      ></div>
+    </div>
     <template
       v-for="{ path, node } in nodeStore.visibleNodes[1]"
       :key="nodeStore.sectionKeys.get(path.join(','))"
     >
-      <SectionNodeRow
-        v-bind="props(path, node)"
-      ></SectionNodeRow>
+      <SectionNodeRow v-bind="props(path, node)"></SectionNodeRow>
     </template>
     <template
       v-for="{ path, node, key } in nodeStore.visibleNodes[0]"
@@ -60,9 +70,9 @@ const props = (path: Path, node: SomeNode) => ({
     >
       <EventNodeRow v-bind="props(path, node)"></EventNodeRow>
     </template>
-    <new-event v-if="editable" />
+    <!-- <new-event v-if="editable" /> -->
+    <div class="absolute left-0 right-0 h-full pointer-events-none"></div>
     <GanttSidebar />
-    <div style="height: 85vh"></div>
   </div>
 </template>
 

@@ -17,6 +17,7 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
+import TimeMarkersBackVue from "../../Markers/TimeMarkersBack.vue";
 
 const props = defineProps<{
   path: EventPath;
@@ -254,10 +255,12 @@ const styleObj = computed(() => {
 const classObj = computed(() => {
   return isGantt.value
     ? {
+        border: true,
         "dark:bg-gray-900 bg-white": props.isDetailEvent,
-        "ring-1 dark:ring-gray-400 ring-black":
+        "dark:border-gray-400 border-black":
           props.hovering && !props.isDetailEvent,
-        "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
+        "dark:border-indigo-600 border-indigo-500": props.isDetailEvent,
+        "border-transparent": !props.hovering && !props.isDetailEvent,
       }
     : {};
 });
@@ -298,14 +301,14 @@ const ganttTitleStyle = computed(() => {
     timelineStore.ganttSidebarTempWidth
       ? timelineStore.ganttSidebarTempWidth
       : timelineStore.ganttSidebarWidth
-  }px - 1rem - 2px)`;
+  }px - 0.5rem)`;
   return styleObj;
 });
 </script>
 
 <template>
   <div
-    class="eventRow absolute"
+    class="eventRow absolute z-10"
     :class="classObj"
     :style="styleObj"
     @mouseenter.passive="elementHover = true"
@@ -326,7 +329,7 @@ const ganttTitleStyle = computed(() => {
     >
       <div class="eventItem pointer-events-none">
         <div
-          class="flex flex-row rounded -mx-2 px-2 py-1 eventBarAndTitle pointer-events-auto cursor-pointer"
+          class="flex flex-row rounded -mx-2 px-2 eventBarAndTitle pointer-events-auto cursor-pointer"
           :class="barAndTitleClass"
           @mousedown="mousedown"
           @mouseup="mouseup"
@@ -368,12 +371,15 @@ const ganttTitleStyle = computed(() => {
     @mouseenter.passive="elementHover = true"
     @mouseleave.passive="elementHover = false"
   >
-    <div class="flex">
-      <div
-        class="sticky left-2 bg-slate-50 dark:bg-slate-700 z-[5] border"
-        :class="hovering ? 'dark:border-gray-400' : 'border-transparent'"
-      >
+    <div class="flex h-full">
+      <div class="sticky left-0 bg-slate-50 dark:bg-slate-700 z-10 h-full">
         <div
+          class="h-full border"
+          :class="{
+            'dark:border-gray-400 border-black': hovering,
+            'border-transparent': !hovering && !isDetailEvent,
+            'dark:border-indigo-600 border-indigo-600': isDetailEvent,
+          }"
           style="
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -385,6 +391,7 @@ const ganttTitleStyle = computed(() => {
           @mouseup.passive="mouseup"
         >
           <event-title
+            class="px-2 h-full"
             :showing-meta="showingMeta"
             :is-hovering="isHovering"
             :has-meta="hasMeta"

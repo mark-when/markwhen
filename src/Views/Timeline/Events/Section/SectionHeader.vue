@@ -15,6 +15,7 @@ const props = defineProps<{
   groupStyle: GroupStyle;
   fullWidth: number;
   left: number;
+  hovering: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -53,10 +54,21 @@ const titleStyle = computed(() => {
       timelineStore.ganttSidebarTempWidth
         ? timelineStore.ganttSidebarTempWidth
         : timelineStore.ganttSidebarWidth
-    }px - 1.5rem)`;
+    }px - 0.5rem)`;
     styleObj.overflow = "auto";
   }
   return styleObj;
+});
+
+const titleClass = computed(() => {
+  if (timelineStore.mode === "gantt") {
+    if (props.hovering) {
+      return "border dark:border-gray-400 border-black";
+    } else {
+      return "border border-transparent";
+    }
+  }
+  return "";
 });
 </script>
 
@@ -66,16 +78,22 @@ const titleStyle = computed(() => {
     :style="styleObject"
     v-on="events"
   >
-    <div class="sticky flex items-center" :style="titleStyle">
-      <SectionTitleButton
-        :title-html="titleHtml"
-        :color="color"
-        :num-children="numChildren"
-        :expanded="expanded"
-        :group-style="groupStyle"
-        :path="path"
-        @click="click"
-      ></SectionTitleButton>
+    <div class="sticky flex items-center left-0">
+      <div
+        class="h-[30px] flex flex-row items-center pl-2"
+        :style="titleStyle"
+        :class="titleClass"
+      >
+        <SectionTitleButton
+          :title-html="titleHtml"
+          :color="color"
+          :num-children="numChildren"
+          :expanded="expanded"
+          :group-style="groupStyle"
+          :path="path"
+          @click="click"
+        ></SectionTitleButton>
+      </div>
     </div>
   </div>
 </template>

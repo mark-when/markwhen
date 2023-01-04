@@ -23,21 +23,19 @@ const currentWidth = computed(() => {
 
 <template>
   <div
-    class="absolute left-0 right-0 h-full pointer-events-none z-[2]"
+    class="absolute left-0 right-0 h-full pointer-events-none z-20"
     v-show="timelineStore.mode === 'gantt'"
   >
     <div class="flex w-full h-full">
       <div
-        class="sticky dark:bg-slate-700 left-0 relative flex flex-col"
+        class="sticky left-0 relative flex flex-col"
         :style="`width: calc(${currentWidth}px)`"
       >
         <div class="h-full w-full">
           <div
-            class="pointer-events-auto sticky right-0 inline-flex items-center justify-center transition hover:bg-gray-200 dark:hover:bg-gray-600 top-0 bottom-0 z-[5]"
+            class="pointer-events-auto sticky right-0 inline-flex items-center justify-center transition bg-slate-50 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-gray-600 top-0 bottom-0 z-[5]"
             style="cursor: ew-resize"
-            :style="`height: ${
-              timelineStore.pageSettings.viewport.height
-            }px; left: ${currentWidth}px`"
+            :style="`height: ${timelineStore.pageSettings.viewport.height}px; left: ${currentWidth}px`"
             @mousedown.prevent="resizeMouseDown"
             @touchstart.prevent="resizeMouseDown"
           >

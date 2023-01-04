@@ -101,15 +101,19 @@ const styleObject = computed(() => ({
       }
     : {}),
 }));
+
+const hovered = computed(
+  () =>
+    hovering.value ||
+    equivalentPaths(hoveringPath.value?.pageFiltered, ourPath.value)
+);
 </script>
 
 <template>
   <div class="absolute" :style="styleObject">
     <div class="relative flex flex-col">
       <ExpandedSectionBackground
-        :hovering="
-          hovering || equivalentPaths(hoveringPath?.pageFiltered, ourPath)
-        "
+        :hovering="hovered"
         :style="groupStyle"
         :node="node"
         :left="left"
@@ -127,6 +131,7 @@ const styleObject = computed(() => ({
         :path="path"
         @toggle="toggle"
         @hover="hover"
+        :hovering="hovered"
         :expanded="!collapsed"
         :titleHtml="titleHtml"
         :color="color"
