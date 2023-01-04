@@ -42,9 +42,19 @@ const styleObject = computed(() => {
     } else if (!isDeep.value) {
       obj.backgroundColor = `rgba(${color.value}, 0.05)`;
     }
-    obj.border = `1px solid rgba(${color.value}, ${
-      isDetailEvent.value ? "0.95" : props.hovering ? "0.75" : "0.12"
+    const border = `1px solid rgba(${color.value}, ${
+      isDetailEvent.value
+        ? "0.95"
+        : props.hovering
+        ? "0.75"
+        : "0.12"
     })`;
+    obj.borderTop = border;
+    obj.borderBottom = border;
+    if (isGroupStyle.value) {
+      obj.borderLeft = border;
+      obj.borderRight = border;
+    }
   }
   if (isGroupStyle.value) {
     obj.marginLeft = `${timelineStore.pageScaleBy24 * props.left - 8}px`;
@@ -59,11 +69,11 @@ const styleObject = computed(() => {
 
 <template>
   <div
-    class="absolute h-full flex flex-row items-center dark:text-gray-400 transition"
+    class="absolute h-full flex flex-row items-center dark:text-gray-400 z-[9] pointer-events-none"
     :class="{
       'dark:bg-opacity-30 bg-opacity-20': hovering || (!color && isDetailEvent),
       'dark:bg-opacity-20 bg-opacity-10': !hovering && !isDeep,
-      border: !color,
+      'border-t border-b': !color,
       'dark:border-gray-900/25 border-gray-400/25': !color && isDeep,
       'bg-gray-400 dark:bg-gray-600': !color && !isDeep,
       'dark:border-gray-400/25 border-gray-400/25': !color && !hovering,
@@ -73,7 +83,8 @@ const styleObject = computed(() => {
       'rounded-[14px]': isGroupStyle,
     }"
     :style="styleObject"
-  ></div>
+  >
+  </div>
 </template>
 
 <style scoped></style>
