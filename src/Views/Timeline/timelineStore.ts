@@ -199,7 +199,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => (offset: number) =>
       baselineLeftmostDate.value.plus({
         [diffScale]:
-          ((offset + pageSettings.value.viewport.left - leftInsetWidth.value) / pageScale.value) * 24,
+          ((offset + pageSettings.value.viewport.left - leftInsetWidth.value) /
+            pageScale.value) *
+          24,
       })
   );
 
@@ -234,7 +236,7 @@ export const useTimelineStore = defineStore("timeline", () => {
       Math.max(MIN_SCALE, Math.min(MAX_SCALE, s))
     );
     pageSettings.value.scale = scale;
-    return s === scale;
+    return scale;
   };
   const setStartedWidthChange = (started: boolean) => {
     startedWidthChange.value = started;

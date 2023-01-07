@@ -48,16 +48,18 @@ export const useGestures = (
       scale = 1;
     }
 
-    if (scale !== 1 && timelineStore.setPageScale(startingZoom! * e.scale)) {
-      const newScrollLeft =
-        scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
-        (e.center.x! - offsetLeft);
+    if (scale !== 1) {
+      const newScale = timelineStore.setPageScale(startingZoom! * e.scale);
+      if (newScale === scale) {
+        const newScrollLeft =
+          newScale * (pinchStartScrollLeft! + pinchStartCenterX!) -
+          (e.center.x! - offsetLeft);
 
-      el.value!.scrollLeft = newScrollLeft;
-      el.value!.scrollTop = newScrollTop;
-    onSetScale();
-  }
-
+        el.value!.scrollLeft = newScrollLeft;
+        el.value!.scrollTop = newScrollTop;
+        onSetScale();
+      }
+    }
   };
 
   const pinchEnd = (e: Event) => {
@@ -84,12 +86,14 @@ export const useGestures = (
   };
 
   const doGesture = (wg: WheelGesture) => {
-    if (startingZoom! * wg.scale > MAX_SCALE) {
+    const scale = startingZoom! * wg.scale;
+    if (scale > MAX_SCALE) {
       return;
     }
     isZooming.value = true;
 
-    if (timelineStore.setPageScale(startingZoom! * wg.scale)) {
+    const newScale = timelineStore.setPageScale(scale);
+    if (newScale === scale) {
       const offsetLeft =
         (el.value! as HTMLElement).offsetLeft + timelineStore.leftInsetWidth;
       const newScrollLeft =
@@ -101,15 +105,15 @@ export const useGestures = (
       el.value!.scrollLeft = newScrollLeft;
       el.value!.scrollTop = newScrollTop;
       onSetScale();
+
+      startingZoom = null;
+      // pinchStartScrollLeft = null;
+      pinchStartScrollTop = null;
+      pinchStartCenterX = null;
+      pinchStartCenterY = null;
+
+      isZooming.value = false;
     }
-
-    startingZoom = null;
-    // pinchStartScrollLeft = null;
-    pinchStartScrollTop = null;
-    pinchStartCenterX = null;
-    pinchStartCenterY = null;
-
-    isZooming.value = false;
     endGesture();
   };
 

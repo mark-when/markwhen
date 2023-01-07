@@ -69,7 +69,7 @@ const styleObject = computed(() => {
 
 <template>
   <div
-    class="absolute h-full flex flex-row items-center dark:text-gray-400 z-[1] pointer-events-none"
+    class="absolute h-full flex flex-row items-center dark:text-gray-400 pointer-events-none"
     :class="{
       'dark:bg-opacity-30 bg-opacity-20': hovering || (!color && isDetailEvent),
       'dark:bg-opacity-20 bg-opacity-10': !hovering && !isDeep,

@@ -28,7 +28,7 @@ const currentWidth = computed(() => {
   >
     <div class="flex w-full h-full">
       <div
-        class="sticky left-0 relative flex flex-col"
+        class="sticky left-0 relative flex flex-col shadow-lg"
         :style="`width: calc(${currentWidth}px)`"
       >
         <div class="h-full w-full">
