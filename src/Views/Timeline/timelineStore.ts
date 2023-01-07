@@ -235,8 +235,10 @@ export const useTimelineStore = defineStore("timeline", () => {
       }),
       Math.max(MIN_SCALE, Math.min(MAX_SCALE, s))
     );
-    pageSettings.value.scale = scale;
-    return scale;
+    if (s === scale) {
+      pageSettings.value.scale = scale;
+    }
+    return s === scale;
   };
   const setStartedWidthChange = (started: boolean) => {
     startedWidthChange.value = started;
