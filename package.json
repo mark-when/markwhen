@@ -14,11 +14,11 @@
     "unlink:parser": "yalc remove @markwhen/parser && npm install"
   },
   "dependencies": {
-    "@markwhen/parser": "^0.3.10",
+    "@markwhen/parser": "^0.3.11",
     "@squadette/hammerjs": "^2.1.0-pre3",
     "@vuepic/vue-datepicker": "^3.6.3",
-    "@vueuse/core": "^9.7.0",
-    "@vueuse/integrations": "^9.7.0",
+    "@vueuse/core": "^9.8.2",
+    "@vueuse/integrations": "^9.8.2",
     "chrono-node": "^2.4.2",
     "lru-cache": "^7.14.1",
     "lunr": "^2.3.9",

@@ -1,3 +1,4 @@
+import { ranges } from "@/utilities/ranges";
 import type {
   Node,
   NodeArray,
@@ -8,7 +9,6 @@ import {
   blankClone,
   eventValue,
   isEventNode,
-  ranges,
 } from "@markwhen/parser/lib/Noder";
 import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 

@@ -6,7 +6,7 @@ import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import SectionHeader from "./SectionHeader.vue";
 import { useTimelineStore } from "../../timelineStore";
-import { ranges } from "@markwhen/parser/lib/Noder";
+import { ranges } from "@/utilities/ranges";
 
 const props = defineProps<{
   node: SomeNode;
@@ -78,7 +78,7 @@ const height = computed(() => 30 + props.numChildren! * 30);
 
 const styleObject = computed(() => ({
   top: `${top.value}px`,
-  display: timelineStore.isCollapsedChild(props.path) ? 'none' : 'block',
+  display: timelineStore.isCollapsedChild(props.path) ? "none" : "block",
   ...(groupStyle.value === "section"
     ? {
         left: 0,
