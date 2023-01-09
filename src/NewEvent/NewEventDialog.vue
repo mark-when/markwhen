@@ -51,8 +51,6 @@ const save = () => {
   newEventStore.createEventWithValues();
 };
 
-const onEnter = save;
-
 const rangePickerToggled = (open: boolean) => {
   if (!open) {
     setTimeout(() => {
@@ -92,7 +90,6 @@ watch(dialogShowing, (showing) => {
           placeholder="Event title"
           v-model="newEventTitle"
           class="mb-1 w-full p-2 outline-none rounded dark:bg-gray-700 font-bold dark:text-white bg-gray-100 font-mono text-sm"
-          v-on:keyup.enter="onEnter"
         />
         <RangePicker
           @is-open="rangePickerToggled"

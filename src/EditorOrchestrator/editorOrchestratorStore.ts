@@ -186,7 +186,7 @@ export const useEditorOrchestratorStore = defineStore(
           params.range || dateRangeToString(todayRange(), "day", undefined)
         }: ${params.title || "Event"}${
           params.description ? "\n" + params.description : ""
-        }` +
+        }\n` +
         es.slice(index);
       setText(newString);
     };
