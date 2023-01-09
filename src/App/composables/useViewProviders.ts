@@ -1,5 +1,5 @@
 import type { ViewProvider } from "@/viewProvider";
-import { useTimelineProvider } from "@/Views/Timeline/timelineViewProvider";
+import { useTimelineProvider, useTimelineRowsProvider } from "@/Views/Timeline/timelineViewProvider";
 
 export const useMapProvider: () => ViewProvider = () => ({
   name: "Map",
@@ -28,5 +28,5 @@ export const useCalendarProvider = () => ({
 });
 
 export const useViewProviders: () => ViewProvider[] = () => {
-  return [useMapProvider(), useCalendarProvider(), useTimelineProvider()];
+  return [useMapProvider(), useCalendarProvider(), useTimelineRowsProvider(), useTimelineProvider()];
 };
