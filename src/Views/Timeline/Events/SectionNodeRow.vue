@@ -7,6 +7,7 @@ const props = defineProps<{
   path: string;
   numAbove: number;
   numChildren?: number | undefined;
+  showTitle: boolean;
 }>();
 </script>
 
@@ -16,6 +17,7 @@ const props = defineProps<{
     :path="path"
     :numChildren="numChildren"
     :numAbove="numAbove"
+    :showTitle="showTitle"
   >
   </Section>
 </template>

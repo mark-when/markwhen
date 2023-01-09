@@ -4,8 +4,9 @@ import { ranges } from "@/utilities/ranges";
 import type { NodeArray, SomeNode, Node } from "@markwhen/parser/lib/Node";
 import { eventValue, isEventNode, iterate } from "@markwhen/parser/lib/Noder";
 import type { Path, Event, Block } from "@markwhen/parser/lib/Types";
+import { defineStore } from "pinia";
 import { computed, watch, watchEffect } from "vue";
-import { useTimelineStore } from "../../timelineStore";
+import { useTimelineStore } from "./timelineStore";
 
 const prevSiblingPath = (path: Path) => {
   if (path[path.length - 1] === 0) {
@@ -65,7 +66,9 @@ export interface PathAndEventNode extends PathAndNode {
 export interface PathAndSectionNode extends PathAndNode {
   node: Node<NodeArray>;
 }
-export const useMaps = () => {
+
+export const useNodeStore = defineStore('nodes', () => {
+
   const transformStore = useTransformStore();
   const timelineStore = useTimelineStore();
 
@@ -264,4 +267,4 @@ export const useMaps = () => {
     childrenMap,
     predecessorMap,
   };
-};
+});

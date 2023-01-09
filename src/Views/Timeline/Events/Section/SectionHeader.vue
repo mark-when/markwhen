@@ -15,6 +15,7 @@ const props = defineProps<{
   groupStyle: GroupStyle;
   fullWidth: number;
   left: number;
+  showTitle: boolean
 }>();
 
 const emit = defineEmits<{
@@ -55,6 +56,7 @@ const click = (e: MouseEvent) => emit("toggle", e);
   >
     <div class="sticky flex items-center" :style="{ left: `1rem` }">
       <SectionTitleButton
+        v-if="showTitle"
         :title-html="titleHtml"
         :color="color"
         :num-children="numChildren"

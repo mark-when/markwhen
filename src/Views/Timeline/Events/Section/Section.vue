@@ -4,15 +4,19 @@ import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import { useEventColor } from "../composables/useEventColor";
 import ExpandedSectionBackground from "./ExpandedSectionBackground.vue";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import SectionHeader from "./SectionHeader.vue";
 import { useTimelineStore } from "../../timelineStore";
 import { ranges } from "@/utilities/ranges";
+import { equivalentPaths } from "@/EventDetail/eventDetailStore";
 
+const editorOrchestrator = useEditorOrchestratorStore();
 const props = defineProps<{
   node: SomeNode;
   path: string;
   numChildren?: number | undefined;
   numAbove: number;
+  showTitle: boolean;
 }>();
 
 const timelineStore = useTimelineStore();
@@ -26,7 +30,11 @@ const collapsed = computed({
   set: (val) => timelineStore.setCollapsed(props.path, val),
 });
 const hovering = ref(false);
-
+const hoveringPath = computed(() => editorOrchestrator.hoveringEventPaths);
+const ourPath = computed(() => ({
+  type: "pageFiltered",
+  path: props.path.split(",").map((i) => parseInt(i)),
+}));
 const toggle = (e: MouseEvent) => {
   if (e.target instanceof HTMLAnchorElement) {
     return;
@@ -92,7 +100,9 @@ const styleObject = computed(() => ({
   <div class="absolute" :style="styleObject">
     <div class="relative flex flex-col">
       <ExpandedSectionBackground
-        :hovering="hovering"
+        :hovering="
+          hovering || equivalentPaths(hoveringPath?.pageFiltered, ourPath)
+        "
         :style="groupStyle"
         :node="node"
         :left="left"
@@ -107,6 +117,7 @@ const styleObject = computed(() => ({
         }"
       ></div>
       <SectionHeader
+        :show-title="showTitle"
         :path="path"
         @toggle="toggle"
         @hover="hover"
