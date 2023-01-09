@@ -94,7 +94,7 @@ export const useTimelineStore = defineStore("timeline", () => {
   const shouldZoomWhenScrolling = ref<boolean>(false);
   const collapsed = reactive<Set<string>>(new Set());
   const mode = ref<TimelineMode>("timeline");
-  const ganttSidebarWidth = ref(150);
+  const ganttSidebarWidth = ref(200);
   const ganttSidebarTempWidth = ref(0);
 
   const leftInsetWidth = computed(() =>

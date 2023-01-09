@@ -24,7 +24,7 @@ export const useViewStore = defineStore("views", () => {
       selectedViewIndex.value = 0;
     } else if (selectedViewIndex.value < 0) {
       // Set initial view to timeline
-      selectedViewIndex.value = 0;
+      selectedViewIndex.value = 1;
     }
     if (currentView.value.name === "Timeline") {
       timelineStore.setMode("timeline");

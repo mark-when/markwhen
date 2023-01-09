@@ -9,6 +9,7 @@ import SectionHeader from "./SectionHeader.vue";
 import { useTimelineStore } from "../../timelineStore";
 import { ranges } from "@/utilities/ranges";
 import { equivalentPaths } from "@/EventDetail/eventDetailStore";
+import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 const editorOrchestrator = useEditorOrchestratorStore();
 const props = defineProps<{
@@ -31,7 +32,7 @@ const collapsed = computed({
 });
 const hovering = ref(false);
 const hoveringPath = computed(() => editorOrchestrator.hoveringEventPaths);
-const ourPath = computed(() => ({
+const ourPath = computed<EventPath>(() => ({
   type: "pageFiltered",
   path: props.path.split(",").map((i) => parseInt(i)),
 }));
