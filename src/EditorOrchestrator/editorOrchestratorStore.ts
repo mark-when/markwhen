@@ -163,16 +163,8 @@ export const useEditorOrchestratorStore = defineStore(
       choosingColor.value = choosing;
     };
 
-    const newEventInsertionIndex = () => {
-      const { node } = getLast(pageStore.pageTimeline.events);
-      if (isEventNode(node)) {
-        return node.value.rangeInText.to;
-      } else {
-        return (
-          node.rangeInText?.to || pageStore.pageTimeline.metadata.endStringIndex
-        );
-      }
-    };
+    const newEventInsertionIndex = () =>
+      pageStore.pageTimeline.metadata.endStringIndex;
 
     const createEvent = (params: EventCreationParams) => {
       if (typeof params.range !== "string") {

@@ -47,15 +47,14 @@ export const useGestures = (
     if (startingZoom! * scale > MAX_SCALE) {
       scale = 1;
     }
-    const newScrollLeft =
-      scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
-      (e.center.x! - offsetLeft);
 
-    el.value!.scrollLeft = newScrollLeft;
-    el.value!.scrollTop = newScrollTop;
+    if (scale !== 1 && timelineStore.setPageScale(startingZoom! * e.scale)) {
+      const newScrollLeft =
+        scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
+        (e.center.x! - offsetLeft);
 
-    if (scale !== 1) {
-      timelineStore.setPageScale(startingZoom! * e.scale);
+      el.value!.scrollLeft = newScrollLeft;
+      el.value!.scrollTop = newScrollTop;
     }
 
     onSetScale();
@@ -89,17 +88,17 @@ export const useGestures = (
     }
     isZooming.value = true;
 
-    const offsetLeft = (el.value! as HTMLElement).offsetLeft;
-    const newScrollLeft =
-      wg.scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
-      (wg.origin.x! - offsetLeft);
-    const newScrollTop =
-      pinchStartScrollTop! + pinchStartCenterY! - wg.origin.y;
+    if (timelineStore.setPageScale(startingZoom! * wg.scale)) {
+      const offsetLeft = (el.value! as HTMLElement).offsetLeft;
+      const newScrollLeft =
+        wg.scale * (pinchStartScrollLeft! + pinchStartCenterX!) -
+        (wg.origin.x! - offsetLeft);
+      const newScrollTop =
+        pinchStartScrollTop! + pinchStartCenterY! - wg.origin.y;
 
-    el.value!.scrollLeft = newScrollLeft;
-    el.value!.scrollTop = newScrollTop;
-
-    timelineStore.setPageScale(startingZoom! * wg.scale);
+      el.value!.scrollLeft = newScrollLeft;
+      el.value!.scrollTop = newScrollTop;
+    }
     onSetScale();
 
     startingZoom = null;

@@ -96,7 +96,7 @@ export const useTimelineStore = defineStore("timeline", () => {
   const earliest = computed(() =>
     DateTime.fromISO(pageTimelineMetadata.value.earliestTime)
   );
-  
+
   const maxDurationDays = computed(
     () => pageTimelineMetadata.value.maxDurationDays
   );
@@ -125,9 +125,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     }
   });
 
-  const blocks = computed(() => {
-
-  })
+  const blocks = computed(() => {});
 
   const baselineRightmostDate = computed(() =>
     floorDateTime(
@@ -200,8 +198,15 @@ export const useTimelineStore = defineStore("timeline", () => {
   const setPageScale = (s: number) => {
     // TODO: also limit zooming in based on our position, if it would put us
     // past the browser's limit of a div's width
-    const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+    const scale = Math.min(
+      scaleToGetDistance(17_895_697, {
+        fromDateTime: baselineLeftmostDate.value,
+        toDateTime: baselineRightmostDate.value,
+      }),
+      Math.max(MIN_SCALE, Math.min(MAX_SCALE, s))
+    );
     pageSettings.value.scale = scale;
+    return s === scale;
   };
   const setStartedWidthChange = (started: boolean) => {
     startedWidthChange.value = started;
