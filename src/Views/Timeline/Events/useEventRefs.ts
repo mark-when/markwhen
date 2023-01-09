@@ -1,7 +1,8 @@
 import { usePageStore } from "@/Markwhen/pageStore";
 import { COMPLETION_REGEX } from "@markwhen/parser/lib/regex";
 import type { Event } from "@markwhen/parser/lib/Types";
-import { ref, watchEffect, type Ref, watch } from "vue";
+import type { MaybeRef } from "@vueuse/core";
+import { ref, watchEffect, type Ref, watch, unref } from "vue";
 import {
   dateRangeIsoComparator,
   stringArrayComparator,
@@ -34,13 +35,13 @@ const cachedComputed = <T>(
 };
 
 export const useEventRefs = (
-  event: Ref<Event | undefined>,
+  event: MaybeRef<Event | undefined>,
   isEventRow: () => boolean = () => true
 ) => {
   const pageStore = usePageStore();
 
   const cachedEventComputed = <T>(
-    val: () => T | undefined,
+    val: () => T,
     comparator: (a: T, b: T) => boolean = (a, b) => a === b,
     defaultValue?: T
   ) =>
@@ -52,35 +53,35 @@ export const useEventRefs = (
     );
 
   const eventRange = cachedEventComputed(
-    () => event.value?.dateRangeIso,
+    () => unref(event)!.dateRangeIso,
     dateRangeIsoComparator
   );
 
   const eventLocations = cachedEventComputed(
-    () => event.value?.eventDescription?.locations,
+    () => unref(event)?.eventDescription?.locations || [],
     stringArrayComparator
   );
 
   const completed = cachedEventComputed(
-    () => event.value?.eventDescription.completed
+    () => unref(event)?.eventDescription.completed
   );
 
   const supplemental = cachedEventComputed(
-    () => event.value?.eventDescription?.supplemental,
+    () => unref(event)?.eventDescription?.supplemental || [],
     supplementalComparator
   );
 
   const percent = cachedEventComputed(
-    () => event.value?.eventDescription?.percent
+    () => unref(event)?.eventDescription?.percent
   );
 
   const matchedListItems = cachedEventComputed(
-    () => event.value?.eventDescription?.matchedListItems,
+    () => unref(event)?.eventDescription?.matchedListItems || [],
     matchedListItemsComparator
   );
 
   const tags = cachedEventComputed(
-    () => event.value?.eventDescription?.tags,
+    () => unref(event)?.eventDescription?.tags || [],
     stringArrayComparator
   );
 
@@ -98,13 +99,13 @@ export const useEventRefs = (
   });
 
   const dateText = cachedEventComputed(() =>
-    toInnerHtml(event.value?.dateText || "")
+    toInnerHtml(unref(event)?.dateText || "")
   );
 
   const titleHtml = cachedEventComputed(() => {
-    const ed = event.value?.eventDescription?.eventDescription;
+    const ed = unref(event)?.eventDescription?.eventDescription;
     if (!ed) {
-      return undefined;
+      return "";
     }
     return toInnerHtml(
       ed.replace(COMPLETION_REGEX, (a, b) => a.substring(b.length))

@@ -1,61 +1,101 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useTransformStore } from "@/Markwhen/transformStore";
-import { toDateRange, type DateRange } from "@markwhen/parser/lib/Types";
+import type { Path, DateRange } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { useTimelineStore } from "../timelineStore";
-import { useEventColor } from "../Events/composables/useEventColor";
-import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
-const transformStore = useTransformStore();
+import { isEventNode } from "@markwhen/parser/lib/Noder";
+import { useNodeStore } from "../useNodeStore";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { computed } from "vue";
+import { eqPath } from "@/Markwhen/composables/useEventFinder";
+import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
+import EventRowSvg from "./EventRowSvg.vue";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
+import { useAppStore } from "@/App/appStore";
+
+const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
+const editorOrchestrator = useEditorOrchestratorStore();
+const appStore = useAppStore();
 
 const left = (range: DateRange) =>
   timelineStore.scalelessDistanceBetweenDates(
-    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+    timelineStore.baselineLeftmostDate,
     range.fromDateTime
   );
 
-const width = (range: DateRange) =>
-  timelineStore.scalelessDistanceBetweenDates(
+const width = (range: DateRange) => {
+  // console.log(range.fromDateTime, range.toDateTime);
+  const t = timelineStore.scalelessDistanceBetweenDates(
     range.fromDateTime,
     range.toDateTime
   );
+
+  return t;
+};
+
+const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
+const isHovering = (p: EventPath) => {
+  return hovering.value && eqPath(p, hovering.value);
+};
+
+const totalWidth = computed(() =>
+  timelineStore.scalelessDistanceBetweenDates(
+    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+    DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
+  )
+);
+
+const heightUnit = computed(() => totalWidth.value / nodeStore.height);
+
+const props = (path: Path, node: SomeNode) => ({
+  node,
+  hovering: isHovering({ type: "pageFiltered", path }),
+  path: path.join(","),
+  numChildren: nodeStore.childrenMap.get(path.join(",")),
+  numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
+  totalHeight: nodeStore.height,
+  totalWidth: totalWidth.value,
+  height: nodeStore.predecessorMap.get(path.join(",")),
+  heightUnit: heightUnit.value,
+  earliestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+  latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
+});
+
+const isDark = computed(() => appStore.inferredDarkMode);
+const vp = computed(() => timelineStore.pageSettings.viewport);
+const vpLeft = computed(
+  () =>
+    timelineStore.pageSettings.viewport.left -
+    timelineStore.scalelessDistanceBetweenDates(
+      timelineStore.baselineLeftmostDate,
+      DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
+    )
+);
 </script>
 
 <template>
   <div
-    class="ml-1 sticky bottom-12 left-12 inline-block dark:bg-gray-700 bg-slate-100 border rounded"
+    class="sticky bottom-8 inline-block dark:bg-slate-800 bg-slate-100 shadow-lg rounded-lg overflow-scroll p-2"
+    :style="`left: calc(${timelineStore.leftInsetWidth}px + 2rem);`"
   >
     <svg
-      preserveAspectRatio="none"
+      style="width: 8rem; height: 8rem"
       xmlns="http://www.w3.org/2000/svg"
-      :style="`width: 10rem; height: 10rem;`"
-      :viewBox="`-4 0 200 200`"
+      :viewBox="`-${heightUnit} ${heightUnit * 1.5} ${
+        totalWidth + heightUnit * 2
+      } ${totalWidth}`"
       fill="currentColor"
+      preserveAspectRatio="xMinYMin meet"
     >
-      <template
-        v-for="({ path, node }, index) in iterate(
-          transformStore.transformedEvents!
-        )"
-      >
-        <path
-          v-if="isEventNode(node)"
-          fill-rule="evenodd"
+      <template v-for="({ path, node }, index) in nodeStore.nodeArray">
+        <EventRowSvg
           :key="path.join(',')"
-          clip-rule="evenodd"
-          :d="`M ${left(toDateRange(eventValue(node).dateRangeIso)) / 1000} ${
-            2 + index * 6
-          } a 1 1 0 0 0 0 4 h ${
-            width(toDateRange(eventValue(node).dateRangeIso)) / 1000
-          } a 1 1 0 1 0 0 -4 H 2 z`"
-          :fill="`rgb(${useEventColor(node).color.value})`"
-        />
+          v-if="isEventNode(node)"
+          v-bind="props(path, node)"
+        ></EventRowSvg>
       </template>
-      <!-- <path
-        :d="`m ${viewportLeft} 0 l 0 ${mapHeight} l ${viewportWidth} 0 l 0 -${mapHeight} l 0 0 z`"
-        fill="rgba(0, 0, 0, 0.05)"
-      /> -->
     </svg>
   </div>
 </template>

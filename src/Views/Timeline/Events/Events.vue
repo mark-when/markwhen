@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import NowLine from "../Events/NowLine.vue";
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject } from "vue";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";
 import { useNodeStore, nodeKey } from "../useNodeStore";
 import EventNodeRow from "./EventNodeRow.vue";
-import SectionNodeRow from "./SectionNodeRow.vue";
 import type { Path } from "@markwhen/parser/lib/Types";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import GanttSidebar from "../Gantt/GanttSidebar.vue";
+import Section from "./Section/Section.vue";
 
 const timelineStore = useTimelineStore();
 
@@ -61,7 +61,7 @@ const currentWidth = computed(() => {
       v-for="{ path, node } in nodeStore.visibleNodes[1]"
       :key="nodeStore.sectionKeys.get(path.join(','))"
     >
-      <SectionNodeRow v-bind="props(path, node)"></SectionNodeRow>
+      <Section v-bind="props(path, node)"></Section>
     </template>
     <template
       v-for="{ path, node, key } in nodeStore.visibleNodes[0]"

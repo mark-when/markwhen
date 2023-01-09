@@ -18,6 +18,7 @@ import { dateMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import DebugView from "./DebugView.vue";
+import MiniMap from "./MiniMap.vue/MiniMap.vue";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();

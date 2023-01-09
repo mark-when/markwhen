@@ -7,15 +7,6 @@ const { newEventPosition, mouseDownTouchStartListener, creating } =
   useCreateEvent();
 const timelineStore = useTimelineStore();
 const nodeStore = useNodeStore();
-const height = computed(() => {
-  let max = 0;
-  for (const p of nodeStore.predecessorMap.values()) {
-    if (p > max) {
-      max = p;
-    }
-  }
-  return max * 30 + 140;
-});
 
 const isGantt = computed(() => timelineStore.mode === "gantt");
 </script>
@@ -32,7 +23,7 @@ const isGantt = computed(() => timelineStore.mode === "gantt");
     "
     :style="`left: ${newEventPosition[0].left}px; width: ${
       newEventPosition[1].left - newEventPosition[0].left
-    }px; top: ${height}px; height: ${
+    }px; top: ${nodeStore.height * 30 + 140}px; height: ${
       isGantt ? '15px' : '10px'
     }; border-radius: ${isGantt ? '0.25rem' : '99px'}`"
     @mousedown.prevent.stop="mouseDownTouchStartListener"

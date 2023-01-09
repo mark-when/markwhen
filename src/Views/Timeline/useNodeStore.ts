@@ -337,6 +337,16 @@ export const useNodeStore = defineStore("nodes", () => {
     // get parent's sibling
   };
 
+  const height = computed(() => {
+    let max = 0;
+    for (const p of predecessorMap.value.values()) {
+      if (p > max) {
+        max = p;
+      }
+    }
+    return max;
+  });
+
   return {
     nodes,
     nodeArray,
@@ -344,5 +354,6 @@ export const useNodeStore = defineStore("nodes", () => {
     childrenMap,
     predecessorMap,
     sectionKeys,
+    height,
   };
 });
