@@ -25,7 +25,11 @@ const events = canHover.value
 </script>
 
 <template>
-  <button @click="jumpToRange" class="px-1 relative" v-on="events">
+   <button
+    @click="jumpToRange"
+    class="h-6 flex flex-row items-center rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1 text-sm lg:text-base font-bold relative"
+    v-on="events"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="w-5 h-5"

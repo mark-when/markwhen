@@ -55,9 +55,9 @@ export const useGestures = (
 
       el.value!.scrollLeft = newScrollLeft;
       el.value!.scrollTop = newScrollTop;
-    }
-
     onSetScale();
+  }
+
   };
 
   const pinchEnd = (e: Event) => {
@@ -98,8 +98,8 @@ export const useGestures = (
 
       el.value!.scrollLeft = newScrollLeft;
       el.value!.scrollTop = newScrollTop;
+      onSetScale();
     }
-    onSetScale();
 
     startingZoom = null;
     // pinchStartScrollLeft = null;
