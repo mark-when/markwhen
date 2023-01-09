@@ -6,7 +6,9 @@ import { computed, reactive, watchEffect, watch } from "vue";
 import { useMarkwhenStore } from "../markwhenStore";
 import { usePageStore } from "../pageStore";
 
-export const usePageEffect = <T>(defaultPageState: () => T) => {
+export const usePageEffect = <T>(
+  defaultPageState: (pageIndex: number) => T
+) => {
   const pageStore = usePageStore();
   const editorOrchestrator = useEditorOrchestratorStore();
   const markwhenStore = useMarkwhenStore();
@@ -26,7 +28,7 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
     const pageIndex = pageStore.pageIndex;
     if (pageState[pageIndex] === undefined) {
       // If we do not have state for this page, give it the default
-        pageState[pageIndex] = defaultPageState();
+      pageState[pageIndex] = defaultPageState(pageIndex);
     }
   });
 
@@ -34,7 +36,7 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
     if (name === "setPageIndex") {
       const pageIndex = args[0];
       if (pageState[pageIndex] === undefined) {
-        pageState[pageIndex] = defaultPageState();
+        pageState[pageIndex] = defaultPageState(pageIndex);
       }
     }
   });
@@ -90,7 +92,7 @@ export const usePageEffect = <T>(defaultPageState: () => T) => {
     () => pageStore.pageIndex,
     (index) => {
       if (pageState[index] === undefined) {
-        pageState[pageStore.pageIndex] = defaultPageState();
+        pageState[pageStore.pageIndex] = defaultPageState(index);
       }
     }
   );

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, nextTick, onActivated, computed } from "vue";
-import { useTimelineStore, type Viewport } from "./timelineStore";
+import {
+  scaleToGetDistance,
+  useTimelineStore,
+  type Viewport,
+} from "./timelineStore";
 import TimeMarkersBack from "@/Views/Timeline/Markers/TimeMarkersBack.vue";
 import TimeMarkersFront from "@/Views/Timeline/Markers/TimeMarkersFront.vue";
 import Events from "@/Views/Timeline/Events/Events.vue";
@@ -13,7 +17,7 @@ import { useResizeObserver, watchThrottled } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
-import type { DateRangePart } from "@markwhen/parser/lib/Types";
+import type { DateRange, DateRangePart } from "@markwhen/parser/lib/Types";
 import { dateMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
@@ -30,13 +34,14 @@ const finder = useEventFinder;
 
 const getViewport = (): Viewport => {
   if (!timelineElement.value) {
-    return { left: 0, width: 0, top: 0, height: 0 };
+    return { left: 0, width: 0, top: 0, height: 0, offsetLeft: 0 };
   }
   return {
     left: timelineElement.value.scrollLeft - timelineElement.value.offsetLeft,
     width: timelineElement.value.clientWidth + timelineElement.value.offsetLeft,
     top: timelineElement.value.scrollTop,
     height: timelineElement.value.clientHeight,
+    offsetLeft: timelineElement.value.offsetLeft,
   };
 };
 
@@ -44,7 +49,7 @@ const setViewport = (v: Viewport) => {
   if (!timelineElement.value) {
     return;
   }
-  timelineElement.value.scrollLeft = v.left;
+  timelineElement.value.scrollLeft = v.left + timelineElement.value.offsetLeft;
   timelineElement.value.scrollTop = v.top;
 };
 
@@ -127,31 +132,56 @@ useGestures(timelineElement, () => {
   setViewportDateInterval();
 });
 
-const scrollToDate = (dateTime: DateTime, force: boolean = false) => {
+const scrollToDate = (
+  dateTime: DateTime,
+  force: boolean = false,
+  immediate: boolean = false
+) => {
   const el = timelineElement.value;
   if (el) {
     const fromLeft = timelineStore.distanceFromBaselineLeftmostDate(dateTime);
     const { left, width } = getViewport();
 
+    const immediateScroll = () => {
+      el.scrollLeft = fromLeft - width / 2 + el.offsetLeft;
+    };
+
     // If it isn't already within view
     if (force || fromLeft < left || fromLeft > left + width) {
-      el.scrollTo({
-        top: el.scrollTop,
-        left: fromLeft - width / 2,
-        behavior: "smooth",
-      });
+      immediate
+        ? immediateScroll()
+        : el.scrollTo({
+            top: el.scrollTop,
+            left: fromLeft - width / 2,
+            behavior: "smooth",
+          });
     }
   }
 };
 
-const scrollToDateRange = (dateRange?: DateRangePart) => {
+const scrollToDateRangeImmediate = (dateRange?: DateRange) => {
+  if (!dateRange) {
+    return;
+  }
+  const { width } = getViewport();
+  // We still want to be zoomed out a bit
+  const scale = scaleToGetDistance(width, dateRange) / 3;
+  timelineStore.setPageScale(scale);
+  nextTick(() => {
+    scrollToDate(dateMidpoint(dateRange), true, true);
+    setViewportDateInterval();
+  });
+};
+
+const scrollToDateRange = (dateRange?: DateRange) => {
+  console.log("scrolling to", dateRange);
   if (!dateRange) {
     return;
   }
   if (timelineStore.shouldZoomWhenScrolling) {
     const { width } = getViewport();
     // We still want to be zoomed out a bit
-    const scale = timelineStore.scaleToGetDistance(width, dateRange) / 3;
+    const scale = scaleToGetDistance(width, dateRange) / 3;
     timelineStore.setPageScale(scale);
     nextTick(() => {
       scrollToDate(dateMidpoint(dateRange));
@@ -216,14 +246,21 @@ onActivated(() => {
     top: viewport.value.top - (timelineElement.value?.offsetTop || 0),
     width: viewport.value.width,
     height: viewport.value.height,
+    offsetLeft: timelineElement.value?.offsetLeft || 0,
   };
-  console.log("Activated");
   nextTick(() => setViewport(viewportWithOffset));
 });
 
+const setInitialScrollAndScale = () =>
+  scrollToDateRangeImmediate({
+    fromDateTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+    toDateTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
+  });
+
 onMounted(() => {
-  setViewportDateInterval();
+  setInitialScrollAndScale();
   panelStore.setPanelElement(PanelVisualization, timelineElement.value!);
+  timelineStore.setViewportGetter(getViewport);
 });
 
 const showJumpToRange = computed({

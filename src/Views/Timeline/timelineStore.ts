@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { DateTime } from "luxon";
 import {
+  dateMidpoint,
   diffScale,
   floorDateTime,
   scales,
@@ -14,8 +15,10 @@ import type {
   DateRange,
   DateRangePart,
   Path,
+  Timeline,
 } from "@markwhen/parser/lib/Types";
 import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
+import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 
 export enum Weight {
   SECOND = 0,
@@ -55,43 +58,99 @@ export interface Viewport {
   width: number;
   top: number;
   height: number;
+  offsetLeft: number;
 }
 
 export interface Settings {
   scale: number;
   viewportDateInterval: DateInterval;
-  viewportDateIntervalWithSidebar: DateInterval;
   viewport: Viewport;
-  viewportWithSidebar: Viewport;
 }
 
 export const MIN_SCALE = 0.04;
 export const MAX_SCALE = 30000000;
 const initialScale = 0.3;
 
-export function blankSettings(): Settings {
-  const interval = {
-    from: DateTime.now().minus({ years: 10 }),
-    to: DateTime.now().plus({ years: 10 }),
-  };
-  return {
-    scale: initialScale,
-    viewportDateInterval: interval,
-    viewport: { left: 0, width: 0, top: 0, height: 0 },
-    viewportDateIntervalWithSidebar: interval,
-    viewportWithSidebar: { left: 0, width: 0, top: 0, height: 0 },
-  };
+export const scaleToGetDistance = (distance: number, range: DateRange) =>
+  (distance * 24) / range.toDateTime.diff(range.fromDateTime).as(diffScale);
+
+export function initialPageSettings(
+  timeline: Timeline,
+  viewport?: Viewport
+): Settings {
+  if (viewport) {
+    const range = {
+      fromDateTime: DateTime.fromISO(timeline.metadata.earliestTime),
+      toDateTime: DateTime.fromISO(timeline.metadata.latestTime),
+    };
+    const scale = scaleToGetDistance(viewport.width, range) / 3;
+    const midpoint = dateMidpoint(range);
+    const bslmd = calculateBaselineLeftmostDate(
+      DateTime.fromISO(timeline.metadata.earliestTime),
+      timeline.metadata.maxDurationDays
+    );
+    const fromLeft = (midpoint.diff(bslmd).as(diffScale) * scale) / 24;
+    return {
+      scale,
+      viewportDateInterval: {
+        from: DateTime.now().minus({ years: 10 }),
+        to: DateTime.now().plus({ years: 10 }),
+      },
+      viewport: {
+        height: viewport.height,
+        top: 0,
+        width: viewport.width,
+        left: fromLeft - viewport.width / 2,
+        offsetLeft: viewport.offsetLeft,
+      },
+    };
+  } else {
+    const interval = {
+      from: DateTime.now().minus({ years: 10 }),
+      to: DateTime.now().plus({ years: 10 }),
+    };
+    return {
+      scale: initialScale,
+      viewportDateInterval: interval,
+      viewport: { left: 0, width: 0, top: 0, height: 0, offsetLeft: 0 },
+    };
+  }
 }
 
+const calculateBaselineLeftmostDate = (
+  earliestDateTime: DateTime,
+  maxDurationDays: number
+) => {
+  if (maxDurationDays < 0.1) {
+    return floorDateTime(earliestDateTime.minus({ hours: 1 }), "hour");
+  }
+  if (maxDurationDays < 1) {
+    return floorDateTime(earliestDateTime.minus({ days: 1 }), "day");
+  }
+  if (maxDurationDays < 30) {
+    return floorDateTime(earliestDateTime.minus({ months: 4 }), "year");
+  }
+  if (maxDurationDays < 180) {
+    return floorDateTime(earliestDateTime.minus({ months: 3 }), "year");
+  }
+  return floorDateTime(earliestDateTime.minus({ months: 6 }), "year");
+};
+
 export const useTimelineStore = defineStore("timeline", () => {
+  const pageStore = usePageStore();
+  const markwhenStore = useMarkwhenStore();
+
   const viewportGetter = ref<() => Viewport>();
-  const pageSettings = usePageEffect(() => blankSettings());
+  const pageSettings = usePageEffect((index) => {
+    const viewport = viewportGetter.value?.();
+    return initialPageSettings(markwhenStore.timelines[index], viewport);
+  });
   const startedWidthChange = ref(false);
   const hideNowLine = ref(false);
   const scrollToPath = ref<EventPaths>();
   const showingJumpToRange = ref(false);
   const jumpToRange = ref<DateRangePart>();
-  const shouldZoomWhenScrolling = ref<boolean>(false);
+  const shouldZoomWhenScrolling = ref<boolean>(true);
   const collapsed = reactive<Set<string>>(new Set());
   const mode = ref<TimelineMode>("timeline");
   const ganttSidebarWidth = ref(200);
@@ -108,9 +167,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     ganttSidebarWidth.value = width;
   };
 
-  const pageTimelineMetadata = computed(
-    () => usePageStore().pageTimelineMetadata
-  );
+  const pageTimelineMetadata = computed(() => pageStore.pageTimelineMetadata);
   const pageScale = computed(() => pageSettings.value.scale);
 
   const earliest = computed(() =>
@@ -124,22 +181,10 @@ export const useTimelineStore = defineStore("timeline", () => {
   const baselineLeftmostDate = ref<DateTime>(DateTime.now());
 
   watchEffect(() => {
-    const earliestTime = earliest.value;
-    const days = maxDurationDays.value;
-    let newValue: DateTime;
-    if (days < 0.1) {
-      newValue = floorDateTime(earliestTime.minus({ hours: 1 }), "hour");
-    }
-    if (days < 1) {
-      newValue = floorDateTime(earliestTime.minus({ days: 1 }), "day");
-    }
-    if (days < 30) {
-      newValue = floorDateTime(earliestTime.minus({ months: 4 }), "year");
-    }
-    if (days < 180) {
-      newValue = floorDateTime(earliestTime.minus({ months: 3 }), "year");
-    }
-    newValue = floorDateTime(earliestTime.minus({ months: 6 }), "year");
+    const newValue = calculateBaselineLeftmostDate(
+      earliest.value,
+      maxDurationDays.value
+    );
     if (+newValue !== +baselineLeftmostDate.value) {
       baselineLeftmostDate.value = newValue;
     }
@@ -192,9 +237,6 @@ export const useTimelineStore = defineStore("timeline", () => {
       pageScale.value) /
     24;
 
-  const scaleToGetDistance = (distance: number, range: DateRange) =>
-    (distance * 24) / range.toDateTime.diff(range.fromDateTime).as(diffScale);
-
   const dateFromClientLeft = computed(
     () => (offset: number) =>
       baselineLeftmostDate.value.plus({
@@ -211,13 +253,10 @@ export const useTimelineStore = defineStore("timeline", () => {
       ...viewport,
       left: viewport.left + ganttSidebarWidth.value,
     };
-    pageSettings.value.viewportWithSidebar = withSidebar;
     pageSettings.value.viewportDateInterval = dateIntervalFromViewport.value(
       viewport.left,
       viewport.width
     );
-    pageSettings.value.viewportDateIntervalWithSidebar =
-      dateIntervalFromViewport.value(withSidebar.left, withSidebar.width);
   };
   const setMode = (m: TimelineMode) => {
     mode.value = m;
@@ -361,11 +400,9 @@ export const useTimelineStore = defineStore("timeline", () => {
       b: DateTime
     ) => number,
     distanceFromViewportLeftDate,
-    distanceFromBaselineLeftmostDate:
-      distanceFromBaselineLeftmostDate as unknown as (a: DateTime) => number,
+    distanceFromBaselineLeftmostDate,
     distanceBetweenBaselineDates,
     dateFromClientLeft,
-    scaleToGetDistance,
     scalelessDistanceFromBaselineLeftmostDate,
     isCollapsed,
     isCollapsedChild,
