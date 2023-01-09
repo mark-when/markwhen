@@ -33,7 +33,7 @@ const props = defineProps<{
   color?: string;
   isDetailEvent: boolean;
   numAbove: number;
-  completed?: boolean
+  completed?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -224,7 +224,7 @@ const top = computed(() => 100 + props.numAbove * 30);
 const display = computed(() => {
   const vp = timelineStore.pageSettings.viewport;
   if (timelineStore.isCollapsedChild(props.path.path)) {
-    return 'none'
+    return "none";
   }
   // if (isScrollToPath.value) {
   //   return "block";
@@ -288,6 +288,7 @@ const display = computed(() => {
           {{ dateText }}
         </p>
         <event-title
+          v-if="timelineStore.mode === 'timeline'"
           :showing-meta="showingMeta"
           :is-hovering="isHovering"
           :has-meta="hasMeta"
@@ -308,6 +309,28 @@ const display = computed(() => {
           :left="barWidth"
           @close="close"
         /> -->
+      </div>
+    </div>
+  </div>
+  <div
+    class="absolute left-0 right-0 h-[30px]"
+    :style="{ top: `${top}px` }"
+    v-if="timelineStore.mode === 'rows'"
+  >
+    <div class="flex">
+      <div class="sticky left-2">
+        <event-title
+          :showing-meta="showingMeta"
+          :is-hovering="isHovering"
+          :has-meta="hasMeta"
+          :has-supplemental="!!supplemental.length"
+          :has-locations="hasLocations"
+          :task-denominator="taskDenominator"
+          :task-numerator="taskNumerator"
+          :completed="completed"
+          :title-html="titleHtml"
+          @toggle-meta="toggleMeta"
+        ></event-title>
       </div>
     </div>
   </div>

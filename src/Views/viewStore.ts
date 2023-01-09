@@ -4,10 +4,12 @@ import type { ViewProvider } from "@/viewProvider";
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
+import { useTimelineStore } from "./Timeline/timelineStore";
 
 export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
+  const timelineStore = useTimelineStore();
 
   const views = computed<ViewProvider[]>(() =>
     isMobile.value ? useMobileViewProviders() : useViewProviders()
@@ -23,6 +25,11 @@ export const useViewStore = defineStore("views", () => {
     } else if (selectedViewIndex.value < 0) {
       // Set initial view to timeline
       selectedViewIndex.value = 0;
+    }
+    if (currentView.value.name === "Timeline") {
+      timelineStore.setMode("timeline");
+    } else if (currentView.value.name === "Rows") {
+      timelineStore.setMode("rows");
     }
   });
 

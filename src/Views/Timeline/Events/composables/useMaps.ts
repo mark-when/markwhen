@@ -147,20 +147,28 @@ export const useMaps = () => {
             const top = 100 + numAbove * 30;
             const vp = timelineStore.pageSettings.viewport;
             if (top > vp.top - 500 && top < vp.top + vp.height + 500) {
-              const range = ranges(pAndN.node)!;
-              const left =
-                timelineStore.pageScaleBy24 *
-                timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-                  range.fromDateTime
-                );
-              const width =
-                timelineStore.pageScaleBy24 *
-                timelineStore.scalelessDistanceBetweenDates(
-                  range.fromDateTime,
-                  range.toDateTime
-                );
-              if (left < vp.left + vp.width + 50 || vp.left < left + width + 50)
+              if (timelineStore.mode === "rows") {
                 visibleEvents.push(pAndN);
+              } else {
+                const range = ranges(pAndN.node)!;
+                const left =
+                  timelineStore.pageScaleBy24 *
+                  timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+                    range.fromDateTime
+                  );
+                const width =
+                  timelineStore.pageScaleBy24 *
+                  timelineStore.scalelessDistanceBetweenDates(
+                    range.fromDateTime,
+                    range.toDateTime
+                  );
+                if (
+                  left < vp.left + vp.width + 50 ||
+                  vp.left < left + width + 50
+                ) {
+                  visibleEvents.push(pAndN);
+                }
+              }
             }
           }
         }

@@ -1,6 +1,6 @@
 import type { ViewProvider } from "@/viewProvider";
-import { useTimelineProvider } from "@/Views/Timeline/timelineViewProvider";
+import { useTimelineProvider, useTimelineRowsProvider } from "@/Views/Timeline/timelineViewProvider";
 
 export const useMobileViewProviders = () => {
-  return [useTimelineProvider()] as ViewProvider[];
+  return [useTimelineRowsProvider(), useTimelineProvider()] as ViewProvider[];
 };

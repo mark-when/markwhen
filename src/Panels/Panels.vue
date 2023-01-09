@@ -4,13 +4,22 @@ import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { usePanelStore } from "./panelStore";
 import { useViewOrchestrator } from "@/Views/ViewOrchestrator/useViewOrchestrator";
+import Timeline from "@/Views/Timeline/Timeline.vue";
 
 const viewStore = useViewStore();
 const panelStore = usePanelStore();
 const currentView = computed(() => viewStore.currentView);
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
-
-const frames = ref<HTMLIFrameElement[]>()
+const currentViewComponent = computed(() => {
+  if (
+    viewStore.currentView.name === "Timeline" ||
+    viewStore.currentView.name === "Rows"
+  ) {
+    return Timeline;
+  }
+  return viewStore.currentView.component();
+});
+const frames = ref<HTMLIFrameElement[]>();
 
 const activeFrame = computed(() =>
   frames.value?.find((f) => f.id === `view_${currentView.value.name}`)
@@ -41,11 +50,6 @@ const visualizationStyle = computed(() => {
     };
   }
 });
-
-const currentComponent = computed(() => currentView.value.component());
-const framedComponents = computed(() =>
-  viewStore.views.filter((v) => typeof v.component() === "string")
-);
 </script>
 
 <template>
@@ -53,16 +57,17 @@ const framedComponents = computed(() =>
     <div class="w-full h-full overflow-auto" :style="visualizationStyle">
       <iframe
         ref="frames"
-        v-for="component in framedComponents"
+        v-for="component in viewStore.framedViews"
         class="w-full h-full"
-        v-show="currentComponent === component.component()"
+        v-show="currentViewComponent === component.component()"
         :src="component.component()"
         :id="`view_${component.name}`"
       ></iframe>
       <keep-alive>
         <component
-          :is="currentComponent"
-          v-if="typeof currentComponent !== 'string'"
+          :is="currentViewComponent"
+          :key="currentView.name === 'Rows' ? 'Timeline' : currentView.name"
+          v-if="typeof currentViewComponent !== 'string'"
         />
       </keep-alive>
       <div class="absolute inset-0 frameCover"></div>

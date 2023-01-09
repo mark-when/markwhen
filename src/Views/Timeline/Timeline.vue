@@ -18,6 +18,7 @@ import { dateMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import DebugView from "./DebugView.vue";
+import RowsSidebar from "./RowsSidebar.vue";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
@@ -216,6 +217,7 @@ onActivated(() => {
     width: viewport.value.width,
     height: viewport.value.height,
   };
+  console.log("Activated");
   nextTick(() => setViewport(viewportWithOffset));
 });
 
@@ -232,21 +234,28 @@ const showJumpToRange = computed({
     timelineStore.setShowingJumpToRange(val);
   },
 });
+
+onMounted(() => {
+  console.log("timeline mounted");
+});
 </script>
 
 <template>
-  <div
-    id="timeline"
-    class="relative h-full overflow-auto w-full noScrollBar"
-    ref="timelineElement"
-    @scroll="scroll"
-    :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
-  >
-    <TimeMarkersBack />
-    <Events />
-    <TimeMarkersFront />
-    <!-- <MiniMap /> -->
-    <DebugView v-if="false" />
+  <div class="flex flex-row w-full h-full">
+    <RowsSidebar v-if="timelineStore.mode === 'rows'" />
+    <div
+      id="timeline"
+      class="relative h-full overflow-auto w-full noScrollBar"
+      ref="timelineElement"
+      @scroll="scroll"
+      :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
+    >
+      <TimeMarkersBack />
+      <Events />
+      <TimeMarkersFront />
+      <!-- <MiniMap /> -->
+      <DebugView v-if="false" />
+    </div>
   </div>
   <JumpToRangeDialog v-model="showJumpToRange" />
 </template>

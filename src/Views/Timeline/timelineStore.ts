@@ -39,6 +39,7 @@ const MONTH = 30 * DAY;
 const YEAR = 12 * MONTH;
 const DECADE = 10 * YEAR;
 
+export type TimelineMode = "timeline" | "rows";
 export const timeMarkerWeightMinimum = 0.25;
 
 function roundToTwoDecimalPlaces(n: number): number {
@@ -87,12 +88,13 @@ export const useTimelineStore = defineStore("timeline", () => {
   const jumpToRange = ref<DateRangePart>();
   const shouldZoomWhenScrolling = ref<boolean>(false);
   const collapsed = reactive<Set<string>>(new Set());
+  const mode = ref<TimelineMode>("timeline");
 
   const pageTimelineMetadata = computed(
     () => usePageStore().pageTimelineMetadata
   );
   const pageScale = computed(() => pageSettings.value.scale);
-  const bucketedScale = computed(() => Math.floor(pageScale.value));
+
   const earliest = computed(() =>
     DateTime.fromISO(pageTimelineMetadata.value.earliestTime)
   );
@@ -191,6 +193,9 @@ export const useTimelineStore = defineStore("timeline", () => {
       viewport.left,
       viewport.width
     );
+  };
+  const setMode = (m: TimelineMode) => {
+    mode.value = m;
   };
   const setViewportGetter = (getter: () => Viewport) => {
     viewportGetter.value = getter;
@@ -313,6 +318,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     jumpToRange,
     shouldZoomWhenScrolling,
     collapsed,
+    mode,
 
     // getters
     pageTimelineMetadata,
@@ -353,5 +359,6 @@ export const useTimelineStore = defineStore("timeline", () => {
     setCollapsed,
     toggleCollapsed,
     expand,
+    setMode,
   };
 });
