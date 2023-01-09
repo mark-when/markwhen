@@ -32,7 +32,7 @@ const events = canHover.value
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      class="w-5 h-5"
+      class="w-5 h-5 py-px"
       width="40"
       height="40"
       viewBox="0 0 24 24"
@@ -43,9 +43,10 @@ const events = canHover.value
       stroke-linejoin="round"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <circle cx="12" cy="12" r=".5" fill="currentColor"></circle>
-      <circle cx="12" cy="12" r="9"></circle>
+      <circle cx="10" cy="10" r="7"></circle>
+      <line x1="21" y1="21" x2="15" y2="15"></line>
     </svg>
+
     <HoverHint
       :hover-position="'top'"
       :hovering="hovering"

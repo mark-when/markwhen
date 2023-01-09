@@ -263,6 +263,15 @@ onMounted(() => {
   timelineStore.setViewportGetter(getViewport);
 });
 
+watch(
+  () => [
+    timelineStore.autoCenterSemaphore,
+  ],
+  () => {
+    setInitialScrollAndScale();
+  }
+);
+
 const showJumpToRange = computed({
   get() {
     return timelineStore.showingJumpToRange;

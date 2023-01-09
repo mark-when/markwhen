@@ -3,6 +3,7 @@ import Timeline from "./Timeline.vue";
 import TimelineScale from "./Settings/TimelineScale.vue";
 import ToggleNowLine from "./Settings/ToggleNowLine.vue";
 import Jump from "./Settings/Jump.vue";
+import AutoCenter from "./Settings/AutoCenter.vue"
 
 export const useTimelineProvider: () => ViewProvider = () => ({
   name: "Timeline",
@@ -13,7 +14,7 @@ export const useTimelineProvider: () => ViewProvider = () => ({
         d="m 13 13 h -5 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 5 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -1 -4 h -7 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 7 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -9 -4 h 0 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 2 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z">
       </path>
     </svg>`,
-  settings: [() => Jump, () => ToggleNowLine, () => TimelineScale],
+  settings: [() => Jump, () => ToggleNowLine, () => TimelineScale, () => AutoCenter],
   capabilities: { edit: true, hoveringEvent: true, jumpToEvent: true },
   uses: { tags: true, drawerDescription: true, sort: true, pages: true },
   framed: false,
@@ -28,7 +29,7 @@ export const useTimelineRowsProvider: () => ViewProvider = () => ({
         d="m 14 13 h -3 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 3 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m 0 -4 h -5 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 5 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z m -6 -4 h -1 c -0.55 0 -1 -0.45 -1 -1 s 0.45 -1 1 -1 h 2 c 0.55 0 1 0.45 1 1 s -0.45 1 -1 1 z M 2 4 L 2 12.5 A 1 1 0 0 0 3 13.5 L 3.5 13.5 A 1 1 0 0 0 4.5 12.5 L 4.5 3.5 A 1 1 0 0 0 3.5 2.5 L 3 2.5 A 1 1 0 0 0 2 3.5 Z">
       </path>
     </svg>`,
-  settings: [() => Jump, () => ToggleNowLine, () => TimelineScale],
+  settings: [() => Jump, () => ToggleNowLine, () => TimelineScale,  () => AutoCenter],
   capabilities: { edit: true, hoveringEvent: true, jumpToEvent: true },
   uses: { tags: true, drawerDescription: true, sort: true, pages: true },
   framed: false,

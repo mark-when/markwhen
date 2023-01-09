@@ -155,6 +155,11 @@ export const useTimelineStore = defineStore("timeline", () => {
   const mode = ref<TimelineMode>("timeline");
   const ganttSidebarWidth = ref(200);
   const ganttSidebarTempWidth = ref(0);
+  const autoCenterSemaphore = ref(0);
+
+  const autoCenter = () => {
+    autoCenterSemaphore.value++;
+  };
 
   const leftInsetWidth = computed(() =>
     mode.value === "gantt" ? ganttSidebarWidth.value : 0
@@ -388,6 +393,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     mode,
     ganttSidebarWidth,
     ganttSidebarTempWidth,
+    autoCenterSemaphore,
 
     // getters
     pageTimelineMetadata,
@@ -428,5 +434,6 @@ export const useTimelineStore = defineStore("timeline", () => {
     setMode,
     setGanttSidebarWidth,
     setGanttSidebarTempWidth,
+    autoCenter,
   };
 });
