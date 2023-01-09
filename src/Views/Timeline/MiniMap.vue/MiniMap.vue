@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
-import type { Path, DateRange } from "@markwhen/parser/lib/Types";
+import type { Path, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { useTimelineStore } from "../timelineStore";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
@@ -10,7 +10,7 @@ import { computed } from "vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import EventRowSvg from "./EventRowSvg.vue";
-import type { SomeNode } from "@markwhen/parser/lib/Node";
+import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
 import { useAppStore } from "@/App/appStore";
 
 const nodeStore = useNodeStore();
@@ -50,14 +50,14 @@ const totalWidth = computed(() =>
 const heightUnit = computed(() => totalWidth.value / nodeStore.height);
 
 const props = (path: Path, node: SomeNode) => ({
-  node,
+  node: node as Node<Event>,
   hovering: isHovering({ type: "pageFiltered", path }),
   path: path.join(","),
   numChildren: nodeStore.childrenMap.get(path.join(",")),
   numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
   totalHeight: nodeStore.height,
   totalWidth: totalWidth.value,
-  height: nodeStore.predecessorMap.get(path.join(",")),
+  height: nodeStore.predecessorMap.get(path.join(","))!,
   heightUnit: heightUnit.value,
   earliestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
   latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
