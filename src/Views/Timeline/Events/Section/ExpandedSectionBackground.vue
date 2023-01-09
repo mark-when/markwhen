@@ -61,12 +61,14 @@ const styleObject = computed(() => {
   <div
     class="absolute h-full flex flex-row items-center dark:text-gray-400 transition"
     :class="{
-      'dark:bg-opacity-30 bg-opacity-20': hovering,
+      'dark:bg-opacity-30 bg-opacity-20': hovering || (!color && isDetailEvent),
       'dark:bg-opacity-20 bg-opacity-10': !hovering && !isDeep,
       border: !color,
       'dark:border-gray-900/25 border-gray-400/25': !color && isDeep,
-      'bg-gray-400 dark:bg-gray-800 dark:border-gray-900/25 border-gray-400/25':
-        (!color && !isDeep) || (!color && hovering),
+      'bg-gray-400 dark:bg-gray-600': !color && !isDeep,
+      'dark:border-gray-400/25 border-gray-400/25': !color && !hovering,
+      'dark:border-gray-400 border-gray-600':
+        !color && (hovering || isDetailEvent),
       'ml-0 w-full': !isGroupStyle,
       'rounded-[14px]': isGroupStyle,
     }"

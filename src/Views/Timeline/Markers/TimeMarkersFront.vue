@@ -74,7 +74,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
             marginLeft: `${leftMargin}px`,
             background: `linear-gradient(${
               dark
-                ? 'to bottom, #374151, 85%, #38404700'
+                ? 'to bottom, rgb(51, 65, 85), 85%, #38404700'
                 : 'to bottom, rgb(241 245 249), 85%, #ffffff00'
             })`,
           }"

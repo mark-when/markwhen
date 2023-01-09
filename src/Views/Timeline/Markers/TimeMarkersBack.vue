@@ -25,7 +25,7 @@ const backgroundColor = computed(() => (tm: TimeMarker) => {
     const a = timelineStore.weights[Weight.DAY] * 0.2;
     if (weekday === 6 || weekday === 7) {
       return dark.value
-        ? `rgba(30, 30, 30, ${a})`
+        ? `rgba(10, 10, 10, ${a})`
         : `rgba(170, 170, 170, ${a})`;
     }
   }
@@ -46,7 +46,7 @@ const alpha = computed(
 
 const borderColor = computed(() => (tm: TimeMarker) => {
   const a = hovering.value(tm) ? 1 : (alpha.value(tm) - 0.3) * 2;
-  return dark.value ? `rgba(100, 100, 100, ${a})` : `rgba(200, 200, 200, ${a})`;
+  return dark.value ? `rgba(71, 85, 105, ${a})` : `rgba(200, 200, 200, ${a})`;
 });
 </script>
 
