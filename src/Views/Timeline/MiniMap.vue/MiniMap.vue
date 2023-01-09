@@ -53,7 +53,7 @@ const props = (path: Path, node: SomeNode) => ({
   node: node as Node<Event>,
   hovering: isHovering({ type: "pageFiltered", path }),
   path: path.join(","),
-  numChildren: nodeStore.childrenMap.get(path.join(",")),
+  numChildren: nodeStore.childrenMap.get(path.join(",")) || 0,
   numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
   totalHeight: nodeStore.height,
   totalWidth: totalWidth.value,

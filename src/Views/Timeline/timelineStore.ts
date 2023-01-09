@@ -75,10 +75,10 @@ export const scaleToGetDistance = (distance: number, range: DateRange) =>
   (distance * 24) / range.toDateTime.diff(range.fromDateTime).as(diffScale);
 
 export function initialPageSettings(
-  timeline: Timeline,
+  timeline?: Timeline,
   viewport?: Viewport
 ): Settings {
-  if (viewport) {
+  if (viewport && timeline) {
     const range = {
       fromDateTime: DateTime.fromISO(timeline.metadata.earliestTime),
       toDateTime: DateTime.fromISO(timeline.metadata.latestTime),
@@ -241,7 +241,10 @@ export const useTimelineStore = defineStore("timeline", () => {
     () => (offset: number) =>
       baselineLeftmostDate.value.plus({
         [diffScale]:
-          ((offset + pageSettings.value.viewport.left - leftInsetWidth.value) /
+          ((offset +
+            pageSettings.value.viewport.left -
+            leftInsetWidth.value -
+            pageSettings.value.viewport.offsetLeft) /
             pageScale.value) *
           24,
       })
@@ -249,13 +252,9 @@ export const useTimelineStore = defineStore("timeline", () => {
 
   const setViewport = (viewport: Viewport) => {
     pageSettings.value.viewport = viewport;
-    const withSidebar = {
-      ...viewport,
-      left: viewport.left + ganttSidebarWidth.value,
-    };
     pageSettings.value.viewportDateInterval = dateIntervalFromViewport.value(
-      viewport.left,
-      viewport.width
+      viewport.left - viewport.offsetLeft,
+      viewport.width + viewport.offsetLeft
     );
   };
   const setMode = (m: TimelineMode) => {
@@ -350,7 +349,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     const multiplier = arbitraryNumber * secondsInADay;
     const diff = rawDiff * (multiplier / 24);
 
-    const width = pageSettings.value.viewport.width;
+    const width =
+      pageSettings.value.viewport.width +
+      pageSettings.value.viewport.offsetLeft;
     const denom = diff / width;
     return [
       clamp(roundToTwoDecimalPlaces((30 * SECOND) / denom)),

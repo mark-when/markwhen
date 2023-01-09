@@ -219,7 +219,7 @@ const percent = computed(() => {
 const top = computed(() => 100 + props.numAbove * 30);
 
 const display = computed(() => {
-  const vp = timelineStore.pageSettings.viewport;
+  // const vp = timelineStore.pageSettings.viewport;
   if (timelineStore.isCollapsedChild(props.path.path)) {
     return "none";
   }

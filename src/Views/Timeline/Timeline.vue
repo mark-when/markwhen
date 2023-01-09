@@ -37,8 +37,8 @@ const getViewport = (): Viewport => {
     return { left: 0, width: 0, top: 0, height: 0, offsetLeft: 0 };
   }
   return {
-    left: timelineElement.value.scrollLeft - timelineElement.value.offsetLeft,
-    width: timelineElement.value.clientWidth + timelineElement.value.offsetLeft,
+    left: timelineElement.value.scrollLeft,
+    width: timelineElement.value.clientWidth,
     top: timelineElement.value.scrollTop,
     height: timelineElement.value.clientHeight,
     offsetLeft: timelineElement.value.offsetLeft,
@@ -49,7 +49,7 @@ const setViewport = (v: Viewport) => {
   if (!timelineElement.value) {
     return;
   }
-  timelineElement.value.scrollLeft = v.left + timelineElement.value.offsetLeft;
+  timelineElement.value.scrollLeft = v.left;
   timelineElement.value.scrollTop = v.top;
 };
 
@@ -143,7 +143,7 @@ const scrollToDate = (
     const { left, width } = getViewport();
 
     const immediateScroll = () => {
-      el.scrollLeft = fromLeft - width / 2 + el.offsetLeft;
+      el.scrollLeft = fromLeft - width / 2;
     };
 
     // If it isn't already within view
@@ -242,8 +242,8 @@ watch(
 const viewport = computed(() => timelineStore.pageSettings.viewport);
 onActivated(() => {
   const viewportWithOffset = {
-    left: viewport.value.left + (timelineElement.value?.offsetLeft || 0),
-    top: viewport.value.top - (timelineElement.value?.offsetTop || 0),
+    left: viewport.value.left,
+    top: viewport.value.top,
     width: viewport.value.width,
     height: viewport.value.height,
     offsetLeft: timelineElement.value?.offsetLeft || 0,
