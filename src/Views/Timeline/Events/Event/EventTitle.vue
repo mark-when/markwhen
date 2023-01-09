@@ -9,6 +9,7 @@ const props = defineProps<{
   hasMeta: boolean;
   hasSupplemental: boolean;
   hasLocations: boolean;
+  completed?: boolean;
   taskDenominator: number;
   taskNumerator: number;
   titleHtml: string;
@@ -63,12 +64,13 @@ const props = defineProps<{
         ></path>
       </svg>
       <task-completion
-        v-if="taskDenominator"
+        v-if="taskDenominator || typeof completed !== 'undefined'"
         :taskNumerator="taskNumerator"
         :taskDenominator="taskDenominator"
+        :completed="completed"
       />
     </div>
-    <p class="ml-2">
+    <p class="ml-px">
       <span
         v-html="titleHtml"
         :class="{

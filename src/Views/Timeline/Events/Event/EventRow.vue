@@ -33,6 +33,7 @@ const props = defineProps<{
   color?: string;
   isDetailEvent: boolean;
   numAbove: number;
+  completed?: boolean
 }>();
 
 const emit = defineEmits<{
@@ -294,6 +295,7 @@ const display = computed(() => {
           :has-locations="hasLocations"
           :task-denominator="taskDenominator"
           :task-numerator="taskNumerator"
+          :completed="completed"
           :title-html="titleHtml"
           @toggle-meta="toggleMeta"
         ></event-title>

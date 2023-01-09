@@ -1,4 +1,5 @@
 import { usePageStore } from "@/Markwhen/pageStore";
+import { COMPLETION_REGEX } from "@markwhen/parser/lib/regex";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch } from "vue";
 import {
@@ -40,7 +41,7 @@ export const useEventRefs = (
 
   const cachedEventComputed = <T>(
     val: () => T | undefined,
-    comparator: (a: T, b: T) => boolean,
+    comparator: (a: T, b: T) => boolean = (a, b) => a === b,
     defaultValue?: T
   ) =>
     cachedComputed(
@@ -60,14 +61,17 @@ export const useEventRefs = (
     stringArrayComparator
   );
 
+  const completed = cachedEventComputed(
+    () => event.value?.eventDescription.completed
+  );
+
   const supplemental = cachedEventComputed(
     () => event.value?.eventDescription?.supplemental,
     supplementalComparator
   );
 
   const percent = cachedEventComputed(
-    () => event.value?.eventDescription?.percent,
-    (a, b) => a === b
+    () => event.value?.eventDescription?.percent
   );
 
   const matchedListItems = cachedEventComputed(
@@ -93,18 +97,19 @@ export const useEventRefs = (
     }
   });
 
-  const dateText = cachedEventComputed(
-    () => toInnerHtml(event.value?.dateText || ''),
-    (a, b) => a === b
+  const dateText = cachedEventComputed(() =>
+    toInnerHtml(event.value?.dateText || "")
   );
 
-  const titleHtml = cachedEventComputed(
-    () =>
-      event.value?.eventDescription?.eventDescription
-        ? toInnerHtml(event.value.eventDescription.eventDescription)
-        : undefined,
-    (a, b) => a === b
-  );
+  const titleHtml = cachedEventComputed(() => {
+    const ed = event.value?.eventDescription?.eventDescription;
+    if (!ed) {
+      return undefined;
+    }
+    return toInnerHtml(
+      ed.replace(COMPLETION_REGEX, (a, b) => a.substring(b.length))
+    );
+  });
 
   return {
     eventRange,
@@ -116,5 +121,6 @@ export const useEventRefs = (
     color,
     dateText,
     titleHtml,
+    completed,
   };
 };

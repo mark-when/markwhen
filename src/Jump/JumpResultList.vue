@@ -1,14 +1,8 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import type { DateFormat } from "@markwhen/parser/lib/Types";
-import type {
-  Node,
-  NodeArray,
-  NodeValue,
-  SomeNode,
-} from "@markwhen/parser/lib/Node";
+import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
   useJumpStore,
@@ -17,22 +11,20 @@ import {
   type ParseResult,
 } from "./jumpStore";
 import JumpResultListItem from "./JumpResultListItem.vue";
-import {
-  useEventFinder,
-  type EventFinder,
-} from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 
 const props = defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{
   (event: "click", item: ParseResult | lunr.Index.Result): void;
 }>();
 const jumpStore = useJumpStore();
-const markersStore = useMarkersStore();
+const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 
 const list = ref();
@@ -40,7 +32,7 @@ const list = ref();
 const dateRangeString = (parseResult: ParseResult) =>
   dateRangeToString(
     parseResult.dateRange,
-    parseResult.scale || markersStore.scaleOfViewportDateInterval,
+    parseResult.scale || timelineStore.scaleOfViewportDateInterval,
     pageStore.pageTimelineMetadata.dateFormat as DateFormat
   );
 

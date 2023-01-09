@@ -27,7 +27,7 @@ const emit = defineEmits<{
 
 const hovering = ref(false);
 const pageTitle = computed(
-  () => markwhenStore.timelines[props.pageIndex].metadata.title
+  () => markwhenStore.timelines[props.pageIndex].metadata.title || 'untitled'
 );
 const button = ref<HTMLButtonElement>();
 const { moveListener, translateX } = usePageButtonMove(button, () =>

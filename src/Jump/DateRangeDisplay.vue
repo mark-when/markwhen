@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import {
   dateRangeToString,
   type DisplayScale,
@@ -14,7 +15,7 @@ const props = defineProps<{
   selected: boolean;
   last: boolean;
 }>();
-const markersStore = useMarkersStore();
+const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 
 const dateRangeString = computed(
@@ -22,7 +23,7 @@ const dateRangeString = computed(
     props.range &&
     dateRangeToString(
       props.range,
-      props.scale || markersStore.scaleOfViewportDateInterval,
+      props.scale || timelineStore.scaleOfViewportDateInterval,
       pageStore.pageTimelineMetadata.dateFormat as DateFormat
     )
 );

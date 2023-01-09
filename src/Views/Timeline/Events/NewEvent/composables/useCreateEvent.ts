@@ -1,11 +1,13 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type { OffsetRange } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import type { DateFormat } from "@markwhen/parser/lib/Types";
 import { computed, ref } from "vue";
 
 export const useCreateEvent = () => {
+  const timelineStore = useTimelineStore();
   const markersStore = useMarkersStore();
   const editorOrchestrator = useEditorOrchestratorStore();
   const pageStore = usePageStore();
@@ -58,7 +60,7 @@ export const useCreateEvent = () => {
           fromDateTime: rangeToCreate[0].dateTime,
           toDateTime: rangeToCreate[1].dateTime,
         },
-        markersStore.scaleOfViewportDateInterval,
+        timelineStore.scaleOfViewportDateInterval,
         pageStore.pageTimelineMetadata.preferredInterpolationFormat as
           | DateFormat
           | undefined

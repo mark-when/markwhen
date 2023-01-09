@@ -12,6 +12,7 @@ import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { useMarkersStore } from "../Markers/markersStore";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
+import { useTimelineStore } from "../timelineStore";
 
 const props = defineProps<{
   node: SomeNode;
@@ -21,7 +22,7 @@ const props = defineProps<{
 }>();
 
 const editorOrchestrator = useEditorOrchestratorStore();
-const markersStore = useMarkersStore();
+const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const eventDetailStore = useEventDetailStore();
 const { editEventDateRange } = editorOrchestrator;
@@ -45,10 +46,11 @@ const {
   color,
   dateText,
   titleHtml,
+  completed,
 } = useEventRefs(event, () => isEventRow.value);
 
 const eventPath = computed(() => ({ type, path: pathArray.value }));
-const scale = computed(() => markersStore.scaleOfViewportDateInterval);
+const scale = computed(() => timelineStore.scaleOfViewportDateInterval);
 
 const preferredInterpolationFormat = computed(
   () =>
@@ -90,6 +92,7 @@ const isDetailEvent = computed(() =>
     :percent="percent"
     :dateText="dateText || ''"
     :titleHtml="titleHtml || ''"
+    :completed="completed"
     @edit-date-range="editDateRange"
     @hover="hover"
     :is-detail-event="isDetailEvent"

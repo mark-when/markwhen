@@ -21,6 +21,7 @@ import type { JumpResults } from "./jumpStore";
 import * as chrono from "chrono-node";
 import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 
 export type SearchState = "ready" | "indexing" | "uninitialized";
 interface SearchDocument {
@@ -34,6 +35,7 @@ interface SearchDocument {
 export const useSearch = () => {
   const pageStore = usePageStore();
   const mapStore = useEventMapStore();
+  const timelineStore = useTimelineStore();
 
   const eventToDocument = (e: Event, path: EventPaths): SearchDocument => ({
     path: JSON.stringify(path),
@@ -101,7 +103,7 @@ export const useSearch = () => {
     let result = [] as JumpResults;
     const markwhenParsed = parseDateRange(`${input}:`) as DateRangePart;
     if (markwhenParsed) {
-      let scale = useMarkersStore().scaleOfViewportDateInterval;
+      let scale = timelineStore.scaleOfViewportDateInterval;
       if (
         markwhenParsed.toDateTime.diff(markwhenParsed.fromDateTime).as("days") <
         1
