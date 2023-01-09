@@ -17,7 +17,7 @@ import {
   type DisplayScale,
 } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import { parseDateRange } from "@markwhen/parser";
-import type { JumpResults } from "./jumpStore";
+import type { JumpResults, ParseResult } from "./jumpStore";
 import * as chrono from "chrono-node";
 import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
@@ -31,6 +31,48 @@ interface SearchDocument {
   description: string;
   tags: string;
 }
+
+export const searchDate = (input: string, scale: DisplayScale = "day") => {
+  let result = [] as ParseResult[];
+  const markwhenParsed = parseDateRange(`${input}:`) as DateRangePart;
+  if (markwhenParsed) {
+    if (
+      markwhenParsed.toDateTime.diff(markwhenParsed.fromDateTime).as("days") < 1
+    ) {
+      markwhenParsed.fromDateTime = floorDateTime(
+        markwhenParsed.fromDateTime,
+        "day"
+      );
+      markwhenParsed.toDateTime = ceilDateTime(
+        markwhenParsed.fromDateTime,
+        "day"
+      );
+      scale = "day";
+    }
+    result.push({
+      dateRange: markwhenParsed,
+      scale,
+    });
+  } else {
+    const [chronoParsed] = chrono.parse(input);
+    if (chronoParsed) {
+      const from = DateTime.fromJSDate(chronoParsed.start.date());
+      result.push({
+        dateRange: {
+          fromDateTime: floorDateTime(from, "day"),
+          toDateTime: ceilDateTime(
+            chronoParsed.end
+              ? DateTime.fromJSDate(chronoParsed.end.date())
+              : from,
+            "day"
+          ),
+        } as DateRangePart,
+        scale: "day" as DisplayScale,
+      });
+    }
+  }
+  return result;
+};
 
 export const useSearch = () => {
   const pageStore = usePageStore();
@@ -100,46 +142,7 @@ export const useSearch = () => {
     if (!input) {
       return;
     }
-    let result = [] as JumpResults;
-    const markwhenParsed = parseDateRange(`${input}:`) as DateRangePart;
-    if (markwhenParsed) {
-      let scale = timelineStore.scaleOfViewportDateInterval;
-      if (
-        markwhenParsed.toDateTime.diff(markwhenParsed.fromDateTime).as("days") <
-        1
-      ) {
-        markwhenParsed.fromDateTime = floorDateTime(
-          markwhenParsed.fromDateTime,
-          "day"
-        );
-        markwhenParsed.toDateTime = ceilDateTime(
-          markwhenParsed.fromDateTime,
-          "day"
-        );
-        scale = "day";
-      }
-      result.push({
-        dateRange: markwhenParsed,
-        scale,
-      });
-    } else {
-      const [chronoParsed] = chrono.parse(input);
-      if (chronoParsed) {
-        const from = DateTime.fromJSDate(chronoParsed.start.date());
-        result.push({
-          dateRange: {
-            fromDateTime: floorDateTime(from, "day"),
-            toDateTime: ceilDateTime(
-              chronoParsed.end
-                ? DateTime.fromJSDate(chronoParsed.end.date())
-                : from,
-              "day"
-            ),
-          } as DateRangePart,
-          scale: "day" as DisplayScale,
-        });
-      }
-    }
+    const result = searchDate(input, timelineStore.scaleOfViewportDateInterval);
     const searchTerm = input
       .replace(/[^a-zA-Z0-9\s]/, "")
       .replace(/[a-zA-Z]{2,}/, (substring) => `+${substring}~1`);

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
-import { dateRangeToString } from "@/Views/Timeline/utilities/dateTimeUtilities";
-import type { DateFormat } from "@markwhen/parser/lib/Types";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
@@ -18,23 +16,16 @@ import { ref, watch } from "vue";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import { useDateRangeString } from "./dateRangeString";
 
 const props = defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{
   (event: "click", item: ParseResult | lunr.Index.Result): void;
 }>();
 const jumpStore = useJumpStore();
-const timelineStore = useTimelineStore();
-const pageStore = usePageStore();
+const dateRangeString = useDateRangeString()
 
 const list = ref();
-
-const dateRangeString = (parseResult: ParseResult) =>
-  dateRangeToString(
-    parseResult.dateRange,
-    parseResult.scale || timelineStore.scaleOfViewportDateInterval,
-    pageStore.pageTimelineMetadata.dateFormat as DateFormat
-  );
 
 const eventFinder = useEventFinder;
 
