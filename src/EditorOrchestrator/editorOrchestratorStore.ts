@@ -46,7 +46,7 @@ export const useEditorOrchestratorStore = defineStore(
     const addPage = () => {
       const newString = markwhenStore.rawTimelineString
         .concat(PAGE_BREAK)
-        .concat(`title: Page ${markwhenStore.timelines.length + 1}`);
+        .concat(`title: Page ${markwhenStore.timelines.length + 1}\n\n\n`);
 
       setText(newString);
     };
@@ -166,6 +166,11 @@ export const useEditorOrchestratorStore = defineStore(
     const newEventInsertionIndex = () =>
       pageStore.pageTimeline.metadata.endStringIndex;
 
+    const newEventString = (params: EventCreationParams) =>
+      `${params.range || dateRangeToString(todayRange(), "day", undefined)}: ${
+        params.title || "Event"
+      }${params.description ? "\n" + params.description : ""}`;
+
     const createEvent = (params: EventCreationParams) => {
       if (typeof params.range !== "string") {
         throw new Error("Range must be preconverted to string at this point");
@@ -228,6 +233,8 @@ export const useEditorOrchestratorStore = defineStore(
       showInEditor,
       setHoveringEventPath,
       createEvent,
+      setText,
+      newEventString,
     };
   }
 );
