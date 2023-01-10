@@ -21,8 +21,8 @@ const styleLeftInset = computed(() => {
 
 <template>
   <div
-    class="absolute dark:bg-slate-800 bg-slate-100 shadow-lg rounded-lg overflow-scroll p-2 bottom-12"
-    :style="`left: calc(${styleLeftInset}px + 1rem);`"
+    class="absolute dark:bg-slate-800 bg-slate-100 shadow-lg rounded-lg overflow-scroll p-2"
+    :style="`left: calc(${styleLeftInset}px + 1rem); bottom: calc(env(safe-area-inset-bottom) + 3rem)`"
   >
     <SvgView style="width: 8rem; height: 8rem" />
   </div>
