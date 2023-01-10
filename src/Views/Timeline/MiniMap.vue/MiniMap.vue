@@ -6,7 +6,7 @@ import { useTimelineStore } from "../timelineStore";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
 import { useNodeStore } from "../useNodeStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import EventRowSvg from "./EventRowSvg.vue";
@@ -18,22 +18,6 @@ const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const editorOrchestrator = useEditorOrchestratorStore();
 const appStore = useAppStore();
-
-const left = (range: DateRange) =>
-  timelineStore.scalelessDistanceBetweenDates(
-    timelineStore.baselineLeftmostDate,
-    range.fromDateTime
-  );
-
-const width = (range: DateRange) => {
-  // console.log(range.fromDateTime, range.toDateTime);
-  const t = timelineStore.scalelessDistanceBetweenDates(
-    range.fromDateTime,
-    range.toDateTime
-  );
-
-  return t;
-};
 
 const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
 const isHovering = (p: EventPath) => {
@@ -65,20 +49,35 @@ const props = (path: Path, node: SomeNode) => ({
 
 const isDark = computed(() => appStore.inferredDarkMode);
 const vp = computed(() => timelineStore.pageSettings.viewport);
+const additionalOffsetLeft = computed(() =>
+  timelineStore.distanceFromBaselineLeftmostDate(
+    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
+  )
+);
+
 const vpLeft = computed(
   () =>
-    timelineStore.pageSettings.viewport.left -
-    timelineStore.scalelessDistanceBetweenDates(
-      timelineStore.baselineLeftmostDate,
-      DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
-    )
+    (vp.value.left - additionalOffsetLeft.value) / timelineStore.pageScaleBy24
 );
+const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
+const styleLeftInset = computed(() => {
+  let inset = timelineStore.pageSettings.viewport.offsetLeft;
+  if (timelineStore.mode === "gantt") {
+    return (
+      inset +
+      (timelineStore.ganttSidebarTempWidth
+        ? timelineStore.ganttSidebarTempWidth
+        : timelineStore.ganttSidebarWidth)
+    );
+  }
+  return inset;
+});
 </script>
 
 <template>
   <div
-    class="sticky bottom-8 inline-block dark:bg-slate-800 bg-slate-100 shadow-lg rounded-lg overflow-scroll p-2"
-    :style="`left: calc(${timelineStore.leftInsetWidth}px + 2rem);`"
+    class="absolute dark:bg-slate-800 bg-slate-100 shadow-lg rounded-lg overflow-scroll p-2 bottom-12"
+    :style="`left: calc(${styleLeftInset}px + 1rem);`"
   >
     <svg
       style="width: 8rem; height: 8rem"
@@ -91,11 +90,18 @@ const vpLeft = computed(
     >
       <template v-for="({ path, node }, index) in nodeStore.nodeArray">
         <EventRowSvg
-          :key="path.join(',')"
-          v-if="isEventNode(node)"
+          :key="path.join(',') + node.value.dateText"
+          v-if="isEventNode(node) && !timelineStore.isCollapsedChild(path)"
           v-bind="props(path, node)"
         ></EventRowSvg>
       </template>
+      <rect
+        :x="vpLeft"
+        :y="0"
+        :width="width"
+        height="150%"
+        :fill="`rgba(${isDark ? '255, 255, 255' : '0, 0, 0'}, 0.1)`"
+      ></rect>
     </svg>
   </div>
 </template>

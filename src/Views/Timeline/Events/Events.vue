@@ -70,7 +70,6 @@ const currentWidth = computed(() => {
       <EventNodeRow v-bind="props(path, node)"></EventNodeRow>
     </template>
     <new-event v-if="editable" />
-    <div class="absolute left-0 right-0 h-full pointer-events-none"></div>
     <GanttSidebar />
   </div>
 </template>

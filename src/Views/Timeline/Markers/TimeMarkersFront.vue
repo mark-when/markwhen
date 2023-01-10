@@ -12,6 +12,7 @@ import {
   type TimeMarker,
 } from "./markersStore";
 import { clamp, useTimelineStore } from "../timelineStore";
+import MiniMap from "../MiniMap.vue/MiniMap.vue";
 
 const appStore = useAppStore();
 
@@ -109,6 +110,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
         </div>
       </div>
     </div>
+    <MiniMap />
   </div>
 </template>
 

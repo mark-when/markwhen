@@ -5,6 +5,9 @@ import type { DateTime } from "luxon";
 import { computed, type Ref } from "vue";
 import { useEventRefs } from "../Events/useEventRefs";
 import { useTimelineStore } from "../timelineStore";
+import { useAppStore } from "@/App/appStore";
+
+const appStore = useAppStore();
 
 const props = defineProps<{
   node: Node<Event>;
@@ -27,6 +30,7 @@ const { color, eventRange } = useEventRefs(props.node.value);
 const range = computed(() => toDateRange(eventRange.value!));
 
 const left = computed(() => dist(props.earliestTime, range.value.fromDateTime));
+const isDark = computed(() => appStore.inferredDarkMode);
 
 const width = computed(() =>
   dist(range.value.fromDateTime, range.value.toDateTime)
@@ -50,8 +54,8 @@ const d = computed(() => {
   <path
     fill-rule="evenodd"
     :d="d"
-    :fill="`rgba(${color}, 0.8)`"
-    :stroke="`rgb(${color})`"
+    :fill="`rgba(${color || (isDark ? '255, 255, 255' : '0, 0, 0')}, 0.8)`"
+    :stroke="`rgb(${color || (isDark ? '255, 255, 255' : '0, 0, 0')})`"
     :stroke-width="heightUnit / 10"
   ></path>
 </template>
