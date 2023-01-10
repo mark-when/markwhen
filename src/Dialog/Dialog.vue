@@ -66,7 +66,7 @@ const keydown = (e: KeyboardEvent) => {
   <dialog
     ref="dialog"
     style="max-height: 60%"
-    class="shadow-xl flex-col p-0 bg-slate-50 dark:bg-slate-900 safeBottomPadding"
+    class="shadow-xl flex-col p-0 bg-slate-50 dark:bg-slate-900 safeBottomPadding dark:text-slate-50 text-gray-800"
     :class="{ closing, 'overflow-visible': overflow === 'visible' }"
     @click="click"
     @keydown="keydown"
