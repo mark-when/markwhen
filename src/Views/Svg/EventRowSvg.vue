@@ -3,8 +3,8 @@ import type { Node } from "@markwhen/parser/lib/Node";
 import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 import type { DateTime } from "luxon";
 import { computed, type Ref } from "vue";
-import { useEventRefs } from "../Events/useEventRefs";
-import { useTimelineStore } from "../timelineStore";
+import { useEventRefs } from "@/Views/Timeline/Events/useEventRefs";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useAppStore } from "@/App/appStore";
 
 const appStore = useAppStore();
