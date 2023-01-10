@@ -22,18 +22,22 @@ const ourProps = defineProps<{
   dark: boolean;
   bg?: string;
   showViewport: boolean;
+  scale?: number;
 }>();
+
+const scale = computed(() => ourProps.scale || 1)
 
 const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
 const isHovering = (p: EventPath) => {
   return hovering.value && eqPath(p, hovering.value);
 };
 
-const totalWidth = computed(() =>
-  timelineStore.scalelessDistanceBetweenDates(
-    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
-    DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
-  )
+const totalWidth = computed(
+  () =>
+    timelineStore.scalelessDistanceBetweenDates(
+      DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+      DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
+    )
 );
 
 const heightUnit = computed(() => totalWidth.value / nodeStore.height);
@@ -51,6 +55,7 @@ const props = (path: Path, node: SomeNode) => ({
   earliestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
   latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
   dark: ourProps.dark,
+  scale: scale.value,
 });
 
 const vp = computed(() => timelineStore.pageSettings.viewport);
@@ -71,7 +76,7 @@ const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
   <svg
     xmlns="http://www.w3.org/2000/svg"
     :viewBox="`-${heightUnit} ${heightUnit * 1.5} ${
-      totalWidth + heightUnit * 2
+      (totalWidth * scale) + heightUnit * 2
     } ${totalWidth}`"
     fill="currentColor"
     preserveAspectRatio="xMinYMin meet"

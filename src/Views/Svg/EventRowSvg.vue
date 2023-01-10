@@ -21,7 +21,8 @@ const props = defineProps<{
   earliestTime: DateTime;
   latestTime: DateTime;
   heightUnit: number;
-  dark: boolean
+  dark: boolean;
+  scale: number;
 }>();
 
 const { scalelessDistanceBetweenDates: dist } = useTimelineStore();
@@ -30,23 +31,22 @@ const { color, eventRange } = useEventRefs(props.node.value);
 
 const range = computed(() => toDateRange(eventRange.value!));
 
-const left = computed(() => dist(props.earliestTime, range.value.fromDateTime));
+const leftX = computed(
+  () => dist(props.earliestTime, range.value.fromDateTime) * props.scale
+);
 
 const width = computed(() =>
-  dist(range.value.fromDateTime, range.value.toDateTime)
+  dist(range.value.fromDateTime, range.value.toDateTime) * props.scale
 );
 
 const d = computed(() => {
   const bottom = (props.height / props.totalHeight) * props.totalWidth;
   const top = bottom + props.totalWidth / props.totalHeight;
 
-  return `M ${left.value + width.value} ${
-    top - props.heightUnit / 4
-  } A 1 1 0 0 0 ${left.value + width.value} ${
-    bottom + props.heightUnit / 4
-  } L ${left.value} ${bottom + props.heightUnit / 4} A 1 1 0 0 0 ${
-    left.value
-  } ${top - props.heightUnit / 4} Z`;
+  const rightX = (leftX.value + width.value);
+  const bottomY = top - props.heightUnit / 4;
+  const topY = bottom + props.heightUnit / 4;
+  return `M ${rightX} ${bottomY} A 1 1 0 0 0 ${rightX} ${topY} L ${leftX.value} ${topY} A 1 1 0 0 0 ${leftX.value} ${bottomY} Z`;
 });
 </script>
 
