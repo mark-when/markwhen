@@ -156,10 +156,13 @@ export const useTimelineStore = defineStore("timeline", () => {
   const ganttSidebarWidth = ref(200);
   const ganttSidebarTempWidth = ref(0);
   const autoCenterSemaphore = ref(0);
+  const miniMapShowing = ref(false);
 
   const autoCenter = () => {
     autoCenterSemaphore.value++;
   };
+
+  const toggleMiniMap = () => (miniMapShowing.value = !miniMapShowing.value);
 
   const leftInsetWidth = computed(() =>
     mode.value === "gantt" ? ganttSidebarWidth.value : 0
@@ -394,6 +397,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     ganttSidebarWidth,
     ganttSidebarTempWidth,
     autoCenterSemaphore,
+    miniMapShowing,
 
     // getters
     pageTimelineMetadata,
@@ -435,5 +439,6 @@ export const useTimelineStore = defineStore("timeline", () => {
     setGanttSidebarWidth,
     setGanttSidebarTempWidth,
     autoCenter,
+    toggleMiniMap,
   };
 });

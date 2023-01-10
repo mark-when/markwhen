@@ -85,7 +85,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
         :style="{
           left: `${
             timelineStore.pageScaleBy24 *
-            (timeMarker.accumulated - timeMarker.size) +
+              (timeMarker.accumulated - timeMarker.size) +
             timelineStore.leftInsetWidth
           }px`,
           width: `${timelineStore.pageScaleBy24 * timeMarker.size}px`,
@@ -110,7 +110,7 @@ const hoveringText = computed(() => (timeMarker: TimeMarker) => {
         </div>
       </div>
     </div>
-    <MiniMap />
+    <MiniMap v-if="timelineStore.miniMapShowing" />
   </div>
 </template>
 
