@@ -17,7 +17,12 @@ const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 const editorOrchestrator = useEditorOrchestratorStore();
-const appStore = useAppStore();
+
+const ourProps = defineProps<{
+  dark: boolean;
+  bg?: string;
+  showViewport: boolean;
+}>();
 
 const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
 const isHovering = (p: EventPath) => {
@@ -45,9 +50,9 @@ const props = (path: Path, node: SomeNode) => ({
   heightUnit: heightUnit.value,
   earliestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
   latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
+  dark: ourProps.dark,
 });
 
-const isDark = computed(() => appStore.inferredDarkMode);
 const vp = computed(() => timelineStore.pageSettings.viewport);
 const additionalOffsetLeft = computed(() =>
   timelineStore.distanceFromBaselineLeftmostDate(
@@ -60,18 +65,6 @@ const vpLeft = computed(
     (vp.value.left - additionalOffsetLeft.value) / timelineStore.pageScaleBy24
 );
 const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
-const styleLeftInset = computed(() => {
-  let inset = timelineStore.pageSettings.viewport.offsetLeft;
-  if (timelineStore.mode === "gantt") {
-    return (
-      inset +
-      (timelineStore.ganttSidebarTempWidth
-        ? timelineStore.ganttSidebarTempWidth
-        : timelineStore.ganttSidebarWidth)
-    );
-  }
-  return inset;
-});
 </script>
 
 <template>
@@ -91,11 +84,12 @@ const styleLeftInset = computed(() => {
       ></EventRowSvg>
     </template>
     <rect
+      v-if="showViewport"
       :x="vpLeft"
       :y="0"
       :width="width"
       height="150%"
-      :fill="`rgba(${isDark ? '255, 255, 255' : '0, 0, 0'}, 0.1)`"
+      :fill="`rgba(${dark ? '255, 255, 255' : '0, 0, 0'}, 0.1)`"
     ></rect>
   </svg>
 </template>

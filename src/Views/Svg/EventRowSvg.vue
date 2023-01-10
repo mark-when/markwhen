@@ -21,6 +21,7 @@ const props = defineProps<{
   earliestTime: DateTime;
   latestTime: DateTime;
   heightUnit: number;
+  dark: boolean
 }>();
 
 const { scalelessDistanceBetweenDates: dist } = useTimelineStore();
@@ -30,7 +31,6 @@ const { color, eventRange } = useEventRefs(props.node.value);
 const range = computed(() => toDateRange(eventRange.value!));
 
 const left = computed(() => dist(props.earliestTime, range.value.fromDateTime));
-const isDark = computed(() => appStore.inferredDarkMode);
 
 const width = computed(() =>
   dist(range.value.fromDateTime, range.value.toDateTime)
@@ -54,8 +54,8 @@ const d = computed(() => {
   <path
     fill-rule="evenodd"
     :d="d"
-    :fill="`rgba(${color || (isDark ? '255, 255, 255' : '0, 0, 0')}, 0.8)`"
-    :stroke="`rgb(${color || (isDark ? '255, 255, 255' : '0, 0, 0')})`"
+    :fill="`rgba(${color || (dark ? '255, 255, 255' : '0, 0, 0')}, 0.8)`"
+    :stroke="`rgb(${color || (dark ? '255, 255, 255' : '0, 0, 0')})`"
     :stroke-width="heightUnit / 10"
   ></path>
 </template>
