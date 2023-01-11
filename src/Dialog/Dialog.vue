@@ -6,11 +6,13 @@ const props = withDefaults(
     modelValue: boolean;
     dismissable?: boolean;
     overflow?: "scroll" | "visible";
+    restrictHeight?: boolean;
   }>(),
   {
     modelValue: false,
     dismissable: true,
     overflow: "scroll",
+    restrictHeight: true,
   }
 );
 const emit = defineEmits<{
@@ -65,7 +67,7 @@ const keydown = (e: KeyboardEvent) => {
 <template>
   <dialog
     ref="dialog"
-    style="max-height: 60%"
+    :style="restrictHeight ? `max-height: 60%` : ''"
     class="shadow-xl flex-col p-0 bg-slate-50 dark:bg-slate-900 safeBottomPadding dark:text-slate-50 text-gray-800"
     :class="{ closing, 'overflow-visible': overflow === 'visible' }"
     @click="click"
