@@ -68,7 +68,7 @@ const props = (path: Path, node: SomeNode) => ({
   numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
   totalHeight: nodeStore.height,
   totalWidth: totalWidth.value,
-  height: nodeStore.predecessorMap.get(path.join(","))!,
+  height: nodeStore.predecessorMap.get(path.join(","))! + 1,
   heightUnit: heightUnit.value,
   earliestTime: earliestTime.value,
   latestTime: latestTime.value,

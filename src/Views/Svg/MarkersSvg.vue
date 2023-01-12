@@ -89,7 +89,7 @@ const textForMarker = (dt: DateTime) =>
     <text
       class="svgMarkerText"
       :x="x(marker) + heightUnit / 4"
-      :y="startY * 1.5 + heightUnit / 8"
+      :y="startY * 1.5 + heightUnit / 4"
       >{{ textForMarker(marker) }}</text
     >
   </template>
