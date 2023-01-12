@@ -59,8 +59,13 @@ const barTopY = computed(
 );
 
 const d = computed(() => {
-  const rightLineCap = props.roundedRight ? `A 1 1 0 0 0` : `L`;
-  const leftLineCap = props.roundedLeft ? `A 1 1 0 0 0` : "L";
+  const arcRadius = (barBottomY.value - barTopY.value) / 2;
+  const rightLineCap = props.roundedRight
+    ? `A ${arcRadius} ${arcRadius} 0 0 0`
+    : `L`;
+  const leftLineCap = props.roundedLeft
+    ? `A ${arcRadius} ${arcRadius} 0 0 0`
+    : "L";
   return `M ${barRightX.value} ${barBottomY.value} ${rightLineCap} ${barRightX.value} ${barTopY.value} L ${leftX.value} ${barTopY.value} ${leftLineCap} ${leftX.value} ${barBottomY.value} Z`;
 });
 
