@@ -126,7 +126,6 @@ const textFontSize = computed(
       .svgEventTitle {
         font: bold {{ textFontSize }}px system-ui;
         fill: {{ dark ? 'white' : 'black' }};
-        letter-spacing: 0.035em;
       }
     </svg:style>
     <template v-for="({ path, node }, index) in nodeStore.nodeArray">
