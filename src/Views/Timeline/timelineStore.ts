@@ -329,7 +329,7 @@ export const useTimelineStore = defineStore("timeline", () => {
   const isCollapsed = (path: Path | string) => {
     const pathJoined = typeof path === "string" ? path : path.join(",");
     for (const entry of collapsed.keys()) {
-      if (pathJoined.startsWith(entry)) {
+      if (pathJoined === entry) {
         return true;
       }
     }
@@ -337,8 +337,10 @@ export const useTimelineStore = defineStore("timeline", () => {
   };
   const isCollapsedChild = (path: Path | string) => {
     const pathJoined = typeof path === "string" ? path : path.join(",");
+    const pathAsArray =
+      typeof path === "string" ? path.split(",").map((i) => parseInt(i)) : path;
     for (const entry of collapsed.keys()) {
-      if (pathJoined !== entry && pathJoined.startsWith(entry)) {
+      if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
         return true;
       }
     }
@@ -351,7 +353,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     let highest: string | undefined;
 
     for (const entry of collapsed.keys()) {
-      if (pathJoined !== entry && pathJoined.startsWith(entry)) {
+      if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
         if (!highest || entry.length < highest.length) {
           highest = entry;
         }
