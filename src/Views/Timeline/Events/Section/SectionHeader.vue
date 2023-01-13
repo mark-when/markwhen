@@ -78,9 +78,9 @@ const titleClass = computed(() => {
     :style="styleObject"
     v-on="events"
   >
-    <div class="sticky flex items-center left-0">
+    <div class="sticky flex items-center left-2">
       <div
-        class="h-[30px] flex flex-row items-center pl-2"
+        class="h-[30px] flex flex-row items-center"
         :style="titleStyle"
         :class="titleClass"
       >
