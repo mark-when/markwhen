@@ -31,6 +31,10 @@ const events = computed(() => {
   };
 });
 
+const isCollapsed = computed(() => timelineStore.isCollapsed(props.path));
+
+const width = computed(() => timelineStore.pageScaleBy24 * props.fullWidth);
+
 const styleObject = computed(() => {
   const obj = {
     order: -9999,
@@ -39,7 +43,7 @@ const styleObject = computed(() => {
     height: "30px",
   } as any;
   if (props.groupStyle === "group") {
-    obj.width = `${timelineStore.pageScaleBy24 * props.fullWidth}px`;
+    obj.width = `${width.value}px`;
     obj.marginLeft = `${timelineStore.pageScaleBy24 * props.left}px`;
   }
   return obj;
@@ -78,7 +82,14 @@ const titleClass = computed(() => {
     :style="styleObject"
     v-on="events"
   >
-    <div class="sticky flex items-center left-2">
+    <div
+      class="sticky flex items-center left-2"
+      :style="
+        groupStyle === 'group' && isCollapsed
+          ? `margin-left: calc(${width}px + 0.75rem)`
+          : ''
+      "
+    >
       <div
         class="h-[30px] flex flex-row items-center"
         :style="titleStyle"
