@@ -3,6 +3,7 @@ export const exampleTimeline = `title: Project planning example
 
 #Project1: #d336b1
 
+section All Projects
 group Project 1 #Project1
 // Supports ISO8601
 2022-01/2022-03: Sub task #John
@@ -14,7 +15,7 @@ More info about sub task 2
 - [ ] This one is extra
 
 2022-07: Yearly planning
-
+endGroup
 group Project 2 #Project2
 2022-04/4 months: Larger sub task #Danielle
 
@@ -28,15 +29,20 @@ group Project 2 #Project2
 - [ ] so many checkboxes omg
 
 10/2022 - 2 months: Holiday season
+endGroup
 
 group Project 3
 01/2023: Project kickoff
 02/2023-04/2023: Other stuff
+endGroup
+endSection
 
 section Overall
 
 2022: Year of the something
 2023: Year of something else
+
+endSection
 
 _-_-_break_-_-_
 
@@ -55,15 +61,15 @@ section Education I #Education
 02/2010-06/2012: Dispatcher #Work
 
 // Add a shareable google photos link to display images. 
-10/2010: Barn built across the street https://photos.app.goo.gl/Er9D81cdiE2tUwDZA
-06/2011-08/2011: Westover Air Reserve Base https://photos.app.goo.gl/NZ5rnGS7vZTXHe7aA #Work
+10/2010: Barn built across the street
+06/2011-08/2011: Westover Air Reserve Base #Work
 endSection
 
 // 2013
-03/15/2013-04/2015: China https://photos.app.goo.gl/4UEkw3EbUkUuNzKGA #Work
+03/15/2013-04/2015: China #Work
 
 // 2014
-07/2014: 4th of July in DC https://photos.app.goo.gl/d418j6GSkCD5LGmY8
+07/2014: 4th of July in DC
 
 section Education II #Education
 // 2015
@@ -122,7 +128,7 @@ endGroup
 02/01/2021 - 02/2022: Working on [swink](https://sw.ink) full time RIP #Work
 05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
 06/05/2021-06/12/2021: Ohio and James's Party
-08/11/2021-08/17/2021: Cincinnati https://photos.app.goo.gl/h5CfrZamP5Tw6yDn7
+08/11/2021-08/17/2021: Cincinnati
 
 // 2022
 
