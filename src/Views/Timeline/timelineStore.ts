@@ -344,6 +344,22 @@ export const useTimelineStore = defineStore("timeline", () => {
     }
     return false;
   };
+  const isCollapsedChildOf = (path: Path | string) => {
+    const pathJoined = typeof path === "string" ? path : path.join(",");
+
+    // We're looking for the shallowest ancestor of this node that has collapsed it
+    let highest: string | undefined;
+
+    for (const entry of collapsed.keys()) {
+      if (pathJoined !== entry && pathJoined.startsWith(entry)) {
+        if (!highest || entry.length < highest.length) {
+          highest = entry;
+        }
+      }
+    }
+
+    return highest?.split(",").map((i) => parseInt(i));
+  };
 
   const weights = computed(() => {
     const arbitraryNumber = 2000;
@@ -417,6 +433,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     scalelessDistanceFromBaselineLeftmostDate,
     isCollapsed,
     isCollapsedChild,
+    isCollapsedChildOf,
     scaleOfViewportDateInterval,
     weights,
     leftInsetWidth,

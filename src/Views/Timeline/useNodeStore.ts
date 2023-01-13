@@ -148,11 +148,11 @@ export const useNodeStore = defineStore("nodes", () => {
     const visibleEvents: PathAndEventNode[] = [];
     const visibleSections: PathAndSectionNode[] = [];
     for (const { path, node } of nodeArray.value) {
-      if (timelineStore.isCollapsedChild(path)) {
-        continue;
-      }
       const joinedPath = path.join(",");
       if (!isEventNode(node)) {
+        if (timelineStore.isCollapsedChild(path)) {
+          continue;
+        }
         if (path.length > 0) {
           const numAbove = predecessorMap.value.get(joinedPath) || 0;
           const children = childrenMap.value.get(joinedPath) || 0;

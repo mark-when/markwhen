@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, watchEffect } from "vue";
+import { computed, inject, nextTick, ref, watch, watchEffect } from "vue";
 import {
   toDateRange,
   type Block,
@@ -9,6 +9,7 @@ import {
   type Range,
 } from "@markwhen/parser/lib/Types";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import { useNodeStore } from "@/Views/Timeline/useNodeStore";
 import EventBar from "@/Views/Timeline/Events/Event/EventBar.vue";
 import { useResize } from "@/Views/Timeline/Events/Event/Edit/composables/useResize";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
@@ -17,7 +18,8 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
-import TimeMarkersBackVue from "../../Markers/TimeMarkersBack.vue";
+import { isolateHistory } from "@codemirror/commands";
+import { isEditable } from "@/injectionKeys";
 
 const props = defineProps<{
   path: EventPath;
@@ -45,6 +47,7 @@ const emit = defineEmits<{
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const timelineStore = useTimelineStore();
+const nodeStore = useNodeStore();
 
 const eventBar = ref();
 const showingMeta = ref(false);
@@ -216,33 +219,26 @@ const percent = computed(() => {
   return 100;
 });
 
-const top = computed(() => 100 + props.numAbove * 30);
+const collapsedParent = computed(() =>
+  timelineStore.isCollapsedChildOf(props.path.path)
+);
 
-const display = computed(() => {
-  // const vp = timelineStore.pageSettings.viewport;
-  if (timelineStore.isCollapsedChild(props.path.path)) {
-    return "none";
-  }
-  // if (isScrollToPath.value) {
-  //   return "block";
-  // }
-  // if (top.value < vp.top - 200 || top.value > vp.top + vp.height + 200) {
-  //   return "none";
-  // }
-  // if (
-  //   left.value > vp.left + vp.width + 50 ||
-  //   vp.left > left.value + barScaledWidth.value + 550
-  // ) {
-  //   return "none";
-  // }
-  return "block";
+const isCollapsed = computed(() => !!collapsedParent.value);
+
+const top = computed(() => {
+  const numAbove = nodeStore.predecessorMap.get(
+    collapsedParent.value
+      ? collapsedParent.value.join(",")
+      : props.path.path.join(",")
+  )!;
+
+  return 100 + numAbove * 30;
 });
 const isGantt = computed(() => timelineStore.mode === "gantt");
 
 const styleObj = computed(() => {
   let obj = {
     top: `${top.value}px`,
-    display: display.value,
     height: `30px`,
   } as any;
   obj.left = isGantt.value ? "0px" : `${left.value}px`;
@@ -262,7 +258,9 @@ const classObj = computed(() => {
         "dark:border-indigo-600 border-indigo-500": props.isDetailEvent,
         "border-transparent": !props.hovering && !props.isDetailEvent,
       }
-    : {};
+    : {
+        "pointer-events-none": isCollapsed.value,
+      };
 });
 
 const barAndTitleClass = computed(() => {
@@ -275,6 +273,7 @@ const barAndTitleClass = computed(() => {
         "ring-1 dark:ring-gray-400 ring-black":
           props.hovering && !props.isDetailEvent,
         "ring-1 dark:ring-indigo-600 ring-indigo-500": props.isDetailEvent,
+        "pointer-events-auto cursor-pointer": !isCollapsed.value,
       };
 });
 
@@ -304,6 +303,8 @@ const ganttTitleStyle = computed(() => {
   }px - 0.5rem)`;
   return styleObj;
 });
+
+const editable = inject(isEditable);
 </script>
 
 <template>
@@ -311,10 +312,10 @@ const ganttTitleStyle = computed(() => {
     class="eventRow absolute"
     :class="classObj"
     :style="styleObj"
-    @mouseenter.passive="elementHover = true"
+    @mouseenter.passive="!isCollapsed && (elementHover = true)"
     @mouseleave.passive="elementHover = false"
   >
-    <template v-if="editorOrchestratorStore.editable">
+    <template v-if="editable && !isCollapsed">
       <move-widgets
         v-show="isHovering"
         :move="moveHandleListener"
@@ -329,10 +330,9 @@ const ganttTitleStyle = computed(() => {
     >
       <div class="eventItem pointer-events-none">
         <div
-          class="flex flex-row rounded -mx-2 px-2 eventBarAndTitle pointer-events-auto cursor-pointer"
+          class="flex flex-row rounded -mx-2 px-2 eventBarAndTitle"
           :class="barAndTitleClass"
-          @mousedown="mousedown"
-          @mouseup="mouseup"
+          v-on="isCollapsed ? {} : { mousedown, mouseup }"
         ></div>
         <event-bar
           ref="eventBar"
@@ -344,12 +344,13 @@ const ganttTitleStyle = computed(() => {
           :taskDenominator="taskDenominator"
           :drag-handle-listener-left="dragHandleListenerLeft"
           :drag-handle-listener-right="dragHandleListenerRight"
+          :editable="!!editable && !isCollapsed"
         />
-        <p class="eventDate py-1">
+        <p class="eventDate py-1" v-show="!isCollapsed">
           {{ dateText }}
         </p>
         <event-title
-          v-if="timelineStore.mode === 'timeline'"
+          v-if="timelineStore.mode === 'timeline' && !isCollapsed"
           :showing-meta="showingMeta"
           :is-hovering="isHovering"
           :has-meta="hasMeta"
@@ -367,7 +368,7 @@ const ganttTitleStyle = computed(() => {
   <div
     class="absolute left-0 right-0 h-[30px]"
     :style="{ top: `${top}px` }"
-    v-if="timelineStore.mode === 'gantt'"
+    v-if="timelineStore.mode === 'gantt' && !isCollapsed"
     @mouseenter.passive="elementHover = true"
     @mouseleave.passive="elementHover = false"
   >

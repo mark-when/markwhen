@@ -15,9 +15,9 @@ const props = defineProps<{
   taskDenominator: number;
   dragHandleListenerLeft: (e: MouseEvent | TouchEvent) => void;
   dragHandleListenerRight: (e: MouseEvent | TouchEvent) => void;
+  editable: boolean
 }>();
 
-const editable = inject(isEditable);
 
 const barStyleObj = computed(() => {
   const isGantt = timelineStore.mode === "gantt";
