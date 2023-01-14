@@ -33,7 +33,8 @@ const events = computed(() => {
 
 const isCollapsed = computed(() => timelineStore.isCollapsed(props.path));
 
-let timeout: number;
+// @ts-ignore
+let timeout: timeout;
 const transitioning = ref(false);
 watch(isCollapsed, () => {
   transitioning.value = true;
