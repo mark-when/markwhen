@@ -240,6 +240,7 @@ const styleObj = computed(() => {
   let obj = {
     top: `${top.value}px`,
     height: `30px`,
+    transition: `top 200ms cubic-bezier(0.4, 0, 0.2, 1)`,
   } as any;
   obj.left = isGantt.value ? "0px" : `${left.value}px`;
   if (isGantt.value) {

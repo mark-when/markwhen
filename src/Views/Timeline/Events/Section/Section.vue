@@ -58,7 +58,6 @@ const left = computed(() => {
 const { color } = useEventColor(props.node);
 
 const fullWidth = computed(() => {
-  // console.log('calling fullwidth')
   if (!props.node || !sectionRange.value) {
     return 100;
   }
@@ -93,6 +92,7 @@ const height = computed(() => 30 + props.numChildren! * 30);
 
 const styleObject = computed(() => ({
   top: `${top.value}px`,
+  transition: `top 200ms cubic-bezier(0.4, 0, 0.2, 1)`,
   display: timelineStore.isCollapsedChild(props.path) ? "none" : "block",
   ...(groupStyle.value === "section"
     ? {

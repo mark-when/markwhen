@@ -34,7 +34,8 @@ const isDeep = computed(() => computedPath.value.length > 4);
 
 const styleObject = computed(() => {
   const obj = {
-    height: `${props.height}px`
+    height: `${props.height}px`,
+    transition: `height 200ms cubic-bezier(0.4, 0, 0.2, 1)`,
   } as any;
   if (color.value) {
     if (props.hovering || isDetailEvent.value) {
@@ -58,9 +59,7 @@ const styleObject = computed(() => {
   }
   if (isGroupStyle.value) {
     obj.marginLeft = `${timelineStore.pageScaleBy24 * props.left - 8}px`;
-    obj.width = `calc(${
-      timelineStore.pageScaleBy24 * props.fullWidth + 16
-    }px)`;
+    obj.width = `calc(${timelineStore.pageScaleBy24 * props.fullWidth + 16}px)`;
   }
   return obj;
 });

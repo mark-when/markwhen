@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Path, GroupStyle } from "@markwhen/parser/lib/Types";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useTimelineStore } from "../../timelineStore";
 import SectionTitleButton from "./SectionTitleButton.vue";
 
@@ -32,6 +32,18 @@ const events = computed(() => {
 });
 
 const isCollapsed = computed(() => timelineStore.isCollapsed(props.path));
+
+let timeout: number;
+const transitioning = ref(false);
+watch(isCollapsed, () => {
+  transitioning.value = true;
+  if (!isNaN(timeout)) {
+    clearTimeout(timeout);
+  }
+  timeout = setTimeout(() => {
+    transitioning.value = false;
+  }, 200);
+});
 
 const width = computed(() => timelineStore.pageScaleBy24 * props.fullWidth);
 
@@ -74,6 +86,21 @@ const titleClass = computed(() => {
   }
   return "";
 });
+
+const childStyleObj = computed(() => {
+  const obj = {} as any;
+  if (transitioning.value) {
+    obj.transition = transitioning.value
+      ? "margin-left 200ms cubic-bezier(0.4, 0, 0.2, 1)"
+      : "";
+  }
+  if (props.groupStyle === "group" && isCollapsed.value) {
+    obj.marginLeft = `calc(${width.value}px + 0.75rem)`;
+  } else {
+    obj.marginLeft = 0;
+  }
+  return obj;
+});
 </script>
 
 <template>
@@ -82,14 +109,7 @@ const titleClass = computed(() => {
     :style="styleObject"
     v-on="events"
   >
-    <div
-      class="sticky flex items-center left-2"
-      :style="
-        groupStyle === 'group' && isCollapsed
-          ? `margin-left: calc(${width}px + 0.75rem)`
-          : ''
-      "
-    >
+    <div class="sticky flex items-center left-2" :style="childStyleObj">
       <div
         class="h-[30px] flex flex-row items-center"
         :style="titleStyle"
