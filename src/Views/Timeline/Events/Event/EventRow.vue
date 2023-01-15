@@ -18,7 +18,6 @@ import MoveWidgets from "./Edit/MoveWidgets.vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { isolateHistory } from "@codemirror/commands";
 import { isEditable } from "@/injectionKeys";
 import Fade from "@/Transitions/Fade.vue";
 
