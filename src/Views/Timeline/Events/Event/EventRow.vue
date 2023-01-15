@@ -20,6 +20,7 @@ import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { isolateHistory } from "@codemirror/commands";
 import { isEditable } from "@/injectionKeys";
+import Fade from "@/Transitions/Fade.vue";
 
 const props = defineProps<{
   path: EventPath;
@@ -347,22 +348,27 @@ const editable = inject(isEditable);
           :drag-handle-listener-right="dragHandleListenerRight"
           :editable="!!editable && !isCollapsed"
         />
-        <p class="eventDate py-1" v-show="!isCollapsed">
-          {{ dateText }}
-        </p>
-        <event-title
-          v-if="timelineStore.mode === 'timeline' && !isCollapsed"
-          :showing-meta="showingMeta"
-          :is-hovering="isHovering"
-          :has-meta="hasMeta"
-          :has-supplemental="!!supplemental.length"
-          :has-locations="hasLocations"
-          :task-denominator="taskDenominator"
-          :task-numerator="taskNumerator"
-          :completed="completed"
-          :title-html="titleHtml"
-          @toggle-meta="toggleMeta"
-        ></event-title>
+        <Fade>
+          <p class="eventDate py-1" v-show="!isCollapsed">
+            {{ dateText }}
+          </p>
+        </Fade>
+        <Fade>
+          <event-title
+            v-if="timelineStore.mode === 'timeline'"
+            v-show="!isCollapsed"
+            :showing-meta="showingMeta"
+            :is-hovering="isHovering"
+            :has-meta="hasMeta"
+            :has-supplemental="!!supplemental.length"
+            :has-locations="hasLocations"
+            :task-denominator="taskDenominator"
+            :task-numerator="taskNumerator"
+            :completed="completed"
+            :title-html="titleHtml"
+            @toggle-meta="toggleMeta"
+          ></event-title>
+        </Fade>
       </div>
     </div>
   </div>
