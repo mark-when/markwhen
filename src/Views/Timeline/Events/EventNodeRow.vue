@@ -46,6 +46,7 @@ const {
   dateText,
   titleHtml,
   completed,
+  recurrence,
 } = useEventRefs(event, () => isEventRow.value);
 
 const eventPath = computed(() => ({ type, path: pathArray.value }));
@@ -92,6 +93,7 @@ const isDetailEvent = computed(() =>
     :dateText="dateText || ''"
     :titleHtml="titleHtml || ''"
     :completed="completed"
+    :recurrence="recurrence"
     @edit-date-range="editDateRange"
     @hover="hover"
     :is-detail-event="isDetailEvent"

@@ -9,6 +9,7 @@ import {
   supplementalComparator,
   matchedListItemsComparator,
   bothDefined,
+  recurrenceComparator,
 } from "../utilities/eventComparator";
 import { toInnerHtml } from "../utilities/innerHtml";
 
@@ -98,9 +99,13 @@ export const useEventRefs = (
     }
   });
 
-  const dateText = cachedEventComputed(() =>
-    toInnerHtml(unref(event)?.dateText || "")
-  );
+  const dateText = cachedEventComputed(() => {
+    const e = unref(event);
+    if (e?.recurrenceRangeInText?.content) {
+      return e.recurrenceRangeInText.content;
+    }
+    return toInnerHtml(e?.dateText || "");
+  });
 
   const titleHtml = cachedEventComputed(() => {
     const ed = unref(event)?.eventDescription?.eventDescription;
@@ -111,6 +116,11 @@ export const useEventRefs = (
       ed.replace(COMPLETION_REGEX, (a, b) => a.substring(b.length))
     );
   });
+
+  const recurrence = cachedEventComputed(
+    () => unref(event)?.recurrence,
+    recurrenceComparator
+  );
 
   return {
     eventRange,
@@ -123,5 +133,6 @@ export const useEventRefs = (
     dateText,
     titleHtml,
     completed,
+    recurrence,
   };
 };

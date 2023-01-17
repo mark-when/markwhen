@@ -20,6 +20,8 @@ import EventTitle from "./EventTitle.vue";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { isEditable } from "@/injectionKeys";
 import Fade from "@/Transitions/Fade.vue";
+import type { Recurrence } from "@markwhen/parser/lib/dateRange/checkRecurrence";
+import { expand } from "@markwhen/parser/lib/utilities/recurrence";
 
 const props = defineProps<{
   path: EventPath;
@@ -37,6 +39,7 @@ const props = defineProps<{
   isDetailEvent: boolean;
   numAbove: number;
   completed?: boolean;
+  recurrence?: Recurrence;
 }>();
 
 const emit = defineEmits<{
@@ -144,6 +147,18 @@ const range = computed(() => {
     toDateTime: +tempFrom.value < +tempTo.value ? tempTo.value : tempFrom.value,
   };
 });
+
+const expandedRecurrence = computed(() =>
+  (props.recurrence
+    ? expand(range.value, props.recurrence, 10)
+    : [range.value]
+  ).map((dr) =>
+    timelineStore.distanceBetweenDates(
+      range.value.fromDateTime,
+      dr.fromDateTime
+    )
+  )
+);
 
 const left = computed(() => {
   return (
@@ -346,9 +361,18 @@ const editable = inject(isEditable);
           :drag-handle-listener-left="dragHandleListenerLeft"
           :drag-handle-listener-right="dragHandleListenerRight"
           :editable="!!editable && !isCollapsed"
+          :expandedRecurrence="expandedRecurrence"
         />
         <Fade>
-          <p class="eventDate py-1" v-show="!isCollapsed">
+          <p
+            class="eventDate py-1"
+            v-show="!isCollapsed"
+            :class="
+              recurrence
+                ? 'dark:text-orange-200 text-orange-400'
+                : 'text-gray-400'
+            "
+          >
             {{ dateText }}
           </p>
         </Fade>
@@ -427,7 +451,6 @@ const editable = inject(isEditable);
 }
 
 .eventDate {
-  color: #93979a;
   font-family: system-ui;
   font-size: 80%;
   margin: 0px 0px 0px 8px;

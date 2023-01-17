@@ -1,3 +1,4 @@
+import type { Recurrence } from "@markwhen/parser/lib/dateRange/checkRecurrence";
 import {
   Block,
   BlockType,
@@ -19,7 +20,7 @@ export const bothDefined = <T>(a: T | undefined, b: T | undefined) => {
   if (typeof b === "undefined") {
     return false;
   }
-  return true
+  return true;
 };
 
 export const rangeComparator = (a: Range, b: Range) =>
@@ -78,4 +79,41 @@ export const markdownBlockComparator = (a: MarkdownBlock, b: MarkdownBlock) => {
     (a as Block).raw === (b as Block).raw &&
     (a as Block).value === (b as Block).value
   );
+};
+
+export const recurrenceComparator = (a?: Recurrence, b?: Recurrence) => {
+  if (!a || !b) {
+    return false;
+  }
+  if (a.for) {
+    if (!b.for) {
+      return false;
+    } else {
+      const aFor = Object.keys(a.for) as (keyof typeof a.for)[];
+      const bFor = Object.keys(b.for) as (keyof typeof b.for)[];
+      if (aFor.sort().join(",") !== bFor.sort().join(",")) {
+        return false;
+      }
+      for (const aKey of aFor) {
+        if (a.for[aKey] !== b.for[aKey]) {
+          return false;
+        }
+      }
+    }
+  } else {
+    if (b.for) {
+      return false;
+    }
+  }
+  const aEvery = Object.keys(a.every) as (keyof typeof a.every)[];
+  const bEvery = Object.keys(b.every) as (keyof typeof b.every)[];
+  if (aEvery.sort().join(",") !== bEvery.sort().join(",")) {
+    return false;
+  }
+  for (const aKey of aEvery) {
+    if (a.every[aKey] !== b.every[aKey]) {
+      return false;
+    }
+  }
+  return true;
 };
