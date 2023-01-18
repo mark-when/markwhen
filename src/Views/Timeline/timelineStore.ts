@@ -19,6 +19,8 @@ import type {
 } from "@markwhen/parser/lib/Types";
 import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
+import { walk } from "@/Views/Timeline/useNodeStore";
+import { isEventNode } from "@markwhen/parser/lib/Noder";
 
 export enum Weight {
   SECOND = 0,
@@ -151,7 +153,20 @@ export const useTimelineStore = defineStore("timeline", () => {
   const showingJumpToRange = ref(false);
   const jumpToRange = ref<DateRangePart>();
   const shouldZoomWhenScrolling = ref<boolean>(true);
-  const collapsed = reactive<Set<string>>(new Set());
+  const collapsed = usePageEffect((index) => {
+    const mw = markwhenStore.timelines[index];
+    const set = new Set<string>();
+    if (mw) {
+      walk(mw.events, [], (node, path) => {
+        if (!isEventNode(node)) {
+          if (!node.startExpanded) {
+            set.add(path.join(","));
+          }
+        }
+      });
+    }
+    return set;
+  });
   const mode = ref<TimelineMode>("timeline");
   const ganttSidebarWidth = ref(200);
   const ganttSidebarTempWidth = ref(0);
@@ -305,30 +320,30 @@ export const useTimelineStore = defineStore("timeline", () => {
     shouldZoomWhenScrolling.value = should;
   };
   const collapse = (path: Path) => {
-    collapsed.add(path.join(","));
+    collapsed.value.add(path.join(","));
   };
   const expand = (path: Path) => {
-    collapsed.delete(path.join(","));
+    collapsed.value.delete(path.join(","));
   };
   const toggleCollapsed = (path: Path) => {
     const pathJoined = path.join(",");
-    if (collapsed.has(pathJoined)) {
-      collapsed.delete(pathJoined);
+    if (collapsed.value.has(pathJoined)) {
+      collapsed.value.delete(pathJoined);
     } else {
-      collapsed.add(pathJoined);
+      collapsed.value.add(pathJoined);
     }
   };
   const setCollapsed = (path: Path | string, shouldCollapse: boolean) => {
     const pathJoined = typeof path === "string" ? path : path.join(",");
     if (shouldCollapse) {
-      collapsed.add(pathJoined);
+      collapsed.value.add(pathJoined);
     } else {
-      collapsed.delete(pathJoined);
+      collapsed.value.delete(pathJoined);
     }
   };
   const isCollapsed = (path: Path | string) => {
     const pathJoined = typeof path === "string" ? path : path.join(",");
-    for (const entry of collapsed.keys()) {
+    for (const entry of collapsed.value.keys()) {
       if (pathJoined === entry) {
         return true;
       }
@@ -339,7 +354,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     const pathJoined = typeof path === "string" ? path : path.join(",");
     const pathAsArray =
       typeof path === "string" ? path.split(",").map((i) => parseInt(i)) : path;
-    for (const entry of collapsed.keys()) {
+    for (const entry of collapsed.value.keys()) {
       if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
         return true;
       }
@@ -352,7 +367,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     // We're looking for the shallowest ancestor of this node that has collapsed it
     let highest: string | undefined;
 
-    for (const entry of collapsed.keys()) {
+    for (const entry of collapsed.value.keys()) {
       if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
         if (!highest || entry.length < highest.length) {
           highest = entry;

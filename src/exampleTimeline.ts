@@ -16,7 +16,7 @@ More info about sub task 2
 
 2022-07: Yearly planning
 endGroup
-group Project 2 #Project2
+ group Project 2 #Project2
 2022-04/4 months: Larger sub task #Danielle
 
 // Supports American date formats
@@ -37,7 +37,7 @@ group Project 3
 endGroup
 endSection
 
-section Overall
+ section Overall
 
 2022: Year of the something
 2023: Year of something else
