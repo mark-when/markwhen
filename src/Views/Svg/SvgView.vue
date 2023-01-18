@@ -11,7 +11,12 @@ import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import EventRowSvg from "./EventRowSvg.vue";
 import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
-import { useAppStore } from "@/App/appStore";
+import type { ShowMarkers } from "@/Menu/Export/imageExportStore";
+import {
+  floorDateTime,
+  ceilDateTime,
+} from "../Timeline/utilities/dateTimeUtilities";
+import MarkersSvg from "./MarkersSvg.vue";
 
 const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
@@ -28,6 +33,7 @@ const ourProps = defineProps<{
   rowHeight: number;
   roundedRight: boolean;
   roundedLeft: boolean;
+  showMarkers?: ShowMarkers;
 }>();
 
 const scale = computed(() => ourProps.scale || 1);
@@ -47,6 +53,13 @@ const viewBoxWidth = ref(totalWidth.value);
 
 const heightUnit = computed(() => totalWidth.value / nodeStore.height);
 
+const earliestTime = computed(() =>
+  DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
+);
+const latestTime = computed(() =>
+  DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
+);
+
 const props = (path: Path, node: SomeNode) => ({
   node: node as Node<Event>,
   hovering: isHovering({ type: "pageFiltered", path }),
@@ -57,8 +70,8 @@ const props = (path: Path, node: SomeNode) => ({
   totalWidth: totalWidth.value,
   height: nodeStore.predecessorMap.get(path.join(","))!,
   heightUnit: heightUnit.value,
-  earliestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
-  latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
+  earliestTime: earliestTime.value,
+  latestTime: latestTime.value,
   dark: ourProps.dark,
   scale: scale.value,
   showDateText: ourProps.showDateText,
@@ -96,8 +109,6 @@ const getRightmostX = () => {
   return max;
 };
 
-const ratio = () => {};
-
 defineExpose({ getRightmostX });
 watchEffect(() => {
   props;
@@ -109,12 +120,15 @@ watchEffect(() => {
 const textFontSize = computed(
   () => ((heightUnit.value / 1.5) * ourProps.rowHeight) / 3
 );
+
+const startX = computed(() => -heightUnit.value);
+const startY = computed(() => heightUnit.value);
 </script>
 
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    :viewBox="`-${heightUnit} ${heightUnit} ${viewBoxWidth} ${totalWidth}`"
+    :viewBox="`${startX} ${startY} ${viewBoxWidth} ${totalWidth}`"
     fill="currentColor"
     preserveAspectRatio="xMinYMin meet"
   >
@@ -128,6 +142,15 @@ const textFontSize = computed(
         fill: {{ dark ? 'white' : 'black' }};
       }
     </svg:style>
+    <MarkersSvg
+      :showMarkers="showMarkers"
+      :earliestTime="earliestTime"
+      :latestTime="latestTime"
+      :scale="scale"
+      :totalWidth="totalWidth"
+      :heightUnit="heightUnit"
+      :startY="startY"
+    ></MarkersSvg>
     <template v-for="({ path, node }, index) in nodeStore.nodeArray">
       <EventRowSvg
         ref="rows"
