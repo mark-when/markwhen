@@ -150,6 +150,7 @@ const startY = computed(() => heightUnit.value);
       :totalWidth="totalWidth"
       :heightUnit="heightUnit"
       :startY="startY"
+      :dark="dark"
     ></MarkersSvg>
     <template v-for="({ path, node }, index) in nodeStore.nodeArray">
       <EventRowSvg

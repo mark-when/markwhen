@@ -16,6 +16,7 @@ const props = defineProps<{
   totalWidth: number;
   heightUnit: number;
   startY: number;
+  dark: boolean;
 }>();
 
 const timelineStore = useTimelineStore();
@@ -54,10 +55,9 @@ const bottomY = computed(() => props.totalWidth + props.heightUnit * 4);
 <template>
   <path
     v-for="marker in markers"
-    stroke="rgba(100, 100, 100, 0.4)"
-    :stroke-dasharray="`${heightUnit / 4},${heightUnit / 8}`"
+    :stroke="`rgba(${dark ? '200, 200, 200' : '100, 100, 100'}, 0.15)`"
+    :stroke-dasharray="`${heightUnit / 5},${heightUnit / 10}`"
     :stroke-width="heightUnit / 10"
-    fill="none"
     :d="`M ${x(marker)} ${startY} L ${x(marker)} ${bottomY}`"
   ></path>
 </template>
