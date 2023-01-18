@@ -19,7 +19,6 @@ const props = defineProps<{
   expandedRecurrence: number[];
 }>();
 
-
 const barStyleObj = computed(() => {
   const isGantt = timelineStore.mode === "gantt";
   return {
@@ -90,8 +89,8 @@ const recurrenceTotalWidth = computed(
     class="flex flex-row items-center eventBar"
     :style="`width: ${recurrenceTotalWidth}px`"
   >
-    <template v-for="instance of expandedRecurrence">
-      <div class="relative items-center" :style="`height: ${barHeight}px`">
+    <template v-for="(instance, i) of expandedRecurrence">
+      <div class="relative items-center" :style="`height: ${barHeight}px;`">
         <div
           :class="{
             'eventBar transition shadow top-0 absolute': true,
@@ -109,6 +108,18 @@ const recurrenceTotalWidth = computed(
           }"
           :style="recurrencePercentBarStyleObj(instance)"
         ></div>
+        <template v-if="i === 0">
+          <drag-handle
+            class="pointer-events-auto"
+            v-show="editable && hovering"
+            :left="0"
+            :mouse-down-touch-start-listener="dragHandleListenerLeft" />
+          <drag-handle
+            class="pointer-events-auto"
+            v-show="editable && hovering"
+            :left="width"
+            :mouse-down-touch-start-listener="dragHandleListenerRight"
+        /></template>
         <!-- <div
         :class="{
           'eventBar transition shadow': true,

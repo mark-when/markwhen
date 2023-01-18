@@ -2,20 +2,11 @@
 import { computed } from "vue";
 
 const props = defineProps<{
-  isLeft: boolean;
-  left?: number;
+  left: number;
   mouseDownTouchStartListener: (e: MouseEvent | TouchEvent) => void;
 }>();
 
-const styleObj = computed(() => {
-  if (props.left) {
-    return { left: `${props.left}px` };
-  }
-  if (props.isLeft) {
-    return { left: "0px" };
-  }
-  return { right: "0px" };
-});
+const styleObj = computed(() => ({ left: `${props.left}px` }));
 </script>
 
 <template>
