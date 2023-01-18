@@ -119,11 +119,11 @@ const textFontSize = computed(
     preserveAspectRatio="xMinYMin meet"
   >
     <svg:style>
-      .dateText {
+      .svgDateText {
         font: bold {{ textFontSize }}px system-ui;
         fill: #93979a;
       }
-      .eventTitle {
+      .svgEventTitle {
         font: bold {{ textFontSize }}px system-ui;
         fill: {{ dark ? 'white' : 'black' }};
         letter-spacing: 0.035em;

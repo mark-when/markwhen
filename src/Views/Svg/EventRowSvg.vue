@@ -84,10 +84,10 @@ defineExpose({
     :stroke-width="strokeWidth"
   ></path>
   <text :x="barRightX" :y="barBottomY" ref="text"
-    ><tspan class="dateText">&nbsp;&nbsp;</tspan
-    ><tspan v-if="showDateText" class="dateText"
+    ><tspan class="svgDateText">&nbsp;&nbsp;</tspan
+    ><tspan v-if="showDateText" class="svgDateText"
       >&nbsp;&nbsp;&nbsp;{{ dateText }}</tspan
-    ><tspan v-if="showEventTitles" class="eventTitle"
+    ><tspan v-if="showEventTitles" class="svgEventTitle"
       >&nbsp;&nbsp;&nbsp;{{ titleHtml }}</tspan
     ><tspan>&nbsp;&nbsp;</tspan></text
   >
