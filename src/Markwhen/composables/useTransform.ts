@@ -11,6 +11,7 @@ import {
   isEventNode,
 } from "@markwhen/parser/lib/Noder";
 import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
+import { recurrenceLimit } from "../pageStore";
 
 import type { Sort } from "../transformStore";
 
@@ -130,7 +131,7 @@ const sortNodeArray = (
       const fromDateTime = (n: SomeNode) =>
         isEventNode(n)
           ? toDateRange(eventValue(n).dateRangeIso).fromDateTime
-          : ranges(n)?.fromDateTime;
+          : ranges(n, recurrenceLimit)?.fromDateTime;
 
       const leftDateTime = fromDateTime(left);
       const rightDateTime = fromDateTime(right);

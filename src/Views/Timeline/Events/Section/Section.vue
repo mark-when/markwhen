@@ -10,6 +10,7 @@ import { useTimelineStore } from "../../timelineStore";
 import { ranges } from "@/utilities/ranges";
 import { equivalentPaths } from "@/EventDetail/eventDetailStore";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { recurrenceLimit } from "@/Markwhen/pageStore";
 
 const editorOrchestrator = useEditorOrchestratorStore();
 const props = defineProps<{
@@ -44,7 +45,7 @@ const toggle = (e: MouseEvent) => {
   collapsed.value = !collapsed.value;
 };
 
-const sectionRange = computed(() => ranges(props.node));
+const sectionRange = computed(() => ranges(props.node, recurrenceLimit));
 
 const left = computed(() => {
   if (!props.node || !sectionRange.value) {
