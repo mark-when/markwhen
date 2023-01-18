@@ -6,7 +6,7 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
 import { useNodeStore } from "@/Views/Timeline/useNodeStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { computed, watch } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import EventRowSvg from "./EventRowSvg.vue";
@@ -23,22 +23,27 @@ const ourProps = defineProps<{
   bg?: string;
   showViewport: boolean;
   scale?: number;
+  showDateText: boolean;
+  showEventTitles: boolean;
+  rowHeight: number;
+  roundedRight: boolean;
+  roundedLeft: boolean;
 }>();
 
-const scale = computed(() => ourProps.scale || 1)
+const scale = computed(() => ourProps.scale || 1);
 
 const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
 const isHovering = (p: EventPath) => {
   return hovering.value && eqPath(p, hovering.value);
 };
 
-const totalWidth = computed(
-  () =>
-    timelineStore.scalelessDistanceBetweenDates(
-      DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
-      DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
-    )
+const totalWidth = computed(() =>
+  timelineStore.scalelessDistanceBetweenDates(
+    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
+    DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
+  )
 );
+const viewBoxWidth = ref(totalWidth.value);
 
 const heightUnit = computed(() => totalWidth.value / nodeStore.height);
 
@@ -56,6 +61,11 @@ const props = (path: Path, node: SomeNode) => ({
   latestTime: DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime),
   dark: ourProps.dark,
   scale: scale.value,
+  showDateText: ourProps.showDateText,
+  showEventTitles: ourProps.showEventTitles,
+  rowHeight: ourProps.rowHeight,
+  roundedLeft: ourProps.roundedLeft,
+  roundedRight: ourProps.roundedRight,
 });
 
 const vp = computed(() => timelineStore.pageSettings.viewport);
@@ -70,19 +80,58 @@ const vpLeft = computed(
     (vp.value.left - additionalOffsetLeft.value) / timelineStore.pageScaleBy24
 );
 const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
+
+const rows = ref<[typeof EventRowSvg]>();
+const getRightmostX = () => {
+  if (!rows.value) {
+    return 0;
+  }
+  let max = 0;
+  for (let i = 0; i < rows.value.length; i++) {
+    const rowMaxX = rows.value[i].getRightmostX();
+    if (rowMaxX > max) {
+      max = rowMaxX;
+    }
+  }
+  return max;
+};
+
+const ratio = () => {};
+
+defineExpose({ getRightmostX });
+watchEffect(() => {
+  props;
+  viewBoxWidth.value =
+    Math.max(totalWidth.value * scale.value, getRightmostX()) +
+    heightUnit.value * 2;
+});
+
+const textFontSize = computed(
+  () => ((heightUnit.value / 1.5) * ourProps.rowHeight) / 3
+);
 </script>
 
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    :viewBox="`-${heightUnit} ${heightUnit * 1.5} ${
-      (totalWidth * scale) + heightUnit * 2
-    } ${totalWidth}`"
+    :viewBox="`-${heightUnit} ${heightUnit} ${viewBoxWidth} ${totalWidth}`"
     fill="currentColor"
     preserveAspectRatio="xMinYMin meet"
   >
+    <svg:style>
+      .dateText {
+        font: bold {{ textFontSize }}px system-ui;
+        fill: #93979a;
+      }
+      .eventTitle {
+        font: bold {{ textFontSize }}px system-ui;
+        fill: {{ dark ? 'white' : 'black' }};
+        letter-spacing: 0.035em;
+      }
+    </svg:style>
     <template v-for="({ path, node }, index) in nodeStore.nodeArray">
       <EventRowSvg
+        ref="rows"
         :key="path.join(',') + node.value.dateText"
         v-if="isEventNode(node) && !timelineStore.isCollapsedChild(path)"
         v-bind="props(path, node)"

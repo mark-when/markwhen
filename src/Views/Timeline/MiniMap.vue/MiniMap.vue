@@ -30,6 +30,12 @@ const styleLeftInset = computed(() => {
       style="width: 8rem; height: 8rem"
       :dark="dark"
       :show-viewport="true"
+      :scale="1"
+      :show-date-text="false"
+      :show-event-titles="false"
+      :row-height="3"
+      :roundedRight="true"
+      :rounded-left="true"
     />
   </div>
 </template>
