@@ -198,14 +198,14 @@ export const useTimelineStore = defineStore("timeline", () => {
     }
   });
 
-  const baselineRightmostDate = computed(() =>
-    floorDateTime(
-      DateTime.fromISO(pageTimelineMetadata.value.latestTime).plus({
+  const baselineRightmostDate = computed(() => {
+    return floorDateTime(
+      pageStore.pageRange.toDateTime.plus({
         years: 30,
       }),
       "year"
-    )
-  );
+    );
+  });
   const dateIntervalFromViewport = computed(() => {
     return (scrollLeft: number, width: number) => {
       // We're adding these so that when we are scrolling it looks like the left

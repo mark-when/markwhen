@@ -1,7 +1,10 @@
-import { PAGE_BREAK, PAGE_BREAK_REGEX } from "@markwhen/parser/lib/regex";
+import { ranges } from "@/utilities/ranges";
+import { DateTime } from "luxon";
 import { defineStore } from "pinia";
-import { computed, ref, watch, watchEffect } from "vue";
+import { computed, ref } from "vue";
 import { useMarkwhenStore } from "./markwhenStore";
+
+export const recurrenceLimit = 100;
 
 export const usePageStore = defineStore("page", () => {
   const pageIndex = ref<number>(0);
@@ -10,6 +13,15 @@ export const usePageStore = defineStore("page", () => {
   const setPageIndex = (index: number) => (pageIndex.value = index);
 
   const pageTimeline = computed(() => markwhenStore.timelines[pageIndex.value]);
+  const pageRange = computed(
+    () =>
+      ranges(pageTimeline.value.events, recurrenceLimit) || {
+        fromDateTime: DateTime.now().minus({ years: 5 }),
+        toDateTime: DateTime.now().plus({ years: 5 }),
+      }
+  );
+  const pageRangeFrom = computed(() => pageRange.value.fromDateTime.toISO());
+  const pageRangeTo = computed(() => pageRange.value.toDateTime.toISO());
   const pageTimelineMetadata = computed(() => pageTimeline.value.metadata);
   const tags = computed(() => pageTimeline.value.tags);
 
@@ -32,5 +44,8 @@ export const usePageStore = defineStore("page", () => {
     pageTimelineMetadata,
     pageTimelineString,
     tags,
+    pageRange,
+    pageRangeFrom,
+    pageRangeTo,
   };
 });

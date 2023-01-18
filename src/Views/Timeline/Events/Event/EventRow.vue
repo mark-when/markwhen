@@ -22,6 +22,7 @@ import { isEditable } from "@/injectionKeys";
 import Fade from "@/Transitions/Fade.vue";
 import type { Recurrence } from "@markwhen/parser/lib/dateRange/checkRecurrence";
 import { expand } from "@markwhen/parser/lib/utilities/recurrence";
+import { recurrenceLimit } from "@/Markwhen/pageStore";
 
 const props = defineProps<{
   path: EventPath;
@@ -150,7 +151,7 @@ const range = computed(() => {
 
 const expandedRecurrence = computed(() =>
   (props.recurrence
-    ? expand(range.value, props.recurrence, 10)
+    ? expand(range.value, props.recurrence, recurrenceLimit)
     : [range.value]
   ).map((dr) =>
     timelineStore.distanceBetweenDates(
@@ -369,7 +370,7 @@ const editable = inject(isEditable);
             v-show="!isCollapsed"
             :class="
               recurrence
-                ? 'dark:text-orange-200 text-orange-400'
+                ? 'dark:text-orange-300 text-orange-500'
                 : 'text-gray-400'
             "
           >

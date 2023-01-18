@@ -1,4 +1,5 @@
 import { eqPath } from "@/Markwhen/composables/useEventFinder";
+import { recurrenceLimit } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { ranges } from "@/utilities/ranges";
 import type { NodeArray, SomeNode, Node } from "@markwhen/parser/lib/Node";
@@ -200,7 +201,7 @@ export const useNodeStore = defineStore("nodes", () => {
             if (timelineStore.mode === "gantt") {
               visibleEvents.push(pAndN);
             } else {
-              const range = ranges(pAndN.node)!;
+              const range = ranges(pAndN.node, recurrenceLimit)!;
               const left =
                 timelineStore.pageScaleBy24 *
                 timelineStore.scalelessDistanceFromBaselineLeftmostDate(
