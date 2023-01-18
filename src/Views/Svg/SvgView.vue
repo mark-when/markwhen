@@ -141,6 +141,10 @@ const startY = computed(() => heightUnit.value);
         font: normal {{ textFontSize }}px system-ui;
         fill: {{ dark ? 'white' : 'black' }};
       }
+      .svgMarkerText {
+        font: normal {{ textFontSize }}px system-ui;
+        fill: #93979a;
+      }
     </svg:style>
     <MarkersSvg
       :showMarkers="showMarkers"
