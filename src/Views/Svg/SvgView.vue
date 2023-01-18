@@ -11,12 +11,7 @@ import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import EventRowSvg from "./EventRowSvg.vue";
 import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
-import type { ShowMarkers } from "@/Menu/Export/imageExportStore";
-import {
-  floorDateTime,
-  ceilDateTime,
-} from "../Timeline/utilities/dateTimeUtilities";
-import MarkersSvg from "./MarkersSvg.vue";
+import MarkersSvg, { type ShowMarkers } from "./MarkersSvg.vue";
 
 const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();

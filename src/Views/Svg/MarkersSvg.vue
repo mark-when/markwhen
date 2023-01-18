@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ShowMarkers } from "@/Menu/Export/imageExportStore";
 import type { DateTime } from "luxon";
 import { computed } from "vue";
 import { useTimelineStore } from "../Timeline/timelineStore";
@@ -9,6 +8,13 @@ import {
   ceilDateTime,
   dateScale,
 } from "../Timeline/utilities/dateTimeUtilities";
+
+export type ShowMarkers = Partial<
+  Record<
+    "decade" | "year" | "month" | "day" | "hour" | "quarterhour" | "minute",
+    { marker: boolean; label: boolean }
+  >
+>;
 
 const props = defineProps<{
   showMarkers?: ShowMarkers;

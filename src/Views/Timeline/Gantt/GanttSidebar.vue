@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { PanelEditor } from "@/Panels/panelStore";
 import { usePanelResize } from "@/Sidebar/composables/usePanelResize";
 import { computed, watchEffect } from "vue";
 import { useTimelineStore } from "../timelineStore";
