@@ -124,7 +124,7 @@ const textFontSize = computed(
         fill: #93979a;
       }
       .svgEventTitle {
-        font: bold {{ textFontSize }}px system-ui;
+        font: normal {{ textFontSize }}px system-ui;
         fill: {{ dark ? 'white' : 'black' }};
       }
     </svg:style>

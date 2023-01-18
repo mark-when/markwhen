@@ -32,9 +32,7 @@ const props = defineProps<{
 
 const { scalelessDistanceBetweenDates: dist } = useTimelineStore();
 
-const { color, eventRange, dateText, titleHtml } = useEventRefs(
-  props.node.value
-);
+const { color, eventRange, dateText } = useEventRefs(props.node.value);
 
 const range = computed(() => toDateRange(eventRange.value!));
 
@@ -89,12 +87,12 @@ defineExpose({
     :stroke-width="strokeWidth"
   ></path>
   <text :x="barRightX" :y="barBottomY" ref="text"
-    ><tspan class="svgDateText">&nbsp;&nbsp;</tspan
+    ><tspan class="svgDateText">&nbsp;</tspan
     ><tspan v-if="showDateText" class="svgDateText"
-      >&nbsp;&nbsp;&nbsp;{{ dateText }}</tspan
+      >&nbsp;&nbsp;{{ dateText }}</tspan
     ><tspan v-if="showEventTitles" class="svgEventTitle"
-      >&nbsp;&nbsp;&nbsp;{{ titleHtml }}</tspan
-    ><tspan>&nbsp;&nbsp;</tspan></text
+      >&nbsp;&nbsp;{{ node.value.eventDescription.eventDescription }}</tspan
+    ></text
   >
 </template>
 
