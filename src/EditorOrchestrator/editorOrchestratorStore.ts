@@ -137,7 +137,7 @@ export const useEditorOrchestratorStore = defineStore(
 
       const newString =
         pre +
-        `${dateRangeToString(range, scale, preferredInterpolationFormat)}:` +
+        `${dateRangeToString(range, scale, preferredInterpolationFormat)}` +
         post;
 
       setText(newString);
