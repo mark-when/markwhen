@@ -35,6 +35,9 @@ group Project 3
 01/2023: Project kickoff
 02/2023-04/2023: Other stuff
 endGroup
+
+2022-01-03 every other week for 1 year: Biweekly meeting
+
 endSection
 
  section Overall
