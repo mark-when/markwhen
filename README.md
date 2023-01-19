@@ -2,7 +2,7 @@
 
 ![](/public/images/screenshot.png)
 
-Markwhen is a text-to-timeline tool. You write markdown-ish text and it gets converted into a nice looking cascading timeline.
+Markwhen is an interactive text-to-timeline tool. Write markdown-ish text and it gets converted into a nice looking cascading timeline.
 
 Use the editor [here](https://markwhen.com).
 
