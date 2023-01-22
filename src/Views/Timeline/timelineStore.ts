@@ -65,7 +65,7 @@ export interface Viewport {
 
 export interface Settings {
   scale: number;
-  viewportDateInterval: DateInterval;
+  viewportDateInterval: DateRange;
   viewport: Viewport;
 }
 
@@ -95,8 +95,8 @@ export function initialPageSettings(
     return {
       scale,
       viewportDateInterval: {
-        from: DateTime.now().minus({ years: 10 }),
-        to: DateTime.now().plus({ years: 10 }),
+        fromDateTime: DateTime.now().minus({ years: 10 }),
+        toDateTime: DateTime.now().plus({ years: 10 }),
       },
       viewport: {
         height: viewport.height,
@@ -108,8 +108,8 @@ export function initialPageSettings(
     };
   } else {
     const interval = {
-      from: DateTime.now().minus({ years: 10 }),
-      to: DateTime.now().plus({ years: 10 }),
+      fromDateTime: DateTime.now().minus({ years: 10 }),
+      toDateTime: DateTime.now().plus({ years: 10 }),
     };
     return {
       scale: initialScale,
@@ -235,7 +235,7 @@ export const useTimelineStore = defineStore("timeline", () => {
       const rightDate = earliest.plus({
         [diffScale]: ((scrollLeft + width) / pageScale.value) * 24,
       });
-      return { from: leftDate, to: rightDate };
+      return { fromDateTime: leftDate, toDateTime: rightDate };
     };
   });
   const scalelessDistanceBetweenDates = (a: DateTime, b: DateTime) =>
@@ -256,7 +256,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     distanceFromBaselineLeftmostDate.value(baselineRightmostDate.value)
   );
   const distanceFromViewportLeftDate = (a: DateTime) =>
-    (a.diff(pageSettings.value.viewportDateInterval.from).as(diffScale) *
+    (a
+      .diff(pageSettings.value.viewportDateInterval.fromDateTime)
+      .as(diffScale) *
       pageScale.value) /
     24;
 
@@ -382,8 +384,8 @@ export const useTimelineStore = defineStore("timeline", () => {
     const arbitraryNumber = 2000;
     const secondsInADay = 86400;
 
-    const to = pageSettings.value.viewportDateInterval.to;
-    const from = pageSettings.value.viewportDateInterval.from;
+    const to = pageSettings.value.viewportDateInterval.toDateTime;
+    const from = pageSettings.value.viewportDateInterval.fromDateTime;
 
     const rawDiff = to.diff(from).as(diffScale);
 

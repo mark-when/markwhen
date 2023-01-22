@@ -65,8 +65,8 @@ export const useMarkersStore = defineStore("markers", () => {
   const markers = computed(() => {
     const markers = [] as TimeMarker[];
     const scale = timelineStore.scaleOfViewportDateInterval;
-    const { from: leftViewportDate, to: rightViewportDate } = timelineStore
-      .pageSettings.viewportDateInterval as DateInterval;
+    const { fromDateTime: leftViewportDate, toDateTime: rightViewportDate } =
+      timelineStore.pageSettings.viewportDateInterval;
 
     let nextLeft = ceilDateTime(leftViewportDate, scale);
     let rightmost = ceilDateTime(rightViewportDate, scale);
@@ -119,9 +119,7 @@ export const useMarkersStore = defineStore("markers", () => {
   });
 
   const rangeFromOffsetLeft = computed(() => (offset: number) => {
-    const offsetDate = timelineStore.dateFromClientLeft(
-      offset
-    );
+    const offsetDate = timelineStore.dateFromClientLeft(offset);
 
     const scale = timelineStore.scaleOfViewportDateInterval as DisplayScale;
     const floored = floorDateTime(offsetDate, scale);
