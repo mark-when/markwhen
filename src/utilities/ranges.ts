@@ -1,55 +1,17 @@
-import {
-  type Recurrence,
-  type Duration,
-  recurrenceDurationUnits,
-} from "@markwhen/parser/lib/dateRange/checkRecurrence";
 import type {
   SomeNode,
   GroupRange,
   NodeArray,
 } from "@markwhen/parser/lib/Node";
 import { Event, toDateRange, type DateRange } from "@markwhen/parser/lib/Types";
+import { expand } from "@markwhen/parser/lib/utilities/recurrence";
 import LRUCache from "lru-cache";
-import { Duration as DTDuration } from "luxon";
 
 const cache = new LRUCache<string, DateRange>({ max: 1000 });
-
-const estimateExpandedRecurrence = (
-  dateRange: DateRange,
-  limit: number,
-  recurrence?: Recurrence
-): DateRange => {
-  if (!recurrence) {
-    return dateRange;
-  }
-  const instanceDuration = dateRange.toDateTime.diff(dateRange.fromDateTime);
-  const startTime = dateRange.fromDateTime;
-  const untilTimes = Math.min(recurrence.for?.times || limit, limit);
-
-  const combined = {} as Duration;
-  for (const unit of recurrenceDurationUnits) {
-    combined[unit] =
-      recurrence.every[unit] && recurrence.every[unit]! * untilTimes;
-  }
-
-  let untilDate = startTime.plus(DTDuration.fromObject(combined));
-  const altUntilDate =
-    recurrence.for &&
-    !recurrence.for.times &&
-    startTime.plus(DTDuration.fromObject(recurrence.for));
-
-  untilDate = altUntilDate
-    ? untilDate < altUntilDate
-      ? untilDate
-      : altUntilDate
-    : untilDate;
-
-  return {
-    fromDateTime: startTime,
-    toDateTime: untilDate.plus(instanceDuration),
-  };
+const cacheAndReturn = (cacheKey: string, dateRange: DateRange) => {
+  cache.set(cacheKey, dateRange);
+  return dateRange;
 };
-
 export const eventRange = (e: Event, recurrenceLimit: number) => {
   const cacheKey =
     JSON.stringify(e.dateRangeIso) + JSON.stringify(e.recurrence);
@@ -57,13 +19,20 @@ export const eventRange = (e: Event, recurrenceLimit: number) => {
   if (cached) {
     return cached;
   }
-  const range = estimateExpandedRecurrence(
-    toDateRange(e.dateRangeIso),
-    100,
-    e.recurrence
-  );
-  cache.set(cacheKey, range);
-  return range;
+
+  if (e.recurrence) {
+    const expanded = expand(
+      toDateRange(e.dateRangeIso),
+      e.recurrence,
+      recurrenceLimit
+    );
+    return cacheAndReturn(cacheKey, {
+      fromDateTime: expanded[0].fromDateTime,
+      toDateTime: expanded[expanded.length - 1].toDateTime,
+    });
+  } else {
+    return cacheAndReturn(cacheKey, toDateRange(e.dateRangeIso));
+  }
 };
 
 export type RecurrenceRangeOptions = {
