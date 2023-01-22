@@ -3,8 +3,11 @@ import { useTimelineStore } from "../timelineStore";
 import { computed, watch } from "vue";
 import SvgView from "@/Views/Svg/SvgView.vue";
 import { useAppStore } from "@/App/appStore";
+import { DateTime } from "luxon";
+import { usePageStore } from "@/Markwhen/pageStore";
 
 const timelineStore = useTimelineStore();
+const pageStore = usePageStore();
 const appStore = useAppStore();
 const dark = computed(() => appStore.inferredDarkMode);
 const styleLeftInset = computed(() => {
@@ -19,6 +22,23 @@ const styleLeftInset = computed(() => {
   }
   return inset;
 });
+
+const viewport = computed(
+  () => timelineStore.pageSettings.viewportDateInterval
+);
+
+const vp = computed(() => timelineStore.pageSettings.viewport);
+const additionalOffsetLeft = computed(() =>
+  timelineStore.distanceFromBaselineLeftmostDate(
+    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
+  )
+);
+
+const vpLeft = computed(
+  () =>
+    (vp.value.left - additionalOffsetLeft.value) / timelineStore.pageScaleBy24
+);
+const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
 </script>
 
 <template>
@@ -27,6 +47,7 @@ const styleLeftInset = computed(() => {
     :style="`left: calc(${styleLeftInset}px + 1rem); bottom: calc(env(safe-area-inset-bottom) + 3rem)`"
   >
     <SvgView
+      diff-scale="hours"
       style="width: 8rem; height: 8rem"
       :dark="dark"
       :show-viewport="true"
@@ -36,6 +57,7 @@ const styleLeftInset = computed(() => {
       :row-height="3"
       :roundedRight="true"
       :rounded-left="true"
+      :eras="[{ left: vpLeft, width }]"
     />
   </div>
 </template>
