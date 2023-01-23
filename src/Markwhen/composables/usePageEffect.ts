@@ -88,15 +88,6 @@ export const usePageEffect = <T>(
     }
   });
 
-  watch(
-    () => pageStore.pageIndex,
-    (index) => {
-      if (pageState[index] === undefined) {
-        pageState[pageStore.pageIndex] = defaultPageState(index);
-      }
-    }
-  );
-
   return computed({
     get: () => pageState[pageStore.pageIndex],
     set(newVal: T) {
