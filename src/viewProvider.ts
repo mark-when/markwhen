@@ -10,6 +10,7 @@ export interface ViewUses {
   drawerDescription?: boolean
   sort?: boolean
   pages?: boolean
+  jump?: boolean
 }
 
 export interface ViewSetting {

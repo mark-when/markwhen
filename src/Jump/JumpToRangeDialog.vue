@@ -96,10 +96,11 @@ const selectedResult = (item: ParseResult | lunr.Index.Result) => {
     viewStore.jumpToRange(item.dateRange);
   } else {
     const paths: EventPaths = JSON.parse(item.ref);
-    viewStore.jumpToPath({
-      type: "pageFiltered",
-      path: paths.pageFiltered?.path,
-    });
+    paths.pageFiltered?.path &&
+      viewStore.jumpToPath({
+        type: "pageFiltered",
+        path: paths.pageFiltered.path,
+      });
     if (eventDetailStore.shouldOpenDetailWhenJumping) {
       eventDetailStore.setDetailEventPath(paths.page!);
     }
@@ -110,7 +111,7 @@ const selectedResult = (item: ParseResult | lunr.Index.Result) => {
 const submit = () => {
   if (jumpStore.jumpResult) {
     const selected = jumpStore.jumpResult[jumpStore.selectedIndex];
-    jumpStore.search()
+    jumpStore.search();
     selectedResult(selected);
   }
 };

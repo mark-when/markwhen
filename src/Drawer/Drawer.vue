@@ -7,6 +7,7 @@ import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
 import Filter from "./ViewSettings/Tags/Filter.vue";
 import NewEvent from "@/NewEvent/NewEvent.vue";
 import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
+import Jump from "@/Views/Timeline/Settings/Jump.vue";
 
 const viewStore = useViewStore();
 
@@ -41,6 +42,7 @@ const useTopBorder = computed(() => {
     >
       <NewEvent></NewEvent>
       <Sort v-if="viewStore.currentView.uses?.sort" />
+      <Jump v-if="viewStore.currentView.uses?.jump" />
       <ViewSettings />
       <Filter v-if="viewStore.currentView.uses?.tags" />
     </div>
