@@ -19,12 +19,13 @@ const emit = defineEmits<{
   (event: "hovering", isHovering: boolean): void;
 }>();
 
-const styleObject = computed(() => {
-  const obj = {
-    backgroundColor: `rgba(${props.color}, 0.5)`,
-  } as any;
-  return obj;
-});
+const styleObject = computed(() =>
+  props.color
+    ? {
+        backgroundColor: `rgba(${props.color}, 0.5)`,
+      }
+    : {}
+);
 
 const click = (e: MouseEvent) => emit("click", e);
 </script>

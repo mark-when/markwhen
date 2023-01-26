@@ -56,7 +56,7 @@ const left = computed(() => {
   );
 });
 
-const { color } = useEventColor(props.node);
+const { color } = useEventColor(computed(() => props.node));
 
 const fullWidth = computed(() => {
   if (!props.node || !sectionRange.value) {
