@@ -6,6 +6,7 @@ import Sort from "../Drawer/ViewSettings/Sort.vue";
 import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
 import Filter from "./ViewSettings/Tags/Filter.vue";
 import NewEvent from "@/NewEvent/NewEvent.vue";
+import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
 
 const viewStore = useViewStore();
 
@@ -23,7 +24,12 @@ const useTopBorder = computed(() => {
     <div
       class="flex lg:flex-row flex-col pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding items-start lg:items-center"
     >
-      <PageButtons v-if="viewStore.currentView.uses?.pages" />
+      <div class="flex flex-row order-2 lg:order-1" style="min-width: 0">
+        <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
+          <ToggleSidebarButton />
+        </div>
+        <PageButtons v-if="viewStore.currentView.uses?.pages" />
+      </div>
       <div
         class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mx-1 lg:block hidden order-2"
       ></div>

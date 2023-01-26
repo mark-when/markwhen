@@ -4,7 +4,6 @@ import { isEditable } from "@/injectionKeys";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { inject, reactive, ref, watch } from "vue";
 import PageButton from "./PageButton.vue";
-import ToggleSidebarButton from "../../Sidebar/ToggleSidebarButton.vue";
 
 const editable = inject(isEditable);
 
@@ -86,12 +85,9 @@ const moving = (pageIndex: number, translationAmount: number) => {
 
 <template>
   <div
-    class="flex flex-row overflow-x-scroll noScrollBar flex-grow order-2 lg:order-1"
+    class="flex flex-row overflow-x-scroll noScrollBar flex-grow"
     style="--webkit-overflow-scrolling: touch; scrollbar-width: none"
   >
-    <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
-      <ToggleSidebarButton />
-    </div>
     <PageButton
       v-for="(timeline, index) in markwhenStore.timelines"
       :key="index"
