@@ -1,26 +1,41 @@
 
-export const exampleTimeline = `title: Project planning example
+export const exampleTimeline = `
+title: Welcome to Markwhen 👋
 
 #Project1: #d336b1
+
+section Welcome #welcome
+now: This example timeline showcases some of markwhen's features.
+
+Feel free to delete everything to start making your own timeline #welcome
+
+
+now: You can also view this example timeline at [markwhen.com/example](https://markwhen.com/example) #welcome
+
+Or you can save this timeline so you can refer to it later, by going to Browser storage & files, and clicking Save current.
+
+now: For more information, view the documentation [here](https://docs.markwhen.com) or join the [discord](https://discord.gg/kQbqP4uz)
+#welcome
+endSection
 
 section All Projects
 group Project 1 #Project1
 // Supports ISO8601
-2022-01/2022-03: Sub task #John
-2022-03/2022-06: Sub task 2 #Michelle
+2023-01/2023-03: Sub task #John
+2023-03/2023-06: Sub task 2 #Michelle
 More info about sub task 2
 
 - [ ] We need to get this done
 - [x] And this
 - [ ] This one is extra
 
-2022-07: Yearly planning
+2023-07: Yearly planning
 endGroup
  group Project 2 #Project2
-2022-04/4 months: Larger sub task #Danielle
+2023-04/4 months: Larger sub task #Danielle
 
 // Supports American date formats
-03/2022 - 1 year: Longer ongoing task #Michelle
+03/2023 - 1 year: Longer ongoing task #Michelle
 
 - [x] Sub task 1
 - [x] Sub task 2
@@ -28,119 +43,187 @@ endGroup
 - [ ] Sub task 4
 - [ ] so many checkboxes omg
 
-10/2022 - 2 months: Holiday season
+10/2023 - 2 months: Holiday season
 endGroup
 
 group Project 3
-01/2023: Project kickoff
-02/2023-04/2023: Other stuff
+01/2024: Project kickoff
+02/2024-04/2024: Other stuff
 endGroup
-
-2022-01-03 every other week for 1 year: Biweekly meeting
-
 endSection
 
- section Overall
+2023-01-03 every other week for 1 year: Biweekly meeting
 
-2022: Year of the something
-2023: Year of something else
-
-endSection
 
 _-_-_break_-_-_
 
-title: Life timeline example
-description: Start editing to make it your own 🫡
+// The header is everything before any events are defined
+// You can add a few things in the header:
+// tag color definitions, the page title, and who can view your timeline (if you are a subscriber)
 
-// Comments start with two slashes: \`//\`
-// Tags start with a pound sign: \`#\`
+// Notably the \`view\` line only works on the first page.
 
-// You can color tags
-#Work: pink
-#Education: #f42
+title: Header
 
-section Education I #Education
-08/2008-05/2012: Psych degree #Education
-02/2010-06/2012: Dispatcher #Work
+view: *@example.com, myteam@mycompany.com
 
-// Add a shareable google photos link to display images. 
-10/2010: Barn built across the street
-06/2011-08/2011: Westover Air Reserve Base #Work
-endSection
+#Horticulture: purple
 
-// 2013
-03/15/2013-04/2015: China #Work
+// Hex colors are supported
+#Transportation: #3ef
 
-// 2014
-07/2014: 4th of July in DC
+2024: First event #Horticulture
 
-section Education II #Education
-// 2015
-05/2015-08/2015: Summer classes so I can graduate in two years #Education
-05/2015: James graduation
-06/2015: Built desk
-06/2015: Kim and Matt wedding
-08/2015-05/2017: CS degree #Education
+06/2024: Other event #Transportation
 
-endSection
+now: [More documentation](https://docs.markwhen.com/syntax/header.html)
+_-_-_break_-_-_
+title: Events
 
-// 2016
-05/22/2016-08/12/2016: Cardinal Health #Work
-08/16/2016-08/27/2016: Italy
+// Events that don't have explicit end dates have inferred ranges - for example, when a year is specified, it lasts from the beginning of that year to the end of it.
+2024: A year-long event
 
-// 2017
-05/2017-05/2018: Cladwell #Work
-06/10/2017-06/17/2017: The Hague & Copenhagen
+// Inferred ranges are as granular as their definitions.
+09/2024: one month
 
-// 2018
-group Unemployed Travel #Travel
-07/21/2018-07/22/2018: Chicago
-07/26/2018-07/31/2018: LA and Seattle (interviewing)
-08/04/2018-08/14/2018: Mexico City
-09/05/2018-09/11/2018: Hong Kong and Macau
-09/19/2018-09/22/2018: Road trip to Seattle
+2025-05-05: one day
+
+Jan 4 2025 8am: instant
+
+// You can also be specific with your ranges
+2024/2025: An event that lasts two years
+
+November 8, 2022 9am - November 9, 2023, 10am: one year, one day, and one hour
+
+now: [More documentation](https://docs.markwhen.com/syntax/events.html)
+
+_-_-_break_-_-_
+title: Event Descriptions
+
+// Event descriptions last from the date range definition up to the next event
+
+2029-04-25/2029-05-03: Descriptions can be one line
+
+2029-04-25/2029-05-03: Or
+they can span
+multiple lines
+
+1/27/2025: [] An event can have a checkbox for completion
+Put square brackets at the start of the event description
+
+1/27/2026: [x] To mark an event as completed, put an x in the square brackets
+
+1/27/2027: Events can have lists
+
+- [ ] checkbox list item
+- [x] a completed checkbox list item
+- simple list item
+- another simple list item
+
+1/27/2028 - 1 year: 68% Manually indicate an event's completion with a percentage in the description
+
+Partially completed events will have their event bar partially filled that amount
+
+1 year: Links are markdown-style: [This is a link](https://markwhen.com)
+
+1 year: Images are also markdown-style:
+![](https://blog.markwhen.com/images/calendar1.png)
+
+1 year: Locations (which are more useful for the map view) can be indicated in a similar way: [Hawaii](location) [Alaska](map)
+
+2024: Refer to other markwhen documents with \`@\` syntax: @rob
+
+now: [More documentation](https://docs.markwhen.com/syntax/event-descriptions.html)
+_-_-_break_-_-_
+title: Groups and Sections
+
+// Events can be grouped together
+
+group
+1/27/2024: Happy birthday
+2020-03: Covid started in the US 
 endGroup
 
-10/01/2018-01/2021: [Google](https://www.google.com) #Work
-12/28/2018-12/29/2018: Nemacolin and Fallingwater
+group Group with title
 
-// 2019
-06/08/2019: Paula's wedding
-07/04/2019: 4th of July in Seattle with siblings
-08/23/2019-08/27/2019: SF and Bishop's Ranch
-09/2019: Hawaii with Google
-12/20/2019-12/22/2019: Train from Seattle to Chicago
-12/2019: Christmas at home, Dad to hospital
+Feb 2 2025: Interviewing
+Feb 8 2025: Write report
+Feb 19 2025: Presentation
 
-// 2020
-02/29/2020: Molly and Kaitlyn to Seattle (thus starting covid)
-03/28/2020: James to Austin
-05/24/2020: Sold the Impala
-07/2020: Oregon & Crater Lake
-08/2020: Mt. Rainier
-08/2020: Oak Island
-09/2020: Hurricane Ridge
-9/2020: Trip to Coeur d'Alene
-11/2020: Trip to Denver
-12/2020: Reese
-12/25/2020: Christmas in Blaine
+endGroup
 
-// 2021
-01/2021: qr.new featured on [Hacker News](https://news.ycombinator.com/item?id=25481772)
-02/2021: Hawaii
-02/01/2021 - 02/2022: Working on [swink](https://sw.ink) full time RIP #Work
-05/25/2021: [cascade.page](https://cascade.page) featured on [Hacker News](https://news.ycombinator.com/item?id=27282842)
-06/05/2021-06/12/2021: Ohio and James's Party
-08/11/2021-08/17/2021: Cincinnati
+group Groups can contain other groups #big
 
-// 2022
+group Smaller plan #small #nested
 
-02/18/2022-02/21/2022: Road trip to LA
-#Travel
+1 year: Accomplish something
 
-[Eugene, Oregon](location)
-[Mt Shasta](location)
-[Los Angeles](location)
+2 years: Accomplish something else
 
-03/2022 - now: [Reddit](https://www.reddit.com) #Work
+endGroup
+
+1 year: Things are accomplished
+
+endGroup
+
+section Sections extend across the screen
+
+2023: Start year
+
+section Nested section #nested
+
+2025: End year
+
+endSection
+endSection
+
+
+now: [More documentation](https://docs.markwhen.com/syntax/groups-and-sections.html)
+
+_-_-_break_-_-_
+title: Tags
+
+// Specify tag colors in the header (before any event)
+#Timeline: #abf
+
+now: Events and groups can have tags
+
+
+section Tagged events #Timeline
+Feb 18 1999: back in the day #Past #The90s
+2043: in the future #TheOther90s
+
+
+now: [More documentation](https://docs.markwhen.com/syntax/event-descriptions.html#tag)
+_-_-_break_-_-_
+title: Relative dates
+
+2025: Event
+
+1 year: This event happens immediately after the previous event and lasts for 1 year
+
+#after
+
+3 months - 1 month: This event happens 3 months after the previous event and lasts for 1 month
+#after
+
+by 2 weeks - 1 month: This event happens 2 weeks before the previous event and lasts 1 month
+#before
+
+
+2023: Event !base
+
+after !base 1 year - 1 month: This event happens 1 year after the event with with id \`base\` and lasts for 1 month
+#after
+
+before !base 1 week day - 1 hour: This event happens 1 week day before the event with id \`base\` and lasts 1 hour
+#before
+
+_-_-_break_-_-_
+title: Recurring events
+
+October 7, 1989 every year for 10 years: ...
+2025-03-04 every week for 12 weeks: ...
+2022-01/2022-03 every other year x9: ...
+Feb 1 2023 every 6 months for 10 times: ...
 `;
