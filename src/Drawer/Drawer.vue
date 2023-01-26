@@ -31,7 +31,7 @@ const useTopBorder = computed(() => {
         <PageButtons v-if="viewStore.currentView.uses?.pages" />
       </div>
       <div
-        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mx-1 lg:block hidden order-2"
+        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mr-1 ml-auto lg:block hidden order-2"
       ></div>
       <div
         class="flex flex-row items-center overflow-auto overflow-visible justify-end order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0"
