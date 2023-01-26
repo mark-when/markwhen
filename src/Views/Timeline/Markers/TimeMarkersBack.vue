@@ -59,11 +59,7 @@ const borderColor = computed(() => (tm: TimeMarker) => {
 });
 
 const eras = computed(() => {
-  const erasAndMilestoneEvents = [] as {
-    left: number;
-    width: number;
-    backgroundColor?: string;
-  }[];
+  const erasAndMilestoneEvents = [] as any[];
   walk(transformStore.transformedEvents, [], (node, path) => {
     if (
       isEventNode(node) &&
