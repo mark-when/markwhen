@@ -32,10 +32,13 @@ export const nodeKey = (n: SomeNode) => {
 };
 
 export const walk = (
-  node: SomeNode,
+  node: SomeNode | undefined,
   path: Path,
   fn: (node: SomeNode, path: Path) => void
 ) => {
+  if (!node) {
+    return;
+  }
   fn(node, path);
   if (!isEventNode(node)) {
     const arr = node.value as NodeArray;
@@ -182,43 +185,27 @@ export const useNodeStore = defineStore("nodes", () => {
           node: node as Node<Event>,
           path: path,
         };
-        if (
-          timelineStore.scrollToPath &&
-          eqPath(
-            {
-              type: "pageFiltered",
-              path: path,
-            },
-            timelineStore.scrollToPath
-          )
-        ) {
-          visibleEvents.push(pAndN);
-        } else {
-          const numAbove = predecessorMap.value.get(joinedPath) || 0;
-          const top = 100 + numAbove * 30;
-          const vp = timelineStore.pageSettings.viewport;
-          if (top > vp.top - 100 && top < vp.top + vp.height + 100) {
-            if (timelineStore.mode === "gantt") {
+        const numAbove = predecessorMap.value.get(joinedPath) || 0;
+        const top = 100 + numAbove * 30;
+        const vp = timelineStore.pageSettings.viewport;
+        if (top > vp.top - 100 && top < vp.top + vp.height + 100) {
+          if (timelineStore.mode === "gantt") {
+            visibleEvents.push(pAndN);
+          } else {
+            const range = ranges(pAndN.node, recurrenceLimit)!;
+            const left =
+              timelineStore.pageScaleBy24 *
+              timelineStore.scalelessDistanceFromBaselineLeftmostDate(
+                range.fromDateTime
+              );
+            const width =
+              timelineStore.pageScaleBy24 *
+              timelineStore.scalelessDistanceBetweenDates(
+                range.fromDateTime,
+                range.toDateTime
+              );
+            if (left < vp.left + vp.width + 50 || vp.left < left + width + 50) {
               visibleEvents.push(pAndN);
-            } else {
-              const range = ranges(pAndN.node, recurrenceLimit)!;
-              const left =
-                timelineStore.pageScaleBy24 *
-                timelineStore.scalelessDistanceFromBaselineLeftmostDate(
-                  range.fromDateTime
-                );
-              const width =
-                timelineStore.pageScaleBy24 *
-                timelineStore.scalelessDistanceBetweenDates(
-                  range.fromDateTime,
-                  range.toDateTime
-                );
-              if (
-                left < vp.left + vp.width + 50 ||
-                vp.left < left + width + 50
-              ) {
-                visibleEvents.push(pAndN);
-              }
             }
           }
         }

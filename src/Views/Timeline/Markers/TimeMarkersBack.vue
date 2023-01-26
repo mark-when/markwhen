@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { viewportLeftMarginPixels } from "../utilities/dateTimeUtilities";
 import { useAppStore } from "@/App/appStore";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { dateScale } from "@/Views/Timeline/utilities/dateTimeUtilities";
 import {
   useMarkersStore,
@@ -10,10 +10,19 @@ import {
 } from "@/Views/Timeline/Markers/markersStore";
 import { useWeekdayCache } from "../utilities/weekdayCache";
 import { useTimelineStore } from "../timelineStore";
+import { useTransformStore } from "@/Markwhen/transformStore";
+import { walk } from "../useNodeStore";
+import { isEventNode } from "@markwhen/parser/lib/Noder";
+import { toDateRange } from "@markwhen/parser/lib/Types";
+import { useEventColor } from "../Events/composables/useEventColor";
+import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
+import { equivalentPaths } from "@/EventDetail/eventDetailStore";
 
 const appStore = useAppStore();
 const markersStore = useMarkersStore();
+const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
+const editorOrchestrator = useEditorOrchestratorStore();
 const { getWeekday } = useWeekdayCache();
 const dark = computed(() => appStore.inferredDarkMode);
 
@@ -48,6 +57,45 @@ const borderColor = computed(() => (tm: TimeMarker) => {
   const a = hovering.value(tm) ? 1 : (alpha.value(tm) - 0.3) * 2;
   return dark.value ? `rgba(71, 85, 105, ${a})` : `rgba(200, 200, 200, ${a})`;
 });
+
+const eras = computed(() => {
+  const erasAndMilestoneEvents = [] as {
+    left: number;
+    width: number;
+    backgroundColor?: string;
+  }[];
+  walk(transformStore.transformedEvents, [], (node, path) => {
+    if (
+      isEventNode(node) &&
+      ["era", "milestone"].some((t) =>
+        node.value.eventDescription.tags.map((t) => t.toLowerCase()).includes(t)
+      )
+    ) {
+      const { fromDateTime, toDateTime } = toDateRange(node.value.dateRangeIso);
+      const color = useEventColor(node).color.value;
+      const isHovering = equivalentPaths(
+        editorOrchestrator.hoveringEventPaths?.pageFiltered,
+        { type: "pageFiltered", path }
+      );
+      const styleObj = {
+        left:
+          timelineStore.distanceFromViewportLeftDate(fromDateTime) +
+          timelineStore.leftInsetWidth -
+          viewportLeftMarginPixels,
+        width: Math.max(
+          2,
+          timelineStore.distanceBetweenDates(fromDateTime, toDateTime)
+        ),
+      } as any;
+      if (color) {
+        styleObj.backgroundColor = `rgba(${color}, ${isHovering ? 0.15 : 0.1})`;
+        styleObj.borderColor = `rgba(${color}, ${isHovering ? 0.75 : 0.3})`;
+      }
+      erasAndMilestoneEvents.push(styleObj);
+    }
+  });
+  return erasAndMilestoneEvents;
+});
 </script>
 
 <template>
@@ -74,5 +122,16 @@ const borderColor = computed(() => (tm: TimeMarker) => {
         }"
       ></div>
     </div>
+    <div
+      v-for="era in eras"
+      class="absolute top-0 bottom-0 h-full border-l border-r transition"
+      :class="!era.backgroundColor ? `bg-gray-300/50 border-gray-500/50` : ''"
+      :style="{
+        left: `${era.left}px`,
+        width: `${era.width}px`,
+        backgroundColor: era.backgroundColor,
+        borderColor: era.borderColor,
+      }"
+    ></div>
   </div>
 </template>
