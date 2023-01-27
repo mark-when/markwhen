@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SettingsButton from "@/Settings/SettingsButton.vue";
 import { watch, ref, nextTick } from "vue";
 import { MAX_SCALE, MIN_SCALE, useTimelineStore } from "../timelineStore";
 
@@ -93,14 +94,13 @@ const mouseUpIn = (e: MouseEvent | TouchEvent) => {
 </script>
 
 <template>
-  <div class="rounded mx-1 flex items-center justify-center gap-1">
-    <div
-      class=""
-      role="button"
+  <div class="rounded mx-1 flex items-center justify-center">
+    <SettingsButton
       @mousedown="mouseDownOut"
       @touchstart="mouseDownOut"
       @mouseup="mouseUpOut"
       @touchend="mouseUpOut"
+      hover-hint-title="Zoom out"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -114,16 +114,14 @@ const mouseUpIn = (e: MouseEvent | TouchEvent) => {
           fill-rule="evenodd"
           d="M3 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H3.75A.75.75 0 013 10z"
           clip-rule="evenodd"
-        />
-      </svg>
-    </div>
-    <div
-      class=""
-      role="button"
+        /></svg
+    ></SettingsButton>
+    <SettingsButton
       @mousedown="mouseDownIn"
       @touchstart="mouseDownIn"
       @mouseup="mouseUpIn"
       @touchend="mouseUpIn"
+      hover-hint-title="Zoom in"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -135,9 +133,8 @@ const mouseUpIn = (e: MouseEvent | TouchEvent) => {
       >
         <path
           d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
-        />
-      </svg>
-    </div>
+        /></svg
+    ></SettingsButton>
   </div>
   <div class="flex-col mr-2 hidden lg:flex items-center justify-center">
     <input

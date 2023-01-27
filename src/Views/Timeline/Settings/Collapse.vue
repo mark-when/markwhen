@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SettingsButton from "./SettingsButton.vue";
+import SettingsButton from "../../../Settings/SettingsButton.vue";
 import { useCollapseStore } from "../collapseStore";
 
 const { collapseAll } = useCollapseStore();

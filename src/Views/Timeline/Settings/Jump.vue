@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useIsTouchscreen } from "../composables/useIsTouchscreen";
 import { useTimelineStore } from "../timelineStore";
-import SettingsButton from "./SettingsButton.vue";
+import SettingsButton from "../../../Settings/SettingsButton.vue";
 const timelineStore = useTimelineStore();
 
 const jumpToRange = () => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTransformStore } from "@/Markwhen/transformStore";
+import SettingsButton from "@/Settings/SettingsButton.vue";
 import { computed } from "vue";
 
 const transformStore = useTransformStore();
@@ -18,12 +19,8 @@ const click = () => transformStore.toggleSort();
 </script>
 
 <template>
-  <button
-    @click="click"
-    class="h-6 rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1"
-    :title="buttonTitle"
-  >
-    <svg
+  <SettingsButton @click="click" hoverHintTitle="Sort" :title="buttonTitle"
+    ><svg
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
       viewBox="0 0 19 16"
@@ -40,9 +37,8 @@ const click = () => transformStore.toggleSort();
       <path
         v-else
         d="M 2 3 a 1 1 0 0 0 0 2 h 11 a 1 1 0 1 0 0 -2 H 2 z M 3 7 a 1 1 0 0 0 0 2 h 4 a 1 1 0 0 0 0 -2 H 3 z M 4 11 a 1 1 0 1 0 0 2 h 3 a 1 1 0 1 0 0 -2 H 4 z M 13 16 a 1 1 0 1 0 2 0 v -5.586 l 1.293 1.293 a 1 1 0 0 0 1.414 -1.414 l -3 -3 a 1 1 0 0 0 -1.414 0 l -3 3 a 1 1 0 1 0 1.414 1.414 L 13 10.414 V 16 z"
-      />
-    </svg>
-  </button>
+      /></svg
+  ></SettingsButton>
 </template>
 
 <style scoped></style>

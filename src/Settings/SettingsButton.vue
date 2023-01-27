@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import HoverHint from "@/Drawer/HoverHint.vue";
 import { ref } from "vue";
-import { useIsTouchscreen } from "../composables/useIsTouchscreen";
-import { useTimelineStore } from "../timelineStore";
-const timelineStore = useTimelineStore();
+import { useIsTouchscreen } from "../Views/Timeline/composables/useIsTouchscreen";
+import { useTimelineStore } from "../Views/Timeline/timelineStore";
 
 defineProps<{ hoverHintTitle?: string; hoverHintShortcut?: string }>();
 defineEmits<{ (event: "click"): void }>();
