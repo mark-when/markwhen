@@ -4,9 +4,11 @@ import { defineStore } from "pinia";
 import { walk } from "@/Views/Timeline/useNodeStore";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
 import type { Path } from "@markwhen/parser/lib/Types";
+import { useTransformStore } from "@/Markwhen/transformStore";
 
 export const useCollapseStore = defineStore("collapse", () => {
   const markwhenStore = useMarkwhenStore();
+  const transformStore = useTransformStore();
 
   const collapsed = usePageEffect((index) => {
     const mw = markwhenStore.timelines[index];
@@ -82,6 +84,22 @@ export const useCollapseStore = defineStore("collapse", () => {
     return highest?.split(",").map((i) => parseInt(i));
   };
 
+  const collapseAll = () => {
+    walk(transformStore.transformedEvents, [], (node, path) => {
+      if (!isEventNode(node)) {
+        setCollapsed(path, true);
+      }
+    });
+  };
+
+  const expandAll = () => {
+    walk(transformStore.transformedEvents, [], (node, path) => {
+      if (!isEventNode(node)) {
+        setCollapsed(path, false);
+      }
+    });
+  };
+
   return {
     collapsed,
     isCollapsed,
@@ -91,5 +109,7 @@ export const useCollapseStore = defineStore("collapse", () => {
     setCollapsed,
     toggleCollapsed,
     expand,
+    collapseAll,
+    expandAll,
   };
 });
