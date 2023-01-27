@@ -27,6 +27,8 @@ import type {
 } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { todayRange, type EventCreationParams } from "@/NewEvent/newEventStore";
 import { useVsCode } from "@/VSCode/composables/useVsCode";
+import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import type { SomeNode } from "@markwhen/parser/lib/Node";
 
 export const useEditorOrchestratorStore = defineStore(
   "editorOrchestrator",
@@ -34,7 +36,7 @@ export const useEditorOrchestratorStore = defineStore(
     const markwhenStore = useMarkwhenStore();
     const pageStore = usePageStore();
     const eventMapStore = useEventMapStore();
-    const { updateText } = useVsCode()
+    const { updateText, showInEditor: showInEditorVsCode } = useVsCode();
 
     const editable = ref(true);
     const showTagFilterButtons = ref(true);
@@ -43,7 +45,7 @@ export const useEditorOrchestratorStore = defineStore(
 
     const setText = (text: string) => {
       markwhenStore.setRawTimelineString(text);
-      updateText(text)
+      updateText(text);
     };
 
     const addPage = () => {
@@ -213,7 +215,33 @@ export const useEditorOrchestratorStore = defineStore(
       setText(newString);
     };
 
-    const showInEditor = (e: Event | EventPaths | EventPath) => {};
+    const indexInString = (node: SomeNode) => {
+      if (isEventNode(node)) {
+        return node.value.rangeInText.from;
+      } else {
+        return node.rangeInText!.from;
+      }
+    };
+
+    const isEventPaths = (e: any): e is EventPaths => {
+      return "whole" in e || "pageFiltered" in e || "page" in e;
+    };
+
+    const showInEditor = (e: SomeNode | EventPaths | EventPath) => {
+      if (isEventPaths(e)) {
+        const foundEvent = useEventFinder(e.page).value;
+        if (foundEvent) {
+          showInEditorVsCode(indexInString(foundEvent));
+        }
+      } else if (e instanceof Node) {
+        showInEditorVsCode(indexInString(e as SomeNode));
+      } else {
+        const foundEvent = useEventFinder(e as EventPath).value;
+        if (foundEvent) {
+          showInEditorVsCode(indexInString(foundEvent));
+        }
+      }
+    };
 
     return {
       // state

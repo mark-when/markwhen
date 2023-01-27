@@ -324,6 +324,9 @@ const ganttTitleStyle = computed(() => {
 });
 
 const editable = inject(isEditable);
+const showInEditor = () => {
+  editorOrchestratorStore.showInEditor(props.path);
+};
 </script>
 
 <template>
@@ -339,6 +342,7 @@ const editable = inject(isEditable);
         v-show="isHovering"
         :move="moveHandleListener"
         :left="left"
+        @edit="showInEditor"
         @mouseenter.passive="hoveringWidgets = true"
         @mouseleave.passive="hoveringWidgets = false"
       />

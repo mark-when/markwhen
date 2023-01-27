@@ -13,7 +13,7 @@ import { useViewStore } from "@/Views/viewStore";
 export const vscodeApi = acquireVsCodeApi();
 
 interface Message {
-  type: "hoverFromEditor" | "update" | "scrollTo" | "canUseSource";
+  type: "hoverFromEditor" | "update" | "scrollTo" | "canUseSource" | "showInEditor"
   request?: boolean;
   response?: boolean;
   id: string;
@@ -72,6 +72,10 @@ export const useVsCode = () => {
 
   const allowSource = (text?: string) => {
     postRequest("canUseSource", { source: text });
+  };
+
+  const showInEditor = (location: number) => {
+    postRequest("showInEditor", { location });
   };
 
   useEventListener("message", (event) => {
@@ -134,5 +138,5 @@ export const useVsCode = () => {
     }
   });
 
-  return { updateText, allowSource };
+  return { updateText, allowSource, showInEditor };
 };
