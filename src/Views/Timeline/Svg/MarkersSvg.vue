@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { DateTime } from "luxon";
 import { computed } from "vue";
-import { useTimelineStore } from "../Timeline/timelineStore";
-import { granularities } from "../Timeline/utilities/DateTimeDisplay";
+import { useTimelineStore } from "../timelineStore";
+import { granularities } from "../utilities/DateTimeDisplay";
 import {
   floorDateTime,
   ceilDateTime,
   dateScale,
-} from "../Timeline/utilities/dateTimeUtilities";
+} from "../utilities/dateTimeUtilities";
 
 export type ShowMarkers = Partial<
   Record<

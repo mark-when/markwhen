@@ -14,7 +14,6 @@ import type { Era } from "./types";
 
 const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
-const pageStore = usePageStore();
 
 const dist = (a: DateTime, b: DateTime, diffScale: "hours" = "hours") =>
   b.diff(a).as(diffScale);
@@ -51,7 +50,7 @@ const scale = computed(() => ourProps.scale || 1);
 
 const totalRange = computed(
   () =>
-    ranges(pageStore.pageTimeline.events, recurrenceLimit) || {
+    ranges(nodeStore.nodes!, recurrenceLimit) || {
       fromDateTime: DateTime.now(),
       toDateTime: DateTime.now(),
     }

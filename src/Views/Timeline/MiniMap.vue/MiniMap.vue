@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTimelineStore } from "../timelineStore";
 import { computed, watch } from "vue";
-import SvgView from "@/Views/Svg/SvgView.vue";
+import SvgView from "@/Views/Timeline/Svg/SvgView.vue";
 import { useAppStore } from "@/App/appStore";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";

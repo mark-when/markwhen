@@ -40,7 +40,7 @@ export type RecurrenceRangeOptions = {
 };
 
 export const ranges = (root: SomeNode, recurrenceLimit: number): GroupRange => {
-  if (!root.value) {
+  if (!root || !root.value) {
     return undefined;
   }
 
