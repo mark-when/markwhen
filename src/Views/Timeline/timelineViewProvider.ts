@@ -5,6 +5,8 @@ import ToggleNowLine from "./Settings/ToggleNowLine.vue";
 import Jump from "./Settings/Jump.vue";
 import AutoCenter from "./Settings/AutoCenter.vue";
 import ToggleMiniMap from "./Settings/ToggleMiniMap.vue";
+import Collapse from "./Settings/Collapse.vue";
+import Expand from "./Settings/Expand.vue";
 
 export const useTimelineProvider: () => ViewProvider = () => ({
   name: "Timeline",
@@ -17,6 +19,8 @@ export const useTimelineProvider: () => ViewProvider = () => ({
     </svg>`,
   settings: [
     () => Jump,
+    () => Collapse,
+    () => Expand,
     () => ToggleNowLine,
     () => ToggleMiniMap,
     () => TimelineScale,
@@ -38,6 +42,8 @@ export const useTimelineRowsProvider: () => ViewProvider = () => ({
     </svg>`,
   settings: [
     () => Jump,
+    () => Collapse,
+    () => Expand,
     () => ToggleNowLine,
     () => ToggleMiniMap,
     () => TimelineScale,

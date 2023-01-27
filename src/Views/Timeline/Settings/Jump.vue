@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import HoverHint from "@/Drawer/HoverHint.vue";
 import { ref } from "vue";
 import { useIsTouchscreen } from "../composables/useIsTouchscreen";
 import { useTimelineStore } from "../timelineStore";
+import SettingsButton from "./SettingsButton.vue";
 const timelineStore = useTimelineStore();
 
 const jumpToRange = () => {
@@ -25,10 +25,10 @@ const events = canHover.value
 </script>
 
 <template>
-   <button
+  <SettingsButton
     @click="jumpToRange"
-    class="h-6 flex flex-row items-center rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1 text-sm lg:text-base font-bold relative"
-    v-on="events"
+    :hover-hint-shortcut="'j'"
+    :hover-hint-title="'Jump'"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -46,14 +46,7 @@ const events = canHover.value
       <circle cx="10" cy="10" r="7"></circle>
       <line x1="21" y1="21" x2="15" y2="15"></line>
     </svg>
-
-    <HoverHint
-      :hover-position="'top'"
-      :hovering="hovering"
-      title="Jump"
-      shortcut="j"
-    />
-  </button>
+  </SettingsButton>
 </template>
 
 <style scoped></style>
