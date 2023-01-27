@@ -76,7 +76,6 @@ const d = (left: number) => {
 const barsRightmostX = computed(() => {
   const rightmost =
     expandedRecurrence.value[expandedRecurrence.value.length - 1] + width.value;
-  console.log(rightmost);
   return rightmost;
 });
 

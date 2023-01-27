@@ -10,12 +10,17 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import EventRowSvg from "./EventRowSvg.vue";
 import MarkersSvg, { type ShowMarkers } from "./MarkersSvg.vue";
 import { ranges } from "@/utilities/ranges";
+import type { Era } from "./types";
 
 const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 
+const dist = (a: DateTime, b: DateTime, diffScale: "hours" = "hours") =>
+  b.diff(a).as(diffScale);
+
 const ourProps = defineProps<{
+  diffScale: "hours";
   dark: boolean;
   bg?: string;
   showViewport: boolean;
@@ -26,7 +31,21 @@ const ourProps = defineProps<{
   roundedRight: boolean;
   roundedLeft: boolean;
   showMarkers?: ShowMarkers;
+  eras?: (Era | { left: number; width: number })[];
 }>();
+
+const computedEras = computed(() =>
+  (ourProps.eras || []).map((era) => ({
+    left:
+      "left" in era
+        ? era.left
+        : dist(earliestTime.value, era.dateRange.fromDateTime),
+    width:
+      "width" in era
+        ? era.width
+        : dist(era.dateRange.fromDateTime, era.dateRange.toDateTime),
+  }))
+);
 
 const scale = computed(() => ourProps.scale || 1);
 
@@ -39,10 +58,7 @@ const totalRange = computed(
 );
 
 const totalWidth = computed(() => {
-  return timelineStore.scalelessDistanceBetweenDates(
-    totalRange.value.fromDateTime,
-    totalRange.value.toDateTime
-  );
+  return dist(totalRange.value.fromDateTime, totalRange.value.toDateTime);
 });
 
 const viewBoxWidth = ref(totalWidth.value);
@@ -71,19 +87,6 @@ const props = (path: Path, node: SomeNode) => ({
   roundedLeft: ourProps.roundedLeft,
   roundedRight: ourProps.roundedRight,
 });
-
-const vp = computed(() => timelineStore.pageSettings.viewport);
-const additionalOffsetLeft = computed(() =>
-  timelineStore.distanceFromBaselineLeftmostDate(
-    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
-  )
-);
-
-const vpLeft = computed(
-  () =>
-    (vp.value.left - additionalOffsetLeft.value) / timelineStore.pageScaleBy24
-);
-const width = computed(() => vp.value.width / timelineStore.pageScaleBy24);
 
 const rows = ref<[typeof EventRowSvg]>();
 const getRightmostX = () => {
@@ -162,10 +165,10 @@ onMounted(() => setWidth());
       ></EventRowSvg>
     </template>
     <rect
-      v-if="showViewport"
-      :x="vpLeft"
+      v-for="era in computedEras"
+      :x="era.left"
       :y="0"
-      :width="width"
+      :width="era.width"
       :height="heightUnit * (nodeStore.height + 4)"
       :fill="`rgba(${dark ? '255, 255, 255' : '0, 0, 0'}, 0.1)`"
     ></rect>
