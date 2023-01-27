@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { usePageStore } from "@/Markwhen/pageStore";
-import type { Path, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import type { Path, Event } from "@markwhen/parser/lib/Types";
 import { isEventNode } from "@markwhen/parser/lib/Noder";
-import { useNodeStore } from "@/Views/Timeline/useNodeStore";
-import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { computed, onMounted, ref, watch, watchEffect } from "vue";
-import { eqPath } from "@/Markwhen/composables/useEventFinder";
-import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
-import EventRowSvg from "./EventRowSvg.vue";
 import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
+import { useNodeStore } from "@/Views/Timeline/useNodeStore";
+import { recurrenceLimit, usePageStore } from "@/Markwhen/pageStore";
+import { useTimelineStore } from "@/Views/Timeline/timelineStore";
+import EventRowSvg from "./EventRowSvg.vue";
 import MarkersSvg, { type ShowMarkers } from "./MarkersSvg.vue";
+import { ranges } from "@/utilities/ranges";
 
 const nodeStore = useNodeStore();
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
-const editorOrchestrator = useEditorOrchestratorStore();
 
 const ourProps = defineProps<{
   dark: boolean;
@@ -33,31 +30,30 @@ const ourProps = defineProps<{
 
 const scale = computed(() => ourProps.scale || 1);
 
-const hovering = computed(() => editorOrchestrator.hoveringEventPaths);
-const isHovering = (p: EventPath) => {
-  return hovering.value && eqPath(p, hovering.value);
-};
-
-const totalWidth = computed(() =>
-  timelineStore.scalelessDistanceBetweenDates(
-    DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime),
-    DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
-  )
+const totalRange = computed(
+  () =>
+    ranges(pageStore.pageTimeline.events, recurrenceLimit) || {
+      fromDateTime: DateTime.now(),
+      toDateTime: DateTime.now(),
+    }
 );
+
+const totalWidth = computed(() => {
+  return timelineStore.scalelessDistanceBetweenDates(
+    totalRange.value.fromDateTime,
+    totalRange.value.toDateTime
+  );
+});
+
 const viewBoxWidth = ref(totalWidth.value);
 
 const heightUnit = computed(() => totalWidth.value / nodeStore.height);
 
-const earliestTime = computed(() =>
-  DateTime.fromISO(pageStore.pageTimelineMetadata.earliestTime)
-);
-const latestTime = computed(() =>
-  DateTime.fromISO(pageStore.pageTimelineMetadata.latestTime)
-);
+const earliestTime = computed(() => totalRange.value.fromDateTime);
+const latestTime = computed(() => totalRange.value.toDateTime);
 
 const props = (path: Path, node: SomeNode) => ({
   node: node as Node<Event>,
-  hovering: isHovering({ type: "pageFiltered", path }),
   path: path.join(","),
   numChildren: nodeStore.childrenMap.get(path.join(",")) || 0,
   numAbove: nodeStore.predecessorMap.get(path.join(",")) || 0,
@@ -105,11 +101,13 @@ const getRightmostX = () => {
 };
 
 defineExpose({ getRightmostX });
-watchEffect(() => {
-  props;
-  viewBoxWidth.value =
-    Math.max(totalWidth.value * scale.value, getRightmostX()) +
-    heightUnit.value * 2;
+
+const setWidth = () => {
+  viewBoxWidth.value = getRightmostX() + heightUnit.value * 2;
+};
+
+watch(ourProps, (p) => {
+  nextTick(() => setWidth());
 });
 
 const textFontSize = computed(
@@ -118,12 +116,16 @@ const textFontSize = computed(
 
 const startX = computed(() => -heightUnit.value);
 const startY = computed(() => heightUnit.value);
+
+onMounted(() => setWidth());
 </script>
 
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    :viewBox="`${startX} ${startY} ${viewBoxWidth} ${totalWidth}`"
+    :viewBox="`${startX} ${startY} ${viewBoxWidth} ${
+      (rowHeight + 2) * nodeStore.height
+    }`"
     fill="currentColor"
     preserveAspectRatio="xMinYMin meet"
   >
@@ -164,7 +166,7 @@ const startY = computed(() => heightUnit.value);
       :x="vpLeft"
       :y="0"
       :width="width"
-      height="150%"
+      :height="heightUnit * (nodeStore.height + 4)"
       :fill="`rgba(${dark ? '255, 255, 255' : '0, 0, 0'}, 0.1)`"
     ></rect>
   </svg>
