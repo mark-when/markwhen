@@ -1,4 +1,3 @@
-import { useAppStore } from "@/App/appStore";
 import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import {
@@ -119,8 +118,6 @@ export const useResize = (
     document.addEventListener("touchmove", moveListenerRight);
     document.addEventListener("touchend", upListener);
     document.addEventListener("keydown", escapeListener);
-
-    appStore.setGlobalClass("cursor-ew-resize");
   };
 
   const moveListener = (e: MouseEvent | TouchEvent) => {
