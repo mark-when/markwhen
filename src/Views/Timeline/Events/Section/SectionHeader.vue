@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { Path, GroupStyle } from "@markwhen/parser/lib/Types";
 import { computed, ref, watch } from "vue";
+import { useCollapseStore } from "../../collapseStore";
 import { useTimelineStore } from "../../timelineStore";
 import SectionTitleButton from "./SectionTitleButton.vue";
 
 const timelineStore = useTimelineStore();
+const collapseStore = useCollapseStore();
 
 const props = defineProps<{
   path: string;
@@ -31,7 +33,7 @@ const events = computed(() => {
   };
 });
 
-const isCollapsed = computed(() => timelineStore.isCollapsed(props.path));
+const isCollapsed = computed(() => collapseStore.isCollapsed(props.path));
 
 // @ts-ignore
 let timeout: timeout;

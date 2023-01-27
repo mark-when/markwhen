@@ -153,20 +153,6 @@ export const useTimelineStore = defineStore("timeline", () => {
   const showingJumpToRange = ref(false);
   const jumpToRange = ref<DateRangePart>();
   const shouldZoomWhenScrolling = ref<boolean>(true);
-  const collapsed = usePageEffect((index) => {
-    const mw = markwhenStore.timelines[index];
-    const set = new Set<string>();
-    if (mw) {
-      walk(mw.events, [], (node, path) => {
-        if (!isEventNode(node)) {
-          if (!node.startExpanded) {
-            set.add(path.join(","));
-          }
-        }
-      });
-    }
-    return set;
-  });
   const mode = ref<TimelineMode>("timeline");
   const ganttSidebarWidth = ref(200);
   const ganttSidebarTempWidth = ref(0);
@@ -321,65 +307,6 @@ export const useTimelineStore = defineStore("timeline", () => {
   const setShouldZoomWhenScrolling = (should: boolean) => {
     shouldZoomWhenScrolling.value = should;
   };
-  const collapse = (path: Path) => {
-    collapsed.value.add(path.join(","));
-  };
-  const expand = (path: Path) => {
-    collapsed.value.delete(path.join(","));
-  };
-  const toggleCollapsed = (path: Path) => {
-    const pathJoined = path.join(",");
-    if (collapsed.value.has(pathJoined)) {
-      collapsed.value.delete(pathJoined);
-    } else {
-      collapsed.value.add(pathJoined);
-    }
-  };
-  const setCollapsed = (path: Path | string, shouldCollapse: boolean) => {
-    const pathJoined = typeof path === "string" ? path : path.join(",");
-    if (shouldCollapse) {
-      collapsed.value.add(pathJoined);
-    } else {
-      collapsed.value.delete(pathJoined);
-    }
-  };
-  const isCollapsed = (path: Path | string) => {
-    const pathJoined = typeof path === "string" ? path : path.join(",");
-    for (const entry of collapsed.value.keys()) {
-      if (pathJoined === entry) {
-        return true;
-      }
-    }
-    return false;
-  };
-  const isCollapsedChild = (path: Path | string) => {
-    const pathJoined = typeof path === "string" ? path : path.join(",");
-    const pathAsArray =
-      typeof path === "string" ? path.split(",").map((i) => parseInt(i)) : path;
-    for (const entry of collapsed.value.keys()) {
-      if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
-        return true;
-      }
-    }
-    return false;
-  };
-  const isCollapsedChildOf = (path: Path | string) => {
-    const pathJoined = typeof path === "string" ? path : path.join(",");
-
-    // We're looking for the shallowest ancestor of this node that has collapsed it
-    let highest: string | undefined;
-
-    for (const entry of collapsed.value.keys()) {
-      if (pathJoined !== entry && pathJoined.startsWith(`${entry},`)) {
-        if (!highest || entry.length < highest.length) {
-          highest = entry;
-        }
-      }
-    }
-
-    return highest?.split(",").map((i) => parseInt(i));
-  };
-
   const weights = computed(() => {
     const arbitraryNumber = 2000;
     const secondsInADay = 86400;
@@ -427,7 +354,6 @@ export const useTimelineStore = defineStore("timeline", () => {
     showingJumpToRange,
     jumpToRange,
     shouldZoomWhenScrolling,
-    collapsed,
     mode,
     ganttSidebarWidth,
     ganttSidebarTempWidth,
@@ -450,9 +376,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     distanceBetweenBaselineDates,
     dateFromClientLeft,
     scalelessDistanceFromBaselineLeftmostDate,
-    isCollapsed,
-    isCollapsedChild,
-    isCollapsedChildOf,
+   
     scaleOfViewportDateInterval,
     weights,
     leftInsetWidth,
@@ -467,10 +391,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     setShowingJumpToRange,
     setJumpToRange,
     setShouldZoomWhenScrolling,
-    collapse,
-    setCollapsed,
-    toggleCollapsed,
-    expand,
+   
     setMode,
     setGanttSidebarWidth,
     setGanttSidebarTempWidth,

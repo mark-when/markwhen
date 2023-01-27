@@ -1,12 +1,12 @@
-import { eqPath } from "@/Markwhen/composables/useEventFinder";
 import { recurrenceLimit } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { ranges } from "@/utilities/ranges";
 import type { NodeArray, SomeNode, Node } from "@markwhen/parser/lib/Node";
-import { eventValue, isEventNode, iterate } from "@markwhen/parser/lib/Noder";
+import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import type { Path, Event, Block } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
-import { computed, reactive, ref, watch, watchEffect } from "vue";
+import { computed, reactive } from "vue";
+import { useCollapseStore } from "./collapseStore";
 import { useTimelineStore } from "./timelineStore";
 
 const prevSiblingPath = (path: Path) => {
@@ -74,6 +74,7 @@ export interface PathAndSectionNode extends PathAndNode {
 export const useNodeStore = defineStore("nodes", () => {
   const transformStore = useTransformStore();
   const timelineStore = useTimelineStore();
+  const collapseStore = useCollapseStore();
 
   const nodes = computed(() => transformStore.transformedEvents);
 
@@ -97,7 +98,7 @@ export const useNodeStore = defineStore("nodes", () => {
       return childCount;
     };
 
-    if (timelineStore.isCollapsed(pathJoined) || isEventNode(node)) {
+    if (collapseStore.isCollapsed(pathJoined) || isEventNode(node)) {
       return cache(0);
     }
 
@@ -154,7 +155,7 @@ export const useNodeStore = defineStore("nodes", () => {
     for (const { path, node } of nodeArray.value) {
       const joinedPath = path.join(",");
       if (!isEventNode(node)) {
-        if (timelineStore.isCollapsedChild(path)) {
+        if (collapseStore.isCollapsedChild(path)) {
           continue;
         }
         if (path.length > 0) {

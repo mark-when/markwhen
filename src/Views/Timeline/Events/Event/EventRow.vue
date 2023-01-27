@@ -23,6 +23,7 @@ import Fade from "@/Transitions/Fade.vue";
 import type { Recurrence } from "@markwhen/parser/lib/dateRange/checkRecurrence";
 import { expand } from "@markwhen/parser/lib/utilities/recurrence";
 import { recurrenceLimit } from "@/Markwhen/pageStore";
+import { useCollapseStore } from "../../collapseStore";
 
 const props = defineProps<{
   path: EventPath;
@@ -51,6 +52,7 @@ const emit = defineEmits<{
 const editorOrchestratorStore = useEditorOrchestratorStore();
 const eventDetailStore = useEventDetailStore();
 const timelineStore = useTimelineStore();
+const collapseStore = useCollapseStore();
 const nodeStore = useNodeStore();
 
 const eventBar = ref();
@@ -236,7 +238,7 @@ const percent = computed(() => {
 });
 
 const collapsedParent = computed(() =>
-  timelineStore.isCollapsedChildOf(props.path.path)
+  collapseStore.isCollapsedChildOf(props.path.path)
 );
 
 const isCollapsed = computed(() => !!collapsedParent.value);

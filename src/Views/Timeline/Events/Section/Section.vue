@@ -11,6 +11,7 @@ import { ranges } from "@/utilities/ranges";
 import { equivalentPaths } from "@/EventDetail/eventDetailStore";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { recurrenceLimit } from "@/Markwhen/pageStore";
+import { useCollapseStore } from "../../collapseStore";
 
 const editorOrchestrator = useEditorOrchestratorStore();
 const props = defineProps<{
@@ -22,14 +23,15 @@ const props = defineProps<{
 }>();
 
 const timelineStore = useTimelineStore();
+const collapseStore = useCollapseStore();
 const {
   scalelessDistanceBetweenDates,
   scalelessDistanceFromBaselineLeftmostDate,
 } = timelineStore;
 
 const collapsed = computed({
-  get: () => timelineStore.isCollapsed(props.path),
-  set: (val) => timelineStore.setCollapsed(props.path, val),
+  get: () => collapseStore.isCollapsed(props.path),
+  set: (val) => collapseStore.setCollapsed(props.path, val),
 });
 const hovering = ref(false);
 const hoveringPath = computed(() => editorOrchestrator.hoveringEventPaths);
@@ -94,7 +96,7 @@ const height = computed(() => 30 + props.numChildren! * 30);
 const styleObject = computed(() => ({
   top: `${top.value}px`,
   transition: `top 200ms cubic-bezier(0.4, 0, 0.2, 1)`,
-  display: timelineStore.isCollapsedChild(props.path) ? "none" : "block",
+  display: collapseStore.isCollapsedChild(props.path) ? "none" : "block",
   ...(groupStyle.value === "section"
     ? {
         left: 0,
