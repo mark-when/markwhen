@@ -19,8 +19,6 @@ import type {
 } from "@markwhen/parser/lib/Types";
 import type { EventPaths } from "../ViewOrchestrator/useStateSerializer";
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
-import { walk } from "@/Views/Timeline/useNodeStore";
-import { isEventNode } from "@markwhen/parser/lib/Noder";
 
 export enum Weight {
   SECOND = 0,
@@ -376,7 +374,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     distanceBetweenBaselineDates,
     dateFromClientLeft,
     scalelessDistanceFromBaselineLeftmostDate,
-   
+
     scaleOfViewportDateInterval,
     weights,
     leftInsetWidth,
@@ -391,7 +389,7 @@ export const useTimelineStore = defineStore("timeline", () => {
     setShowingJumpToRange,
     setJumpToRange,
     setShouldZoomWhenScrolling,
-   
+
     setMode,
     setGanttSidebarWidth,
     setGanttSidebarTempWidth,
