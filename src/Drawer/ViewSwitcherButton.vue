@@ -23,10 +23,12 @@ const events = canHover.value
 <template>
   <button
     v-on="events"
-    class="p-1 border-2 disabled:text-gray-400 dark:disabled:text-gray-500 relative"
+    class="p-1 border-2 disabled:text-gray-400 dark:disabled:text-gray-500 relative rounded transition"
     :class="
       selected
-        ? 'border-indigo-500 dark:border-indigo-400 rounded text-indigo-800 dark:text-indigo-100'
+        ? 'border-indigo-500 dark:border-indigo-400 text-indigo-800 dark:text-indigo-100'
+        : hovering
+        ? 'border-gray-300 dark:border-gray-600'
         : 'border-transparent'
     "
   >
@@ -35,6 +37,4 @@ const events = canHover.value
   </button>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

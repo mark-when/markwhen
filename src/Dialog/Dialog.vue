@@ -77,7 +77,7 @@ const keydown = (e: KeyboardEvent) => {
       <slot name="header"></slot>
       <button
         v-if="dismissable"
-        class="ml-auto rounded bg-gray-100 dark:bg-gray-700 dark:text-white p-1 m-2"
+        class="ml-auto rounded bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 dark:text-white p-1 m-2 hover:bg-gray-200 transition"
         @click="close"
       >
         <svg
