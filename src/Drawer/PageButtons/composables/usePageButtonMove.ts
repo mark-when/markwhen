@@ -47,12 +47,9 @@ export const usePageButtonMove = (
     const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
     const diff = clientX - startX.value!;
     const parentOffsetLeft = button.parentElement?.offsetLeft || 0;
-    const addPageButtonWidth = 20;
+    const offsetLeft = button.offsetLeft - parentOffsetLeft;
     const maxRight =
-      button.parentElement!.scrollWidth -
-      button.offsetLeft -
-      button.clientWidth -
-      addPageButtonWidth;
+      button.parentElement!.scrollWidth - button.clientWidth - offsetLeft;
     translateX.value = Math.min(
       Math.max(-button.offsetLeft + parentOffsetLeft, diff),
       maxRight

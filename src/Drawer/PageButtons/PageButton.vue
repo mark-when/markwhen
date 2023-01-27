@@ -16,7 +16,6 @@ const pageStore = usePageStore();
 const props = defineProps<{
   timeline: Timeline;
   pageIndex: number;
-  shadowed: boolean;
   translate: number;
 }>();
 
@@ -25,9 +24,12 @@ const emit = defineEmits<{
   (event: "moving", translateX: number): void;
 }>();
 
+const shadowed = computed(() => {
+  return !!translateX.value;
+});
 const hovering = ref(false);
 const pageTitle = computed(
-  () => markwhenStore.timelines[props.pageIndex].metadata.title || 'untitled'
+  () => markwhenStore.timelines[props.pageIndex].metadata.title || "untitled"
 );
 const button = ref<HTMLButtonElement>();
 const { moveListener, translateX } = usePageButtonMove(button, () =>
@@ -39,9 +41,14 @@ const computedStyle = computed(() => {
   }
   const givenTranslation = props.translate;
   if (givenTranslation) {
-    return { transform: `translateX(${givenTranslation}px)` };
+    return {
+      transform: `translateX(${givenTranslation}px)`,
+      transition: "transform cubic-bezier(0.4, 0, 0.2, 1) 150ms",
+    };
   }
-  return { transform: `translateX(0px)` };
+  return {
+    transform: `translateX(0px)`,
+  };
 });
 
 watch(translateX, (val) => emit("moving", val || 0));
@@ -87,7 +94,7 @@ const events = computed(() => {
       'bg-white hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-300':
         pageIndex !== pageStore.pageIndex,
       'w-10': !pageTitle,
-      'shadow-sm': shadowed,
+      'shadow-lg': shadowed,
     }"
     ref="button"
   >

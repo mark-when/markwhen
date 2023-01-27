@@ -9,7 +9,6 @@ const editable = inject(isEditable);
 
 const markwhenStore = useMarkwhenStore();
 const { addPage, movePages } = useEditorOrchestratorStore();
-const shadowed = false;
 
 const moveFrom = ref(undefined as number | undefined);
 const moveTo = ref(undefined as number | undefined);
@@ -32,8 +31,9 @@ const moving = (pageIndex: number, translationAmount: number) => {
   moveFrom.value = pageIndex;
   const positions = buttons.value.map((button) => {
     const b = button.$el;
-    const from = b.offsetLeft;
-    const to = b.offsetLeft + b.clientWidth;
+    const offsetLeft = b.offsetLeft - b.parentElement.offsetLeft;
+    const from = offsetLeft;
+    const to = offsetLeft + b.clientWidth;
     return {
       from,
       to,
@@ -55,10 +55,7 @@ const moving = (pageIndex: number, translationAmount: number) => {
       leftOf = Math.min(leftOf, i);
     }
   }
-  const newIndex =
-    translationAmount < 0
-      ? Math.max(leftOf, rightOf)
-      : Math.min(leftOf, rightOf);
+  const newIndex = translationAmount < 0 ? leftOf : rightOf;
 
   moveTo.value = newIndex;
 
@@ -93,7 +90,6 @@ const moving = (pageIndex: number, translationAmount: number) => {
       :key="index"
       :pageIndex="index"
       :timeline="timeline"
-      :shadowed="shadowed"
       :translate="translations[index] || 0"
       @moving="moving(index, $event)"
       @doneMoving="doneMoving"
@@ -102,7 +98,6 @@ const moving = (pageIndex: number, translationAmount: number) => {
     <button
       v-if="editable"
       class="w-8 h-8 flex items-center justify-center transition bg-white hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-slate-800 dark:border-slate-600 flex-shrink-0 print-hidden"
-      :class="shadowed ? 'shadow' : ''"
       @click="addPage"
     >
       <svg
