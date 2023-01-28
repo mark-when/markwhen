@@ -13,17 +13,27 @@ export const useTransformStore = defineStore("transform", () => {
   const sort = usePageEffect(() => "none" as Sort);
   const filter = usePageEffect(() => [] as string[]);
   const filterUntagged = usePageEffect(() => false);
-  const filterDialogShowing = ref(false)
+  const filterDialogShowing = ref(false);
 
   const setSort = (s: Sort) => (sort.value = s);
   const clear = () => {
     filterUntagged.value = false;
-    while (filter.value.length) {
-      filter.value.pop();
-    }
+    filter.value = [];
   };
   const toggleSort = () =>
     (sort.value = sorts[(sorts.indexOf(sort.value) + 1) % sorts.length]);
+
+  const addFilterTag = (tag: string) => {
+    if (!pageStore.pageTimeline.tags[tag]) {
+      return
+    }
+    const index = filter.value.indexOf(tag);
+    if (index >= 0) {
+      return;
+    }
+    filter.value.push(tag);
+  };
+
   const filterTag = (tag: string) => {
     const index = filter.value.indexOf(tag);
     if (index >= 0) {
@@ -36,8 +46,8 @@ export const useTransformStore = defineStore("transform", () => {
     (filterUntagged.value = !filterUntagged.value);
 
   const setFilterDialogShowing = (showing: boolean) => {
-    filterDialogShowing.value = showing
-  }
+    filterDialogShowing.value = showing;
+  };
 
   // const events = computed(() => [...pageStore.pageTimeline.events]);
 
@@ -66,6 +76,7 @@ export const useTransformStore = defineStore("transform", () => {
     filterTag,
     toggleFilterUntagged,
     setFilterDialogShowing,
+    addFilterTag,
 
     // getters
     transformedEvents,

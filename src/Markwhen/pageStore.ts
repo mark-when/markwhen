@@ -1,7 +1,7 @@
 import { ranges } from "@/utilities/ranges";
 import { DateTime } from "luxon";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useMarkwhenStore } from "./markwhenStore";
 
 export const recurrenceLimit = 100;
@@ -10,7 +10,9 @@ export const usePageStore = defineStore("page", () => {
   const pageIndex = ref<number>(0);
   const markwhenStore = useMarkwhenStore();
 
-  const setPageIndex = (index: number) => (pageIndex.value = index);
+  const setPageIndex = (index: number) => {
+    pageIndex.value = index;
+  };
 
   const pageTimeline = computed(() => markwhenStore.timelines[pageIndex.value]);
   const pageRange = computed(
