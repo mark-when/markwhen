@@ -4,7 +4,7 @@ import type {
   DateTimeGranularity,
 } from "@markwhen/parser/lib/Types";
 import type { Ref } from "vue";
-import type { DisplayScale } from "../Timeline/utilities/dateTimeUtilities";
+import type { DisplayScale } from "@/Markwhen/utilities/dateTimeUtilities";
 import type { EventPath, State } from "./useStateSerializer";
 
 interface MessageTypes {
