@@ -2,6 +2,12 @@
 import SettingsButton from "@/Settings/SettingsButton.vue";
 import { watch, ref, nextTick } from "vue";
 
+const emits = defineEmits<{
+  (event: "startZoomingIn"): void;
+  (event: "startZoomingOut"): void;
+  (event: "stopZooming"): void;
+}>();
+
 const zoomingIn = ref(false);
 const zoomingOut = ref(false);
 
@@ -37,23 +43,19 @@ const zoomingOut = ref(false);
 //   }
 // });
 const mouseDownOut = (e: MouseEvent | TouchEvent) => {
-  zoomingOut.value = true;
-  zoomingIn.value = false;
+  emits("startZoomingOut");
 };
 
 const mouseUpOut = (e: MouseEvent | TouchEvent) => {
-  zoomingOut.value = false;
-  zoomingIn.value = false;
+  emits("stopZooming");
 };
 
 const mouseDownIn = (e: MouseEvent | TouchEvent) => {
-  zoomingIn.value = true;
-  zoomingOut.value = false;
+  emits("startZoomingIn");
 };
 
 const mouseUpIn = (e: MouseEvent | TouchEvent) => {
-  zoomingOut.value = false;
-  zoomingIn.value = false;
+  emits("stopZooming");
 };
 </script>
 
@@ -64,6 +66,8 @@ const mouseUpIn = (e: MouseEvent | TouchEvent) => {
     @touchstart="mouseDownOut"
     @mouseup="mouseUpOut"
     @touchend="mouseUpOut"
+    @mouseout="emits('stopZooming')"
+    @mouseleave="emits('stopZooming')"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -87,6 +91,8 @@ const mouseUpIn = (e: MouseEvent | TouchEvent) => {
     @touchstart="mouseDownIn"
     @mouseup="mouseUpIn"
     @touchend="mouseUpIn"
+    @mouseout="emits('stopZooming')"
+    @mouseleave="emits('stopZooming')"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

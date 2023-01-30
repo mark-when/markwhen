@@ -21,10 +21,16 @@ const useTopBorder = computed(() => {
   return uses?.drawerDescription || uses?.sort || uses?.tags;
 });
 
-const autocenter = () => {};
-const toggleMiniMap = () => {};
-const collapseAll = () => {};
-const expandAll = () => {};
+const autocenter = viewStore.autoCenter;
+const toggleMiniMap = viewStore.toggleMiniMap;
+const collapseAll = viewStore.collapseAll;
+const expandAll = viewStore.expandAll;
+const toggleNowLine = viewStore.toggleNowLine;
+const startZoomingIn = viewStore.startZoomingIn;
+const startZoomingOut = viewStore.startZoomingOut;
+const stopZooming = () => {
+  viewStore.stopZooming();
+};
 </script>
 
 <template>
@@ -54,13 +60,17 @@ const expandAll = () => {};
       <Sort v-if="viewStore.currentView.uses?.sort" />
       <Jump v-if="viewStore.currentView.uses?.jump" />
       <template v-if="viewStore.currentView.name === 'Timeline2'">
-          <CollapseAll @click="collapseAll"></CollapseAll>
-          <ExpandAll @click="expandAll"></ExpandAll>
-          <ToggleNowLine></ToggleNowLine>
-          <ToggleMiniMap @click="toggleMiniMap"></ToggleMiniMap>
-          <AutoCenter @click="autocenter"></AutoCenter>
-          <TimelineScale></TimelineScale>
-        </template>
+        <CollapseAll @click="collapseAll"></CollapseAll>
+        <ExpandAll @click="expandAll"></ExpandAll>
+        <ToggleNowLine @click="toggleNowLine"></ToggleNowLine>
+        <ToggleMiniMap @click="toggleMiniMap"></ToggleMiniMap>
+        <AutoCenter @click="autocenter"></AutoCenter>
+        <TimelineScale
+          @start-zooming-in="startZoomingIn"
+          @start-zooming-out="startZoomingOut"
+          @stop-zooming="stopZooming"
+        ></TimelineScale>
+      </template>
       <!-- <ViewSettings /> -->
       <Filter v-if="viewStore.currentView.uses?.tags" />
     </div>
