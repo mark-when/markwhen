@@ -42,7 +42,18 @@ export const useViewStore = defineStore("views", () => {
     selectedViewIndex.value = i;
   };
 
-  const { jumpToRange, jumpToPath } = useViewOrchestrator(activeFrame);
+  const {
+    jumpToRange,
+    jumpToPath,
+    autoCenter,
+    toggleMiniMap,
+    toggleNowLine,
+    startZoomingIn,
+    startZoomingOut,
+    stopZooming,
+    collapseAll,
+    expandAll,
+  } = useViewOrchestrator(activeFrame);
 
   return {
     // state
@@ -59,5 +70,13 @@ export const useViewStore = defineStore("views", () => {
     setActiveFrame,
     jumpToPath,
     jumpToRange,
+    autoCenter,
+    toggleMiniMap,
+    toggleNowLine,
+    startZoomingIn,
+    startZoomingOut,
+    stopZooming,
+    collapseAll,
+    expandAll,
   };
 });

@@ -8,7 +8,7 @@ import {
   type DateRangeIso,
 } from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
-import { useLpc } from "./useLpc";
+import { type TimelineSpecificMessages, useLpc } from "./useLpc";
 import { useStateSerializer, type EventPath } from "./useStateSerializer";
 
 export const useViewOrchestrator = (
@@ -81,8 +81,25 @@ export const useViewOrchestrator = (
     });
   };
 
+  const autoCenter = () => lpc.postRequest('autoCenter')
+  const collapseAll = () => lpc.postRequest("collapseAll");
+  const expandAll = () => lpc.postRequest("expandAll");
+  const toggleNowLine = () => lpc.postRequest("toggleNowLine");
+  const toggleMiniMap = () => lpc.postRequest("toggleMiniMap");
+  const startZoomingIn = () => lpc.postRequest("startZoomingIn");
+  const startZoomingOut = () => lpc.postRequest("startZoomingOut");
+  const stopZooming = () => lpc.postRequest("stopZooming");
+
   return {
     jumpToRange,
     jumpToPath,
+    autoCenter,
+    collapseAll,
+    expandAll,
+    toggleNowLine,
+    toggleMiniMap,
+    startZoomingIn,
+    startZoomingOut,
+    stopZooming,
   };
 };

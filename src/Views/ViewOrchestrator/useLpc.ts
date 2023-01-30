@@ -7,7 +7,7 @@ import type { Ref } from "vue";
 import type { DisplayScale } from "@/Markwhen/utilities/dateTimeUtilities";
 import type { EventPath, State } from "./useStateSerializer";
 
-interface MessageTypes {
+export interface MessageTypes {
   state: State;
   setHoveringPath: EventPath;
   setDetailPath: EventPath;
@@ -32,28 +32,33 @@ interface MessageTypes {
   };
 }
 
-interface TimelineSpecificMessages {
+export interface TimelineSpecificMessages {
   toggleMiniMap: void;
   toggleNowLine: void;
-  zoom: {
-    level: number;
-  };
+  startZoomingIn: void;
+  startZoomingOut: void;
+  stopZooming: void;
   autoCenter: void;
+  collapseAll: void;
+  expandAll: void;
 }
 
-type MessageType = keyof MessageTypes;
-type MessageParam<T extends keyof MessageTypes> = MessageTypes[T];
+type MessageType<ViewSpecificMessageTypes> = keyof (MessageTypes &
+  ViewSpecificMessageTypes);
+type MessageParam<VSMT, T extends MessageType<VSMT>> = (MessageTypes & VSMT)[T];
 
-export interface Message<T extends MessageType> {
+export interface Message<VSMT, T extends MessageType<VSMT>> {
   type: T;
   request?: boolean;
   response?: boolean;
   id: string;
-  params?: MessageParam<T>;
+  params?: MessageParam<VSMT, T>;
 }
 
-type MessageListeners = {
-  [Property in keyof MessageTypes]?: (event: MessageTypes[Property]) => any;
+type MessageListeners<VSMT> = {
+  [Property in MessageType<VSMT>]?: (
+    event: (MessageTypes & VSMT)[Property]
+  ) => any;
 };
 export const getNonce = () => {
   let text = "";
@@ -65,10 +70,10 @@ export const getNonce = () => {
   return text;
 };
 
-export const useLpc = (
+export function useLpc<ViewSpecificMessageTypes = {}>(
   frame: Ref<HTMLIFrameElement | undefined>,
-  listeners: MessageListeners
-) => {
+  listeners: MessageListeners<ViewSpecificMessageTypes>
+) {
   const calls: Map<
     string,
     {
@@ -77,15 +82,15 @@ export const useLpc = (
     }
   > = new Map();
 
-  const post = <T extends MessageType>(
-    message: Message<T>,
+  const post = <T extends MessageType<ViewSpecificMessageTypes>>(
+    message: Message<ViewSpecificMessageTypes, T>,
     origin: string = "*"
   ) =>
     frame.value?.contentWindow?.postMessage(message, { targetOrigin: origin });
 
-  const postRequest = <T extends MessageType>(
+  const postRequest = <T extends MessageType<ViewSpecificMessageTypes>>(
     type: T,
-    params?: MessageParam<T>
+    params?: MessageParam<ViewSpecificMessageTypes, T>
   ) => {
     const id = `markwhen_${getNonce()}`;
     return new Promise((resolve, reject) => {
@@ -99,15 +104,17 @@ export const useLpc = (
     });
   };
 
-  const postResponse = <T extends MessageType>(
+  const postResponse = <T extends MessageType<ViewSpecificMessageTypes>>(
     id: string,
     type: T,
-    params?: MessageParam<T>
+    params?: MessageParam<ViewSpecificMessageTypes, T>
   ) => post<T>({ type, response: true, id, params });
 
   window.addEventListener(
     "message",
-    <T extends keyof MessageTypes>(e: MessageEvent<Message<T>>) => {
+    <T extends MessageType<ViewSpecificMessageTypes>>(
+      e: MessageEvent<Message<ViewSpecificMessageTypes, T>>
+    ) => {
       if (!e.data.id || !e.data.id.startsWith("markwhen")) {
         return;
       }
@@ -130,4 +137,4 @@ export const useLpc = (
   );
 
   return { postRequest, post };
-};
+}
