@@ -3,11 +3,16 @@ import PageButtons from "./PageButtons/PageButtons.vue";
 import { useViewStore } from "@/Views/viewStore";
 import { computed } from "vue";
 import Sort from "../Drawer/ViewSettings/Sort.vue";
-import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
 import Filter from "./ViewSettings/Tags/Filter.vue";
 import NewEvent from "@/NewEvent/NewEvent.vue";
 import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
 import Jump from "@/Jump/JumpButton.vue";
+import ToggleMiniMap from "./ViewSettings/TimelineSettings/ToggleMiniMap.vue";
+import AutoCenter from "./ViewSettings/TimelineSettings/AutoCenter.vue";
+import ExpandAll from "./ViewSettings/TimelineSettings/ExpandAll.vue";
+import CollapseAll from "./ViewSettings/TimelineSettings/CollapseAll.vue";
+import TimelineScale from "./ViewSettings/TimelineSettings/TimelineScale.vue";
+import ToggleNowLine from "./ViewSettings/TimelineSettings/ToggleNowLine.vue";
 
 const viewStore = useViewStore();
 
@@ -15,6 +20,11 @@ const useTopBorder = computed(() => {
   const { uses } = viewStore.currentView;
   return uses?.drawerDescription || uses?.sort || uses?.tags;
 });
+
+const autocenter = () => {};
+const toggleMiniMap = () => {};
+const collapseAll = () => {};
+const expandAll = () => {};
 </script>
 
 <template>
@@ -43,7 +53,15 @@ const useTopBorder = computed(() => {
       <NewEvent></NewEvent>
       <Sort v-if="viewStore.currentView.uses?.sort" />
       <Jump v-if="viewStore.currentView.uses?.jump" />
-      <ViewSettings />
+      <template v-if="viewStore.currentView.name === 'Timeline2'">
+          <CollapseAll @click="collapseAll"></CollapseAll>
+          <ExpandAll @click="expandAll"></ExpandAll>
+          <ToggleNowLine></ToggleNowLine>
+          <ToggleMiniMap @click="toggleMiniMap"></ToggleMiniMap>
+          <AutoCenter @click="autocenter"></AutoCenter>
+          <TimelineScale></TimelineScale>
+        </template>
+      <!-- <ViewSettings /> -->
       <Filter v-if="viewStore.currentView.uses?.tags" />
     </div>
   </div>

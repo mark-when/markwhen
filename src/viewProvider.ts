@@ -16,10 +16,6 @@ export interface ViewUses {
 export interface ViewSetting {
   name: string
   iconSvg: string,
-  /**
-   * Click handler for setting. Optionally returns new button icon if it has changed.
-   */
-  onClick?: () => string | undefined
 }
 
 export interface ViewProvider {

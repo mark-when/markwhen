@@ -39,7 +39,13 @@ export const useTimelineExternalProvider = () => ({
 </path></svg>`,
   settings: [],
   capabilities: { edit: true, hoveringEvent: true },
-  uses: { tags: true, drawerDescription: true, sort: true, pages: true, jump: true },
+  uses: {
+    tags: true,
+    drawerDescription: true,
+    sort: true,
+    pages: true,
+    jump: true,
+  },
   framed: true,
 });
 
