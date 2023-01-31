@@ -18,36 +18,31 @@ const useTopBorder = computed(() => {
 
 <template>
   <div
-    class="drawerHeader bg-slate-50 dark:bg-slate-800 border-t-slate-200 dark:border-t-slate-600 text-gray-500 dark:text-gray-300 z-10"
+    class="bg-slate-50 dark:bg-slate-700 border-t-slate-200 dark:border-t-slate-600 text-gray-500 dark:text-gray-300 z-10 flex lg:flex-row flex-col pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding items-start lg:items-center"
     :class="{ 'border-t': useTopBorder }"
   >
     <div
-      class="flex lg:flex-row flex-col pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding items-start lg:items-center"
+      class="flex flex-row order-2 lg:order-1 overflow-hidden w-full"
+      style="min-width: 0"
     >
-      <div class="flex flex-row order-2 lg:order-1" style="min-width: 0">
-        <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
-          <ToggleSidebarButton />
-        </div>
-        <PageButtons v-if="viewStore.currentView.uses?.pages" />
+      <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
+        <ToggleSidebarButton />
       </div>
-      <div
-        class="rounded bg-gray-300 dark:bg-slate-600 h-4 w-[2px] mr-1 ml-auto lg:block hidden order-2"
-      ></div>
-      <div
-        class="flex flex-row items-center overflow-auto overflow-visible justify-end order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0"
-        style="width: fit-content"
-        v-if="
-          viewStore.currentView.uses?.tags ||
-          viewStore.currentView.uses?.sort ||
-          (viewStore.currentView.settings &&
-            viewStore.currentView.settings.length)
-        "
-      >
-        <NewEvent></NewEvent>
-        <Sort v-if="viewStore.currentView.uses?.sort" />
-        <ViewSettings />
-        <Filter v-if="viewStore.currentView.uses?.tags" />
-      </div>
+      <PageButtons v-if="viewStore.currentView.uses?.pages" />
+    </div>
+    <div
+      class="flex flex-row items-center lg:overflow-visible overflow-auto order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0 lg:w-auto w-full noScrollBar lg:justify-end"
+      v-if="
+        viewStore.currentView.uses?.tags ||
+        viewStore.currentView.uses?.sort ||
+        (viewStore.currentView.settings &&
+          viewStore.currentView.settings.length)
+      "
+    >
+      <NewEvent></NewEvent>
+      <Sort v-if="viewStore.currentView.uses?.sort" />
+      <ViewSettings />
+      <Filter v-if="viewStore.currentView.uses?.tags" />
     </div>
   </div>
 </template>
