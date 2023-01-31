@@ -5,7 +5,7 @@ import { useIsTouchscreen } from "../Views/Timeline/composables/useIsTouchscreen
 import { useTimelineStore } from "../Views/Timeline/timelineStore";
 
 defineProps<{ hoverHintTitle?: string; hoverHintShortcut?: string }>();
-defineEmits<{ (event: "click"): void }>();
+const emit = defineEmits<{ (event: "click"): void }>();
 
 const hovering = ref(false);
 const { canHover } = useIsTouchscreen();
@@ -20,11 +20,16 @@ const events = canHover.value
       },
     }
   : {};
+
+const click = () => {
+  hovering.value = false
+  emit("click");
+};
 </script>
 
 <template>
   <button
-    @click="$emit('click')"
+    @click="click"
     class="h-6 flex flex-row items-center rounded hover:bg-zinc-200 transition dark:border-gray-900 dark:hover:bg-gray-900 dark:hover:text-gray-100 px-1 text-sm lg:text-base font-bold relative"
     v-on="events"
   >

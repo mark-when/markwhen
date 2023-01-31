@@ -22,7 +22,7 @@ const useTopBorder = computed(() => {
     :class="{ 'border-t': useTopBorder }"
   >
     <div
-      class="flex flex-row order-2 lg:order-1 overflow-hidden w-full"
+      class="flex flex-row order-2 lg:order-1 overflow-hidden lg:overflow-visible w-full"
       style="min-width: 0"
     >
       <div class="dark:bg-slate-700 px-2 items-center justify-center flex">
