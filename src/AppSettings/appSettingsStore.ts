@@ -31,6 +31,7 @@ export const useAppSettingsStore = defineStore("appSettings", () => {
       savedSettings.defaultView &&
       defaultViewOptions.includes(savedSettings.defaultView)
     ) {
+      defaultView.value = savedSettings.defaultView;
       const foundView = viewStore.views.findIndex(
         (v) => v.name === savedSettings.defaultView
       );
