@@ -226,4 +226,18 @@ October 7, 1989 every year for 10 years: ...
 2025-03-04 every week for 12 weeks: ...
 2022-01/2022-03 every other year x9: ...
 Feb 1 2023 every 6 months for 10 times: ...
+_-_-_break_-_-_
+title: Eras and Milestones
+
+// Visually indicate that an event is an era or milestone with the tag #era or #milestone
+
+2023-06-01/2023-08-20: Summer time #vacation
+
+2023-08-21/2023-12-17: Back to school
+
+2023-12-18/2024-01-05: Winter break #vacation #milestone
+
+2024-01-08/2024-05-31: Back to school
+
+2024-05-27/2024-05-31: Final project due #milestone
 `;
