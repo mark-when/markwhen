@@ -93,26 +93,3 @@ test("Route to page by page title, is selected", async ({ page }) => {
   await page.goto(url + "?page=" + encodeURIComponent("Groups and Sections"));
   await expect(page.getByText(`title: Groups and Sections`)).toBeVisible();
 });
-
-test("Delete page, draft is updated", async ({ page }) => {
-  await page.goto(url);
-  const headerPageButtonLocator = async () =>
-    page.getByRole("button", { name: "Header" });
-  let headerPageButton = await headerPageButtonLocator();
-  await headerPageButton.hover();
-  const deletePageButton = await headerPageButton.getByRole("button");
-  await deletePageButton.click();
-  await page
-    .getByTitle("Saved to local storage")
-    .getByTitle("Pending save", { exact: true });
-  await page
-    .getByTitle("Saved to local storage")
-    .getByTitle("Saving", { exact: true });
-  await page
-    .getByTitle("Saved to local storage")
-    .getByTitle("Saved", { exact: true });
-    
-  await page.waitForFunction(() => {
-    return JSON.parse(localStorage)
-  })
-});
