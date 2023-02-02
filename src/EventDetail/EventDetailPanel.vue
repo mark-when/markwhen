@@ -68,8 +68,12 @@ watch(translateX, (val) => val && panelStore.moving(PanelDetail, val));
 <template>
   <div
     ref="panel"
-    class="hidden md:h-full lg:flex flex-shrink-0 flex-col md:flex-row border-slate-200 dark:border-slate-600 z-10 pb-4 md:pb-0 bg-slate-50 dark:bg-slate-800 text-zinc-600 dark:text-zinc-200 transition transition-shadow"
-    :class="`${!!translateX ? 'shadow-xl' : ''}`"
+    class="hidden md:h-full lg:flex flex-shrink-0 flex-col md:flex-row z-10 pb-4 md:pb-0 bg-slate-50 dark:bg-slate-800 text-zinc-600 dark:text-zinc-200 transition transition-shadow border-slate-200 dark:border-slate-600"
+    :class="{
+      'shadow-xl': !!translateX,
+      'border-r': isLeft,
+      'border-l': !isLeft,
+    }"
     :style="{
       order: computedOrder,
       ...computedStyle,
