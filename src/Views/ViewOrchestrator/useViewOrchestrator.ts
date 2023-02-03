@@ -81,25 +81,8 @@ export const useViewOrchestrator = (
     });
   };
 
-  const autoCenter = () => lpc.postRequest('autoCenter')
-  const collapseAll = () => lpc.postRequest("collapseAll");
-  const expandAll = () => lpc.postRequest("expandAll");
-  const toggleNowLine = () => lpc.postRequest("toggleNowLine");
-  const toggleMiniMap = () => lpc.postRequest("toggleMiniMap");
-  const startZoomingIn = () => lpc.postRequest("startZoomingIn");
-  const startZoomingOut = () => lpc.postRequest("startZoomingOut");
-  const stopZooming = () => lpc.postRequest("stopZooming");
-
   return {
     jumpToRange,
     jumpToPath,
-    autoCenter,
-    collapseAll,
-    expandAll,
-    toggleNowLine,
-    toggleMiniMap,
-    startZoomingIn,
-    startZoomingOut,
-    stopZooming,
   };
 };

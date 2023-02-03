@@ -6,7 +6,6 @@ import { computed, ref, watchEffect } from "vue";
 
 export const defaultViewOptions = [
   "Timeline",
-  "Gantt",
   "Calendar",
   "Map",
 ] as const;

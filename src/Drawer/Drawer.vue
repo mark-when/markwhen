@@ -7,12 +7,6 @@ import Filter from "./ViewSettings/Tags/Filter.vue";
 import NewEvent from "@/NewEvent/NewEvent.vue";
 import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
 import Jump from "@/Jump/JumpButton.vue";
-import ToggleMiniMap from "./ViewSettings/TimelineSettings/ToggleMiniMap.vue";
-import AutoCenter from "./ViewSettings/TimelineSettings/AutoCenter.vue";
-import ExpandAll from "./ViewSettings/TimelineSettings/ExpandAll.vue";
-import CollapseAll from "./ViewSettings/TimelineSettings/CollapseAll.vue";
-import TimelineScale from "./ViewSettings/TimelineSettings/TimelineScale.vue";
-import ToggleNowLine from "./ViewSettings/TimelineSettings/ToggleNowLine.vue";
 
 const viewStore = useViewStore();
 
@@ -20,17 +14,6 @@ const useTopBorder = computed(() => {
   const { uses } = viewStore.currentView;
   return uses?.drawerDescription || uses?.sort || uses?.tags;
 });
-
-const autocenter = viewStore.autoCenter;
-const toggleMiniMap = viewStore.toggleMiniMap;
-const collapseAll = viewStore.collapseAll;
-const expandAll = viewStore.expandAll;
-const toggleNowLine = viewStore.toggleNowLine;
-const startZoomingIn = viewStore.startZoomingIn;
-const startZoomingOut = viewStore.startZoomingOut;
-const stopZooming = () => {
-  viewStore.stopZooming();
-};
 </script>
 
 <template>
@@ -59,18 +42,6 @@ const stopZooming = () => {
       <NewEvent></NewEvent>
       <Sort v-if="viewStore.currentView.uses?.sort" />
       <Jump v-if="viewStore.currentView.uses?.jump" />
-      <template v-if="viewStore.currentView.name === 'Timeline2'">
-        <CollapseAll @click="collapseAll"></CollapseAll>
-        <ExpandAll @click="expandAll"></ExpandAll>
-        <ToggleNowLine @click="toggleNowLine"></ToggleNowLine>
-        <ToggleMiniMap @click="toggleMiniMap"></ToggleMiniMap>
-        <AutoCenter @click="autocenter"></AutoCenter>
-        <TimelineScale
-          @start-zooming-in="startZoomingIn"
-          @start-zooming-out="startZoomingOut"
-          @stop-zooming="stopZooming"
-        ></TimelineScale>
-      </template>
       <!-- <ViewSettings /> -->
       <Filter v-if="viewStore.currentView.uses?.tags" />
     </div>
