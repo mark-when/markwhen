@@ -23,8 +23,8 @@ const activeFrame = computed(() =>
 );
 
 watchEffect(() => {
-  viewStore.setActiveFrame(activeFrame.value)
-})
+  viewStore.setActiveFrame(activeFrame.value);
+});
 
 const visualizationContainer = ref();
 
@@ -66,6 +66,7 @@ onMounted(() => {
     >
       <iframe
         ref="frames"
+        sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-top-navigation allow-top-navigation-by-user-activation allow-same-origin"
         v-for="component in viewStore.framedViews"
         class="w-full h-full"
         v-show="currentViewComponent === component.component()"
