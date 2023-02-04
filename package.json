@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@markwhen/parser": "^0.4.9",
-    "@squadette/hammerjs": "^2.1.0-pre3",
     "@vuepic/vue-datepicker": "^3.6.6",
     "@vueuse/core": "^9.12.0",
     "@vueuse/integrations": "^9.12.0",
