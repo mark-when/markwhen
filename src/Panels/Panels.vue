@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
-import { usePanelStore } from "./panelStore";
+import { PanelVisualization, usePanelStore } from "./panelStore";
 import { useViewOrchestrator } from "@/Views/ViewOrchestrator/useViewOrchestrator";
 import Timeline from "@/Views/Timeline/Timeline.vue";
 import Dialogs from "@/Dialogs/Dialogs.vue";
@@ -27,6 +27,7 @@ const activeFrame = computed(() =>
 );
 
 useViewOrchestrator(activeFrame);
+const visualizationContainer = ref();
 
 const translateX = computed(
   () => panelStore.visualizationPanelState.translation
@@ -51,11 +52,19 @@ const visualizationStyle = computed(() => {
     };
   }
 });
+
+onMounted(() => {
+  panelStore.setPanelElement(PanelVisualization, visualizationContainer.value);
+});
 </script>
 
 <template>
   <div class="flex flex-row w-full h-full overflow-auto">
-    <div class="w-full h-full overflow-auto" :style="visualizationStyle">
+    <div
+      class="w-full h-full overflow-auto"
+      :style="visualizationStyle"
+      ref="visualizationContainer"
+    >
       <iframe
         ref="frames"
         v-for="component in viewStore.framedViews"

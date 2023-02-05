@@ -256,7 +256,6 @@ const setInitialScrollAndScale = () =>
 
 onMounted(() => {
   setInitialScrollAndScale();
-  panelStore.setPanelElement(PanelVisualization, timelineElement.value!);
   timelineStore.setViewportGetter(getViewport);
 });
 
