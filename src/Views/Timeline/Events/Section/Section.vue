@@ -8,7 +8,7 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import SectionHeader from "./SectionHeader.vue";
 import { useTimelineStore } from "../../timelineStore";
 import { ranges } from "@/utilities/ranges";
-import { equivalentPaths } from "@/EventDetail/eventDetailStore";
+import { equivalentPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { recurrenceLimit } from "@/Markwhen/pageStore";
 import { useCollapseStore } from "../../collapseStore";

@@ -1,27 +1,10 @@
-import { ref, computed, watchEffect, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
-import type { Path } from "@markwhen/parser/lib/Types";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
-import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { getLast } from "@markwhen/parser/lib/Noder";
-import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
-
-export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
-  if (!p1 || !p2 || p1.type !== p2.type) {
-    return false;
-  }
-  const path1 = p1.path;
-  const path2 = p2.path;
-
-  return (
-    path1.length > 0 &&
-    path2.length > 0 &&
-    path1.length === path2.length &&
-    path1.every((pathValue, index) => path2[index] === pathValue)
-  );
-};
+import { equivalentPaths, type EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 
 export const useEventDetailStore = defineStore("eventDetail", () => {
   const panelStore = usePanelStore();

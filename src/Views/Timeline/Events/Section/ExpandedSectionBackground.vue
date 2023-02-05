@@ -15,8 +15,8 @@ const props = defineProps<{
   height: number;
 }>();
 const { color } = useEventColor(computed(() => props.node));
-const eventDetailStore = useEventDetailStore();
 const timelineStore = useTimelineStore();
+const eventDetailStore = useEventDetailStore();
 
 const isGroupStyle = computed(() => props.style === "group");
 

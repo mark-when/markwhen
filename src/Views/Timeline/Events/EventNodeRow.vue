@@ -3,15 +3,13 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
 import { computed, onMounted } from "vue";
 import EventRow from "./Event/EventRow.vue";
-import {
-  equivalentPaths,
-  useEventDetailStore,
-} from "@/EventDetail/eventDetailStore";
+import { equivalentPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { useEventRefs } from "./useEventRefs";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import { useTimelineStore } from "../timelineStore";
+import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 
 const props = defineProps<{
   node: SomeNode;
