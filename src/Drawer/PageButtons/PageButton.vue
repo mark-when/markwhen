@@ -5,7 +5,7 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { isEditable } from "@/injectionKeys";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { useIsTouchscreen } from "@/App/composables/useIsTouchscreen";
 import { usePageButtonMove } from "./composables/usePageButtonMove";
 
 const { canHover } = useIsTouchscreen();

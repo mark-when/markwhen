@@ -13,14 +13,9 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import {
   dateRangeToString,
   type DisplayScale,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+} from "@/Markwhen/utilities/dateTimeUtilities";
 import { useEventMapStore } from "@/Markwhen/eventMapStore";
-import {
-  eventValue,
-  flat,
-  getLast,
-  isEventNode,
-} from "@markwhen/parser/lib/Noder";
+import { isEventNode } from "@markwhen/parser/lib/Noder";
 import type {
   EventPath,
   EventPaths,

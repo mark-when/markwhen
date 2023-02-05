@@ -6,7 +6,7 @@ import EventDetailWhen from "./EventDetailWhen.vue";
 import EventDetailMarkdown from "./EventDetailMarkdown.vue";
 import { toDateRange, type Event } from "@markwhen/parser/lib/Types";
 import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
-import { useEventRefs } from "@/Views/Timeline/Events/useEventRefs";
+import { useEventRefs } from "@/Markwhen/composables/useEventRefs";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import type { EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";
 

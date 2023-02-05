@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTimelineStore } from "@/Views/Timeline/timelineStore";
-import NowLine from "../Events/NowLine.vue";
+import NowLine from "./NowLine.vue";
 import { computed, inject } from "vue";
 import { isEditable } from "@/injectionKeys";
 import NewEvent from "./NewEvent/NewEvent.vue";

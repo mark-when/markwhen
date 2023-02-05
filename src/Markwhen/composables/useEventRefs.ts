@@ -10,8 +10,8 @@ import {
   matchedListItemsComparator,
   bothDefined,
   recurrenceComparator,
-} from "../utilities/eventComparator";
-import { toInnerHtml } from "../utilities/innerHtml";
+} from "@/Markwhen/utilities/eventComparator";
+import { toInnerHtml } from "@/Markwhen/utilities/innerHtml";
 
 const cachedComputed = <T>(
   val: () => T | undefined,

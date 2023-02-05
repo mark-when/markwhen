@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { useIsTouchscreen } from "@/App/composables/useIsTouchscreen";
 import { ref } from "vue";
 import HoverHint from "./HoverHint.vue";
 

@@ -4,7 +4,7 @@ import type { Node, SomeNode } from "@markwhen/parser/lib/Node";
 import { computed, onMounted } from "vue";
 import EventRow from "./Event/EventRow.vue";
 import { equivalentPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { useEventRefs } from "./useEventRefs";
+import { useEventRefs } from "../../../Markwhen/composables/useEventRefshen/composables/useEventRefs";
 import type { DateFormat, DateRange, Event } from "@markwhen/parser/lib/Types";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
