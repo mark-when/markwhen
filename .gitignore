@@ -27,4 +27,6 @@ coverage
 *.sln
 *.sw?
 dev-dist
-playwright-report
+/test-results/
+/playwright-report/
+/playwright/.cache/
