@@ -1,7 +1,7 @@
 import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import { usePageEffect } from "@/Markwhen/composables/usePageEffect";
-import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
 import { PanelDetail, usePanelStore } from "@/Panels/panelStore";
 import { getLast } from "@markwhen/parser/lib/Noder";
 import { equivalentPaths, type EventPath } from "@/Views/ViewOrchestrator/useStateSerializer";

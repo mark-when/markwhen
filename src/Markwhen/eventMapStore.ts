@@ -7,7 +7,7 @@ import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 import type { Event } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
 import { computed } from "vue";
-import { useEventFinder } from "./composables/useEventFinder";
+import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
 import { usePageStore } from "./pageStore";
 import { useTransformStore } from "./transformStore";
 

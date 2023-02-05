@@ -1,10 +1,13 @@
-import type { EventPath, EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
+import type {
+  EventPath,
+  EventPaths,
+} from "@/Views/ViewOrchestrator/useStateSerializer";
 import type { SomeNode } from "@markwhen/parser/lib/Node";
 import { get } from "@markwhen/parser/lib/Noder";
 import type { MaybeRef } from "@vueuse/core";
 import { computed, ref, unref, watchEffect } from "vue";
-import { usePageStore } from "../pageStore";
-import { useTransformStore } from "../transformStore";
+import { usePageStore } from "@/Markwhen/pageStore";
+import { useTransformStore } from "@/Markwhen/transformStore";
 
 export const eqPath = (ep: EventPath, eps: EventPaths): boolean => {
   const path = eps[ep.type]?.path;

@@ -18,9 +18,9 @@ import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
 import type { DateRange } from "@markwhen/parser/lib/Types";
 import { dateMidpoint } from "./utilities/dateTimeUtilities";
-import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import DebugView from "./DebugView.vue";
+import { useEventFinder } from "../ViewOrchestrator/useEventFinder";
 
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
@@ -260,9 +260,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [
-    timelineStore.autoCenterSemaphore,
-  ],
+  () => [timelineStore.autoCenterSemaphore],
   () => {
     setInitialScrollAndScale();
   }

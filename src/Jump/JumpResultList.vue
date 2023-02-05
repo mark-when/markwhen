@@ -9,7 +9,7 @@ import {
   type ParseResult,
 } from "./jumpStore";
 import JumpResultListItem from "./JumpResultListItem.vue";
-import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
 import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";

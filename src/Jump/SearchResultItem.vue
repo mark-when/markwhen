@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
+import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
 import { Event } from "@markwhen/parser/lib/Types";
 import type lunr from "lunr";
 import { computed } from "vue";
