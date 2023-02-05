@@ -5,6 +5,7 @@ import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { usePanelStore } from "./panelStore";
 import { useViewOrchestrator } from "@/Views/ViewOrchestrator/useViewOrchestrator";
 import Timeline from "@/Views/Timeline/Timeline.vue";
+import Dialogs from "@/Dialogs/Dialogs.vue";
 
 const viewStore = useViewStore();
 const panelStore = usePanelStore();
@@ -73,6 +74,7 @@ const visualizationStyle = computed(() => {
       <div class="absolute inset-0 frameCover"></div>
     </div>
     <EventDetailPanel v-if="detailVisible && !viewStore.isMobile" />
+    <Dialogs />
   </div>
 </template>
 

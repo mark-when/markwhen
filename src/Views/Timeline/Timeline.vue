@@ -16,8 +16,7 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useResizeObserver, watchThrottled } from "@vueuse/core";
 import { useIsActive } from "@/utilities/composables/useIsActive";
 import { PanelVisualization, usePanelStore } from "@/Panels/panelStore";
-import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
-import type { DateRange, DateRangePart } from "@markwhen/parser/lib/Types";
+import type { DateRange } from "@markwhen/parser/lib/Types";
 import { dateMidpoint } from "./utilities/dateTimeUtilities";
 import { useEventFinder } from "@/Markwhen/composables/useEventFinder";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
@@ -173,7 +172,6 @@ const scrollToDateRangeImmediate = (dateRange?: DateRange) => {
 };
 
 const scrollToDateRange = (dateRange?: DateRange) => {
-  console.log("scrolling to", dateRange);
   if (!dateRange) {
     return;
   }
@@ -270,15 +268,6 @@ watch(
     setInitialScrollAndScale();
   }
 );
-
-const showJumpToRange = computed({
-  get() {
-    return timelineStore.showingJumpToRange;
-  },
-  set(val) {
-    timelineStore.setShowingJumpToRange(val);
-  },
-});
 </script>
 
 <template>
@@ -296,7 +285,6 @@ const showJumpToRange = computed({
       <DebugView v-if="false" />
     </div>
   </div>
-  <JumpToRangeDialog v-model="showJumpToRange" />
 </template>
 
 <style></style>
