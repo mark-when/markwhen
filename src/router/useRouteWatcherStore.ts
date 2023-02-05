@@ -2,8 +2,8 @@ import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTransformStore, type Sort } from "@/Markwhen/transformStore";
 import { useViewStore } from "@/Views/viewStore";
 import { defineStore } from "pinia";
-import { computed, ref, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { usePageStore } from "../Markwhen/pageStore";
 
 export type RouteWatchState = "idle" | "error" | "loading";
@@ -21,7 +21,6 @@ export const useRouteWatcherStore = defineStore("routeWatcher", () => {
   });
 
   const pageIndexFromQuery = (index: string) => {
-    console.log("set page index", index);
     if (typeof index === "string") {
       const parsed = parseInt(index);
       if (isNaN(parsed)) {
@@ -30,47 +29,52 @@ export const useRouteWatcherStore = defineStore("routeWatcher", () => {
             return i;
           }
         }
-      } else if (parsed >= 0 && parsed < pageTitles.value.length) {
-        return parsed;
+      } else if (parsed >= 1 && parsed < pageTitles.value.length + 1) {
+        return parsed - 1;
       }
     } else if (
       typeof index === "number" &&
-      index >= 0 &&
-      index < pageTitles.value.length
+      index >= 1 &&
+      index < pageTitles.value.length + 1
     ) {
-      return index;
+      return index - 1;
     }
   };
 
-  // query
-  watchEffect(() => {
-    if (route.query.page) {
+  const setFromQuery = (query: Record<string, string>) => {
+    if (query.page) {
       const index = pageIndexFromQuery(route.query.page as string);
       if (typeof index === "number") {
         pageStore.setPageIndex(index);
       }
     }
-    if (route.query.view) {
+    if (query.view) {
       for (let i = 0; i < viewStore.views.length; i++) {
         if (
-          (route.query.view as string).toLowerCase() ===
+          (query.view as string).toLowerCase() ===
           viewStore.views[i].name.toLowerCase()
         ) {
           viewStore.setSelectedViewIndex(i);
         }
       }
     }
-    const sort = (route.query.sort as string)?.toLowerCase();
+    const sort = (query.sort as string)?.toLowerCase();
     for (const s of ["none", "up", "down"] as Sort[]) {
       if (sort === s) {
         transformStore.setSort(sort);
       }
     }
-    const filters = (route.query.filter as string)?.split(",") || [];
+    const filters = (query.filter as string)?.split(",") || [];
     for (const filter of filters) {
       transformStore.addFilterTag(filter);
     }
-  });
+  };
+
+  watch(
+    () => route.query,
+    (query) => setFromQuery(query as Record<string, string>),
+    { immediate: true }
+  );
 
   return {
     watchState,

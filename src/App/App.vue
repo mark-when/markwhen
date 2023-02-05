@@ -10,7 +10,7 @@ import { useAppHead } from "./composables/useAppHead";
 import Panels from "../Panels/Panels.vue";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useKeyboardStore } from "@/Keyboard/keyboardStore";
-import QuickEditor from "@/QuickEditor/QuickEditor.vue";
+import { useQuerySetter } from "@/router/useQuerySetter";
 
 const appStore = useAppStore();
 const sidebarStore = useSidebarStore();
@@ -19,6 +19,7 @@ const editorOrchestrator = useEditorOrchestratorStore();
 usePageEffects();
 useAppHead();
 useKeyboardStore();
+useQuerySetter();
 
 const globalClass = computed(
   () =>
