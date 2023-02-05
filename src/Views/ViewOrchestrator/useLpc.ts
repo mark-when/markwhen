@@ -1,8 +1,10 @@
 import type {
+  DateFormat,
   DateRangeIso,
   DateTimeGranularity,
 } from "@markwhen/parser/lib/Types";
 import type { Ref } from "vue";
+import type { DisplayScale } from "../Timeline/utilities/dateTimeUtilities";
 import type { EventPath, State } from "./useStateSerializer";
 
 interface MessageTypes {
@@ -16,6 +18,27 @@ interface MessageTypes {
     granularity?: DateTimeGranularity;
     immediate: boolean;
   };
+  editEventDateRange: {
+    path: EventPath;
+    range: DateRangeIso;
+    scale: DisplayScale;
+    preferredInterpolationFormat: DateFormat | undefined;
+  };
+  jumpToPath: {
+    path: EventPath;
+  };
+  jumpToRange: {
+    dateRangeIso: DateRangeIso;
+  };
+}
+
+interface TimelineSpecificMessages {
+  toggleMiniMap: void;
+  toggleNowLine: void;
+  zoom: {
+    level: number;
+  };
+  autoCenter: void;
 }
 
 type MessageType = keyof MessageTypes;

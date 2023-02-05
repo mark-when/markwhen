@@ -12,21 +12,21 @@ const panelStore = usePanelStore();
 const currentView = computed(() => viewStore.currentView);
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
 const currentViewComponent = computed(() => {
-  if (
-    viewStore.currentView.name === "Timeline" ||
-    viewStore.currentView.name === "Gantt"
-  ) {
+  if (viewStore.currentView.name === "Gantt") {
     return Timeline;
   }
   return viewStore.currentView.component();
 });
-const frames = ref<HTMLIFrameElement[]>();
 
+const frames = ref<HTMLIFrameElement[]>();
 const activeFrame = computed(() =>
   frames.value?.find((f) => f.id === `view_${currentView.value.name}`)
 );
 
-useViewOrchestrator(activeFrame);
+watchEffect(() => {
+  viewStore.setActiveFrame(activeFrame.value)
+})
+
 const visualizationContainer = ref();
 
 const translateX = computed(

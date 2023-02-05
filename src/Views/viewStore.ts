@@ -5,11 +5,17 @@ import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
 import { useTimelineStore } from "./Timeline/timelineStore";
+import { useViewOrchestrator } from "./ViewOrchestrator/useViewOrchestrator";
 
 export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const timelineStore = useTimelineStore();
+  const activeFrame = ref<HTMLIFrameElement>();
+
+  const setActiveFrame = (frame?: HTMLIFrameElement) => {
+    activeFrame.value = frame;
+  };
 
   const views = computed<ViewProvider[]>(() =>
     isMobile.value ? useMobileViewProviders() : useViewProviders()
@@ -37,6 +43,8 @@ export const useViewStore = defineStore("views", () => {
     selectedViewIndex.value = i;
   };
 
+  const { jumpToRange, jumpToPath } = useViewOrchestrator(activeFrame);
+
   return {
     // state
     selectedViewIndex,
@@ -49,5 +57,8 @@ export const useViewStore = defineStore("views", () => {
 
     // actions
     setSelectedViewIndex,
+    setActiveFrame,
+    jumpToPath,
+    jumpToRange,
   };
 });

@@ -7,9 +7,11 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type lunr from "lunr";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { useViewStore } from "@/Views/viewStore";
 
 const input = ref();
 const timelineStore = useTimelineStore();
+const viewStore = useViewStore();
 const jumpStore = useJumpStore();
 
 const props = defineProps<{ modelValue: boolean }>();
@@ -91,10 +93,13 @@ watch(rangeInput, (input) => {
 
 const selectedResult = (item: ParseResult | lunr.Index.Result) => {
   if (isParseResult(item)) {
-    timelineStore.setJumpToRange(item.dateRange);
+    viewStore.jumpToRange(item.dateRange);
   } else {
     const paths: EventPaths = JSON.parse(item.ref);
-    timelineStore.setScrollToPaths(paths);
+    viewStore.jumpToPath({
+      type: "pageFiltered",
+      path: paths.pageFiltered?.path,
+    });
     if (eventDetailStore.shouldOpenDetailWhenJumping) {
       eventDetailStore.setDetailEventPath(paths.page!);
     }
@@ -105,6 +110,7 @@ const selectedResult = (item: ParseResult | lunr.Index.Result) => {
 const submit = () => {
   if (jumpStore.jumpResult) {
     const selected = jumpStore.jumpResult[jumpStore.selectedIndex];
+    jumpStore.search()
     selectedResult(selected);
   }
 };
@@ -144,7 +150,7 @@ const submit = () => {
       <div
         class="flex flex-row justify-end text-sm font-bold text-gray-500 dark:text-gray-400 pt-1"
       >
-        <div class="flex flex-row items-center mr-2">
+        <!-- <div class="flex flex-row items-center mr-2">
           <input
             type="checkbox"
             id="zoom"
@@ -152,7 +158,7 @@ const submit = () => {
             v-model="scrollAndZoom"
           />
           <label for="zoom"><div>Zoom</div></label>
-        </div>
+        </div> -->
         <div class="flex flex-row items-center">
           <input
             type="checkbox"

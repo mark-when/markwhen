@@ -1,10 +1,15 @@
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { useNewEventStore } from "@/NewEvent/newEventStore";
-import { toDateRange } from "@markwhen/parser/lib/Types";
+import {
+  toDateRange,
+  toDateRangeIso,
+  type DateRange,
+  type DateRangeIso,
+} from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
 import { useLpc } from "./useLpc";
-import { useStateSerializer } from "./useStateSerializer";
+import { useStateSerializer, type EventPath } from "./useStateSerializer";
 
 export const useViewOrchestrator = (
   frame: Ref<HTMLIFrameElement | undefined>
@@ -59,9 +64,25 @@ export const useViewOrchestrator = (
     key(key: string) {},
   });
 
-  return watchEffect(() => {
+  watchEffect(() => {
     // we're watching this so the view can request a state update
     trigger.value;
     lpc.postRequest("state", toRaw(stateSerializer.value));
   });
+
+  const jumpToRange = (range: DateRange | DateRangeIso) =>
+    lpc.postRequest("jumpToRange", {
+      dateRangeIso: "fromDateTimeIso" in range ? range : toDateRangeIso(range),
+    });
+
+  const jumpToPath = (path: EventPath) => {
+    lpc.postRequest("jumpToPath", {
+      path,
+    });
+  };
+
+  return {
+    jumpToRange,
+    jumpToPath,
+  };
 };
