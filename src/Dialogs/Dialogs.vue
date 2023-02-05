@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { computed } from "vue";
 import JumpToRangeDialog from "@/Jump/JumpToRangeDialog.vue";
+import { useJumpStore } from "@/Jump/jumpStore";
 
-const timelineStore = useTimelineStore();
+const jumpStore = useJumpStore();
 
 const showJumpToRange = computed({
   get() {
-    return timelineStore.showingJumpToRange;
+    return jumpStore.showingJumpDialog;
   },
   set(val) {
-    timelineStore.setShowingJumpToRange(val);
+    jumpStore.setShowJumpDialog(val);
   },
 });
 </script>

@@ -1,20 +1,11 @@
 <script setup lang="ts">
-import { useAppStore } from "@/App/appStore";
-import {
-  toDateRange,
-  toDateRangeIso,
-  type DateFormat,
-  type DateRange,
-} from "@markwhen/parser/lib/Types";
+import { toDateRangeIso, type DateRange } from "@markwhen/parser/lib/Types";
 import DatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { DateTime } from "luxon";
-import { usePageStore } from "@/Markwhen/pageStore";
-import { dateRangeToString } from "@/Views/Timeline/utilities/dateRangeToString2";
 import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
-
-const pageStore = usePageStore();
+import { dateRangeToString } from "@/Markwhen/utilities/dateRangeToString2";
 
 const props = defineProps<{ modelValue: DateRange }>();
 

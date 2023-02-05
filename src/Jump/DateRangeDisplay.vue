@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { usePageStore } from "@/Markwhen/pageStore";
-import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import {
   dateRangeToString,
   type DisplayScale,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+} from "@/Markwhen/utilities/dateTimeUtilities";
 import type { DateFormat, DateRangePart } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 
@@ -15,7 +13,6 @@ const props = defineProps<{
   selected: boolean;
   last: boolean;
 }>();
-const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
 
 const dateRangeString = computed(
@@ -23,7 +20,7 @@ const dateRangeString = computed(
     props.range &&
     dateRangeToString(
       props.range,
-      props.scale || timelineStore.scaleOfViewportDateInterval,
+      props.scale || "day",
       pageStore.pageTimelineMetadata.dateFormat as DateFormat
     )
 );

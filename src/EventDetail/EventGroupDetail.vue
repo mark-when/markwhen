@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { toInnerHtml } from "@/Markwhen/utilities/innerHtml";
 import type { Node, NodeArray } from "@markwhen/parser/lib/Node";
 
 defineProps<{ eventGroup: Node<NodeArray> }>();

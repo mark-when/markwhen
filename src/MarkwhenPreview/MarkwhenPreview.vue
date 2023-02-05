@@ -2,7 +2,7 @@
 import {
   ceilDateTime,
   floorDateTime,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+} from "@/Markwhen/utilities/dateTimeUtilities";
 import type { DateRange, Timelines } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
 import { computed } from "vue";

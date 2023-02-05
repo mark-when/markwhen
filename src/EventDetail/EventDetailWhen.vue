@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { humanDuration } from "@/Views/Timeline/utilities/dateTimeUtilities";
+import { humanDuration } from "@/Markwhen/utilities/dateTimeUtilities";
 import type { DateRange } from "@markwhen/parser/lib/Types";
 import { computed } from "vue";
 

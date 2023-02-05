@@ -7,7 +7,7 @@ import ViewSettings from "../Drawer/ViewSettings/ViewSettings.vue";
 import Filter from "./ViewSettings/Tags/Filter.vue";
 import NewEvent from "@/NewEvent/NewEvent.vue";
 import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
-import Jump from "@/Views/Timeline/Settings/Jump.vue";
+import Jump from "@/Jump/JumpButton.vue";
 
 const viewStore = useViewStore();
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { usePageStore } from "@/Markwhen/pageStore";
 import type { NodeArray, SomeNode } from "@markwhen/parser/lib/Node";
 import type lunr from "lunr";
 import {
@@ -10,15 +9,14 @@ import {
 } from "./jumpStore";
 import JumpResultListItem from "./JumpResultListItem.vue";
 import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
-import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { toInnerHtml } from "@/Markwhen/utilities/innerHtml";
 import JumpResultListItemMeta from "./JumpResultListItemMeta.vue";
 import { ref, watch } from "vue";
 import { eventValue, isEventNode } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useDateRangeString } from "./dateRangeString";
 
-const props = defineProps<{ jumpResult: JumpResults }>();
+defineProps<{ jumpResult: JumpResults }>();
 const emit = defineEmits<{
   (event: "click", item: ParseResult | lunr.Index.Result): void;
 }>();

@@ -1,4 +1,4 @@
-import type { DisplayScale } from "@/Views/Timeline/utilities/dateTimeUtilities";
+import type { DisplayScale } from "@/Markwhen/utilities/dateTimeUtilities";
 import type { DateRangePart } from "@markwhen/parser/lib/Types";
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
@@ -19,6 +19,7 @@ export const isParseResult = (
 
 export const useJumpStore = defineStore("jump", () => {
   const selectedIndex = ref(0);
+  const showingJumpDialog = ref(false);
   const jumpResult = ref<JumpResults | undefined>();
   const search = useSearch();
 
@@ -37,9 +38,11 @@ export const useJumpStore = defineStore("jump", () => {
   const setJumpResult = (j: JumpResults | undefined) => {
     jumpResult.value = j;
   };
-
   const setSelectedIndex = (val: number) => {
     selectedIndex.value = val;
+  };
+  const setShowJumpDialog = (show: boolean) => {
+    showingJumpDialog.value = show;
   };
   const selectNextIndex = () => {
     if (!jumpResult.value || !jumpResult.value?.length) {
@@ -68,7 +71,9 @@ export const useJumpStore = defineStore("jump", () => {
   return {
     selectedIndex,
     jumpResult,
+    showingJumpDialog,
 
+    setShowJumpDialog,
     setJumpResult,
     setSelectedIndex,
     search: searchInput,

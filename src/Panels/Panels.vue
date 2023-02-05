@@ -3,8 +3,7 @@ import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { PanelVisualization, usePanelStore } from "./panelStore";
-import { useViewOrchestrator } from "@/Views/ViewOrchestrator/useViewOrchestrator";
-import Timeline from "@/Views/Timeline/Timeline.vue";
+// import Timeline from "@/Views/Timeline/Timeline.vue";
 import Dialogs from "@/Dialogs/Dialogs.vue";
 
 const viewStore = useViewStore();
@@ -12,9 +11,9 @@ const panelStore = usePanelStore();
 const currentView = computed(() => viewStore.currentView);
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
 const currentViewComponent = computed(() => {
-  if (viewStore.currentView.name === "Gantt") {
-    return Timeline;
-  }
+  // if (viewStore.currentView.name === "Gantt") {
+  //   return Timeline;
+  // }
   return viewStore.currentView.component();
 });
 

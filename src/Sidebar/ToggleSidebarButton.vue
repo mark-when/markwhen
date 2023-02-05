@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HoverHint from "@/Drawer/HoverHint.vue";
 import SettingsButton from "@/Settings/SettingsButton.vue";
-import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { useIsTouchscreen } from "@/App/composables/useIsTouchscreen";
 import { ref } from "vue";
 import { useSidebarStore } from "./sidebarStore";
 

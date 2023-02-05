@@ -10,18 +10,16 @@ import {
   type Image,
 } from "@markwhen/parser/lib/Types";
 import { DateTime } from "luxon";
-import { useMarkersStore } from "@/Views/Timeline/Markers/markersStore";
 import {
   floorDateTime,
   ceilDateTime,
   type DisplayScale,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+} from "@/Markwhen/utilities/dateTimeUtilities";
 import { parseDateRange } from "@markwhen/parser";
 import type { JumpResults, ParseResult } from "./jumpStore";
 import * as chrono from "chrono-node";
 import { isEventNode, eventValue, iterate } from "@markwhen/parser/lib/Noder";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 
 export type SearchState = "ready" | "indexing" | "uninitialized";
 interface SearchDocument {
@@ -77,7 +75,6 @@ export const searchDate = (input: string, scale: DisplayScale = "day") => {
 export const useSearch = () => {
   const pageStore = usePageStore();
   const mapStore = useEventMapStore();
-  const timelineStore = useTimelineStore();
 
   const eventToDocument = (e: Event, path: EventPaths): SearchDocument => ({
     path: JSON.stringify(path),
@@ -142,7 +139,7 @@ export const useSearch = () => {
     if (!input) {
       return;
     }
-    const result = searchDate(input, timelineStore.scaleOfViewportDateInterval);
+    const result = searchDate(input, "day");
     const searchTerm = input
       .replace(/[^a-zA-Z0-9\s]/, "")
       .replace(/[a-zA-Z]{2,}/, (substring) => `+${substring}~1`);

@@ -4,13 +4,12 @@ import type { ViewProvider } from "@/viewProvider";
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
-import { useTimelineStore } from "./Timeline/timelineStore";
 import { useViewOrchestrator } from "./ViewOrchestrator/useViewOrchestrator";
 
 export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
-  const timelineStore = useTimelineStore();
+  // const timelineStore = useTimelineStore();
   const activeFrame = ref<HTMLIFrameElement>();
 
   const setActiveFrame = (frame?: HTMLIFrameElement) => {
@@ -29,14 +28,14 @@ export const useViewStore = defineStore("views", () => {
     if (selectedViewIndex.value >= views.value.length) {
       selectedViewIndex.value = 0;
     } else if (selectedViewIndex.value < 0) {
-      // Set initial view to timeline
-      selectedViewIndex.value = 1;
+      // Set default view
+      selectedViewIndex.value = 2;
     }
-    if (currentView.value.name === "Timeline") {
-      timelineStore.setMode("timeline");
-    } else if (currentView.value.name === "Gantt") {
-      timelineStore.setMode("gantt");
-    }
+    // if (currentView.value.name === "Timeline") {
+    //   timelineStore.setMode("timeline");
+    // } else if (currentView.value.name === "Gantt") {
+    //   timelineStore.setMode("gantt");
+    // }
   });
 
   const setSelectedViewIndex = (i: number) => {

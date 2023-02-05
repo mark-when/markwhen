@@ -2,7 +2,7 @@ import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestra
 import {
   ceilDateTime,
   floorDateTime,
-} from "@/Views/Timeline/utilities/dateTimeUtilities";
+} from "@/Markwhen/utilities/dateTimeUtilities";
 import { parseDateRange } from "@markwhen/parser";
 import {
   toDateRange,
@@ -12,7 +12,7 @@ import {
 import { DateTime } from "luxon";
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
-import { dateRangeToString } from "@/Views/Timeline/utilities/dateRangeToString2";
+import { dateRangeToString } from "@/Markwhen/utilities/dateRangeToString2";
 
 export type EventCreationParams = {
   title?: string;

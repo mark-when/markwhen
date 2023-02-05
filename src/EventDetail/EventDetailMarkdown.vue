@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EventMarkdown from "../Views/Timeline/Events/Event/EventMarkdown.vue";
+import EventMarkdown from "@/Markwhen/EventMarkdown.vue";
 import type { MarkdownBlock, Range } from "@markwhen/parser/lib/Types";
 
 const props = defineProps<{

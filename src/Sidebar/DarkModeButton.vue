@@ -2,7 +2,7 @@
 import { useAppStore } from "@/App/appStore";
 import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 import HoverHint from "@/Drawer/HoverHint.vue";
-import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
+import { useIsTouchscreen } from "@/App/composables/useIsTouchscreen";
 import { ref } from "vue";
 
 const appSettingsStore = useAppSettingsStore();

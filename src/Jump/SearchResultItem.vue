@@ -3,7 +3,7 @@ import { useEventFinder } from "@/Views/ViewOrchestrator/useEventFinder";
 import { Event } from "@markwhen/parser/lib/Types";
 import type lunr from "lunr";
 import { computed } from "vue";
-import { toInnerHtml } from "@/Views/Timeline/utilities/innerHtml";
+import { toInnerHtml } from "@/Markwhen/utilities/innerHtml";
 
 const props = defineProps<{
   searchResult: lunr.Index.Result;

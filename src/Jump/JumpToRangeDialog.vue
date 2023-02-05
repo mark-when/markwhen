@@ -3,14 +3,12 @@ import { computed, nextTick, ref, watch } from "vue";
 import Dialog from "@/Dialog/Dialog.vue";
 import JumpResultList from "./JumpResultList.vue";
 import { isParseResult, useJumpStore, type ParseResult } from "./jumpStore";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import type lunr from "lunr";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
 import { useViewStore } from "@/Views/viewStore";
 
 const input = ref();
-const timelineStore = useTimelineStore();
 const viewStore = useViewStore();
 const jumpStore = useJumpStore();
 
@@ -43,15 +41,6 @@ watch(dialogShowing, (showing) => {
 const reset = () => {
   rangeInput.value = undefined;
 };
-
-const scrollAndZoom = computed({
-  get() {
-    return timelineStore.shouldZoomWhenScrolling;
-  },
-  set(val) {
-    timelineStore.setShouldZoomWhenScrolling(val);
-  },
-});
 
 const eventDetailStore = useEventDetailStore();
 const openDetail = computed({

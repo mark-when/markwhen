@@ -4,18 +4,18 @@ import { computed, type ComputedRef, type Ref } from "vue";
 import { useAppStore } from "@/App/appStore";
 import { usePanelStore } from "@/Panels/panelStore";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
-import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { getLast } from "@markwhen/parser/lib/Noder";
 import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
+import { useJumpStore } from "@/Jump/jumpStore";
 
 export const useKeyboardStore = defineStore("keyboard", () => {
   const sidebarStore = useSidebarStore();
   const panelStore = usePanelStore();
   const activeElement = useActiveElement();
   const appSettingsStore = useAppSettingsStore();
-  const timelineStore = useTimelineStore();
+  const jumpStore = useJumpStore();
   const eventDetailStore = useEventDetailStore();
   const transformStore = useTransformStore();
 
@@ -44,9 +44,7 @@ export const useKeyboardStore = defineStore("keyboard", () => {
   key(t, () => {});
   // map
   key(z, sidebarStore.toggle);
-  key(j, () =>
-    timelineStore.setShowingJumpToRange(!timelineStore.showingJumpToRange)
-  );
+  key(j, () => jumpStore.setShowJumpDialog(!jumpStore.showingJumpDialog));
   key(comma, () => {
     if (!eventDetailStore.detailEventPath) {
       const last =
