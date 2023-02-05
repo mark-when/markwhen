@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useAppStore } from "@/App/appStore";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 import HoverHint from "@/Drawer/HoverHint.vue";
 import { useIsTouchscreen } from "@/Views/Timeline/composables/useIsTouchscreen";
 import { ref } from "vue";
 
-const appStore = useAppStore();
-const toggleDarkMode = appStore.toggleDarkMode;
+const appSettingsStore = useAppSettingsStore();
+const toggleDarkMode = appSettingsStore.toggleDarkMode;
 
 const hovering = ref(false);
 const { canHover } = useIsTouchscreen();
@@ -31,7 +32,7 @@ const events = canHover.value
     @click="toggleDarkMode"
   >
     <svg
-      v-if="appStore.darkMode === 'light'"
+      v-if="appSettingsStore.theme === 'Light'"
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
       viewBox="0 0 20 20"
@@ -44,7 +45,7 @@ const events = canHover.value
       />
     </svg>
     <svg
-      v-if="appStore.darkMode === 'dark'"
+      v-if="appSettingsStore.theme === 'Dark'"
       xmlns="http://www.w3.org/2000/svg"
       class="h-5 w-5"
       viewBox="0 0 20 20"
@@ -55,7 +56,7 @@ const events = canHover.value
       />
     </svg>
     <svg
-      v-if="appStore.darkMode === 'system'"
+      v-if="appSettingsStore.theme === 'System'"
       class="h-5 w-5"
       focusable="false"
       viewBox="0 0 24 24"

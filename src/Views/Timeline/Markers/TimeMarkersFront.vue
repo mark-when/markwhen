@@ -13,10 +13,11 @@ import {
 } from "./markersStore";
 import { clamp, useTimelineStore } from "../timelineStore";
 import MiniMap from "../MiniMap.vue/MiniMap.vue";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
-const appStore = useAppStore();
+const appSettingsStore = useAppSettingsStore();
 
-const dark = computed(() => appStore.inferredDarkMode);
+const dark = computed(() => appSettingsStore.inferredDarkMode);
 const timelineStore = useTimelineStore();
 const markerStore = useMarkersStore();
 

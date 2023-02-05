@@ -8,12 +8,13 @@ import { useTimelineStore } from "@/Views/Timeline/timelineStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { getLast } from "@markwhen/parser/lib/Noder";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
 export const useKeyboardStore = defineStore("keyboard", () => {
   const sidebarStore = useSidebarStore();
   const panelStore = usePanelStore();
   const activeElement = useActiveElement();
-  const appStore = useAppStore();
+  const appSettingsStore = useAppSettingsStore();
   const timelineStore = useTimelineStore();
   const eventDetailStore = useEventDetailStore();
   const transformStore = useTransformStore();
@@ -35,7 +36,7 @@ export const useKeyboardStore = defineStore("keyboard", () => {
   const key = (k: ComputedRef<boolean>, f: () => void) =>
     whenever(and(notUsingInput, k), f);
 
-  key(l, appStore.toggleDarkMode);
+  key(l, appSettingsStore.toggleDarkMode);
   key(d, () =>
     panelStore.setVisibility("detail", !panelStore.detailPanelState.visible)
   );

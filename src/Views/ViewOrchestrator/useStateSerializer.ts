@@ -7,6 +7,7 @@ import { usePageStore } from "@/Markwhen/pageStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
 export type EventPaths = { [pathType in EventPath["type"]]?: EventPath };
 
@@ -53,7 +54,7 @@ export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
 export const useStateSerializer = () => {
   const state = ref<State>();
 
-  const appStore = useAppStore();
+  const appSettingsStore = useAppSettingsStore();
   const markwhenStore = useMarkwhenStore();
   const pageStore = usePageStore();
   const transformStore = useTransformStore();
@@ -63,7 +64,7 @@ export const useStateSerializer = () => {
   watchEffect(() => {
     state.value = {
       app: {
-        isDark: appStore.inferredDarkMode,
+        isDark: appSettingsStore.inferredDarkMode,
         hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
         detailPath: toRaw(eventDetailStore.detailEventPath),
       },

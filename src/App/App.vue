@@ -11,7 +11,9 @@ import Panels from "../Panels/Panels.vue";
 import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useKeyboardStore } from "@/Keyboard/keyboardStore";
 import { useQuerySetter } from "@/router/useQuerySetter";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
+const appSettingsStore = useAppSettingsStore()
 const appStore = useAppStore();
 const sidebarStore = useSidebarStore();
 const editorOrchestrator = useEditorOrchestratorStore();
@@ -23,7 +25,7 @@ useQuerySetter();
 
 const globalClass = computed(
   () =>
-    `${appStore.inferredDarkMode ? "dark" : "light"} ${appStore.globalClass}`
+    `${appSettingsStore.inferredDarkMode ? "dark" : "light"} ${appStore.globalClass}`
 );
 
 provide(isEditable, editorOrchestrator.editable);

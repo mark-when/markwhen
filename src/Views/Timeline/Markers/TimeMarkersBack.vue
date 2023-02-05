@@ -16,15 +16,16 @@ import { isEventNode } from "@markwhen/parser/lib/Noder";
 import { toDateRange } from "@markwhen/parser/lib/Types";
 import { useEventColor } from "../Events/composables/useEventColor";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
-import { equivalentPaths } from "@/EventDetail/eventDetailStore";
+import { equivalentPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
-const appStore = useAppStore();
+const appSettingsStore = useAppSettingsStore();
 const markersStore = useMarkersStore();
 const transformStore = useTransformStore();
 const timelineStore = useTimelineStore();
 const editorOrchestrator = useEditorOrchestratorStore();
 const { getWeekday } = useWeekdayCache();
-const dark = computed(() => appStore.inferredDarkMode);
+const dark = computed(() => appSettingsStore.inferredDarkMode);
 
 const leftMargin = viewportLeftMarginPixels;
 

@@ -12,6 +12,7 @@ import { computed, ref, watch } from "vue";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
 import { dateRangeToString } from "@/Views/Timeline/utilities/dateRangeToString2";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
 const pageStore = usePageStore();
 
@@ -64,7 +65,7 @@ const previewFormat = (dateOrRange: Date | [Date, Date]) => {
   return s;
 };
 
-const appStore = useAppStore();
+const appSettingsStore = useAppSettingsStore();
 const dp = ref<typeof DatePicker>();
 const p = (b: HTMLElement | undefined) => {
   return {
@@ -74,7 +75,7 @@ const p = (b: HTMLElement | undefined) => {
   };
 };
 
-const dark = computed(() => appStore.inferredDarkMode);
+const dark = computed(() => appSettingsStore.inferredDarkMode);
 
 const select = () => {
   dp.value?.selectDate();

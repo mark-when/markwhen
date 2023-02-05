@@ -5,11 +5,12 @@ import SvgView from "@/Views/Timeline/Svg/SvgView.vue";
 import { useAppStore } from "@/App/appStore";
 import { DateTime } from "luxon";
 import { usePageStore } from "@/Markwhen/pageStore";
+import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
 
+const appSettingsStore = useAppSettingsStore();
 const timelineStore = useTimelineStore();
 const pageStore = usePageStore();
-const appStore = useAppStore();
-const dark = computed(() => appStore.inferredDarkMode);
+const dark = computed(() => appSettingsStore.inferredDarkMode);
 const styleLeftInset = computed(() => {
   let inset = timelineStore.pageSettings.viewport.offsetLeft;
   if (timelineStore.mode === "gantt") {
