@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 
-const url = "http://localhost:5173/";
+const url = "http://localhost:8788/";
 
 const expectPageQuery = async (page: Page, pageQuery: string | number) => {
   await page.waitForURL(/page/);
@@ -92,4 +92,12 @@ test("Route to page by page index, is selected", async ({ page }) => {
 test("Route to page by page title, is selected", async ({ page }) => {
   await page.goto(url + "?page=" + encodeURIComponent("Groups and Sections"));
   await expect(page.getByText(`title: Groups and Sections`)).toBeVisible();
+});
+
+test("Route to shared page by page title, is selected", async ({ page }) => {
+  await page.goto(
+    url + "example?page=" + encodeURIComponent("event descriptions"),
+    { waitUntil: "networkidle" }
+  );
+  await expect(page.getByText(`title: Event Descriptions`)).toBeVisible();
 });

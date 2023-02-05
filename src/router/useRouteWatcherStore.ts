@@ -25,7 +25,10 @@ export const useRouteWatcherStore = defineStore("routeWatcher", () => {
       const parsed = parseInt(index);
       if (isNaN(parsed)) {
         for (let i = 0; i < pageTitles.value.length; i++) {
-          if (pageTitles.value[i] === decodeURIComponent(index)) {
+          if (
+            pageTitles.value[i]?.toLowerCase() ===
+            decodeURIComponent(index).toLowerCase()
+          ) {
             return i;
           }
         }
