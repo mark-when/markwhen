@@ -1,4 +1,4 @@
-import { ref, toRaw, watchEffect } from "vue";
+import { computed, ref, toRaw, watchEffect } from "vue";
 import type { NodeArray, Node } from "@markwhen/parser/lib/Node";
 import type { Timeline } from "@markwhen/parser/lib/Types";
 import { useAppStore } from "@/App/appStore";
@@ -52,8 +52,6 @@ export const equivalentPaths = (p1?: EventPath, p2?: EventPath): boolean => {
 };
 
 export const useStateSerializer = () => {
-  const state = ref<State>();
-
   const appSettingsStore = useAppSettingsStore();
   const markwhenStore = useMarkwhenStore();
   const pageStore = usePageStore();
@@ -61,24 +59,22 @@ export const useStateSerializer = () => {
   const editorOrchestrator = useEditorOrchestratorStore();
   const eventDetailStore = useEventDetailStore();
 
-  watchEffect(() => {
-    state.value = {
-      app: {
-        isDark: appSettingsStore.inferredDarkMode,
-        hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
-        detailPath: toRaw(eventDetailStore.detailEventPath),
+  const state = computed(() => ({
+    app: {
+      isDark: appSettingsStore.inferredDarkMode,
+      hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
+      detailPath: toRaw(eventDetailStore.detailEventPath),
+    },
+    markwhen: {
+      rawText: markwhenStore.rawTimelineString,
+      parsed: markwhenStore.timelines,
+      page: {
+        index: pageStore.pageIndex,
+        parsed: pageStore.pageTimeline,
+        transformed: transformStore.transformedEvents,
       },
-      markwhen: {
-        rawText: markwhenStore.rawTimelineString,
-        parsed: markwhenStore.timelines,
-        page: {
-          index: pageStore.pageIndex,
-          parsed: pageStore.pageTimeline,
-          transformed: transformStore.transformedEvents,
-        },
-      },
-    };
-  });
+    },
+  }));
 
   return state;
 };

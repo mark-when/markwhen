@@ -137,13 +137,20 @@ const calculateBaselineLeftmostDate = (
 };
 
 export const useTimelineStore = defineStore("timeline", () => {
-  const pageStore = usePageStore();
-  const markwhenStore = useMarkwhenStore();
+  const state = useStateSerializer();
+
+  const pageRange = computed(
+    () =>
+      ranges(state.value.markwhen.page.parsed.events, recurrenceLimit) || {
+        fromDateTime: DateTime.now().minus({ years: 5 }),
+        toDateTime: DateTime.now().plus({ years: 5 }),
+      }
+  );
 
   const viewportGetter = ref<() => Viewport>();
   const pageSettings = usePageEffect((index) => {
     const viewport = viewportGetter.value?.();
-    return initialPageSettings(markwhenStore.timelines[index], viewport);
+    return initialPageSettings(state.value.markwhen.parsed[index], viewport);
   });
   const startedWidthChange = ref(false);
   const hideNowLine = ref(false);
@@ -174,7 +181,9 @@ export const useTimelineStore = defineStore("timeline", () => {
     ganttSidebarWidth.value = width;
   };
 
-  const pageTimelineMetadata = computed(() => pageStore.pageTimelineMetadata);
+  const pageTimelineMetadata = computed(
+    () => state.value.markwhen.page.parsed.metadata
+  );
   const pageScale = computed(() => pageSettings.value.scale);
 
   const earliest = computed(() =>
@@ -199,7 +208,7 @@ export const useTimelineStore = defineStore("timeline", () => {
 
   const baselineRightmostDate = computed(() => {
     return floorDateTime(
-      pageStore.pageRange.toDateTime.plus({
+      pageRange.value.toDateTime.plus({
         years: 30,
       }),
       "year"
