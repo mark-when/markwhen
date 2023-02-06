@@ -14,7 +14,7 @@ const currentViewComponent = computed(() => {
   // if (viewStore.currentView.name === "Gantt") {
   //   return Timeline;
   // }
-  return viewStore.currentView.component();
+  return viewStore.currentView.url;
 });
 
 const frames = ref<HTMLIFrameElement[]>();
@@ -69,8 +69,8 @@ onMounted(() => {
         sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-top-navigation allow-top-navigation-by-user-activation allow-same-origin"
         v-for="component in viewStore.framedViews"
         class="w-full h-full"
-        v-show="currentViewComponent === component.component()"
-        :src="component.component()"
+        v-show="currentViewComponent === component.url"
+        :src="component.url"
         :id="`view_${component.name}`"
       ></iframe>
       <keep-alive>

@@ -19,11 +19,11 @@ export interface ViewSetting {
 }
 
 export interface ViewProvider {
-  component: () => any,
-  framed: boolean
+  url: string,
   name: string,
   iconSvg?: string,
   settings?: (() => ViewSetting | any)[]
   capabilities?: ViewCapabilities
   uses?: ViewUses
+  active?: boolean
 }

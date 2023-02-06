@@ -28,10 +28,26 @@ const isViewSelected = (view: ViewProvider, index: number) => {
 const select = (i: number) => {
   viewStore.setSelectedViewIndex(i);
 };
+
+const showAddView = () => {
+  viewStore.showingViewsDialog = true
+}
 </script>
 
 <template>
   <div class="flex flex-col rounded print-hidden items-center">
+    <ViewSwitcherButton :selected="false" title="Add view" @click="showAddView">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="4 4 12 12"
+        fill="currentColor"
+        class="w-5 h-5"
+      >
+        <path
+          d="M10.75 6.75a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z"
+        ></path>
+      </svg>
+    </ViewSwitcherButton>
     <ViewSwitcherButton
       v-for="(view, i) in viewStore.views"
       :key="view.name"

@@ -109,7 +109,6 @@ export function useLpc<ViewSpecificMessageTypes = {}>(
       }
 
       const data = e.data;
-      console.log(data)
       if (data.response) {
         calls.get(data.id)?.resolve(data);
         calls.delete(data.id);
