@@ -19,13 +19,14 @@
     "@vuepic/vue-datepicker": "^3.6.6",
     "@vueuse/core": "^9.12.0",
     "@vueuse/integrations": "^9.12.0",
+    "chrono-node": "^2.5.0",
     "lru-cache": "^7.14.1",
     "lunr": "^2.3.9",
     "luxon": "^3.2.1",
     "pinia": "^2.0.30",
     "stripe": "^10.15.0",
     "throttle-debounce": "^5.0.0",
-    "vue": "^3.2.45",
+    "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
