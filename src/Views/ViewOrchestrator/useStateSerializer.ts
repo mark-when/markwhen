@@ -20,6 +20,7 @@ export interface AppState {
   isDark?: boolean;
   hoveringPath?: EventPaths;
   detailPath?: EventPath;
+  pageIndex: number;
 }
 export interface MarkwhenState {
   rawText?: string;
@@ -27,7 +28,6 @@ export interface MarkwhenState {
   page?: PageState;
 }
 export interface PageState {
-  index?: number;
   parsed?: Timeline;
   transformed?: Node<NodeArray>;
 }
@@ -59,22 +59,26 @@ export const useStateSerializer = () => {
   const editorOrchestrator = useEditorOrchestratorStore();
   const eventDetailStore = useEventDetailStore();
 
-  const state = computed(() => ({
-    app: {
-      isDark: appSettingsStore.inferredDarkMode,
-      hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
-      detailPath: toRaw(eventDetailStore.detailEventPath),
-    },
-    markwhen: {
-      rawText: markwhenStore.rawTimelineString,
-      parsed: markwhenStore.timelines,
-      page: {
-        index: pageStore.pageIndex,
-        parsed: pageStore.pageTimeline,
-        transformed: transformStore.transformedEvents,
-      },
-    },
-  }));
+  const state = computed(
+    () =>
+      ({
+        app: {
+          isDark: appSettingsStore.inferredDarkMode,
+          hoveringPath:
+            toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
+          detailPath: toRaw(eventDetailStore.detailEventPath),
+          pageIndex: pageStore.pageIndex,
+        },
+        markwhen: {
+          rawText: markwhenStore.rawTimelineString,
+          parsed: markwhenStore.timelines,
+          page: {
+            parsed: pageStore.pageTimeline,
+            transformed: transformStore.transformedEvents,
+          },
+        },
+      } as State)
+  );
 
   return state;
 };

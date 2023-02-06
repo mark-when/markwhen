@@ -20,7 +20,5 @@ export const useTimelineExternalProvider = () => ({
 });
 
 export const useViewProviders: () => ViewProvider[] = () => {
-  return [
-    useTimelineExternalProvider(),
-  ];
+  return [useTimelineExternalProvider()];
 };

@@ -12,8 +12,9 @@ import { useSidebarStore } from "@/Sidebar/sidebarStore";
 import { useKeyboardStore } from "@/Keyboard/keyboardStore";
 import { useQuerySetter } from "@/router/useQuerySetter";
 import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
+import QuickEditor from "@/QuickEditor/QuickEditor.vue";
 
-const appSettingsStore = useAppSettingsStore()
+const appSettingsStore = useAppSettingsStore();
 const appStore = useAppStore();
 const sidebarStore = useSidebarStore();
 const editorOrchestrator = useEditorOrchestratorStore();
@@ -25,7 +26,9 @@ useQuerySetter();
 
 const globalClass = computed(
   () =>
-    `${appSettingsStore.inferredDarkMode ? "dark" : "light"} ${appStore.globalClass}`
+    `${appSettingsStore.inferredDarkMode ? "dark" : "light"} ${
+      appStore.globalClass
+    }`
 );
 
 provide(isEditable, editorOrchestrator.editable);
@@ -45,7 +48,8 @@ provide(isEditable, editorOrchestrator.editable);
         <Panels />
         <Drawer />
       </div>
-      <QuickEditor />
+      <!-- Uncomment the QuickEditor to have some editing functionality -->
+      <!-- <QuickEditor /> -->
     </div>
   </div>
 </template>

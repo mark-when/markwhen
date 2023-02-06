@@ -32,17 +32,6 @@ export interface MessageTypes {
   };
 }
 
-export interface TimelineSpecificMessages {
-  toggleMiniMap: void;
-  toggleNowLine: void;
-  startZoomingIn: void;
-  startZoomingOut: void;
-  stopZooming: void;
-  autoCenter: void;
-  collapseAll: void;
-  expandAll: void;
-}
-
 type MessageType<ViewSpecificMessageTypes> = keyof (MessageTypes &
   ViewSpecificMessageTypes);
 type MessageParam<VSMT, T extends MessageType<VSMT>> = (MessageTypes & VSMT)[T];
@@ -120,6 +109,7 @@ export function useLpc<ViewSpecificMessageTypes = {}>(
       }
 
       const data = e.data;
+      console.log(data)
       if (data.response) {
         calls.get(data.id)?.resolve(data);
         calls.delete(data.id);

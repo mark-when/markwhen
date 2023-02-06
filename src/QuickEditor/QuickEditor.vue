@@ -21,7 +21,7 @@ const toggle = () => {
 </script>
 
 <template>
-  <div class="shadow flex flex-col absolute bottom-12 left-12 z-40">
+  <div class="shadow flex flex-col absolute bottom-20 left-14 z-40">
     <div class="font-bold text-sm ml-auto dark:bg-slate-900 bg-white px-1">
       <button class="flex items-center justify-center p-1" @click="toggle">
         <svg

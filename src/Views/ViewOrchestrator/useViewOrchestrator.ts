@@ -8,7 +8,7 @@ import {
   type DateRangeIso,
 } from "@markwhen/parser/lib/Types";
 import { ref, watchEffect, type Ref, watch, toRaw, unref } from "vue";
-import { type TimelineSpecificMessages, useLpc } from "./useLpc";
+import { useLpc } from "./useLpc";
 import { useStateSerializer, type EventPath } from "./useStateSerializer";
 
 export const useViewOrchestrator = (

@@ -31,11 +31,6 @@ export const useViewStore = defineStore("views", () => {
       // Set default view
       selectedViewIndex.value = 2;
     }
-    // if (currentView.value.name === "Timeline") {
-    //   timelineStore.setMode("timeline");
-    // } else if (currentView.value.name === "Gantt") {
-    //   timelineStore.setMode("gantt");
-    // }
   });
 
   const setSelectedViewIndex = (i: number) => {
