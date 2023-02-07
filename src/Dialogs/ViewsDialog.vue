@@ -35,7 +35,6 @@ const addView = () => {
   });
   viewStore.selectedViewIndex = 0;
   viewUrl.value = "";
-  viewStore.showingViewsDialog = false;
 };
 
 const toggleView = (v: ViewProvider) => {
@@ -45,6 +44,15 @@ const toggleView = (v: ViewProvider) => {
   } else if (viewStore.views.length > 1) {
     viewStore.selectedViewIndex = 0;
     v.active = !v.active;
+  }
+};
+
+const removeView = (v: ViewProvider) => {
+  const index = viewStore.viewOptions.findIndex(
+    (vo) => v.name === vo.name && v.url === vo.url
+  );
+  if (index >= 0) {
+    viewStore.viewOptions.splice(index, 1);
   }
 };
 </script>
@@ -64,6 +72,7 @@ const toggleView = (v: ViewProvider) => {
         :vp="view"
         :is-active="!!view.active"
         @click="toggleView(view)"
+        @remove="removeView(view)"
       ></ViewOptionRow>
     </div>
     <form class="w-full flex px-2 pb-2 flex-col" @submit.prevent="addView">
