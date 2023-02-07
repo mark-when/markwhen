@@ -95,8 +95,32 @@ const removeView = (v: ViewProvider) => {
         </button>
       </div>
     </form>
-    <div class="flex flex-row w-full pb-2 px-2">
-      <div class="flex flex-row ml-auto">
+    <div class="flex flex-row w-full pb-2">
+      <div class="flex flex-row w-full pr-2 pl-4">
+        <a
+          target="_blank"
+          href="https://docs.markwhen.com/visualizations"
+          class="font-bold underline text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white flex flex-row items-center"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4 mr-1"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+            <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+            <path d="M3 6l0 13"></path>
+            <path d="M12 6l0 13"></path>
+            <path d="M21 6l0 13"></path></svg
+          >Documentation</a
+        >
         <button
           role="button"
           type="button"
