@@ -9,11 +9,11 @@ const emits = defineEmits<{ (event: "click"): void }>();
   <button
     :class="
       isActive
-        ? 'border-indigo-500 dark:border-indigo-400'
-        : 'border-transparent'
+        ? 'border-indigo-500 dark:border-indigo-400 '
+        : 'border-transparent dark:hover:border-gray-600 hover:border-gray-300'
     "
     @click="emits('click')"
-    class="rounded px-2 py-1 mb-1 bg-white dark:bg-slate-900 font-bold grid border-2 vpButton"
+    class="rounded px-1 py-1 mb-1 bg-white dark:bg-slate-900 font-bold grid border-2 vpButton transition"
   >
     <div
       v-html="vp.iconSvg"

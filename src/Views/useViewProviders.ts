@@ -16,6 +16,7 @@ export const useTimelineExternalProvider = () => ({
     pages: true,
     jump: true,
   },
+  active: true
 });
 
 export const useViewProviders: () => ViewProvider[] = () => {

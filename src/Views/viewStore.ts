@@ -9,7 +9,6 @@ import { useViewOrchestrator } from "./ViewOrchestrator/useViewOrchestrator";
 export const useViewStore = defineStore("views", () => {
   const selectedViewIndex = ref(-1);
   const isMobile = useMediaQuery("(max-width: 1024px)");
-  // const timelineStore = useTimelineStore();
   const activeFrame = ref<HTMLIFrameElement>();
   const showingViewsDialog = ref(false);
 
@@ -25,51 +24,29 @@ export const useViewStore = defineStore("views", () => {
   const getViewOptions = () => {
     const defaultOptions = useViewProviders();
     if (typeof localStorage !== "undefined") {
-      const options = localStorage.getItem("viewOptions");
-      if (options) {
+      const saved = localStorage.getItem("viewOptions");
+      if (saved) {
         try {
-          const parsed = JSON.parse(options);
+          const parsed = JSON.parse(saved);
           return parsed as ViewProvider[];
         } catch {
           return defaultOptions;
         }
+      } else {
+        return defaultOptions;
       }
-      return defaultOptions;
-    } else {
-      return defaultOptions;
     }
+    return defaultOptions;
   };
 
   const viewOptions = ref(getViewOptions());
-
-  const views = ref<ViewProvider[]>(
-    isMobile.value ? useMobileViewProviders() : useViewProviders()
-  );
+  const views = computed(() => viewOptions.value.filter((vo) => vo.active));
 
   watch(
     viewOptions,
-    (v) => {
+    (vo) => {
       if (typeof localStorage !== "undefined") {
-        localStorage.setItem("viewOptions", JSON.stringify(v));
-      }
-    },
-    { deep: true }
-  );
-
-  watch(
-    views,
-    (v) => {
-      for (const view of v) {
-        if (!viewOptions.value) {
-          viewOptions.value = v;
-        }
-        if (
-          viewOptions.value.findIndex(
-            (vo) => vo.name === view.name && vo.url === view.url
-          ) < 0
-        ) {
-          viewOptions.value.push(view);
-        }
+        localStorage.setItem("viewOptions", JSON.stringify(vo));
       }
     },
     { deep: true }

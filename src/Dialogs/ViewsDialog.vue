@@ -9,7 +9,7 @@ const viewStore = useViewStore();
 
 const viewUrl = ref("");
 const addView = () => {
-  viewStore.views.unshift({
+  viewStore.viewOptions.push({
     url: viewUrl.value,
     name: "View",
     capabilities: {
@@ -31,24 +31,20 @@ const addView = () => {
       sort: true,
       tags: true,
     },
+    active: true,
   });
   viewStore.selectedViewIndex = 0;
+  viewUrl.value = "";
   viewStore.showingViewsDialog = false;
 };
 
-const isActiveView = (v: ViewProvider) => {
-  const index = viewStore.views.findIndex(
-    (vo) => vo.name === v.name && v.url === vo.url
-  );
-  return index;
-};
-
 const toggleView = (v: ViewProvider) => {
-  const index = isActiveView(v);
-  if (index < 0) {
-    viewStore.views.unshift(v);
+  if (!v.active) {
+    viewStore.selectedViewIndex = 0;
+    v.active = true;
   } else if (viewStore.views.length > 1) {
-    viewStore.views.splice(index, 1);
+    viewStore.selectedViewIndex = 0;
+    v.active = !v.active;
   }
 };
 </script>
@@ -57,7 +53,7 @@ const toggleView = (v: ViewProvider) => {
   <Dialog v-model="viewStore.showingViewsDialog">
     <template #header>
       <div
-        class="p-2 flex flex-row items-center dark:text-white text-gray-800 font-bold"
+        class="p-2 flex flex-row items-center dark:text-white text-gray-800 font-bold pl-4"
       >
         Views
       </div></template
@@ -66,7 +62,7 @@ const toggleView = (v: ViewProvider) => {
       <ViewOptionRow
         v-for="view in viewStore.viewOptions"
         :vp="view"
-        :is-active="isActiveView(view) >= 0"
+        :is-active="!!view.active"
         @click="toggleView(view)"
       ></ViewOptionRow>
     </div>
@@ -77,7 +73,7 @@ const toggleView = (v: ViewProvider) => {
           type="text"
           placeholder="http://localhost:5000"
           v-model="viewUrl"
-          class="w-full py-1 px-2 outline-none rounded-t dark:bg-gray-700 font-bold dark:text-white bg-gray-100"
+          class="w-full py-1 px-3 outline-none rounded dark:bg-gray-700 font-bold dark:text-white bg-gray-100"
           required
         />
         <button

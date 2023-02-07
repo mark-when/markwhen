@@ -11,7 +11,9 @@ export const useQuerySetter = () => {
   const viewStore = useViewStore();
   const transformStore = useTransformStore();
 
-  const currentViewName = computed(() => viewStore.currentView.name);
+  const currentViewName = computed(() => {
+    return viewStore.currentView.name;
+  });
 
   const queryMap = computed(() => ({
     page: `${pageStore.pageIndex + 1}`,
