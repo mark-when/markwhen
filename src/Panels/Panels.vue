@@ -19,7 +19,9 @@ const currentViewComponent = computed(() => {
 
 const frames = ref<HTMLIFrameElement[]>();
 const activeFrame = computed(() =>
-  frames.value?.find((f) => f.id === `view_${currentView.value.name}`)
+  frames.value?.find(
+    (f) => f.id === `view_${currentView.value.name}_${currentView.value.url}`
+  )
 );
 
 watchEffect(() => {
@@ -71,7 +73,7 @@ onMounted(() => {
         class="w-full h-full"
         v-show="currentViewComponent === component.url"
         :src="component.url"
-        :id="`view_${component.name}`"
+        :id="`view_${component.name}_${component.url}`"
       ></iframe>
       <keep-alive>
         <component
