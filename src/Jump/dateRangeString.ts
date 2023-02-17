@@ -10,6 +10,6 @@ export const useDateRangeString = () => {
     dateRangeToString(
       parseResult.dateRange,
       parseResult.scale || "day",
-      pageStore.pageTimelineMetadata.dateFormat as DateFormat
+      pageStore.header.dateFormat as DateFormat
     );
 };
