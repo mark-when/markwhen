@@ -48,7 +48,9 @@ To enable editing from the timeline view, set [`editorOrchestrator.editable`](sr
 ```
 const editable = ref(true);
 ```
+
 ## Dockerized
+
 ```
 > git clone git@github.com:mark-when/markwhen.git
 > cd markwhen
@@ -56,6 +58,7 @@ const editable = ref(true);
 > docker run -p8080:8080 markwhen
 ```
 This should build a *development* `markwhen` image from the [Dockerfile](./Dockerfile) and run it on port `8080`. Once running, it should be available at http://localhost:8080
+
 ## Documentation
 
 Documentation is located [here](https://docs.markwhen.com).
