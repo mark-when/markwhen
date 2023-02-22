@@ -116,7 +116,7 @@ const events = computed(() => {
         ></path>
       </svg>
     </button>
-    <h3 v-if="pageTitle" class="px-2 text-sm lg:text-base">
+    <h3 v-if="pageTitle" class="px-2 text-sm">
       {{ pageTitle }}
     </h3>
   </button>
