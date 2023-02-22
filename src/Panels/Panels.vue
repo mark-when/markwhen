@@ -6,7 +6,7 @@ import { PanelVisualization, usePanelStore } from "./panelStore";
 import Dialogs from "@/Dialogs/Dialogs.vue";
 import { useVisualizationStore } from "@/Views/visualizationStore";
 import Visualizations from "./Visualizations.vue";
-import ViewPicker from "@/WelcomeViewPicker/ViewPicker.vue";
+import WelcomeViewPicker from "@/WelcomeViewPicker/WelcomeViewPicker.vue";
 
 const viewStore = useViewStore();
 const visualizationStore = useVisualizationStore();
@@ -57,7 +57,9 @@ onMounted(() => {
         ></Visualizations>
       </KeepAlive>
       <keep-alive>
-        <ViewPicker v-show="visualizationStore.showingWelcomeViewPicker" />
+        <WelcomeViewPicker
+          v-show="visualizationStore.showingWelcomeViewPicker"
+        />
       </keep-alive>
       <div class="absolute inset-0 frameCover"></div>
     </div>

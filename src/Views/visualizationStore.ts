@@ -6,7 +6,7 @@ import { useViewOrchestrator } from "./ViewOrchestrator/useViewOrchestrator";
 
 export const useVisualizationStore = defineStore("visualization", () => {
   const activeFrame = ref<HTMLIFrameElement>();
-  const showingWelcomeViewPicker = ref(false);
+  const showingWelcomeViewPicker = ref(true);
   const selectedViewIndex = ref(-1);
 
   const getViewOptions = () => {
