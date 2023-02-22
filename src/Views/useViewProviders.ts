@@ -17,7 +17,10 @@ export const useTimelineExternalProvider = () => ({
     pages: true,
     jump: true,
   },
-  active: true
+  active: true,
+  description:
+    "A graph-like representation of events in a cascading timeline. Optionally view as a gantt chart as well.",
+  screenshots: ["/images/timeline.png"],
 });
 
 export const useViewProviders: () => ViewProvider[] = () => {

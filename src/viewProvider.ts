@@ -26,4 +26,6 @@ export interface ViewProvider {
   capabilities?: ViewCapabilities
   uses?: ViewUses
   active?: boolean
+  description: string
+  screenshots: string[]
 }
