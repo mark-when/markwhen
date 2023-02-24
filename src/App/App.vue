@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isEditable } from "@/injectionKeys";
-import { computed, provide, watch } from "vue";
+import { computed, provide } from "vue";
 import Drawer from "../Drawer/Drawer.vue";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useAppStore } from "./appStore";
@@ -53,5 +53,4 @@ provide(isEditable, editorOrchestrator.editable);
     </div>
   </div>
 </template>
-
 <style scoped></style>
