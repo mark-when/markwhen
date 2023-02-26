@@ -1,6 +1,6 @@
 import { newOrder } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { defineStore } from "pinia";
-import { computed, markRaw, ref } from "vue";
+import { computed, markRaw, ref, watch } from "vue";
 
 export const PanelVisualization = "visualization";
 export const PanelDetail = "detail";
@@ -15,6 +15,25 @@ interface Panel {
   translation: number;
   width?: number;
 }
+
+const getPanelConfiguration = () => {
+  if (typeof localStorage === "undefined" || !localStorage) {
+    return;
+  }
+  const savedConfiguration = localStorage.getItem("panelConfiguration");
+  if (!savedConfiguration) {
+    return;
+  }
+  try {
+    const parsed = JSON.parse(savedConfiguration) as Panel[];
+    return parsed.map((panel) => ({
+      ...panel,
+      translattion: 0,
+    }));
+  } catch {
+    return;
+  }
+};
 
 export const usePanelStore = defineStore("panels", () => {
   const panels = ref<Panel[]>([
@@ -102,7 +121,7 @@ export const usePanelStore = defineStore("panels", () => {
         leftOf = Math.min(leftOf, i);
       }
     }
-    const newIndex = Math.min(leftOf, rightOf);
+    const newIndex = translation < 0 ? leftOf : rightOf;
     moveTo.value = newIndex;
 
     // We only need to change elements that are between `newIndex` and `timelineIndex`
@@ -159,6 +178,24 @@ export const usePanelStore = defineStore("panels", () => {
     );
     panels.value = order.map((i) => ({ ...panels.value[i], translation: 0 }));
   };
+
+  watch(
+    panels,
+    () => {
+      if (localStorage) {
+        localStorage.setItem(
+          "panelConfiguration",
+          JSON.stringify(
+            panels.value.map((p) => {
+              const { translation, ...rest } = p;
+              return rest;
+            })
+          )
+        );
+      }
+    },
+    { deep: true }
+  );
 
   return {
     // state
