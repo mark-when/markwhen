@@ -7,10 +7,18 @@ import { useVisualizationStore } from "@/Views/visualizationStore";
 
 const visualizationStore = useVisualizationStore();
 const view = computed(() => visualizationStore.currentView);
+const click = () => {
+  visualizationStore.showingWelcomeViewPicker =
+    !visualizationStore.showingWelcomeViewPicker;
+};
 </script>
 
 <template>
-  <SettingsButton class="p-1 w-full justify-center" :hover-hint-left="-1">
+  <SettingsButton
+    class="p-1 w-full justify-center"
+    :hover-hint-left="-1"
+    @click="click"
+  >
     <div
       class="flex flex-row items-center gap-1"
       v-if="!visualizationStore.showingWelcomeViewPicker"
@@ -42,8 +50,8 @@ const view = computed(() => visualizationStore.currentView);
           d="M14 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"
         ></path>
         <path d="M14 7l6 0"></path>
-        <path d="M17 4l0 6"></path>
-      </svg><span class="text-sm">Views</span>
+        <path d="M17 4l0 6"></path></svg
+      ><span class="text-sm">Views</span>
     </div>
     <template #hover="slotProps">
       <HoverMenu :hovering="slotProps.hovering">

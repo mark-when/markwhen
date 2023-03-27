@@ -19,7 +19,8 @@ export interface ViewSetting {
 }
 
 export interface ViewProvider {
-  url: string,
+  id: string,
+  url: string | any,
   name: string,
   iconSvg?: string,
   settings?: (() => ViewSetting | any)[]

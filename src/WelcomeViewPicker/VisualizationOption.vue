@@ -33,7 +33,7 @@ const events = canHover.value
     <h1 class="text-xl font-bold flex flex-row items-center gap-2">
       <div class="h-5 w-5" v-html="vp.iconSvg"></div>
       {{ vp.name }}
-      <div class="ml-auto px-1 relative" v-on="events">
+      <!-- <div class="ml-auto px-1 relative" v-on="events">
         <transition>
           <input
             class="transition"
@@ -44,13 +44,14 @@ const events = canHover.value
             type="checkbox"
             :checked="isActive"
             :disabled="isActive && !canChange"
-            @change="emit('toggle')"
+            @click.stop=""
+            @change.prevent.stop="emit('toggle')"
           />
         </transition>
         <HoverHint :hovering="hovering" hover-position="top" :left="-3"
           ><span class="text-sm">Quick access</span></HoverHint
         >
-      </div>
+      </div> -->
     </h1>
     <div class="py-1" v-if="vp.screenshots && vp.screenshots.length">
       <img :src="vp.screenshots[0]" class="rounded" />

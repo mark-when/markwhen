@@ -21,7 +21,7 @@ const close = () => {
 
 <template>
   <div class="w-full h-full flex justify-center @container">
-    <main class="p-6 flex flex-col gap-4 overflow-auto">
+    <main class="py-6 px-6 @lg:px-24 flex flex-col gap-4 overflow-auto">
       <WelcomeBanner v-if="showingBanner" @close="close"></WelcomeBanner>
       <ViewPicker></ViewPicker>
     </main>
@@ -30,6 +30,6 @@ const close = () => {
 
 <style scoped>
 main {
-  width: min(96ch, 100%);
+  width: min(104ch, 100%);
 }
 </style>

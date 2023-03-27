@@ -24,7 +24,7 @@ export const useParserWorker = (rawTimelineString: Ref<string>) => {
 
   worker.addEventListener("message", (message) => {
     const { timelines: fromWorker, cache: c } = message.data;
-    console.log("parse time", performance.now() - timeStart);
+    // console.log("parse time", performance.now() - timeStart);
     timelines.value = fromWorker;
     if (queuedString.value !== rawTimelineString.value) {
       worker.postMessage({ rawTimelineString: queuedString.value });

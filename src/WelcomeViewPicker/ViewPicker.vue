@@ -3,6 +3,7 @@ import VisualizationOption from "./VisualizationOption.vue";
 import { useVisualizationStore } from "@/Views/visualizationStore";
 import type { ViewProvider } from "@/viewProvider";
 import { onMounted } from "vue";
+import CustomViewOption from "./CustomViewOption.vue";
 
 const visualizationStore = useVisualizationStore();
 
@@ -24,6 +25,15 @@ const removeView = (v: ViewProvider) => {
     visualizationStore.viewOptions.splice(index, 1);
   }
 };
+
+const select = (v: ViewProvider) => {
+  v.active = true;
+  const index = visualizationStore.activeViews.findIndex(
+    (vo) => v.name === vo.name && v.url === vo.url
+  );
+  visualizationStore.selectedViewIndex = index;
+  visualizationStore.showingWelcomeViewPicker = false
+};
 </script>
 
 <template>
@@ -36,7 +46,9 @@ const removeView = (v: ViewProvider) => {
         :is-active="!!view.active"
         @toggle="toggleView(view)"
         @remove="removeView(view)"
+        @click="select(view)"
       ></VisualizationOption>
+      <!-- <CustomViewOption></CustomViewOption> -->
     </div>
   </section>
 </template>

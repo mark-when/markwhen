@@ -17,7 +17,7 @@ const selectView = (i: number) => {
 <template>
   <div class="flex flex-col">
     <button
-      @click="visualizationStore.showWelcomeViewPicker"
+      @click.stop="visualizationStore.showWelcomeViewPicker"
       class="flex flex-row px-3 py-1 items-center gap-2 hover:bg-indigo-600"
       :class="{
         'bg-indigo-600': visualizationStore.showingWelcomeViewPicker,
@@ -47,7 +47,7 @@ const selectView = (i: number) => {
         ></path>
         <path d="M14 7l6 0"></path>
         <path d="M17 4l0 6"></path></svg
-      ><span class="text-sm">All views...</span>
+      ><span class="text-sm">Views...</span>
     </button>
     <hr class="border-slate-700 my-[2px]" />
     <button
@@ -58,7 +58,7 @@ const selectView = (i: number) => {
           visualizationStore.currentView.name === view.name,
       }"
       class="flex flex-row px-3 py-1 items-center gap-2 hover:bg-indigo-600"
-      @click="selectView(i)"
+      @click.stop="selectView(i)"
     >
       <div class="w-4 h-4" v-html="view.iconSvg"></div>
       <span class="text-sm">{{ view.name }}</span>

@@ -13,7 +13,7 @@ const visualizationStore = useVisualizationStore();
 <template>
   <div class="gap-2 flex flex-col overflow-scroll">
     <div class="flex flex-col px-2 gap-2">
-      <div class="ml-2 flex">
+      <!-- <div class="ml-2 flex">
         <label for="defaultView" class="mr-auto">Default view</label>
         <select
           v-model="settingsStore.defaultView"
@@ -22,7 +22,7 @@ const visualizationStore = useVisualizationStore();
         >
           <option v-for="view in defaultViewOptions">{{ view }}</option>
         </select>
-      </div>
+      </div> -->
       <div class="ml-2 flex">
         <label for="theme" class="mr-auto">Theme</label>
         <select

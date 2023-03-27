@@ -17,22 +17,20 @@ export const useAppSettingsStore = defineStore("appSettings", () => {
   const defaultView = ref<typeof defaultViewOptions[number]>("Timeline");
   const theme = ref<typeof themeOptions[number]>("System");
 
-  const visualizationStore = useVisualizationStore();
-
   const savedSettings = getSettings();
   if (savedSettings) {
-    if (
-      savedSettings.defaultView &&
-      defaultViewOptions.includes(savedSettings.defaultView)
-    ) {
-      defaultView.value = savedSettings.defaultView;
-      const foundView = visualizationStore.activeViews.findIndex(
-        (v) => v.name === savedSettings.defaultView
-      );
-      if (foundView >= 0) {
-        visualizationStore.selectedViewIndex = foundView;
-      }
-    }
+    // if (
+    //   savedSettings.defaultView &&
+    //   defaultViewOptions.includes(savedSettings.defaultView)
+    // ) {
+    //   defaultView.value = savedSettings.defaultView;
+    //   const foundView = visualizationStore.activeViews.findIndex(
+    //     (v) => v.name === savedSettings.defaultView
+    //   );
+    //   if (foundView >= 0) {
+    //     visualizationStore.selectedViewIndex = foundView;
+    //   }
+    // }
     if (savedSettings.theme && themeOptions.includes(savedSettings.theme)) {
       theme.value = savedSettings.theme;
     }
