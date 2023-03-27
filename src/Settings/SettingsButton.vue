@@ -1,27 +1,33 @@
 <script setup lang="ts">
 import HoverHint from "@/Drawer/HoverHint.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useIsTouchscreen } from "@/App/composables/useIsTouchscreen";
 
-defineProps<{ hoverHintTitle?: string; hoverHintShortcut?: string }>();
+defineProps<{
+  hoverHintTitle?: string;
+  hoverHintShortcut?: string;
+  hoverHintLeft?: number;
+}>();
 const emit = defineEmits<{ (event: "click"): void }>();
 
 const hovering = ref(false);
 const { canHover } = useIsTouchscreen();
 
-const events = canHover.value
-  ? {
-      mouseover: () => {
-        hovering.value = true;
-      },
-      mouseleave: () => {
-        hovering.value = false;
-      },
-    }
-  : {};
+const events = computed(() =>
+  canHover.value
+    ? {
+        mouseover: () => {
+          hovering.value = true;
+        },
+        mouseleave: () => {
+          hovering.value = false;
+        },
+      }
+    : {}
+);
 
 const click = () => {
-  hovering.value = false
+  hovering.value = false;
   emit("click");
 };
 </script>
@@ -39,7 +45,9 @@ const click = () => {
       :hovering="hovering"
       :title="hoverHintTitle"
       :shortcut="hoverHintShortcut"
+      :left="hoverHintLeft"
     />
+    <slot v-else name="hover" :hovering="hovering"></slot>
   </button>
 </template>
 
