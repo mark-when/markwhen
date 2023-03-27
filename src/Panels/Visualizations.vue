@@ -28,6 +28,7 @@ watchEffect(() => {
       v-for="component in visualizationStore.activeViews"
       class="w-full h-full"
       v-show="currentViewComponent === component.url"
+      allow="web-share; clipboard-read; clipboard-write; "
       :src="component.url"
       :id="`view_${component.name}_${component.url}`"
     ></iframe>

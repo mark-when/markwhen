@@ -8,6 +8,7 @@ import { useTransformStore } from "@/Markwhen/transformStore";
 import { useEditorOrchestratorStore } from "@/EditorOrchestrator/editorOrchestratorStore";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import { useAppSettingsStore } from "@/AppSettings/appSettingsStore";
+import { useRoute } from "vue-router";
 
 export type EventPaths = { [pathType in EventPath["type"]]?: EventPath };
 
@@ -58,27 +59,25 @@ export const useStateSerializer = () => {
   const transformStore = useTransformStore();
   const editorOrchestrator = useEditorOrchestratorStore();
   const eventDetailStore = useEventDetailStore();
+  const route = useRoute()
 
-  const state = computed(
-    () =>
-      ({
-        app: {
-          isDark: appSettingsStore.inferredDarkMode,
-          hoveringPath:
-            toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
-          detailPath: toRaw(eventDetailStore.detailEventPath),
-          pageIndex: pageStore.pageIndex,
-        },
-        markwhen: {
-          rawText: markwhenStore.rawTimelineString,
-          parsed: markwhenStore.timelines,
-          page: {
-            parsed: pageStore.pageTimeline,
-            transformed: transformStore.transformedEvents,
-          },
-        },
-      } as State)
-  );
+  const state = computed<State>(() => ({
+    app: {
+      isDark: appSettingsStore.inferredDarkMode,
+      hoveringPath: toRaw(editorOrchestrator.hoveringEventPaths) || undefined,
+      detailPath: toRaw(eventDetailStore.detailEventPath),
+      pageIndex: pageStore.pageIndex,
+      path: route.path
+    },
+    markwhen: {
+      rawText: markwhenStore.rawTimelineString,
+      parsed: markwhenStore.timelines,
+      page: {
+        parsed: pageStore.pageTimeline,
+        transformed: transformStore.transformedEvents,
+      },
+    },
+  }));
 
   return state;
 };
