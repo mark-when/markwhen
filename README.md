@@ -47,7 +47,7 @@ To switch between the text editor and the timeline view, select `View: Reopen ed
 
 The default view is hosted from https://timeline.markwhen.com. You may want to run your own local instance of the [timeline](https://github.com/mark-when/timeline) (or other view) and update [`useViewProviders`](src/Views/useViewProviders.ts) accordingly:
 
-```ts
+```diff
 /* src/Views/useViewProviders.ts */
 ...
 
@@ -79,7 +79,7 @@ View container:
 
 (Optional) Update [`useViewProviders`](src/Views/useViewProviders.ts):
 
-```ts
+```diff
 /* src/Views/useViewProviders.ts */
 ...
 
