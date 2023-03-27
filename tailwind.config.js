@@ -29,6 +29,7 @@ module.exports = {
         ":root": extractColorVars(theme("colors")),
       });
     },
+    require("@tailwindcss/container-queries"),
   ],
   darkMode: "class",
 };
