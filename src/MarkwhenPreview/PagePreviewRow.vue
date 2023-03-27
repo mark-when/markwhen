@@ -23,7 +23,7 @@ const left = computed(() => {
 const flattenedEvents = computed(() => flat(props.page.events));
 
 const pageDisplayTitle = computed(() => {
-  const t = props.page.metadata.title;
+  const t = props.page.header.title;
   if (!t) {
     return "";
   }

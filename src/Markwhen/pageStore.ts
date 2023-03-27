@@ -25,6 +25,7 @@ export const usePageStore = defineStore("page", () => {
   const pageRangeFrom = computed(() => pageRange.value.fromDateTime.toISO());
   const pageRangeTo = computed(() => pageRange.value.toDateTime.toISO());
   const pageTimelineMetadata = computed(() => pageTimeline.value.metadata);
+  const header = computed(() => pageTimeline.value.header)
   const tags = computed(() => pageTimeline.value.tags);
 
   const pageTimelineString = computed(() =>
@@ -45,6 +46,7 @@ export const usePageStore = defineStore("page", () => {
     pageTimeline,
     pageTimelineMetadata,
     pageTimelineString,
+    header,
     tags,
     pageRange,
     pageRangeFrom,

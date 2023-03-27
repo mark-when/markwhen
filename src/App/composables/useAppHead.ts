@@ -6,7 +6,7 @@ export const useAppHead = () => {
   const pageStore = usePageStore();
 
   const title = computed(() => {
-    const pageTitle = pageStore.pageTimelineMetadata.title;
+    const pageTitle = pageStore.header.title;
     if (pageTitle) {
       return `${pageTitle} - Markwhen`;
     }

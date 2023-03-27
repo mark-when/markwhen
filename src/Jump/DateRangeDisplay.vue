@@ -21,7 +21,7 @@ const dateRangeString = computed(
     dateRangeToString(
       props.range,
       props.scale || "day",
-      pageStore.pageTimelineMetadata.dateFormat as DateFormat
+      pageStore.header.dateFormat as DateFormat
     )
 );
 </script>

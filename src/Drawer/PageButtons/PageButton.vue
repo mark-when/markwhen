@@ -29,7 +29,7 @@ const shadowed = computed(() => {
 });
 const hovering = ref(false);
 const pageTitle = computed(
-  () => markwhenStore.timelines[props.pageIndex].metadata.title || "untitled"
+  () => markwhenStore.timelines[props.pageIndex].header.title || "untitled"
 );
 const button = ref<HTMLButtonElement>();
 const { moveListener, translateX } = usePageButtonMove(button, () =>
