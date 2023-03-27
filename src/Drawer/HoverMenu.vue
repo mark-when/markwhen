@@ -32,7 +32,7 @@ const allToldHovering = computed(() => selfHover.value || props.hovering);
 <template>
   <transition>
     <div
-      class="hintTop absolute -top-1 left-0 whitespace-nowrap flex items-center justify-center mb-2 shadow-lg rounded px-2 py-1 font-bold text-white pointer-events-none"
+      class="hintTop absolute -top-1 left-0 whitespace-nowrap flex items-center justify-center mb-2 shadow-lg rounded py-1 font-bold text-white"
       :style="{
         transform: `translateY(-100%)`,
       }"
@@ -44,7 +44,7 @@ const allToldHovering = computed(() => selfHover.value || props.hovering);
       ></div> -->
       <div class="absolute inset-0 bg-slate-800 border-3 border-indigo-600 rounded"></div>
       <div
-        class="absolute -inset-4 pointer-events-auto"
+        class="absolute -inset-2"
         @mouseover="mouseover"
         @mouseleave="mouseleave"
       ></div>

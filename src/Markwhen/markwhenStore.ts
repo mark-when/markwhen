@@ -15,7 +15,7 @@ export const useMarkwhenStore = defineStore("markwhen", () => {
   // );
 
   const useWorker = false;
-  console.log("using worker", useWorker);
+  // console.log("using worker", useWorker);
 
   let timelines: Ref<Timeline[]>;
   const cache = shallowReactive(new Cache());

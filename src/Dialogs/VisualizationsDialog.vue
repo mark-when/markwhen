@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import Dialog from "@/Dialog/Dialog.vue";
-import { useViewStore } from "@/Views/viewStore";
 import type { ViewProvider } from "@/viewProvider";
-import ViewOptionRow from "./ViewOptionRow.vue";
+import ViewOptionRow from "./VisualizationOptionRow.vue";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 
-const viewStore = useViewStore();
+const visualizationStore = useVisualizationStore();
 
 const viewUrl = ref("");
 const addView = () => {
-  viewStore.viewOptions.push({
+  visualizationStore.viewOptions.push({
     url: viewUrl.value,
     name: "View",
     capabilities: {
@@ -33,32 +33,32 @@ const addView = () => {
     },
     active: true,
   });
-  viewStore.selectedViewIndex = 0;
+  visualizationStore.selectedViewIndex = 0;
   viewUrl.value = "";
 };
 
 const toggleView = (v: ViewProvider) => {
   if (!v.active) {
-    viewStore.selectedViewIndex = 0;
+    visualizationStore.selectedViewIndex = 0;
     v.active = true;
-  } else if (viewStore.views.length > 1) {
-    viewStore.selectedViewIndex = 0;
+  } else if (visualizationStore.activeViews.length > 1) {
+    visualizationStore.selectedViewIndex = 0;
     v.active = !v.active;
   }
 };
 
 const removeView = (v: ViewProvider) => {
-  const index = viewStore.viewOptions.findIndex(
+  const index = visualizationStore.viewOptions.findIndex(
     (vo) => v.name === vo.name && v.url === vo.url
   );
   if (index >= 0) {
-    viewStore.viewOptions.splice(index, 1);
+    visualizationStore.viewOptions.splice(index, 1);
   }
 };
 </script>
 
 <template>
-  <Dialog v-model="viewStore.showingViewsDialog">
+  <Dialog v-model="visualizationStore.showingViewsDialog">
     <template #header>
       <div
         class="p-2 flex flex-row items-center dark:text-white text-gray-800 font-bold pl-4"
@@ -68,7 +68,9 @@ const removeView = (v: ViewProvider) => {
     >
     <div class="w-full flex px-2 mb-1 flex-col">
       <ViewOptionRow
-        v-for="view in viewStore.viewOptions"
+        v-for="view in visualizationStore.viewOptions.filter(
+          (vo) => typeof vo.url === 'string'
+        )"
         :vp="view"
         :is-active="!!view.active"
         @click="toggleView(view)"
@@ -125,7 +127,7 @@ const removeView = (v: ViewProvider) => {
           role="button"
           type="button"
           class="rounded px-2 ml-auto dark:bg-gray-700 dark:text-white font-bold"
-          @click.prevent="viewStore.showingViewsDialog = false"
+          @click.prevent="visualizationStore.showingViewsDialog = false"
         >
           Done
         </button>

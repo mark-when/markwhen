@@ -1,18 +1,18 @@
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePageStore } from "../Markwhen/pageStore";
-import { useViewStore } from "../Views/viewStore";
 import { useTransformStore } from "@/Markwhen/transformStore";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 
 export const useQuerySetter = () => {
   const route = useRoute();
   const router = useRouter();
   const pageStore = usePageStore();
-  const viewStore = useViewStore();
+  const visualizationStore = useVisualizationStore();
   const transformStore = useTransformStore();
 
   const currentViewName = computed(() => {
-    return viewStore.currentView.name;
+    return visualizationStore.currentView.name;
   });
 
   const queryMap = computed(() => ({

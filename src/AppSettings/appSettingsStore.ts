@@ -1,14 +1,9 @@
-import { useAppStore } from "@/App/appStore";
-import { useViewStore } from "@/Views/viewStore";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
 
-export const defaultViewOptions = [
-  "Timeline",
-  "Calendar",
-  "Map",
-] as const;
+export const defaultViewOptions = ["Timeline", "Calendar", "Map"] as const;
 export const themeOptions = ["System", "Light", "Dark"] as const;
 
 const getSettings = () => {
@@ -22,7 +17,7 @@ export const useAppSettingsStore = defineStore("appSettings", () => {
   const defaultView = ref<typeof defaultViewOptions[number]>("Timeline");
   const theme = ref<typeof themeOptions[number]>("System");
 
-  const viewStore = useViewStore();
+  const visualizationStore = useVisualizationStore();
 
   const savedSettings = getSettings();
   if (savedSettings) {
@@ -31,11 +26,11 @@ export const useAppSettingsStore = defineStore("appSettings", () => {
       defaultViewOptions.includes(savedSettings.defaultView)
     ) {
       defaultView.value = savedSettings.defaultView;
-      const foundView = viewStore.views.findIndex(
+      const foundView = visualizationStore.activeViews.findIndex(
         (v) => v.name === savedSettings.defaultView
       );
       if (foundView >= 0) {
-        viewStore.setSelectedViewIndex(foundView);
+        visualizationStore.selectedViewIndex = foundView;
       }
     }
     if (savedSettings.theme && themeOptions.includes(savedSettings.theme)) {

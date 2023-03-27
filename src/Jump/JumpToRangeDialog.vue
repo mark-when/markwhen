@@ -6,10 +6,10 @@ import { isParseResult, useJumpStore, type ParseResult } from "./jumpStore";
 import type lunr from "lunr";
 import { useEventDetailStore } from "@/EventDetail/eventDetailStore";
 import type { EventPaths } from "@/Views/ViewOrchestrator/useStateSerializer";
-import { useViewStore } from "@/Views/viewStore";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 
 const input = ref();
-const viewStore = useViewStore();
+const visualizationStore = useVisualizationStore();
 const jumpStore = useJumpStore();
 
 const props = defineProps<{ modelValue: boolean }>();
@@ -82,11 +82,11 @@ watch(rangeInput, (input) => {
 
 const selectedResult = (item: ParseResult | lunr.Index.Result) => {
   if (isParseResult(item)) {
-    viewStore.jumpToRange(item.dateRange);
+    visualizationStore.jumpToRange(item.dateRange);
   } else {
     const paths: EventPaths = JSON.parse(item.ref);
     paths.pageFiltered?.path &&
-      viewStore.jumpToPath({
+      visualizationStore.jumpToPath({
         type: "pageFiltered",
         path: paths.pageFiltered.path,
       });

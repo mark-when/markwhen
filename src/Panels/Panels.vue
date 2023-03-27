@@ -1,32 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useViewStore } from "@/Views/viewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { PanelVisualization, usePanelStore } from "./panelStore";
-// import Timeline from "@/Views/Timeline/Timeline.vue";
 import Dialogs from "@/Dialogs/Dialogs.vue";
+import { useVisualizationStore } from "@/Views/visualizationStore";
+import Visualizations from "./Visualizations.vue";
+import ViewPicker from "@/WelcomeViewPicker/ViewPicker.vue";
 
 const viewStore = useViewStore();
+const visualizationStore = useVisualizationStore();
 const panelStore = usePanelStore();
-const currentView = computed(() => viewStore.currentView);
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
-const currentViewComponent = computed(() => {
-  // if (viewStore.currentView.name === "Gantt") {
-  //   return Timeline;
-  // }
-  return viewStore.currentView.url;
-});
-
-const frames = ref<HTMLIFrameElement[]>();
-const activeFrame = computed(() =>
-  frames.value?.find(
-    (f) => f.id === `view_${currentView.value.name}_${currentView.value.url}`
-  )
-);
-
-watchEffect(() => {
-  viewStore.setActiveFrame(activeFrame.value);
-});
 
 const visualizationContainer = ref();
 
@@ -66,21 +51,13 @@ onMounted(() => {
       :style="visualizationStyle"
       ref="visualizationContainer"
     >
-      <iframe
-        ref="frames"
-        sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-top-navigation allow-top-navigation-by-user-activation allow-same-origin"
-        v-for="component in viewStore.framedViews"
-        class="w-full h-full"
-        v-show="currentViewComponent === component.url"
-        :src="component.url"
-        :id="`view_${component.name}_${component.url}`"
-      ></iframe>
+      <KeepAlive>
+        <Visualizations
+          v-show="!visualizationStore.showingWelcomeViewPicker"
+        ></Visualizations>
+      </KeepAlive>
       <keep-alive>
-        <component
-          :is="currentViewComponent"
-          :key="currentView.name === 'Gantt' ? 'Timeline' : currentView.name"
-          v-if="typeof currentViewComponent !== 'string'"
-        />
+        <ViewPicker v-show="visualizationStore.showingWelcomeViewPicker" />
       </keep-alive>
       <div class="absolute inset-0 frameCover"></div>
     </div>

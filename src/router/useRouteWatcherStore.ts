@@ -1,10 +1,10 @@
 import { useMarkwhenStore } from "@/Markwhen/markwhenStore";
 import { useTransformStore, type Sort } from "@/Markwhen/transformStore";
-import { useViewStore } from "@/Views/viewStore";
+import { usePageStore } from "@/Markwhen/pageStore";
 import { defineStore } from "pinia";
-import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { usePageStore } from "../Markwhen/pageStore";
+import { computed, ref, watch, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 
 export type RouteWatchState = "idle" | "error" | "loading";
 
@@ -13,11 +13,11 @@ export const useRouteWatcherStore = defineStore("routeWatcher", () => {
   const markwhenStore = useMarkwhenStore();
   const watchState = ref<RouteWatchState>("loading");
   const pageStore = usePageStore();
-  const viewStore = useViewStore();
+  const visualizationStore = useVisualizationStore();
   const transformStore = useTransformStore();
 
   const pageTitles = computed(() => {
-    return markwhenStore.timelines.map((t) => t.metadata.title);
+    return markwhenStore.timelines.map((t) => t.header.title);
   });
 
   const pageIndexFromQuery = (index: string) => {
@@ -52,12 +52,12 @@ export const useRouteWatcherStore = defineStore("routeWatcher", () => {
       }
     }
     if (query.view) {
-      for (let i = 0; i < viewStore.views.length; i++) {
+      for (let i = 0; i < visualizationStore.activeViews.length; i++) {
         if (
           (query.view as string).toLowerCase() ===
-          viewStore.views[i].name.toLowerCase()
+          visualizationStore.activeViews[i].name.toLowerCase()
         ) {
-          viewStore.setSelectedViewIndex(i);
+          visualizationStore.selectedViewIndex = i;
         }
       }
     }

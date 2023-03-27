@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ViewProvider } from "@/viewProvider";
-import { useViewStore } from "@/Views/viewStore";
+import { useVisualizationStore } from "@/Views/visualizationStore";
 import { ref } from "vue";
 
-const viewStore = useViewStore();
+const visualizationStore = useVisualizationStore();
 
 const props = defineProps<{ isActive: boolean; vp: ViewProvider }>();
 const emits = defineEmits<{ (event: "click" | "remove"): void }>();
@@ -32,7 +32,9 @@ const hovering = ref(false);
     >
     <span class="ml-auto vpCheckmark">
       <svg
-        v-if="isActive && (!hovering || viewStore.views.length <= 1)"
+        v-if="
+          isActive && (!hovering || visualizationStore.activeViews.length <= 1)
+        "
         class="w-5 h-5 text-indigo-500 dark:text-indigo-400"
         focusable="false"
         aria-hidden="true"
