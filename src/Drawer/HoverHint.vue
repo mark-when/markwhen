@@ -25,7 +25,10 @@ const props = withDefaults(
       style="transform: translateX(100%)"
       v-if="hovering && hoverPosition === 'right'"
     >
-      <div class="z-10">{{ title }}</div>
+      <div class="z-10">
+        <div v-if="title">{{ title }}</div>
+        <slot v-else></slot>
+      </div>
       <ShortcutKey :keyboardKey="shortcut" v-if="shortcut" />
 
       <div
@@ -40,7 +43,10 @@ const props = withDefaults(
       }"
       v-else-if="hovering && hoverPosition === 'top'"
     >
-      <div class="z-10">{{ title }}</div>
+      <div class="z-10">
+        <div v-if="title">{{ title }}</div>
+        <slot v-else></slot>
+      </div>
       <ShortcutKey :keyboardKey="shortcut" v-if="shortcut" />
       <div
         class="absolute left-0 -bottom-[2px] rotate-45 bg-indigo-600 h-1/2 aspect-square translate-x-2/4 rounded shadow-sm"
