@@ -8,8 +8,10 @@ import ToggleSidebarButton from "@/Sidebar/ToggleSidebarButton.vue";
 import Jump from "@/Jump/JumpButton.vue";
 import { useVisualizationStore } from "@/Views/visualizationStore";
 import VisualizationIndicator from "./VisualizationSwitcher/VisualizationIndicator.vue";
+import { useMobileViewStore } from "@/Views/mobileViewStore";
 
 const visualizationStore = useVisualizationStore();
+const mobileViewStore = useMobileViewStore();
 
 const currentView = computed(() => visualizationStore.currentView);
 
@@ -24,7 +26,10 @@ const useTopBorder = computed(() => {
     class="bg-slate-50 dark:bg-slate-700 border-t-slate-200 dark:border-t-slate-600 text-gray-500 dark:text-gray-300 z-10 pointer-events-auto bg-white dark:bg-slate-700 safeBottomPadding drawer grid"
     :class="{ 'border-t': useTopBorder }"
   >
-    <div class="viewSwitcher items-center justify-center flex pl-1 pr-3">
+    <div
+      class="viewSwitcher items-center justify-center flex pl-1 pr-3"
+      v-if="!mobileViewStore.isMobile"
+    >
       <VisualizationIndicator></VisualizationIndicator>
     </div>
     <div class="flex flex-row items-center px-1 saveState">
@@ -33,11 +38,7 @@ const useTopBorder = computed(() => {
     <PageButtons v-if="currentView.uses?.pages" />
     <div
       class="viewSettings flex flex-row items-center lg:overflow-visible overflow-auto order-1 lg:order-3 px-2 py-1 lg:py-0 lg:px-0 lg:w-auto w-full noScrollBar lg:justify-end"
-      v-if="
-        currentView.uses?.tags ||
-        currentView.uses?.sort ||
-        (currentView.settings && currentView.settings.length)
-      "
+      v-if="!mobileViewStore.isMobile"
     >
       <NewEvent></NewEvent>
       <Sort v-if="currentView.uses?.sort" />
@@ -54,7 +55,7 @@ const useTopBorder = computed(() => {
     "saveState pageButtons";
 
   grid-template-columns: auto 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 @media (min-width: 1024px) {

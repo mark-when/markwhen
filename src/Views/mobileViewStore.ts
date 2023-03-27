@@ -1,7 +1,7 @@
 import { useMediaQuery } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-export const useViewStore = defineStore("views", () => {
+export const useMobileViewStore = defineStore("views", () => {
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
   // watch(

@@ -21,7 +21,9 @@ const close = () => {
 
 <template>
   <div class="w-full h-full flex justify-center @container">
-    <main class="py-6 px-6 @lg:px-24 flex flex-col gap-4 overflow-auto">
+    <main
+      class="@lg:py-6 px-2 py-2 @lg:px-24 flex flex-col gap-4 overflow-auto"
+    >
       <WelcomeBanner v-if="showingBanner" @close="close"></WelcomeBanner>
       <ViewPicker></ViewPicker>
     </main>

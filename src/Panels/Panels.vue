@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { useViewStore } from "@/Views/viewStore";
+import { useMobileViewStore } from "@/Views/mobileViewStore";
 import EventDetailPanel from "@/EventDetail/EventDetailPanel.vue";
 import { PanelVisualization, usePanelStore } from "./panelStore";
 import Dialogs from "@/Dialogs/Dialogs.vue";
@@ -8,7 +8,7 @@ import { useVisualizationStore } from "@/Views/visualizationStore";
 import Visualizations from "./Visualizations.vue";
 import WelcomeViewPicker from "@/WelcomeViewPicker/WelcomeViewPicker.vue";
 
-const viewStore = useViewStore();
+const viewStore = useMobileViewStore();
 const visualizationStore = useVisualizationStore();
 const panelStore = usePanelStore();
 const detailVisible = computed(() => panelStore.detailPanelState.visible);
@@ -42,6 +42,20 @@ const visualizationStyle = computed(() => {
 onMounted(() => {
   panelStore.setPanelElement(PanelVisualization, visualizationContainer.value);
 });
+
+const showVisualizations = computed(() => {
+  if (viewStore.isMobile) {
+    return !visualizationStore.showingWelcomeViewPicker;
+  }
+  return !visualizationStore.showingWelcomeViewPicker;
+});
+
+const showWelcomeViewPicker = computed(() => {
+  if (viewStore.isMobile) {
+    return visualizationStore.showingWelcomeViewPicker;
+  }
+  return visualizationStore.showingWelcomeViewPicker;
+});
 </script>
 
 <template>
@@ -51,16 +65,8 @@ onMounted(() => {
       :style="visualizationStyle"
       ref="visualizationContainer"
     >
-      <KeepAlive>
-        <Visualizations
-          v-show="!visualizationStore.showingWelcomeViewPicker"
-        ></Visualizations>
-      </KeepAlive>
-      <keep-alive>
-        <WelcomeViewPicker
-          v-show="visualizationStore.showingWelcomeViewPicker"
-        />
-      </keep-alive>
+      <Visualizations v-show="showVisualizations"></Visualizations>
+      <WelcomeViewPicker v-show="showWelcomeViewPicker" />
       <div class="absolute inset-0 frameCover"></div>
     </div>
     <EventDetailPanel v-if="detailVisible && !viewStore.isMobile" />
