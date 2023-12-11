@@ -1,3 +1,9 @@
+# Markwhen is alive and well, just not in this repository
+
+Markwhen's components have been separated and live in other repositories under the [mark-when](https://github.com/mark-when) organization. 
+
+The web app (the editor) is the only thing that isn't open source. Everything else (including the timeline itself and the vs code extension) is - check out the links below and the diagram of repositories image.
+
 # [Markwhen](https://markwhen.com)
 
 ![](/public/images/screenshot.png)
